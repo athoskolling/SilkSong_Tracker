@@ -1,6 +1,6 @@
 # Silksong Guide: project structure
 
-Planning document. No code exists yet: this is the context for starting development in Claude Code. Terms in **bold** are defined in `GLOSSARY.md`.
+Planning document, written before the code. The vertical slice (Phase 1) now exists; `docs/PROGRESS-LOG.md` has the current state. Terms in **bold** are defined in `GLOSSARY.md`.
 
 > Translated from Athos's Portuguese original (`athos-notes-pt-br/silksong-estrutura.md`) and updated after the design phase. Changes from the original are listed in section 13.
 
@@ -72,7 +72,7 @@ silksong-guide/
 ├── js/
 │   ├── main.js             # entry point; picks behaviour by <body data-page="...">
 │   ├── firebase.js         # init + auth + Firestore
-│   ├── firebase-config.js  # the Firebase web config (not a secret; see ADR 0002)
+│   ├── firebase-config.js  # the Firebase web config (not a secret; see ADR 0004)
 │   ├── progress.js         # local (localStorage), Firestore, export/import, merge
 │   ├── requirements.js     # resolves requirements: "what is missing for X"
 │   ├── data.js             # loads data/*.json with relative URLs
@@ -197,7 +197,6 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 - Confirm on the wiki the first three Regions of batch 1 and the exact scope of each.
 - Review the wiki's license and terms of use before using the draft script.
 - Strategy for updating the data when the game gets patches or DLC.
-- Repository name and creation, and whether it is private or public.
 - How to handle the global Route when one `step` depends on a player choice (Endings with `locksOut`). The Route screen has a "Choice point" marker for this; the data rule is still open.
 - Whether to keep game screenshots as hero images on the public site (see section 8 and `docs/IMAGES.md`).
 
@@ -205,7 +204,7 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 
 - Give it this document, `docs/AGENT-PLAN.md` and `GLOSSARY.md` as starting context. `CLAUDE.md` already imports them.
 - Work in small steps: the vertical slice first (one Region, two entries), then widen.
-- Athos writes the first draft of `regions.json` and the `requirements.js` module; Claude Code reviews and explains.
+- The plan was for Athos to write the first data draft and the `requirements.js` module. On 2026-10-19 he delegated `requirements.js` to Dev A and the slice research to the orchestrator; he reviews both and confirms the facts.
 - Use Claude Code as reviewer and guide: try each part first, ask for review and ask for the reasoning behind decisions.
 
 ## 13. Changes from the Portuguese original
@@ -217,3 +216,4 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 - Import is a union merge (confirmed by Athos in Phase 0, see `docs/CONTRACTS.md`).
 - Section 8 records the hero-image exception.
 - Firebase: the site has its own project instead of sharing Hollow-Thingy's (ADR 0004, Athos, Phase 1).
+- Repository created (public, `athoskolling/SilkSong_Tracker`), so it is no longer an open point. `requirements.js` delegated to Dev A (Athos, Phase 1).

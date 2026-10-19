@@ -16,6 +16,7 @@ paths:
 - **The Firebase SDK** loads from gstatic at one pinned version, imported only by `js/firebase.js`; if it fails to load, the site still works locally.
 - **One document per user:** `silksong_progress/{uid}`. The rules let a user read and write only their own document and nothing else in the Silksong collection.
 - **Own Firebase project** (ADR 0004, replaces 0002): `silksong-tracker-90229` belongs to this site alone, so `firestore.rules` is written from scratch and denies everything except `silksong_progress/{uid}` for its own user. Test with the Firebase Emulator that (a) each user reaches only their own document, (b) another user's document is refused, (c) signed-out access is refused and (d) any other path is refused.
+- **Rules tests** run only against the Emulator, under the `demo-silksong-guide` project id, from `tests/firestore-rules.test.js` (see `.claude/rules/tests.md`). No `.firebaserc` in the repository: nothing should default to the real project.
 - **Never deploy.** Do not run `firebase deploy` and do not publish rules. Athos deploys, after the Emulator tests pass.
 - No secrets in the repository. The Firebase web config is not a secret and lives only in `js/firebase-config.js`; the rules are what protect the data.
 - Progress stores ids only, never game text. Ids that no longer exist in `data/` are ignored by the interface and kept in storage.

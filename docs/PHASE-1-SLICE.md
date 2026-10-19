@@ -95,3 +95,12 @@ Known simplification: Silkspear's real chain also passes a gate near The Marrow.
 3. Mosshome belongs to Moss Grotto: confirmed.
 
 Sources for point 2: [Destructoid](https://www.destructoid.com/how-to-get-silkspear-skill-in-hollow-knight-silksong/), [Sportskeeda](https://www.sportskeeda.com/esports/hollow-knight-silksong-how-unlock-silkspear), [dtgre (skip claim)](https://www.dtgre.com/2025/09/hollow-knight-silksong-sequence-breaking-early-skill-unlocks.html).
+
+## Finishing Phase 1 (2026-10-19)
+
+Phase 1 is done when marking one entry unlocks the other (done), Progress survives a reload (done) and Progress syncs between two devices (not yet). Sync needs Firestore rules: the rules published now deny everything.
+
+1. **T8 (dev-a):** `firestore.rules` and `firebase.json` at the root, and `tests/firestore-rules.test.js` run against the Emulator. Never deployed by an agent.
+2. **Athos publishes the rules** once the Emulator tests pass and he has read them. The orchestrator gives him the exact command; agents never run it. Then he copies the published rules into `firebase/SilkSong_Tracker.rules` so the copy matches the console.
+3. **Athos checks sync on two devices** (for example a computer and a phone, on the GitHub Pages site): sign in on both, mark an entry on one, see it on the other after a reload. The orchestrator gives him a short script for this check.
+4. The orchestrator reviews Phase 1 against `docs/AGENT-PLAN.md` section 8 and Athos says whether to start Phase 2.

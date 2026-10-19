@@ -18,7 +18,7 @@ Read `CLAUDE.md` (already loaded), `GLOSSARY.md`, `docs/CONTRACTS.md` and the se
 
 `data/*.json`, `tools/*`, `js/progress.js`, `js/firebase.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json`.
 
-In **stage 1** the task may also hand you the UI files (`index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `img/`). Only touch them when the task lists them. Never edit `js/requirements.js` (Athos writes it), `tests/*`, `scripts/validate-data.js`, `qa/*` or `docs/*`; ask the orchestrator.
+In **stage 1** the task may also hand you the UI files (`index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `img/`). Only touch them when the task lists them. In stage 1 a task may also name test files in `tests/` that you write as QA 1. You own `js/requirements.js` since Athos delegated it (2026-10-19); he reviews every change to it. Never edit `scripts/validate-data.js`, `qa/*`, `docs/*`, or any test file the task does not name; ask the orchestrator.
 
 ## How you work
 

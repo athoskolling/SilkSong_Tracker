@@ -11,7 +11,7 @@ Five agents for a static site with a handful of files cost more in coordination 
 **Stage 1: vertical slice (orchestrator, one dev, Athos)**
 - Orchestrator (Opus 5.5, high).
 - Dev (Sonnet 5.5, high). In this stage the `dev-a` agent does the work of both Dev A and Dev B, and the orchestrator says so explicitly in each task so file ownership stays single-owner.
-- Athos writes the data draft and the `requirements.js` module, and reviews everything.
+- Athos writes the data draft and the `requirements.js` module, and reviews everything. (On 2026-10-19 Athos delegated `requirements.js` to `dev-a` and the slice research to the orchestrator; he reviews both and confirms the facts.)
 - Goal: one Region, two entries, a requirement chain, local Progress and a real login, end to end.
 
 **Stage 2: widening (up to 5 agent roles)**
@@ -36,17 +36,18 @@ Notes:
 
 ## 3. File owners
 
-Main rule: **every file has exactly one owner**. Nobody edits another owner's file. If a change is needed, ask the owner or the orchestrator. In stage 1, the dev holds both A and B.
+Main rule: **every file has exactly one owner**. Nobody edits another owner's file. If a change is needed, ask the owner or the orchestrator. In stage 1, the dev holds both A and B, and also writes the tests a task names (acting as QA 1); QA 1 takes those test files over in stage 2.
 
 | Path | Owner |
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
-| `data/*.json`, `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (stage 1: Athos writes `requirements.js` and the data draft) |
+| `data/*.json`, `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `img/` | Dev B |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
 | `docs/PROGRESS-LOG.md` | Orchestrator (the tutor only reads it) |
 | `data/sample/*` | Orchestrator (layout samples only; Dev B may read them) |
+| `firebase/*` | Athos (his copy of the rules published in the Firebase console, for reference; the rules the repository owns are `firestore.rules` at the root) |
 
 ## 4. Contracts between modules (`docs/CONTRACTS.md`)
 
@@ -54,9 +55,9 @@ The orchestrator writes this file **before** releasing parallel work. The contra
 
 Summary (the exact signatures and data shapes are in `docs/CONTRACTS.md`):
 
-- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`
-- `progress.js`: `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`
-- `firebase.js`: `signIn`, `signOut`, `onAuthChange`
+- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`
+- `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`)
+- `firebase.js`: `signIn`, `completeEmailLinkSignIn`, `signOut`, `onAuthChange`; and, for `progress.js` only, `readProgressDoc`, `writeProgressDoc`, `deleteProgressDoc`, `watchProgressDoc`
 
 The interface uses only these functions. It does not touch Firestore or localStorage, and does not read requirement JSON on its own.
 
@@ -72,13 +73,13 @@ The interface uses only these functions. It does not touch Firestore or localSto
 
 **Phase 1: Vertical slice (stage 1)**
 - One Region, two entries and a dependency between them.
-- `requirements.js` (Athos), local Progress, the Region screen, a real login.
+- `requirements.js` (Dev A, delegated by Athos), local Progress, the Region screen, a real login, and `firestore.rules` tested in the Emulator (sync needs it).
 - Done when: marking one entry unlocks the other, Progress survives a page reload and syncs between two devices.
 
 **Phase 2: Widening (stage 2, in parallel)**
 - Dev A: the rest of the logic, sync and `firestore.rules` tested in the Emulator.
 - Dev B: Home, Region and Route screens, and the account and backup screen, from `docs/DESIGN.md` and `docs/design/`.
-- QA 1: `scripts/validate-data.js` (unique ids, valid `requires`, no cycles, coherent `missable`) and tests for `requirements.js`.
+- QA 1: `scripts/validate-data.js` (unique ids, valid `requires`, no cycles, coherent `missable`); takes over the tests Dev A wrote in stage 1 and checks they cover every case in `docs/CONTRACTS.md` section 2.
 - QA 2: QA checklist built from the screens.
 
 **Phase 3: Real data, in batches (Dev A, with Athos)**
@@ -136,3 +137,4 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - `index.html`, `route.html`, `account.html` and `img/` added to Dev B's files.
 - Haiku "extra" mapped to `xhigh`.
 - Stage 1 clarified: `dev-a` acts as both devs, with the orchestrator naming the owner of each task.
+- Phase 1 (2026-10-19): `requirements.js` delegated to Dev A; `firestore.rules` and its Emulator tests moved into Phase 1, because sync between two devices (the slice's done criterion) cannot work without them; contract summary in section 4 brought up to date; `firebase/` added to the owner table.

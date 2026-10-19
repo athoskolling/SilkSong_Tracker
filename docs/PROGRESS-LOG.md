@@ -21,7 +21,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Athos confirmed:** the name is Silk Spear (id `silk-spear`, renamed before publishing) and Mosshome is part of Moss Grotto. The orchestrator searched the Mosshome question: the normal route needs Moss Mother first, so `silk-spear` keeps needing `moss-mother`.
 - **T7 merged** (`dev-a/slice-data-fix`): rename and new texts. 88 tests pass. **Pushed**: the slice runs on GitHub Pages (local Progress only; sync waits for the rules).
 
+- **New session; Athos chose to finish Phase 1.** Emulator tools are now installed (Firebase CLI 15.34.0, Java 21), so the rules task is unblocked.
+- **Docs brought up to date** (orchestrator): `requirements.js` is Dev A's (delegated by Athos) in `AGENT-PLAN.md`, `STRUCTURE.md` and the agent files; contract summary in `AGENT-PLAN.md` section 4 updated; `firebase/` (Athos's copy of the published rules) added to the owner table, `firestore.rules` at the root is the repository's ruleset; rules tests run only in the Emulator under the `demo-silksong-guide` project id, and skip in `node --test tests/`; README status; steps to finish Phase 1 in `docs/PHASE-1-SLICE.md`. Merged `dev-a/*` branches deleted.
+
 ## Open
 
-- Emulator tools not installed (Firebase CLI and Java): blocks the rules task, so sync between devices cannot work yet (published rules deny everything).
+- Sync between devices cannot work until Athos publishes the rules from T8 (published rules deny everything).
 - Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.

@@ -21,7 +21,7 @@ Read `CLAUDE.md` (already loaded), `GLOSSARY.md`, `docs/CONTRACTS.md` (every sig
 ## What you build
 
 1. `scripts/validate-data.js`: `node scripts/validate-data.js [dir]` reads `regions.json`, `items.json` and `endings.json` from `dir` (default `data`) and enforces every check in section 6 of `docs/CONTRACTS.md`. Plain Node, no dependencies. Errors exit with code 1 and name the file, the id and the rule. Warnings do not fail. `node scripts/validate-data.js data/sample` must pass.
-2. Tests for `js/requirements.js` with `node:test` and `node:assert`, using the cases listed in section 2 of `docs/CONTRACTS.md`: empty requirements, a chain, a diamond, a cycle, unknown ids, tasks excluded from `regionProgress`, ordering by `step`.
+2. Tests for `js/requirements.js` with `node:test` and `node:assert`, using the cases listed in section 2 of `docs/CONTRACTS.md`: empty requirements, a chain, a diamond, a cycle, unknown ids, tasks excluded from `regionProgress`, ordering by `step`. Dev A wrote a first set in stage 1 (`tests/requirements.test.js`); you take it over, check it against the contract and fill the gaps.
 3. Tests for the pure part of `js/progress.js` (`mergeLocalAndCloud`, the import union rule) once Dev A has delivered them.
 4. Validator tests: copy `data/sample` to a temp folder, break it on purpose (cycle, missing id, duplicate step, missing credit, `missable` with no note) and assert each rule fires.
 

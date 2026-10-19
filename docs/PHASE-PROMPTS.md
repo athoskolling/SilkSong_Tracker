@@ -16,6 +16,8 @@ Start Phase 0. Check docs/PHASE-0-CHECKLIST.md and tell me which of my tasks are
 
 Athos writes `data/regions.json` (draft) and `js/requirements.js`; the orchestrator guides and reviews.
 
+> Used on 2026-10-19 with two changes from Athos: `dev-a` wrote `js/requirements.js` and the orchestrator researched the slice facts, which Athos confirmed. Phase 1 also includes `firestore.rules` tested in the Emulator, since sync cannot work without it.
+
 ```
 Start Phase 1, stage 1: one Region, two entries with a dependency between them, local Progress, the Region screen and a real login, end to end. Use only the orchestrator and dev-a (dev-a also acts as dev-b for the UI files you name).
 First, with me, choose the slice: which Region and which two entries from the wiki. I will give you the facts; you do not supply any. Then:
