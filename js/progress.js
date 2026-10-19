@@ -1,11 +1,20 @@
-// progress.js: the only module that touches localStorage (and, from task T3 on,
-// Firestore through firebase.js). See docs/CONTRACTS.md section 3 and ADR 0001.
+// progress.js: the only module that touches localStorage and, through firebase.js,
+// Firestore. See docs/CONTRACTS.md section 3 and ADR 0001.
 //
-// This file is the LOCAL half. Local first: every change is written to
-// localStorage before anything else, and a failure anywhere else never loses it.
+// Local first: every change is written to localStorage before anything else, and a
+// failure anywhere in the cloud half never loses or rolls back local data. The cloud
+// half is the block marked CLOUD further down.
 //
 // Stored shape (same as the cloud document, plus the local-only syncedUid):
 //   { done: { id: true }, visited: { id: true }, updatedAt: ms, dataVersion: n, syncedUid?: string }
+
+import {
+  onAuthChange,
+  readProgressDoc,
+  writeProgressDoc,
+  deleteProgressDoc,
+  watchProgressDoc,
+} from './firebase.js';
 
 const STORAGE_KEY = 'silksong-guide:progress:v1';
 
@@ -53,6 +62,7 @@ export function useStorage(storage) {
   syncStatus = { state: 'local', at: null, message: '' };
   progressListeners.clear();
   statusListeners.clear();
+  stopCloud(); // a test starts from "nobody signed in, no cloud"
 }
 
 // ------------------------------------------------------------------- storage
@@ -128,11 +138,11 @@ function toSets(progress) {
 
 // Every local change goes through here: stamp, save locally, tell the cloud hook,
 // tell subscribers.
-function commit(progress) {
+function commit(progress, { syncToCloud = true } = {}) {
   progress.updatedAt = Date.now();
   if (contentVersion !== null) progress.dataVersion = contentVersion;
   writeLocal(progress);
-  afterLocalWrite(progress);
+  if (syncToCloud) afterLocalWrite();
   notifyProgress(progress);
 }
 
@@ -159,23 +169,236 @@ function setSyncStatus(status) {
 }
 
 // ====================================================================== CLOUD
-// TASK T3 PLUGS IN HERE (do not change the public signatures below).
-//   1. Subscribe to onAuthChange from firebase.js. On sign-in: readProgressDoc(uid),
-//      mergeLocalAndCloud(readLocal(), cloud, uid), writeLocal + writeProgressDoc the
-//      result, start watchProgressDoc, then notifyProgress and setSyncStatus (with
-//      `combined` after a first sign-in).
-//   2. On sign-out: stop the watch and remove syncedUid from the local copy.
-//   3. afterLocalWrite below: when signed in, writeProgressDoc (without syncedUid);
-//      report 'syncing', then 'synced' or 'error'. An error must never touch local data.
-//   4. clearProgress: also deleteProgressDoc when signed in.
-//   5. exportProgress / importProgress need no change.
-function afterLocalWrite(_progress) {
-  // Local-only in task T1: nothing to sync.
+// Everything that talks to the account lives in this block. The rule that shapes it:
+// local Progress is saved first and is never rolled back, whatever the cloud does.
+//
+// Why the cloud copy is a whole object: a write replaces the document, so a failed
+// write needs no retry queue. The next successful write carries the latest local
+// state, and the next page load repairs a missed write anyway (same account, local
+// newer than the cloud copy, so local wins and is written).
+
+const CLOUD_ERROR_MESSAGE = 'Could not sync with your account. Your Progress is saved on this device.';
+
+// The five firebase.js functions this block needs. A test swaps them through useCloud.
+const realCloud = { onAuthChange, readProgressDoc, writeProgressDoc, deleteProgressDoc, watchProgressDoc };
+
+let cloud = realCloud;
+let stopAuth = null; // unsubscribe from onAuthChange
+let stopWatch = null; // unsubscribe from watchProgressDoc
+let signedInUid = null; // null = nobody signed in (or the SDK never loaded)
+let cloudReady = false; // true once the first merge for this sign-in is done
+let session = 0; // bumped on every sign-in, sign-out and reset; late results from an old one are dropped
+let cloudChain = Promise.resolve(); // cloud jobs run one at a time, in order, so writes cannot overtake each other
+let writeQueued = false; // one queued write is enough: it reads the latest local state when it runs
+let pendingJobs = 0;
+let combinedNote = null; // { localDone, cloudDone, totalDone } kept until the status 'synced' that follows a first sign-in
+
+// Test seam only (like useStorage): replaces the firebase.js functions with a fake and
+// starts listening to its onAuthChange. useCloud(null) just stops everything.
+export function useCloud(fake) {
+  stopCloud();
+  if (fake) startCloud(fake);
+}
+
+function startCloud(api) {
+  cloud = api;
+  stopAuth = api.onAuthChange(handleAuthChange);
+}
+
+function stopCloud() {
+  newSession();
+  if (typeof stopAuth === 'function') stopAuth();
+  stopAuth = null;
+  stopWatching();
+  signedInUid = null;
+  cloud = realCloud;
+}
+
+function newSession() {
+  session += 1;
+  cloudReady = false;
+  writeQueued = false;
+  pendingJobs = 0;
+  combinedNote = null;
+  cloudChain = Promise.resolve();
+}
+
+function stopWatching() {
+  if (typeof stopWatch === 'function') stopWatch();
+  stopWatch = null;
+}
+
+function idCount(map) {
+  return Object.keys(map).length;
+}
+
+function hasIds(progress) {
+  return idCount(progress.done) + idCount(progress.visited) > 0;
+}
+
+function sameIds(a, b) {
+  const same = (x, y) => idCount(x) === idCount(y) && Object.keys(x).every((id) => y[id] === true);
+  return same(a.done, b.done) && same(a.visited, b.visited);
+}
+
+// What goes to the cloud: the Progress object without the device-only syncedUid.
+function forCloud(progress) {
+  const { syncedUid, ...shareable } = progress;
+  return shareable;
+}
+
+function reportError(error) {
+  console.warn('Cloud sync problem:', error && error.code ? error.code : error);
+  setSyncStatus({ state: 'error', at: syncStatus.at, message: CLOUD_ERROR_MESSAGE });
+}
+
+function markSynced() {
+  const status = { state: 'synced', at: Date.now(), message: '' };
+  if (combinedNote) status.combined = combinedNote;
+  combinedNote = null;
+  setSyncStatus(status);
+}
+
+// Runs one cloud job after the ones before it. Errors become status 'error' and
+// nothing else: local data is never touched here.
+function enqueueCloudJob(job) {
+  const mine = session;
+  const uid = signedInUid;
+  pendingJobs += 1;
+  if (syncStatus.state !== 'syncing') setSyncStatus({ state: 'syncing', at: syncStatus.at, message: '' });
+
+  cloudChain = cloudChain.then(async () => {
+    if (mine !== session) return; // signed out or switched account while waiting
+    try {
+      await job(uid);
+      if (mine !== session) return;
+      pendingJobs -= 1;
+      if (pendingJobs === 0) markSynced();
+    } catch (error) {
+      if (mine !== session) return;
+      pendingJobs -= 1;
+      reportError(error);
+    }
+  });
+}
+
+function scheduleCloudWrite() {
+  // Not ready = the first merge is still running. It reads local Progress after
+  // the cloud read, so it already includes this change; writing now could overwrite
+  // the cloud copy before it was read.
+  if (!signedInUid || !cloudReady || writeQueued) return;
+  writeQueued = true;
+  enqueueCloudJob(async (uid) => {
+    writeQueued = false;
+    await cloud.writeProgressDoc(uid, forCloud(readLocal()));
+  });
+}
+
+// Compares the cloud copy with local Progress and applies the rule of docs/CONTRACTS.md
+// section 3: first sign-in on this device = union; afterwards the larger updatedAt wins
+// as a whole object, and a cloud copy that is older or equal is ignored. Used for the
+// first read and for every later change coming from another device.
+function reconcile(uid, cloudCopy) {
+  const local = readLocal();
+  const merged = mergeLocalAndCloud(local, cloudCopy, uid);
+  const theirs = cloudCopy ? normalize(cloudCopy) : null;
+  const firstSignIn = local.syncedUid !== uid;
+  const cloudIsNewer = Boolean(theirs) && !firstSignIn && theirs.updatedAt > local.updatedAt;
+
+  let pushLocal;
+  if (!theirs) pushLocal = hasIds(merged); // nothing to create in the cloud for an empty run
+  else if (firstSignIn) pushLocal = true; // the union is new to the cloud
+  else pushLocal = theirs.updatedAt < local.updatedAt; // local is newer: the cloud copy is behind
+
+  if (firstSignIn || cloudIsNewer) writeLocal(merged); // otherwise local is already the result
+  cloudReady = true;
+  if (theirs && firstSignIn) {
+    combinedNote = {
+      localDone: idCount(local.done),
+      cloudDone: idCount(theirs.done),
+      totalDone: idCount(merged.done),
+    };
+  }
+  if (!sameIds(local, merged)) notifyProgress(merged);
+  if (pushLocal) scheduleCloudWrite();
+  else markSynced();
+}
+
+function startWatch(uid, mine) {
+  stopWatching();
+  stopWatch = cloud.watchProgressDoc(
+    uid,
+    (copy) => {
+      if (mine !== session) return;
+      // null once we are in sync means the document was deleted (another device started
+      // a new run). Our local Progress stays; our next change writes it back.
+      if (copy === null && cloudReady) return;
+      try {
+        reconcile(uid, copy);
+      } catch (error) {
+        reportError(error);
+      }
+    },
+    (error) => {
+      if (mine === session) reportError(error);
+    }
+  );
+}
+
+function forgetSyncedUid() {
+  const local = readLocal();
+  if (!local.syncedUid) return;
+  delete local.syncedUid; // not a content change: updatedAt stays as it was
+  writeLocal(local);
+}
+
+async function handleAuthChange(user) {
+  newSession();
+  stopWatching();
+
+  if (!user) {
+    signedInUid = null;
+    forgetSyncedUid(); // anything marked from now on is combined by union at the next sign-in
+    setSyncStatus({ state: 'local', at: null, message: '' });
+    return;
+  }
+
+  const mine = session;
+  const uid = user.uid;
+  signedInUid = uid;
+  setSyncStatus({ state: 'syncing', at: syncStatus.at, message: '' });
+
+  try {
+    const copy = await cloud.readProgressDoc(uid);
+    if (mine !== session) return;
+    reconcile(uid, copy);
+  } catch (error) {
+    if (mine !== session) return;
+    reportError(error);
+  }
+  // The watch is started even when the first read failed: its first good snapshot goes
+  // through the same reconcile, so the site recovers by itself when the network returns.
+  if (mine === session) startWatch(uid, mine);
+}
+
+// Called after every local change (commit). The local write has already happened.
+function afterLocalWrite() {
+  scheduleCloudWrite();
+}
+
+// Used by clearProgress: removes the cloud copy of a signed-in account.
+function deleteCloudCopy() {
+  if (signedInUid) enqueueCloudJob((uid) => cloud.deleteProgressDoc(uid));
 }
 // ====================================================================== /CLOUD
 
 // ----------------------------------------------------------- public: reading
 
+// Local first, and it never waits for the network: a slow or missing connection must
+// not block the page. When signed in, the cloud copy is merged in the background and
+// arrives through onProgressChange (and onSyncStatus). Note: this is narrower than the
+// contract wording ("also reads the cloud copy ... and returns the result"); flagged
+// in the T3 handoff for the orchestrator to settle.
 export async function loadProgress() {
   return toSets(readLocal());
 }
@@ -329,9 +552,20 @@ export function mergeLocalAndCloud(local, cloud, uid) {
 // We write an empty Progress with a fresh updatedAt (instead of deleting the key)
 // so that, once signed in, the empty copy counts as the newest and wins over the
 // old cloud copy. syncedUid is kept for the same reason.
+// When signed in the cloud copy is deleted too (instead of written empty, as an
+// ordinary change would be), so no document is left behind for a new run. The delete
+// is not awaited: a slow network must not hold the screen, and a failure only sets
+// the sync status.
 export async function clearProgress() {
   const { syncedUid } = readLocal();
   const fresh = emptyProgress();
   if (syncedUid) fresh.syncedUid = syncedUid;
-  commit(fresh);
+  commit(fresh, { syncToCloud: false });
+  deleteCloudCopy();
 }
+
+// Start listening for sign-in. Browsers only: node (the tests) has no window and
+// starts the cloud half through useCloud with a fake instead, so a test never tries
+// to reach the real SDK. If the SDK cannot load, firebase.js reports "nobody signed
+// in" and the status simply stays 'local'.
+if (typeof window !== 'undefined') startCloud(realCloud);

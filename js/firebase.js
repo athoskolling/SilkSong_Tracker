@@ -300,11 +300,24 @@ export async function deleteProgressDoc(uid) {
 // Calls back with the stored object, or null when there is no document. Echoes of
 // this device's own writes (not yet confirmed by the server) are skipped, so the
 // callback means "the cloud copy changed", which is what progress.js needs.
-// The contract has no error channel here, so a watch error is logged and the
-// callback is not called (null would wrongly mean "no cloud copy").
-export function watchProgressDoc(uid, callback) {
+// A failure (the SDK cannot load, or the listener stops, for example permission-denied)
+// goes to the optional onError and NEVER to callback: callback(null) means "there is
+// no cloud copy", and reporting an error as that would make progress.js think the
+// copy was deleted.
+export function watchProgressDoc(uid, callback, onError) {
   let active = true;
   let stopSdkListener = null;
+
+  const fail = (error, fallback) => {
+    const friendly = friendlyError(error, fallback);
+    console.warn(fallback, friendly.code);
+    if (!active || typeof onError !== 'function') return;
+    try {
+      onError(friendly);
+    } catch (handlerError) {
+      console.error('onError handler failed', handlerError); // a bad handler must not break the listener code
+    }
+  };
 
   getServices()
     .then((services) => {
@@ -315,14 +328,10 @@ export function watchProgressDoc(uid, callback) {
           if (!active || snapshot.metadata.hasPendingWrites) return;
           callback(snapshot.exists() ? snapshot.data() : null);
         },
-        (error) => {
-          console.warn('Watching the cloud copy stopped:', error && error.code ? error.code : error);
-        }
+        (error) => fail(error, 'Lost the connection to the cloud copy.')
       );
     })
-    .catch((error) => {
-      console.warn('Could not watch the cloud copy:', error && error.message ? error.message : error);
-    });
+    .catch((error) => fail(error, 'Could not watch the cloud copy.'));
 
   return () => {
     active = false;
