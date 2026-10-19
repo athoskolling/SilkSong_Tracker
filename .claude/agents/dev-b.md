@@ -20,7 +20,7 @@ Read `CLAUDE.md` (already loaded), `GLOSSARY.md`, `docs/CONTRACTS.md`, `docs/DES
 
 ## How you work
 
-- Plain HTML, CSS and JavaScript modules. No framework, no build step, no CDN script. Relative paths only.
+- Plain HTML, CSS and JavaScript modules. No framework, no build step, no CDN script (only `js/firebase.js`, not yours, loads the Firebase SDK). Relative paths only.
 - **Sample content is not data.** Names, steps, requirements and counts in the mockups only show states. Never copy them into code. The interface shows only what comes from `data/` and Progress. While real data does not exist, develop against `data/sample/` (invented names) behind a clearly marked development switch, never as a default in the shipped page.
 - The interface uses only the functions in `docs/CONTRACTS.md` for requirements, Progress and sign-in. It never reads localStorage, never touches Firestore and never walks `requires` itself. If you need a function that does not exist, ask the orchestrator to extend the contract.
 - Every state in `docs/DESIGN.md` must have a working equivalent: Available, Locked, Visited, Complete, Not in the guide yet, next on the route, missable, needs something, done, blocked. A new game starts empty.

@@ -1,12 +1,12 @@
 # Contracts
 
-**Status: draft, to be reviewed with Athos in Phase 0.** These are hypotheses until the vertical slice (Phase 1) proves them. Changing a contract is the orchestrator's job; no one else edits this file. A doubt about a contract is a question for the orchestrator, never something to improvise.
+**Status: approved by Athos, 2026-10-19 (Phase 0).** Still hypotheses until the vertical slice (Phase 1) proves them; changes after this are recorded with their reason. Changing a contract is the orchestrator's job; no one else edits this file. A doubt about a contract is a question for the orchestrator, never something to improvise.
 
 Terms follow `GLOSSARY.md`. In code and JSON, an entry is stored in `items.json` and its `kind` is `collectible` or `task`.
 
 ## 1. Data shapes
 
-Every file in `data/` is `{ "dataVersion": <integer>, ... }`. Ids are lowercase slugs (`^[a-z0-9]+(-[a-z0-9]+)*$`), globally unique across `items.json`, `regions.json` and `endings.json` so that `requires` and `conditions` can point at any of them without saying which file. **Never rename a published id** (ADR 0003): add a new entry and retire the old one.
+Every file in `data/` is `{ "dataVersion": <integer>, ... }`, and **all three files carry the same `dataVersion`**: it is one version for the whole of `data/`, raised in all three files together on any content change (decided with Athos, Phase 0, so Progress has a single version to record). Ids are lowercase slugs (`^[a-z0-9]+(-[a-z0-9]+)*$`), globally unique across `items.json`, `regions.json` and `endings.json`, so an id never means two things. **`requires` and `conditions` hold entry ids only** (ids from `items.json`), never Region or Ending ids: only entries can be in `done`, so any other id could never be met. "Region B needs Region A" is written as the entry that opens Region B. Anything an Ending depends on is an entry (a Task if it adds nothing to the counts). **Never rename a published id** (ADR 0003): add a new entry and retire the old one.
 
 ### `regions.json`
 
@@ -35,7 +35,7 @@ Every file in `data/` is `{ "dataVersion": <integer>, ... }`. Ids are lowercase 
 | `order` | integer | yes | suggested position in the guide; unique |
 | `summary` | string | yes | our own words |
 | `requires` | string[] | yes | entry ids needed to enter; `[]` = available from the start |
-| `heroImage` | string | no | relative path, no leading slash |
+| `heroImage` | string | no | relative path, no leading slash; `.jpg` or `.png` |
 | `heroPosition` | string | no | CSS `object-position`; default `50% 40%` |
 | `heroCredit` | string | if `heroImage` | credit line shown under the image |
 
@@ -100,7 +100,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 }
 ```
 
-`conditions` are entry ids. `locksOut` are ending ids that stop being reachable once this one is reached. V1 stores five endings and does not build the full endings screen.
+`conditions` are entry ids only. `locksOut` are ending ids that stop being reachable once this one is reached. V1 stores five endings and does not build the full endings screen.
 
 ### Progress
 
@@ -122,15 +122,20 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 
 All functions are pure: same input, same output. `doneSet` is a `Set` of entry ids. `items` is the `items` array and `regions` is the `regions` array (not the whole file). They never read localStorage, never touch the DOM and never fetch.
 
+An entry can only be reached inside its Region, so **an entry's real requirements are its own `requires` plus its Region's `requires`** (decided with Athos, Phase 0; it keeps the rule in one place instead of copying Region requirements onto every entry). Below, "the requirements of X" always means that combined list for an entry, and the Region's `requires` for a Region.
+
+Walking the chain: start from the requirements of X; for each id not in doneSet, list it and walk its own requirements the same way. An id already in doneSet is neither listed nor walked further (the player has it, so what came before it no longer matters, even if they marked it out of order).
+
 ```js
-isAvailable(itemId, doneSet, items) -> boolean
-// true when every id in the entry's `requires` is in doneSet. No requirements = true.
+isAvailable(itemId, doneSet, items, regions) -> boolean
+// true when every id in the entry's requirements (its own `requires` and its Region's `requires`)
+// is in doneSet. No requirements = true.
 // Unknown itemId: throw an Error (validate data on load; do not hide data bugs).
 
-missingFor(itemId, doneSet, items) -> string[]
-// Ids still not done that stand between the player and the entry, following the chain
-// (a requirement's own requirements). Each id once, ordered by `step` ascending.
-// Empty array = nothing missing. An id already in doneSet is never listed.
+missingFor(itemId, doneSet, items, regions) -> string[]
+// Entry ids still not done that stand between the player and the entry, walking the chain as
+// described above. Each id once, ordered by `step` ascending. Empty array = nothing missing.
+// An id already in doneSet is never listed. Only entry ids are ever returned.
 
 regionProgress(regionId, doneSet, items) -> { done: number, total: number }
 // Counts entries with kind === 'collectible' in the Region. Tasks never count.
@@ -139,59 +144,101 @@ isRegionAvailable(regionId, doneSet, regions) -> boolean
 // true when every id in the Region's `requires` is in doneSet.
 
 missingForRegion(regionId, doneSet, regions, items) -> string[]
-// Same idea as missingFor, but for a Region: the ids missing for the Region to open,
-// following the chain through `items`. Ordered by `step`.
+// Same as missingFor, but for a Region: the entry ids missing for the Region to open,
+// walking the chain (including the Regions of those entries). Ordered by `step`.
+
+nextStep(doneSet, items, regions) -> string | null
+// "Next on the route": the id of the entry with the lowest `step` that is not done and is
+// Available. null when nothing Available is left. Needed in Phase 1 (the Region page shows it).
+
+holdingYouUp(doneSet, items, regions) -> Array<{ id: string, blocks: string[] }>
+// "Holding you up". For every entry not done and not Available, and every Region not Available,
+// take its missing ids and keep only those that are Available now (so each result is something
+// the player can do next). `blocks` lists the entry and Region ids it holds up.
+// Sorted by blocks.length descending, then by the id's `step` ascending.
+// Needed in Phase 2 (Home and Route); Athos may write it then.
 ```
 
-Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`.
+Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`.
 
 Athos writes this module in stage 1. Agents review it and write tests against these signatures; they do not rewrite it unless Athos asks.
 
 ## 3. `js/progress.js`
 
-The only module that touches localStorage and Firestore. The interface never does.
+The only module that touches localStorage and Firestore (Firestore through the `firebase.js` functions in section 4). The interface never does.
 
 ```js
 loadProgress() -> Promise<{ done: Set<string>, visited: Set<string> }>
 // Local first. If signed in, also reads the cloud copy, merges with mergeLocalAndCloud, and returns the result.
 
 setDone(itemId, value /* boolean */) -> Promise<void>
-// Writes locally always, to the cloud when signed in. Also marks the entry's Region visited
-// when value is true. Stamps updatedAt. Notifies subscribers.
+// Writes locally always, to the cloud when signed in. Stamps updatedAt. Notifies subscribers.
+// value true also marks the entry's Region Visited. value false never clears Visited
+// (the player has still been there; Visited only controls spoilers).
+// Marking an entry that is not Available is allowed: the guide follows the real game, and the
+// player may have done things out of order. The interface may show what it needed; it does not refuse.
 
 setVisited(regionId, value /* boolean */) -> Promise<void>
 // Marks or unmarks a Region as Visited by hand. Notifies subscribers.
 
-onProgressChange(callback /* (progress) => void */) -> unsubscribe /* () => void */
-// Called after every change, including changes from the cloud, with { done, visited }.
+onProgressChange(callback /* ({ done: Set, visited: Set }) => void */) -> unsubscribe /* () => void */
+// Called after every change, including changes from the cloud (another device).
+
+onSyncStatus(callback /* (status) => void */) -> unsubscribe
+// status = { state: 'local' | 'syncing' | 'synced' | 'error', at /* ms or null */, message /* string or '' */,
+//            combined /* only right after a first sign-in: { localDone, cloudDone, totalDone } */ }
+// Drives the Account screen's sync line and its "Progress combined" plate.
 
 exportProgress() -> Blob
-// The Progress object as JSON, ready to be downloaded as silksong-guide-backup-YYYY-MM-DD.json.
+// The Progress object as JSON (without syncedUid), ready to be downloaded as
+// silksong-guide-backup-YYYY-MM-DD.json.
 
 importProgress(file /* File */) -> Promise<{ addedDone: number, addedVisited: number }>
-// ASSUMPTION (Athos to confirm): an import ADDS what the file has to what is already there
-// (union), never removes anything. It rejects a file that is not valid Progress JSON, with a
-// message the interface can show. The Account screen's copy already says so.
+// An import ADDS what the file has to what is already there (union) and never removes anything
+// (confirmed by Athos, Phase 0). Rejects a file that is not valid Progress JSON, with a message the
+// interface can show.
 
-mergeLocalAndCloud(local, cloud) -> progress
-// First sign-in: union of done and visited (ADR 0001). After the first sign-in, whichever has
-// the larger updatedAt wins as a whole object. Pure function; unit-tested.
+mergeLocalAndCloud(local, cloud, uid) -> progress
+// Pure function; unit-tested. cloud null = no cloud copy yet: the result is local.
+// If local.syncedUid !== uid, this is the first sign-in for this account on this device:
+// union of done and visited (ADR 0001), updatedAt = now.
+// Otherwise the one with the larger updatedAt wins as a whole object.
+// The result has syncedUid = uid.
 
 clearProgress() -> Promise<void>
 // "Start a new run". Clears local, and the cloud copy when signed in. The interface asks for an
 // export first; this function does not.
 ```
 
+Behaviour that is not a function:
+
+- `progress.js` subscribes to `onAuthChange` itself. On sign-in it reads the cloud copy, merges, writes the result to both sides and starts `watchProgressDoc`. The interface never calls the merge.
+- Local Progress also stores `syncedUid` (the account it was last merged with). It is never written to the cloud document or to a backup file. **Signing out clears `syncedUid`**, so anything marked while signed out is combined by union at the next sign-in instead of being overwritten by an older cloud copy.
+- Known cost (ADR 0001): after the first sign-in, "newer wins as a whole object" means two devices editing at the same time keep only the newer side.
+
 ## 4. `js/firebase.js`
 
 ```js
 signIn(provider /* 'google' | 'github' | 'email-link' */, email /* only for 'email-link' */) -> Promise<void>
+// For 'email-link' this sends the link; sign-in finishes in completeEmailLinkSignIn.
+completeEmailLinkSignIn(email /* optional */) -> Promise<'signed-in' | 'not-a-link' | 'needs-email'>
+// main.js calls it on every page load. 'needs-email' = the link was opened on a device that does
+// not remember the address; the page asks for it and calls again with it.
 signOut() -> Promise<void>
 onAuthChange(callback /* (user | null) => void */) -> unsubscribe
 // user = { uid, email, displayName, provider }
+
+// Only progress.js may import these four:
+readProgressDoc(uid) -> Promise<object | null>
+writeProgressDoc(uid, progress) -> Promise<void>
+deleteProgressDoc(uid) -> Promise<void>
+watchProgressDoc(uid, callback /* (progress | null) => void */) -> unsubscribe
+// All on silksong_progress/{uid}.
 ```
 
-It initializes Firebase from a config object that lives in `js/firebase-config.js` (owned by Dev A; the web config is not a secret, see ADR 0002). It never exports Firestore handles. `progress.js` imports what it needs from this module through functions added to this contract by the orchestrator.
+- It initializes Firebase from a config object in `js/firebase-config.js` (owned by Dev A; the web config is not a secret, see ADR 0002). It never exports Firestore or Auth handles.
+- **The Firebase SDK is the one exception to "no CDN script"** (decided with Athos, Phase 0): it is imported from `https://www.gstatic.com/firebasejs/<version>/...` at one pinned version, **only by `firebase.js`**, and loaded so that a failure to reach it leaves the site working locally. Copying the SDK into the repository was rejected because its files import each other by absolute gstatic URLs and would need hand edits on every update (Dev A confirms this when building the module).
+- `firebase.js` may keep the address an email link was sent to in localStorage under `silksong-guide:email-for-sign-in`. This is the one localStorage key outside `progress.js`; it holds no Progress.
 
 ## 5. `js/render.js` and `js/main.js` (interface)
 
@@ -204,20 +251,20 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 
 ## 6. Cross-checks the validator must enforce (`scripts/validate-data.js`)
 
-1. Each file parses and has an integer `dataVersion`.
+1. Each file parses and has an integer `dataVersion`, and the three values are equal.
 2. Ids are slugs and unique across all three files.
-3. `regionId` of every entry exists; every id in `requires` and `conditions` exists.
-4. No cycles in `requires` (entries and Regions together).
+3. `regionId` of every entry exists; every id in `requires` (entries and Regions) and `conditions` exists **and is an entry id** in `items.json`.
+4. No cycles in `requires`, where an entry also depends on its Region's `requires` (so a Region that requires an entry inside itself is a cycle).
 5. `step` is a unique integer across all entries.
 6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`.
 7. Every entry has `source`, `how` and a non-empty `name`.
-8. Every Region with `heroImage` has `heroCredit` and the image file exists.
+8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
 
 ## 7. Open contract questions
 
-- Does `import` always union, or should the interface offer "replace" in a later version? (Assumed: union.)
+- Should a later version offer "replace" as well as the union import? (V1: union only, confirmed.)
 - How a `step` that depends on a player choice (an Ending's `locksOut`) is represented in the Route. The Route screen has a "Choice point" marker; the data rule is open.
 - What the three `spoiler` levels mean, and whether any of them needs behaviour in V1 (assumed: no; the original plan only says the field lets entries stay hidden until the player gets there).
 - The localStorage key (`silksong-guide:progress:v1`) and the `firebase-config.js` file name are proposals, not decisions.

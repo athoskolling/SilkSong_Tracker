@@ -114,7 +114,7 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 - `name`
 - `order` (suggested position in the guide)
 - `summary` (short text, in our own words)
-- `requires` (list of entry ids needed to enter or advance; decides when the Region is *Available*; empty = available from the start)
+- `requires` (list of entry ids, never Region ids, needed to enter or advance; decides when the Region is *Available*; empty = available from the start)
 - `heroImage` (relative path, for example `img/regions/deep-docks.jpg`; optional)
 - `heroPosition` (CSS `object-position`, default `50% 40%`; optional)
 - `heroCredit` (credit line shown under the image; required whenever `heroImage` is set)
@@ -136,12 +136,12 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 - `source` (wiki or MapGenie link; a reference, not a copy)
 
 ### Ending (`endings.json`)
-- `id`, `name`, `conditions` (list of entry or event ids)
+- `id`, `name`, `conditions` (list of entry ids; anything an Ending depends on is an entry, a Task if it does not count)
 - `locksOut` (list of ending ids that can no longer be reached after this one)
 - In V1: the five endings, with requirements and `locksOut`, filled in from the wiki.
 
 ### Data metadata
-- `dataVersion` at the top of each file in `data/`, raised on every content revision (patch or DLC).
+- `dataVersion` at the top of each file in `data/`: one number shared by all three files, raised in all of them on every content revision (patch or DLC).
 
 ### User Progress
 - **Local:** one localStorage key holding `{ done, visited, updatedAt, dataVersion }`.
@@ -160,7 +160,7 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 
 Points of attention: cycles in the data (validate), ids that do not exist (validate on load) and entries with no requirements (always available).
 
-Regions use the same logic: a Region is *Available* when all of its `requires` are in `done`. Otherwise it is *Locked*, and the interface shows only the name and what is missing (the Region's own pending list).
+Regions use the same logic: a Region is *Available* when all of its `requires` are in `done`. An entry is only Available when its Region is Available too: its real requirements are its own `requires` plus its Region's. Otherwise it is *Locked*, and the interface shows only the name and what is missing (the Region's own pending list).
 
 ## 7. V1 screens
 
@@ -215,5 +215,5 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 - The separate "Pendências" screen is folded into the Route screen (the "Holding you up" rail) and into a block on Home.
 - Region has three image fields (`heroImage`, `heroPosition`, `heroCredit`).
 - Entry `type` examples now include flea and door, which the design uses.
-- Import is specified as a union merge (an assumption; Athos can change it, see `docs/CONTRACTS.md`).
+- Import is a union merge (confirmed by Athos in Phase 0, see `docs/CONTRACTS.md`).
 - Section 8 records the hero-image exception.

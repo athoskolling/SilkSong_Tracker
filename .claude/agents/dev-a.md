@@ -18,7 +18,7 @@ Read `CLAUDE.md` (already loaded), `GLOSSARY.md`, `docs/CONTRACTS.md` and the se
 
 `data/*.json`, `tools/*`, `js/progress.js`, `js/firebase.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json`.
 
-In **stage 1** the task may also hand you the UI files (`index.html`, `region.html`, `css/*`, `js/main.js`, `js/render.js`). Only touch them when the task lists them. Never edit `js/requirements.js` (Athos writes it), `tests/*`, `scripts/validate-data.js`, `qa/*` or `docs/*`; ask the orchestrator.
+In **stage 1** the task may also hand you the UI files (`index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `img/`). Only touch them when the task lists them. Never edit `js/requirements.js` (Athos writes it), `tests/*`, `scripts/validate-data.js`, `qa/*` or `docs/*`; ask the orchestrator.
 
 ## How you work
 

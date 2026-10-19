@@ -33,7 +33,7 @@ Read the doc a task needs; do not load everything.
 8. **Never deploy.** No `firebase deploy`, no publishing Firestore rules, no force pushes. Athos deploys, after the Emulator tests pass.
 9. **Never scrape MapGenie.** Wiki and MapGenie are references, read by hand; text is rewritten in our own words. The wiki draft script is not run until Athos has reviewed the wiki's license and terms (`docs/PHASE-0-CHECKLIST.md`, item 4).
 10. **Athos's Phase 0 tasks are his.** Creating the GitHub repository, Pages and privacy, the Firebase authorized domain, the wiki license review and supplying the current Firestore rules. Never do them or assume they are done; if work is blocked by one, stop that thread and say which.
-11. **Relative paths everywhere** (GitHub Pages serves the site from `/<repository>/`). No framework, no build step, no CDN script.
+11. **Relative paths everywhere** (GitHub Pages serves the site from `/<repository>/`). No framework, no build step, no CDN script, except the Firebase SDK from gstatic at a pinned version, imported only by `js/firebase.js` (`docs/CONTRACTS.md` section 4).
 12. **Small tasks.** Each has a goal, the files touched and a definition of done. End each task with a short handoff note: what changed, decisions and why, open questions, how you checked it.
 13. **Tests use native `node:test`.** No framework.
 14. **Say what you could not check.** Never claim something works, passes or matches the wiki unless you ran or read it.

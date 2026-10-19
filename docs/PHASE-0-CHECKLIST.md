@@ -18,16 +18,17 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
 - [ ] **5. Current Firestore rules.** Copy the rules the Hollow-Thingy Firebase project has now (Firebase console, Firestore, Rules) into `firebase/hollow-thingy-firestore.rules`. The Silksong rules must be added to them, not replace them, because the project has one ruleset. Also say which repository owns the deployed rules.
   - Owner of the deployed ruleset: ________
 - [ ] **6. Firebase web config and sign-in providers.** Give the orchestrator the Firebase web config (it is not a secret) for `js/firebase-config.js`, and confirm Google, GitHub and email link sign-in are enabled in that project.
-- [ ] **7. Contracts.** Read `docs/CONTRACTS.md` with the orchestrator and approve it. Confirm or change the assumption that importing a backup adds to existing Progress (union) and never removes anything.
+- [x] **7. Contracts.** Read `docs/CONTRACTS.md` with the orchestrator and approve it. Confirm or change the assumption that importing a backup adds to existing Progress (union) and never removes anything.
+  - Approved 2026-10-19. Import is a union. Firebase SDK from gstatic allowed (pinned, only in `js/firebase.js`).
 - [ ] **8. First batch.** Confirm on the wiki that Moss Grotto, The Marrow and Deep Docks are the first three Regions, and the scope of each.
 - [ ] **9. Hero images.** Decide whether game screenshots stay as Region heroes on the public site (see "Rights and risk" in `docs/IMAGES.md`), and send the images you want (`img/incoming/`).
 
 ## Orchestrator's tasks
 
 - [x] Scaffold the folders in `docs/STRUCTURE.md` section 4 that do not exist yet (empty folders get a short `README.md` or `.gitkeep`).
-- [ ] Review `docs/CONTRACTS.md` with Athos; fix any contradiction with the other docs; record changes.
+- [x] Review `docs/CONTRACTS.md` with Athos; fix any contradiction with the other docs; record changes.
 - [x] Confirm `data/sample/` passes the contract shapes by reading it against `docs/CONTRACTS.md`. (Done 2026-10-19 by reading; the validator does not exist yet, so it has not been run.)
 - [x] Set the branch convention: one branch per agent task (`dev-a/<topic>`, `dev-b/<topic>`, `qa-tests/<topic>`, `qa-manual/<topic>`). Recorded in `docs/AGENT-PLAN.md` section 6.
-- [ ] Output: contracts approved by Athos (item 7 above).
+- [x] Output: contracts approved by Athos (item 7 above).
 
 Phase 0 is done when the orchestrator's tasks and Athos's items 1, 2, 3, 5, 6 and 7 are checked. Items 4 and 8 gate Phase 3 and the wiki parts of QA; item 9 gates only the images.

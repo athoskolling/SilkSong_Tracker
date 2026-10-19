@@ -10,7 +10,7 @@ One **hero image per Region**, shown at the top of its Region page and (optional
 
 | | |
 |---|---|
-| Path | `img/regions/<region-id>.jpg` (the `id` from `regions.json`, for example `deep-docks.jpg`) |
+| Path | `img/regions/<region-id>.jpg` (the `id` from `regions.json`, for example `deep-docks.jpg`). `.png` is also accepted, so the current placeholder stays valid; prefer JPEG for screenshots because it is much smaller |
 | Ratio | 16:9 |
 | Size | at least 1920 × 1080 for the real file; under about 400 KB after compression (JPEG quality around 80 to 85) |
 | Content | a clean scene: no HUD, menus, text, health bars or watermarks. Crop or use a clean capture. Avoid story spoilers (late bosses, endings) in the hero of an early Region |
@@ -33,7 +33,7 @@ Credit line used so far: `Screenshot from Hollow Knight: Silksong, © Team Cherr
 
 ## Current state
 
-- `img/regions/deep-docks.png` is a 640 × 360 screenshot Athos supplied. It is a **placeholder**: below the 1920 × 1080 target, so it looks soft on a wide screen. It is a PNG, so rename or convert it to `deep-docks.jpg` when the larger one arrives and update `heroImage`.
+- `img/regions/deep-docks.png` is a 640 × 360 screenshot Athos supplied. It is a **placeholder**: below the 1920 × 1080 target, so it looks soft on a wide screen. It is a PNG, which the data accepts (`heroImage` may end in `.jpg` or `.png`); when the larger one arrives, save it as `deep-docks.jpg` and update `heroImage`.
 - The mockups point at this PNG with a relative path.
 
 ## Rights and risk (decision recorded, not legal advice)
