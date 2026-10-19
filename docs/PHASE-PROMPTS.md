@@ -31,7 +31,7 @@ Only after the slice works and Athos says so.
 
 ```
 Start Phase 2: stage 2, in parallel. Update docs/CONTRACTS.md with anything the slice taught us and show me the diff before spawning anyone. Then run these four in parallel, each on files it owns:
-- dev-a: the rest of the logic, sync with the merge rule from ADR 0001, and firestore.rules built on top of the Hollow-Thingy rules in firebase/ and tested in the Emulator (never deploy).
+- dev-a: the rest of the logic, sync with the merge rule from ADR 0001, and firestore.rules for the site's own Firebase project (ADR 0004) and tested in the Emulator (never deploy).
 - dev-b: Home, Route and Account and backup screens plus the phone layout of the Region page, from docs/DESIGN.md and docs/design/screens/. Develop against data/sample/ behind a development switch.
 - qa-tests: scripts/validate-data.js and the tests in docs/CONTRACTS.md sections 2, 3 and 6.
 - qa-manual: qa/checklist.md from the screens and the V1 definition of done (no wiki checks yet).

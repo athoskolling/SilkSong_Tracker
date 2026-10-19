@@ -61,7 +61,7 @@ The interface uses only these functions. It does not touch Firestore or localSto
 ## 5. Phases
 
 **Phase 0: Foundation (Orchestrator)**
-- Folder structure, README, `GLOSSARY.md` (in the root) and `docs/adr/` (ADRs 0001 to 0003 are already written: local-first with union merge, shared Firebase, permanent ids).
+- Folder structure, README, `GLOSSARY.md` (in the root) and `docs/adr/` (ADRs 0001 to 0004: local-first with union merge, shared Firebase (superseded), permanent ids, own Firebase project).
 - GitHub Pages from the start: publish the vertical slice early, authorize the Pages domain in Firebase Auth and use relative paths. Check whether the GitHub plan allows Pages on a private repository; if not, the repository is public and nothing sensitive can go in the code.
 - `docs/CONTRACTS.md` and minimal sample data.
 - Branch convention: one per agent.
@@ -124,7 +124,7 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Starts empty in a new game, with nothing marked by default.
 - Locked Regions show only the name and what is missing, and open when requirements are met; Collectibles in Regions that are not Visited stay hidden, with an option to show everything.
 - Site published on GitHub Pages, with login working on the published domain.
-- Firestore rules tested in the Emulator: each user reaches only their own document, and Hollow-Thingy keeps working.
+- Firestore rules tested in the Emulator: each user reaches only their own document, and nothing else is reachable.
 - Data has `source` and attribution, with no copied text.
 - QA checklist with no critical findings.
 

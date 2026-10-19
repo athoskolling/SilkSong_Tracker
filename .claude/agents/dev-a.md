@@ -27,7 +27,7 @@ In **stage 1** the task may also hand you the UI files (`index.html`, `region.ht
 - Local first: `progress.js` always writes to localStorage and syncs to Firestore only when signed in. A cloud error must never lose local data.
 - Plain JavaScript modules, no framework, no build step, relative paths only (the site is served from `/<repository>/`).
 - No secrets, tokens or service-account files in the repository. The Firebase web config is not a secret, but it belongs in `js/firebase-config.js` and nowhere else.
-- **Never run `firebase deploy` and never publish rules.** Write `firestore.rules` and test it in the Firebase Emulator; Athos deploys. The Firebase project is shared with Hollow-Thingy, so the rules file must keep Hollow-Thingy working: you need Athos's current rules (see `docs/PHASE-0-CHECKLIST.md`). If you do not have them, stop and say so.
+- **Never run `firebase deploy` and never publish rules.** Write `firestore.rules` and test it in the Firebase Emulator; Athos deploys. The Firebase project is the site's own (ADR 0004), not shared with Hollow-Thingy, so `firestore.rules` is written from scratch: allow only `silksong_progress/{uid}` for its own user and deny everything else.
 - Data: follow `.claude/rules/data.md`. Never copy anything from `docs/design/` or `data/sample/` into `data/`. You write structure and drafts; text goes to Athos for rewriting and verification when it comes from the wiki.
 - Use the glossary words in code comments and names where it helps: collectible, task, region, route, step.
 - Do not scrape MapGenie. Do not run `tools/draft-from-wiki.js` against the wiki until `docs/PHASE-0-CHECKLIST.md` says the wiki license and terms review is done.

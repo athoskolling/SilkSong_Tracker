@@ -1,6 +1,6 @@
 # Silksong Guide
 
-A static site (plain HTML, CSS and JavaScript, no framework, no backend of our own) that guides a max-completion, all-endings Hollow Knight: Silksong run. The player follows a Route, marks what they finished and sees what is missing. Progress is saved in the browser first and synced through a Firebase login shared with Hollow-Thingy. Hosted on GitHub Pages.
+A static site (plain HTML, CSS and JavaScript, no framework, no backend of our own) that guides a max-completion, all-endings Hollow Knight: Silksong run. The player follows a Route, marks what they finished and sees what is missing. Progress is saved in the browser first and synced through the site's own Firebase project (Auth and Firestore). Hosted on GitHub Pages.
 
 Owner: Athos. He wants to understand the project, so explain the reason behind any non-obvious choice. Reply in English unless he writes in Portuguese. Use Claude as reviewer and guide: he writes the first data draft and `js/requirements.js`; you review and explain, you do not write them for him.
 
@@ -14,7 +14,7 @@ Read the doc a task needs; do not load everything.
 - `docs/DESIGN.md` and `docs/design/`: the finished visual design (PNG screens, HTML mockups, tokens).
 - `docs/IMAGES.md`: hero image rules and credits.
 - `docs/PHASE-PROMPTS.md` and `docs/PHASE-0-CHECKLIST.md`: how each phase starts; what Athos must do himself.
-- `docs/adr/`: why: local-first with union merge (0001), shared Firebase with Emulator-tested rules (0002), permanent ids (0003).
+- `docs/adr/`: why: local-first with union merge (0001), permanent ids (0003), own Firebase project with Emulator-tested rules (0004, replaces 0002).
 - `.claude/rules/`: path-scoped rules (data, ui, tests, sync). They load when you touch matching files.
 - `athos-notes-pt-br/`: Athos's original Portuguese planning notes, for reference only. The English docs in `docs/` are the current ones.
 

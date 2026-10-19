@@ -1,4 +1,4 @@
 # firebase/
 
-Athos puts the current Firestore rules of the shared Hollow-Thingy Firebase project here as `hollow-thingy-firestore.rules` (Phase 0, item 5 in `docs/PHASE-0-CHECKLIST.md`).
-Dev A uses that file as the starting point for `firestore.rules`, so the one deployed ruleset keeps Hollow-Thingy working and adds the Silksong collection (`silksong_progress/{uid}`). Agents never deploy rules.
+Athos's copy of the Firestore rules currently published on the site's own Firebase project (`silksong-tracker-90229`, ADR 0004): `SilkSong_Tracker.rules`. Today it is the default deny-all ruleset.
+The project is not shared with Hollow-Thingy, so Dev A writes `firestore.rules` (repository root) from scratch: each signed-in user reads and writes only `silksong_progress/{uid}`, and everything else stays denied. Agents never deploy rules; Athos publishes them after the Emulator tests pass.

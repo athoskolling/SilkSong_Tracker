@@ -42,4 +42,4 @@ Open `http://localhost:8000/`. Tests: `node --test tests/`. Data check: `node sc
 
 ## Stack
 
-Plain HTML, CSS and JavaScript. No framework and no backend of our own. Firebase Auth and Firestore (shared with Hollow-Thingy) for sign-in and sync. GitHub Pages for hosting.
+Plain HTML, CSS and JavaScript. No framework and no backend of our own. Firebase Auth and Firestore (the site's own Firebase project) for sign-in and sync. GitHub Pages for hosting.

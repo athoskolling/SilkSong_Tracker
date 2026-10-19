@@ -16,7 +16,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 
 - New, separate repository (created later, without hurry).
 - Same stack as Hollow-Thingy: plain HTML + CSS + JavaScript, no framework and no backend of our own.
-- Login and sync: reuse the Hollow-Thingy Firebase project (Auth + Firestore), with Silksong data in a separate collection.
+- Login and sync: the site's own Firebase project (Auth + Firestore), separate from Hollow-Thingy (ADR 0004).
 - No visual game map. Text and checklists only.
 - Minimal visual style, nothing that looks "made by AI". The visual design is settled; see `docs/DESIGN.md` and `docs/design/`.
 - Data source: the game's main wiki, with MapGenie as a fallback reference when information is missing.
@@ -29,7 +29,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **One Run per account** in V1. "New run" offers an export before clearing.
 - **First sign-in:** union of local and cloud Progress; after that, the latest write wins.
 - **Spoilers:** Collectibles in Regions that are not Visited stay hidden by default, with an option to show everything.
-- **Firebase:** shared project; rules are published only after passing Firebase Emulator tests.
+- **Firebase:** own project (ADR 0004, replaces the shared project of ADR 0002); rules are published only after passing Firebase Emulator tests.
 - **Vertical slice before parallel work:** one Region, two entries, a working requirement chain and a real login, end to end. Only then widen.
 - **Global Route:** `step` is one sequence across all Regions; region pages are filtered views of that Route.
 - **Visited and Available Regions:** *Visited* is set by hand and also automatically when the player completes something in the Region (it controls spoilers). *Available* is computed from the Region's `requires`, based on Progress.
@@ -39,7 +39,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Sub-areas:** a text label (`area`) on each entry, with no pages or unlock logic of their own.
 - **Data authorship:** script-assisted drafts from the wiki, always rewritten and verified by a person (see section 8).
 - **Hosting:** GitHub Pages from the start (see section 10).
-- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase) and `0003` (permanent ids), in `docs/adr/`.
+- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids) and `0004` (own Firebase project), in `docs/adr/`.
 
 ## 3. V1 scope
 
@@ -71,7 +71,7 @@ silksong-guide/
 │   └── components.css      # entry rows, plates, thread/progress bars
 ├── js/
 │   ├── main.js             # entry point; picks behaviour by <body data-page="...">
-│   ├── firebase.js         # init + auth + Firestore (reused from Hollow-Thingy)
+│   ├── firebase.js         # init + auth + Firestore
 │   ├── firebase-config.js  # the Firebase web config (not a secret; see ADR 0002)
 │   ├── progress.js         # local (localStorage), Firestore, export/import, merge
 │   ├── requirements.js     # resolves requirements: "what is missing for X"
@@ -169,7 +169,7 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 1. **Home** (`index.html`): "Next on the route" plate, "What is holding you up", totals (Collectibles and Tasks), Collectibles by type and one card per Region (Complete, Visited, Available, Locked, or Not in the guide yet).
 2. **Region** (`region.html?id=`): the Region's hero, its totals and its entries in Route order, with pending requirements and missable warnings. A Locked Region shows only the name and what is missing. Entries in Regions that are not Visited stay hidden, with a "Show everything, spoilers included" option. A phone layout exists.
 3. **Route** (`route.html`): every step across all Regions in order, a "Show on the route" filter and a "Holding you up" rail. This is also where "what is missing" lives, so there is no separate pending page.
-4. **Account and backup** (`account.html`): sign in with the account already used on Hollow-Thingy (Google, GitHub or an email link); download and add a backup file; start a new run; a short "How saving works" explanation.
+4. **Account and backup** (`account.html`): sign in with Google, GitHub or an email link; download and add a backup file; start a new run; a short "How saving works" explanation.
 
 ## 8. Data: license and accuracy
 
@@ -181,9 +181,8 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 
 ## 9. Firebase
 
-- The Firebase project is the same one Hollow-Thingy uses, so a wrong rule can affect the other site.
+- The site has its own Firebase project (`silksong-tracker-90229`), separate from Hollow-Thingy (ADR 0004). Its ruleset is ours alone.
 - Test the rules in the Firebase Emulator before publishing them.
-- If the risk is not worth the saved setup, create a separate project.
 - The rules must let each user read and write only their own document.
 
 ## 10. Hosting
@@ -217,3 +216,4 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 - Entry `type` examples now include flea and door, which the design uses.
 - Import is a union merge (confirmed by Athos in Phase 0, see `docs/CONTRACTS.md`).
 - Section 8 records the hero-image exception.
+- Firebase: the site has its own project instead of sharing Hollow-Thingy's (ADR 0004, Athos, Phase 1).
