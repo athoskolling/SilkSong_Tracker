@@ -9,9 +9,9 @@ Rule for agents: a box is checked only when Athos has checked it or told you it 
 Write the answer next to each item when it has one (name, URL, yes or no, date).
 
 - [ ] **1. GitHub repository.** Create it and choose a name. Check whether your GitHub plan allows Pages on a private repository.
-  - Name: ________  Visibility: private / public  (If private is not allowed with Pages, the repository is public: no secrets in the code and strict Firestore rules.)
+  - Name: `athoskolling/SilkSong_Tracker` (https://github.com/athoskolling/SilkSong_Tracker)  Visibility: **public** (seen by the orchestrator on 2026-10-19; empty, no commits yet). Waiting for Athos to confirm before checking the box.  (If private is not allowed with Pages, the repository is public: no secrets in the code and strict Firestore rules.)
 - [ ] **2. GitHub Pages.** Turn it on for the repository after the first push. Record the address: `https://<user>.github.io/<repository>/`
-  - URL: ________
+  - URL: ________ (expected `https://athoskolling.github.io/SilkSong_Tracker/`; returned 404 on 2026-10-19, so Pages is not on yet)
 - [ ] **3. Firebase authorized domain.** In the Firebase console, Authentication, Settings, Authorized domains, add `<user>.github.io`. Without it, sign-in fails on the published site.
 - [ ] **4. Wiki license and terms.** Read the main wiki's terms of use and content license. Decide whether the draft script may read it and with what limits. Until this is checked, nobody reads the wiki in bulk, runs `tools/draft-from-wiki.js` or starts wiki checks.
   - Wiki: ________  Decision: allowed / not allowed / allowed with limits: ________
@@ -24,10 +24,10 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
 
 ## Orchestrator's tasks
 
-- [ ] Scaffold the folders in `docs/STRUCTURE.md` section 4 that do not exist yet (empty folders get a short `README.md` or `.gitkeep`).
+- [x] Scaffold the folders in `docs/STRUCTURE.md` section 4 that do not exist yet (empty folders get a short `README.md` or `.gitkeep`).
 - [ ] Review `docs/CONTRACTS.md` with Athos; fix any contradiction with the other docs; record changes.
-- [ ] Confirm `data/sample/` passes the contract shapes by reading it against `docs/CONTRACTS.md`.
-- [ ] Set the branch convention: one branch per agent task (`dev-a/<topic>`, `dev-b/<topic>`, `qa-tests/<topic>`, `qa-manual/<topic>`).
+- [x] Confirm `data/sample/` passes the contract shapes by reading it against `docs/CONTRACTS.md`. (Done 2026-10-19 by reading; the validator does not exist yet, so it has not been run.)
+- [x] Set the branch convention: one branch per agent task (`dev-a/<topic>`, `dev-b/<topic>`, `qa-tests/<topic>`, `qa-manual/<topic>`). Recorded in `docs/AGENT-PLAN.md` section 6.
 - [ ] Output: contracts approved by Athos (item 7 above).
 
 Phase 0 is done when the orchestrator's tasks and Athos's items 1, 2, 3, 5, 6 and 7 are checked. Items 4 and 8 gate Phase 3 and the wiki parts of QA; item 9 gates only the images.

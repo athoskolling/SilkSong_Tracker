@@ -95,6 +95,8 @@ The interface uses only these functions. It does not touch Firestore or localSto
 ## 6. Working conventions
 
 - **Small tasks:** goal, files touched and a definition of done.
+- **Branches:** one branch per agent task, named `<agent>/<topic>` (`dev-a/progress-local`, `dev-b/region-page`, `qa-tests/validator`, `qa-manual/checklist`). The orchestrator merges into `main` one branch at a time. Nobody pushes to `main` except through the orchestrator, and nobody force-pushes.
+- **Empty folders:** a `.gitkeep` keeps a folder in git until its owner adds the first real file; the owner may delete it then.
 - **Handoff:** a short note with what changed, decisions made and open questions.
 - **Contract doubt:** do not improvise; ask the orchestrator, who updates `docs/CONTRACTS.md`.
 - **Durable decisions:** record them in `docs/adr/` and use the terms in `GLOSSARY.md`.
