@@ -161,7 +161,7 @@ holdingYouUp(doneSet, items, regions) -> Array<{ id: string, blocks: string[] }>
 
 Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`.
 
-Athos writes this module in stage 1. Agents review it and write tests against these signatures; they do not rewrite it unless Athos asks.
+Athos delegated this module to Dev A on 2026-10-19 (Phase 1) and reviews it. Agents write tests against these signatures.
 
 ## 3. `js/progress.js`
 

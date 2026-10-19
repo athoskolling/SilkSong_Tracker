@@ -8,10 +8,10 @@ Rule for agents: a box is checked only when Athos has checked it or told you it 
 
 Write the answer next to each item when it has one (name, URL, yes or no, date).
 
-- [ ] **1. GitHub repository.** Create it and choose a name. Check whether your GitHub plan allows Pages on a private repository.
-  - Name: `athoskolling/SilkSong_Tracker` (https://github.com/athoskolling/SilkSong_Tracker)  Visibility: **public** (seen by the orchestrator on 2026-10-19; empty, no commits yet). Waiting for Athos to confirm before checking the box.  (If private is not allowed with Pages, the repository is public: no secrets in the code and strict Firestore rules.)
-- [ ] **2. GitHub Pages.** Turn it on for the repository after the first push. Record the address: `https://<user>.github.io/<repository>/`
-  - URL: ________ (expected `https://athoskolling.github.io/SilkSong_Tracker/`; returned 404 on 2026-10-19, so Pages is not on yet)
+- [x] **1. GitHub repository.** Create it and choose a name. Check whether your GitHub plan allows Pages on a private repository.
+  - Name: `athoskolling/SilkSong_Tracker` (https://github.com/athoskolling/SilkSong_Tracker)  Visibility: **public** (seen by the orchestrator on 2026-10-19; empty, no commits yet). Confirmed by Athos (he pushed and turned on Pages), 2026-10-19.  (If private is not allowed with Pages, the repository is public: no secrets in the code and strict Firestore rules.)
+- [x] **2. GitHub Pages.** Turn it on for the repository after the first push. Record the address: `https://<user>.github.io/<repository>/`
+  - URL: https://athoskolling.github.io/SilkSong_Tracker/ (on, returns 200, checked by the orchestrator 2026-10-19)
 - [x] **3. Firebase authorized domain.** In the Firebase console (project `silksong-tracker-90229`), Authentication, Settings, Authorized domains, add `<user>.github.io`. Without it, sign-in fails on the published site.
   - Done 2026-10-19 (Athos).
 - [ ] **4. Wiki license and terms.** Read the main wiki's terms of use and content license. Decide whether the draft script may read it and with what limits. Until this is checked, nobody reads the wiki in bulk, runs `tools/draft-from-wiki.js` or starts wiki checks.

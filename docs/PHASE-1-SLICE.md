@@ -64,3 +64,26 @@ Signatures and rules are in `docs/CONTRACTS.md` section 2. For the slice the Reg
 - `isRegionAvailable` (the Region is Available because its `requires` is empty).
 
 `missingForRegion` and `holdingYouUp` can wait for Phase 2. Write the five above first; I review them against the contract when you say they are ready, and explain anything I would change.
+
+## The slice chosen (orchestrator research, 2026-10-19; Athos asked for it)
+
+Athos asked the orchestrator to research the slice. The main wiki (hollowknight.wiki) refuses automated reading (HTTP 403), so these facts come from two Fextralife pages, each read once. Sources disagree in places; only facts that the pages and the search results agreed on are used. **Athos confirms them in game or in his browser before Phase 3**; until then they are the slice's best reading, not verified guide data.
+
+| | Region | Entry A | Entry B |
+|---|---|---|---|
+| Name | Moss Grotto | Moss Mother | Silkspear |
+| id | `moss-grotto` | `moss-mother` | `silkspear` |
+| kind / type | Region, open from the start (`requires: []`) | Task / `boss` | Collectible / `silk-skill` |
+| Sub-area | | Ruined Chapel | Mosshome |
+| Why | Where the game starts | The first boss. Defeating it opens the way up out of Moss Grotto; it drops nothing, so it is a Task | A Silk Skill, permanent, so it counts |
+| Needs | nothing | nothing (cut two vines at the entrance) | `moss-mother`: Mosshome is reached later, through The Marrow, which comes after Moss Mother |
+| Step | | 10 | 20 |
+| Source | [Moss Grotto](https://hollowknightsilksong.wiki.fextralife.com/Moss+Grotto) | [Moss Mother](https://hollowknightsilksong.wiki.fextralife.com/Moss+Mother) | [Moss Grotto](https://hollowknightsilksong.wiki.fextralife.com/Moss+Grotto) (Mosshome section) |
+
+Things to confirm (Athos):
+
+1. The spelling in game: "Silkspear" or "Silk Spear". The id `silkspear` is permanent once pushed, so check before the data is pushed.
+2. That nothing else can be done before Moss Mother that reaches Mosshome.
+3. That Mosshome belongs to Moss Grotto (the page lists it there) and not to The Marrow.
+
+Known simplification: Silkspear's real chain also passes a gate near The Marrow. That entry belongs to The Marrow and arrives in Phase 3; then `silkspear` needs the gate entry and the gate entry needs `moss-mother`. Nothing is invented here; the chain is only shorter than the real one.

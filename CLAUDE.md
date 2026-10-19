@@ -2,7 +2,7 @@
 
 A static site (plain HTML, CSS and JavaScript, no framework, no backend of our own) that guides a max-completion, all-endings Hollow Knight: Silksong run. The player follows a Route, marks what they finished and sees what is missing. Progress is saved in the browser first and synced through the site's own Firebase project (Auth and Firestore). Hosted on GitHub Pages.
 
-Owner: Athos. He wants to understand the project, so explain the reason behind any non-obvious choice. Reply in English unless he writes in Portuguese. Use Claude as reviewer and guide: he writes the first data draft and `js/requirements.js`; you review and explain, you do not write them for him.
+Owner: Athos. He wants to understand the project, so explain the reason behind any non-obvious choice. Reply in English unless he writes in Portuguese. Use Claude as reviewer and guide: he reviews everything. On 2026-10-19 he delegated `js/requirements.js` to `dev-a` and the slice research to the orchestrator; the rest of the data still comes from him and the wiki.
 
 ## Where things are
 
@@ -49,7 +49,7 @@ There is no build. These exist once the matching files do:
 
 ## Agents (`.claude/agents/`)
 
-`orchestrator` (Opus 5.5, high; run the project with `claude --agent orchestrator`), `dev-a` (data and logic) and `dev-b` (interface) on Sonnet 5.5 high, `qa-tests` and `qa-manual` on Haiku 5.5 `xhigh`. Workers run in git worktrees that start from the orchestrator's current `HEAD` (`.claude/settings.json`), so the orchestrator commits before spawning them. Stage 1 uses only the orchestrator and `dev-a`.
+`orchestrator` (Opus 5.5, high; run the project with `claude --agent orchestrator`), `dev-a` (data and logic) and `dev-b` (interface) on Sonnet 5.5 high, `qa-tests` and `qa-manual` on Haiku 5.5 `xhigh`, `tutor` on Sonnet 5.5 high (read-only; explains the project to Athos, run it in a second terminal with `claude --agent tutor`). The orchestrator logs every task in `docs/PROGRESS-LOG.md`. Workers run in git worktrees that start from the orchestrator's current `HEAD` (`.claude/settings.json`), so the orchestrator commits before spawning them. Stage 1 uses only the orchestrator and `dev-a`.
 
 ## Style
 

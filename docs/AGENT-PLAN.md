@@ -26,6 +26,7 @@ Starts only when the vertical slice works and the contracts have been proven in 
 | **Dev B: interface** | `dev-b` | Sonnet 5.5 (`high`) | HTML, CSS, `render.js`, `main.js`, screens and accessibility. |
 | **QA 1: automated tests** | `qa-tests` | Haiku 5.5 (`xhigh`) | Logic tests and the data validator. |
 | **QA 2: manual QA and review** | `qa-manual` | Haiku 5.5 (`xhigh`) | Screen checklist, responsiveness, login flow and checking the data against the wiki. |
+| **Tutor** | `tutor` | Sonnet 5.5 (`high`) | Read-only. Explains to Athos, in simple words, what is happening and why (reads `docs/PROGRESS-LOG.md` and git). Added at Athos's request, Phase 1. |
 | **Athos** | (you) | human | Approves decisions, writes the first data draft and reviews what each agent delivers. |
 
 Notes:
@@ -44,6 +45,7 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `img/` | Dev B |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
+| `docs/PROGRESS-LOG.md` | Orchestrator (the tutor only reads it) |
 | `data/sample/*` | Orchestrator (layout samples only; Dev B may read them) |
 
 ## 4. Contracts between modules (`docs/CONTRACTS.md`)
