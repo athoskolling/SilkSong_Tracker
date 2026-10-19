@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// Silksong Guide: Firestore rules for the site's own Firebase project (ADR 0004).
+// Written from scratch. One document per user, silksong_progress/{uid}, holds that
+// user's Progress (docs/CONTRACTS.md sections 1 and 3). Everything else is denied.
+// Tested in the Emulator by tests/firestore-rules.test.js. Athos publishes this file.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The signed-in user is the owner of the document whose id is their own uid.
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // The shape js/firebase.js writeProgressDoc sends: exactly these four keys, always.
+    // - syncedUid and any other key are refused: syncedUid belongs to one device and
+    //   must never reach the cloud (contract section 3).
+    // - All four are required, because progress.js always sends all four (it builds
+    //   every write from a normalized local Progress; see the handoff note).
+    // - There is no size cap on the maps: the 1 MiB document limit already bounds
+    //   them, and any number would be a guess at the game's entry count.
+    function isProgressShape(data) {
+      return data.keys().hasOnly(['done', 'visited', 'updatedAt', 'dataVersion'])
+        && data.keys().hasAll(['done', 'visited', 'updatedAt', 'dataVersion'])
+        && data.done is map
+        && data.visited is map
+        && data.updatedAt is number
+        && data.dataVersion is int;
+    }
+
+    match /silksong_progress/{uid} {
+      // "get" (one document) and not "read": "read" would also allow "list", and
+      // the code never lists the collection. onSnapshot on a document needs only "get".
+      allow get: if isOwner(uid);
+
+      // Create and update both check the shape of the document as it WILL be.
+      allow create, update: if isOwner(uid) && isProgressShape(request.resource.data);
+
+      // "Start a new run" deletes the cloud copy.
+      allow delete: if isOwner(uid);
+    }
+
+    // Everything else, for anyone, signed in or not, has no rule and is therefore denied.
+    // (Firestore denies by default; this explicit rule is a second lock, kept on purpose.)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
