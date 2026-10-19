@@ -18,6 +18,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **T6 merged locally** (`dev-a/slice-data`): `data/` now holds the slice (Moss Grotto, Moss Mother, Silkspear). **Not pushed**: ids become permanent once published, so `main` stays local until Athos confirms the three facts in `docs/PHASE-1-SLICE.md`.
 - **T5 merged locally** (`dev-a/requirements`): `js/requirements.js` (all seven contract functions) and 33 tests; 88 tests pass. Checked on the real slice data: Silkspear is not Available until Moss Mother is done, then it is. Decision: a cycle that runs through an entry already done does not throw (a done entry is never walked); the validator (rule 4) still rejects any cycle in the data.
 - **Phase 1 status:** marking unlocks and reload persistence are built. Left: Athos confirms the slice facts (then push), rules plus Emulator tests (needs the tools installed), Athos publishes the rules, sync test on two devices.
+- **Athos confirmed:** the name is Silk Spear (id `silk-spear`, renamed before publishing) and Mosshome is part of Moss Grotto. The orchestrator searched the Mosshome question: the normal route needs Moss Mother first, so `silk-spear` keeps needing `moss-mother`.
+- **T7 merged** (`dev-a/slice-data-fix`): rename and new texts. 88 tests pass. **Pushed**: the slice runs on GitHub Pages (local Progress only; sync waits for the rules).
 
 ## Open
 
