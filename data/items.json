@@ -1,0 +1,29 @@
+{
+  "dataVersion": 1,
+  "items": [
+    {
+      "id": "moss-mother",
+      "name": "Moss Mother",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "moss-grotto",
+      "area": "Ruined Chapel",
+      "how": "The first boss. Cut the two vines at the entrance to reach it. Beating it opens the way up out of Moss Grotto. It drops nothing, so it is a Task.",
+      "requires": [],
+      "step": 10,
+      "source": "https://hollowknightsilksong.wiki.fextralife.com/Moss+Mother"
+    },
+    {
+      "id": "silkspear",
+      "name": "Silkspear",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "moss-grotto",
+      "area": "Mosshome",
+      "how": "A Silk Skill, and a permanent one. You reach Mosshome later, through The Marrow, which comes after Moss Mother.",
+      "requires": ["moss-mother"],
+      "step": 20,
+      "source": "https://hollowknightsilksong.wiki.fextralife.com/Moss+Grotto"
+    }
+  ]
+}
