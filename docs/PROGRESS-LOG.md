@@ -24,7 +24,9 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **New session; Athos chose to finish Phase 1.** Emulator tools are now installed (Firebase CLI 15.34.0, Java 21), so the rules task is unblocked.
 - **Docs brought up to date** (orchestrator): `requirements.js` is Dev A's (delegated by Athos) in `AGENT-PLAN.md`, `STRUCTURE.md` and the agent files; contract summary in `AGENT-PLAN.md` section 4 updated; `firebase/` (Athos's copy of the published rules) added to the owner table, `firestore.rules` at the root is the repository's ruleset; rules tests run only in the Emulator under the `demo-silksong-guide` project id, and skip in `node --test tests/`; README status; steps to finish Phase 1 in `docs/PHASE-1-SLICE.md`. Merged `dev-a/*` branches deleted.
 
+- **T8 merged** (`dev-a/firestore-rules`): `firestore.rules`, `firebase.json` and `tests/firestore-rules.test.js`. A user can get, create, update and delete only `silksong_progress/{their uid}`; no listing; writes must have exactly `done`, `visited`, `updatedAt`, `dataVersion` (so `syncedUid` never reaches the cloud); everything else denied. Orchestrator ran both after merging: 88 tests pass without the Emulator (rules file skipped), 22 rules tests pass in the Emulator. Dev A also checked the tests fail against a weakened copy of the rules. Not deployed: Athos publishes.
+
 ## Open
 
-- Sync between devices cannot work until Athos publishes the rules from T8 (published rules deny everything).
+- Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
 - Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.
