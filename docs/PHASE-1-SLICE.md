@@ -71,8 +71,8 @@ Athos asked the orchestrator to research the slice. The main wiki (hollowknight.
 
 | | Region | Entry A | Entry B |
 |---|---|---|---|
-| Name | Moss Grotto | Moss Mother | Silkspear |
-| id | `moss-grotto` | `moss-mother` | `silkspear` |
+| Name | Moss Grotto | Moss Mother | Silk Spear |
+| id | `moss-grotto` | `moss-mother` | `silk-spear` |
 | kind / type | Region, open from the start (`requires: []`) | Task / `boss` | Collectible / `silk-skill` |
 | Sub-area | | Ruined Chapel | Mosshome |
 | Why | Where the game starts | The first boss. Defeating it opens the way up out of Moss Grotto; it drops nothing, so it is a Task | A Silk Skill, permanent, so it counts |
@@ -87,3 +87,11 @@ Things to confirm (Athos):
 3. That Mosshome belongs to Moss Grotto (the page lists it there) and not to The Marrow.
 
 Known simplification: Silkspear's real chain also passes a gate near The Marrow. That entry belongs to The Marrow and arrives in Phase 3; then `silkspear` needs the gate entry and the gate entry needs `moss-mother`. Nothing is invented here; the chain is only shorter than the real one.
+
+### Confirmed by Athos (2026-10-19)
+
+1. The name is **Silk Spear**, so the id is `silk-spear` (renamed before it was ever pushed, so ADR 0003 is not broken).
+2. Reaching Mosshome before Moss Mother: Athos did not know; the orchestrator searched. The guides agree that the normal way is Moss Mother, then Bone Bottom, then The Marrow, then left past Shakra into Mosshome. One unverified guide claims a wall-climb skip of Moss Mother, and only to Bone Bottom. The guide follows the intended route, so `silk-spear` keeps needing `moss-mother`.
+3. Mosshome belongs to Moss Grotto: confirmed.
+
+Sources for point 2: [Destructoid](https://www.destructoid.com/how-to-get-silkspear-skill-in-hollow-knight-silksong/), [Sportskeeda](https://www.sportskeeda.com/esports/hollow-knight-silksong-how-unlock-silkspear), [dtgre (skip claim)](https://www.dtgre.com/2025/09/hollow-knight-silksong-sequence-breaking-early-skill-unlocks.html).
