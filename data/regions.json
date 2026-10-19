@@ -5,7 +5,7 @@
       "id": "moss-grotto",
       "name": "Moss Grotto",
       "order": 1,
-      "summary": "The Region where the game starts. It is open from the first moment.",
+      "summary": "Where the game starts. Nothing is needed to enter.",
       "requires": []
     }
   ]
