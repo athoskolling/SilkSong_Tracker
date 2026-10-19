@@ -168,6 +168,13 @@ Athos writes this module in stage 1. Agents review it and write tests against th
 The only module that touches localStorage and Firestore (Firestore through the `firebase.js` functions in section 4). The interface never does.
 
 ```js
+configureProgress({ items /* the items array */, dataVersion /* integer */ }) -> void
+// Added in Phase 1 (approved by Athos, 2026-10-19). The interface calls it once, right after
+// loading data/. progress.js keeps only a map of entry id -> regionId (so setDone(id, true) can
+// mark the Region Visited) and the dataVersion it stamps on saved Progress. Before it is called,
+// setDone still works but cannot mark Visited. Why: progress.js never loads data itself, and the
+// "doing something there means Visited" rule should live in one place, not in the interface.
+
 loadProgress() -> Promise<{ done: Set<string>, visited: Set<string> }>
 // Local first. If signed in, also reads the cloud copy, merges with mergeLocalAndCloud, and returns the result.
 
@@ -183,11 +190,15 @@ setVisited(regionId, value /* boolean */) -> Promise<void>
 
 onProgressChange(callback /* ({ done: Set, visited: Set }) => void */) -> unsubscribe /* () => void */
 // Called after every change, including changes from the cloud (another device).
+// A change that changes nothing (marking an entry already done) does not notify, does not move
+// updatedAt and does not write to the cloud.
 
 onSyncStatus(callback /* (status) => void */) -> unsubscribe
 // status = { state: 'local' | 'syncing' | 'synced' | 'error', at /* ms or null */, message /* string or '' */,
 //            combined /* only right after a first sign-in: { localDone, cloudDone, totalDone } */ }
 // Drives the Account screen's sync line and its "Progress combined" plate.
+// Calls the callback once immediately with the current status, so a screen that subscribes late
+// has something to show.
 
 exportProgress() -> Blob
 // The Progress object as JSON (without syncedUid), ready to be downloaded as
@@ -207,7 +218,12 @@ mergeLocalAndCloud(local, cloud, uid) -> progress
 
 clearProgress() -> Promise<void>
 // "Start a new run". Clears local, and the cloud copy when signed in. The interface asks for an
-// export first; this function does not.
+// export first; this function does not. Locally it writes an empty Progress with a fresh
+// updatedAt (keeping syncedUid), so the old cloud copy cannot win back as the newer one.
+
+useStorage(storageLike) -> void
+// Test seam only: swaps localStorage for an in-memory stand-in and resets in-session state.
+// The interface never calls it.
 ```
 
 Behaviour that is not a function:
@@ -232,8 +248,11 @@ onAuthChange(callback /* (user | null) => void */) -> unsubscribe
 readProgressDoc(uid) -> Promise<object | null>
 writeProgressDoc(uid, progress) -> Promise<void>
 deleteProgressDoc(uid) -> Promise<void>
-watchProgressDoc(uid, callback /* (progress | null) => void */) -> unsubscribe
+watchProgressDoc(uid, callback /* (progress | null) => void */, onError /* optional (Error) => void */) -> unsubscribe
 // All on silksong_progress/{uid}.
+// callback(null) means "no cloud copy", so a listener failure never calls it; it calls onError
+// instead (added in Phase 1, approved by Athos 2026-10-19), which progress.js turns into
+// sync status 'error'. Snapshots that are only the echo of this device's own pending write are skipped.
 ```
 
 - It initializes Firebase from a config object in `js/firebase-config.js` (owned by Dev A; the web config is not a secret, see ADR 0002). It never exports Firestore or Auth handles.
@@ -262,7 +281,12 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
 
-## 7. Open contract questions
+## 7. Changes after approval
+
+- 2026-10-19, Phase 1: `configureProgress` added to `progress.js` (entry -> Region map and `dataVersion`); `watchProgressDoc` gets an optional `onError`; behaviours found while building T1 recorded (no-op changes, immediate `onSyncStatus` call, how `clearProgress` writes locally, the `useStorage` test seam). Approved by Athos.
+- 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
+
+## 8. Open contract questions
 
 - Should a later version offer "replace" as well as the union import? (V1: union only, confirmed.)
 - How a `step` that depends on a player choice (an Ending's `locksOut`) is represented in the Route. The Route screen has a "Choice point" marker; the data rule is open.
