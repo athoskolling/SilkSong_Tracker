@@ -1,0 +1,445 @@
+/* components.css: the pieces of the Region page (docs/DESIGN.md section 5).
+   Colors come only from the tokens in base.css. Sizes are read from docs/design/mockups. */
+
+/* ------------------------------------------------------------ sample banner */
+
+.banner {
+  position: relative;
+  z-index: 20;
+  padding: 6px 16px;
+  background: var(--ember);
+  color: var(--night);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------- header */
+
+.page { position: relative; overflow-x: clip; }
+
+/* The header sits on top of the hero, so it is absolutely positioned inside .page. */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.site-header .frame {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 32px;
+  padding-top: 28px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--ivory);
+  text-decoration: none;
+}
+
+.logo-mark { width: 30px; height: 18px; flex: none; }
+.logo-mark .line { fill: none; stroke: var(--ivory); stroke-width: 1.6; }
+.logo-mark .eye { fill: none; stroke: var(--silk); stroke-width: 1.4; }
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 30px;
+  font-size: 15px;
+}
+
+.site-nav a {
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+}
+
+.site-nav a[aria-current="page"] { border-bottom-color: var(--silk); }
+
+@media (max-width: 600px) {
+  .site-nav { gap: 8px 22px; }
+}
+
+/* --------------------------------------------------------------------- hero */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 460px;
+  /* The top padding keeps the title clear of the header when the nav wraps on a phone. */
+  padding: 112px 0 72px;
+  background: linear-gradient(180deg, var(--lacquer), var(--night));
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+}
+
+@media (max-width: 600px) {
+  .hero { min-height: 380px; padding-top: 124px; padding-bottom: 60px; }
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  display: block;
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--scrim-strong), transparent 38%);
+}
+
+.hero-shade--title {
+  background:
+    linear-gradient(0deg, var(--scrim-mid), transparent 55%),
+    linear-gradient(90deg, var(--scrim-side), transparent 55%);
+}
+
+.hero .frame { width: 100%; }
+
+.crumb { font-size: 15px; }
+
+.hero-title {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(52px, 8vw, 100px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ivory);
+  overflow-wrap: anywhere;
+}
+
+.hero--locked .hero-title { color: var(--ash); }
+
+@media (max-width: 600px) {
+  .hero-title { font-size: clamp(48px, 14vw, 64px); }
+}
+
+.hero-intro {
+  margin-top: 14px;
+  max-width: 46ch;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ivory);
+}
+
+/* ---------------------------------------------------------------- the thread */
+
+.content {
+  position: relative;
+  padding-top: 56px;
+  padding-bottom: 96px;
+}
+
+@media (max-width: 600px) {
+  .content { padding-top: 40px; padding-bottom: 72px; }
+}
+
+/* The start thread: drawn once on load from the hero down to the first entry. */
+.start-thread {
+  position: absolute;
+  left: 7px;
+  top: -76px;
+  height: 144px;
+  width: 0;
+  border-left: 2px solid var(--silk);
+  transform-origin: top;
+  animation: draw 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
+}
+
+.start-thread.is-dashed {
+  border-left-style: dashed;
+  border-left-color: var(--thread);
+}
+
+@media (max-width: 600px) {
+  .start-thread { height: 130px; }
+}
+
+/* With no entry list to lead into (hidden entries, no entries) the thread has nowhere to go. */
+.content:has(.layout--side-only) .start-thread { display: none; }
+
+@keyframes draw {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 56px 72px;
+  align-items: start;
+}
+
+/* When only the side plate exists (hidden entries, no entries) it stays one narrow column. */
+.layout--side-only { grid-template-columns: minmax(0, 280px); }
+
+@media (max-width: 900px) {
+  .layout, .layout--side-only { grid-template-columns: minmax(0, 1fr); gap: 40px 0; }
+}
+
+.entries, .chain {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-heading--spaced { margin-top: 56px; }
+
+.list-heading {
+  margin-bottom: 28px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+/* One entry row. The rail holds the mark; the thread segment runs from this mark down to the next. */
+.entry {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  padding-bottom: 36px;
+}
+
+.entry:last-child { padding-bottom: 0; }
+
+.entry-rail {
+  position: relative;
+  flex: none;
+  width: 16px;
+  margin-top: 4px;
+}
+
+/* The "next on the route" plate has 18px of padding, so the mark drops by the same amount. */
+.entry--next .entry-rail { margin-top: 22px; }
+
+.entry-thread {
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: -48px;
+  width: 0;
+  border-left: 2px solid var(--thread);
+}
+
+.entry-thread.is-clear { border-left-color: var(--silk); }
+.entry-thread.is-blocked { border-left-style: dashed; }
+.entry:last-child .entry-thread { display: none; }
+
+/* Bead (Collectible) and knot (Task). The 5px night ring makes the thread look as if it passes through. */
+.mark {
+  display: block;
+  border: 2px solid var(--ivory);
+  background: var(--night);
+  box-shadow: 0 0 0 5px var(--night);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.mark--bead { width: 16px; height: 16px; border-radius: 50%; }
+.mark--knot { width: 12px; height: 12px; border-radius: 1px; transform: rotate(45deg); }
+
+.mark.is-blocked { border: 2px dashed var(--ash); }
+.mark.is-next { border-color: var(--silk); box-shadow: 0 0 0 5px var(--night), 0 0 0 7px var(--silk); }
+.mark.is-done { background: var(--bronze); border: 2px solid var(--bronze); box-shadow: 0 0 0 5px var(--night); }
+
+/* A mark on a Locked Region's missing list is not a button, so it sits directly on the rail. */
+.mark--static { position: absolute; left: 0; top: 0; }
+.mark--knot.mark--static { left: 2px; top: 2px; }
+.mark--region { border: 2px dashed var(--thread); }
+
+/* The 44 x 44px hit area around the 16px mark (DESIGN.md section 5). */
+.entry-mark {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.entry-mark:hover .mark:not(.is-done) { border-color: var(--silk); }
+
+.entry-body { flex: 1 1 auto; min-width: 0; }
+
+.entry--next .entry-body {
+  padding: 18px 22px;
+  border: 1.5px dashed var(--next-border);
+  background: var(--next-fill);
+}
+
+.entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 16px;
+}
+
+.entry-name { font-size: 19px; font-weight: 600; line-height: 1.3; color: var(--ivory); overflow-wrap: anywhere; }
+.entry.is-done .entry-name { color: var(--ash); }
+
+.entry-step { font-size: 13px; color: var(--ash); }
+
+.entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--ash);
+}
+
+.entry-meta .flag-next { color: var(--silk); font-weight: 500; }
+.entry-meta .flag-missable { color: var(--ember); }
+
+.entry-how { margin-top: 10px; max-width: 60ch; font-size: 15px; line-height: 1.6; color: var(--ash); }
+
+.entry-needs { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.entry-needs.is-missing { color: var(--silk); }
+
+/* Locked Region list: plain statements, no buttons. */
+.chain .entry-name + .entry-meta { margin-top: 4px; }
+.chain .entry-state { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.chain .entry-state.is-missing { color: var(--silk); }
+.chain .entry-link { margin-top: 10px; font-size: 15px; }
+.chain .entry-note { margin-top: 8px; font-size: 15px; line-height: 1.6; color: var(--ash); }
+.chain .entry-region .entry-name { color: var(--ash); }
+
+/* ------------------------------------------------------------------- plates */
+
+.plate {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  border: 1.5px dashed var(--plate-border);
+  background: linear-gradient(180deg, var(--plate-top), var(--plate-bottom));
+}
+
+.plate-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.plate-text { font-size: 15px; line-height: 1.6; color: var(--ash); }
+.plate-help { font-size: 14px; line-height: 1.6; color: var(--ash); }
+
+.plate--counts { gap: 28px; }
+
+.message { max-width: 60ch; }
+
+/* Pages with no hero (errors) start below the absolutely positioned header. */
+.main-plain { padding-top: 140px; padding-bottom: 96px; }
+.message .plate-text a { color: var(--ivory); }
+
+/* --------------------------------------------- needle-and-thread progress bar */
+
+.count-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 15px;
+}
+
+.count-row--tasks { color: var(--ash); }
+.count-row--collectibles .count-value { color: var(--bronze); font-weight: 600; }
+
+.bar { position: relative; height: 18px; margin-top: 8px; }
+
+.bar-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 8px;
+  border-top: 2px dashed var(--track);
+}
+
+.bar-fill { position: absolute; left: 0; top: 8px; border-top: 2px solid var(--silk); }
+
+.bar-needle { position: absolute; top: 0; width: 28px; height: 18px; }
+.bar-needle .line { fill: none; stroke: var(--ivory); stroke-width: 1.6; }
+.bar-needle .eye { fill: var(--lacquer); stroke: var(--silk); stroke-width: 1.4; }
+
+.bar--tasks .bar-fill { border-top-color: var(--ash); }
+.bar--tasks .bar-needle .line { stroke: var(--ash); }
+.bar--tasks .bar-needle .eye { stroke: var(--ash); }
+
+/* ------------------------------------------------------------------ toggles */
+
+.toggles { display: flex; flex-direction: column; gap: 4px; }
+
+/* A real checkbox drawn as a switch. The input is hidden but stays focusable and announced. */
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.switch-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  border-radius: 20px;
+  background: var(--switch-off);
+  transition: background-color 0.15s;
+}
+
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ivory);
+  transition: left 0.15s, background-color 0.15s;
+}
+
+.switch-input:checked + .switch-track { background: var(--silk); }
+.switch-input:checked + .switch-track::after { left: 18px; background: var(--night); }
+.switch-input:focus-visible + .switch-track { outline: 2px solid var(--silk); outline-offset: 3px; }
+
+/* ------------------------------------------------------------------- footer */
+
+.site-footer { padding-bottom: 56px; font-size: 13px; line-height: 1.6; color: var(--ash); }
+.site-footer p { max-width: 60ch; }
+.site-footer p + p { margin-top: 8px; }
+.site-footer a { color: var(--ash); }
+.site-footer a:hover { color: var(--silk); }
