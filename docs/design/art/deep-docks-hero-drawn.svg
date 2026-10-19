@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 720" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="dd-t dd-d">
+<title id="dd-t">Deep Docks</title>
+<desc id="dd-d">A dockside forge district at dusk: crooked chimneys, a glowing furnace, a big bronze bell on an iron gantry, and embers drifting over dark water.</desc>
+
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#130B13"/>
+    <stop offset=".32" stop-color="#2b0f1d"/>
+    <stop offset=".6" stop-color="#5c1d1a"/>
+    <stop offset=".82" stop-color="#b8471f"/>
+    <stop offset="1" stop-color="#f08a3c"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="1060" cy="570" r="560" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#ff7a3d" stop-opacity=".85"/>
+    <stop offset=".45" stop-color="#d9442a" stop-opacity=".28"/>
+    <stop offset="1" stop-color="#ff7a3d" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="mouth" cx=".5" cy=".85" r=".85">
+    <stop offset="0" stop-color="#fff2b0"/>
+    <stop offset=".35" stop-color="#ffb347"/>
+    <stop offset=".7" stop-color="#ff6a2c"/>
+    <stop offset="1" stop-color="#b8281a"/>
+  </radialGradient>
+  <linearGradient id="bell" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#7a4a1e"/>
+    <stop offset=".35" stop-color="#e7b45c"/>
+    <stop offset=".5" stop-color="#f6d58a"/>
+    <stop offset=".75" stop-color="#c98a35"/>
+    <stop offset="1" stop-color="#6e3f18"/>
+  </linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5c2418"/>
+    <stop offset=".3" stop-color="#2a1220"/>
+    <stop offset="1" stop-color="#0e070e"/>
+  </linearGradient>
+  <radialGradient id="lamp" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#ffb35a" stop-opacity=".6"/>
+    <stop offset="1" stop-color="#ffb35a" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="vTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#130B13" stop-opacity=".85"/>
+    <stop offset="1" stop-color="#130B13" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="vLeft" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#130B13" stop-opacity=".75"/>
+    <stop offset="1" stop-color="#130B13" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="vBottom" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#130B13" stop-opacity="0"/>
+    <stop offset="1" stop-color="#130B13" stop-opacity=".7"/>
+  </linearGradient>
+  <pattern id="lattice" width="40" height="80" patternUnits="userSpaceOnUse" patternTransform="translate(1368 96)">
+    <path d="M0 0 L40 80 M40 0 L0 80" stroke="#3a1f2c" stroke-width="5" fill="none"/>
+  </pattern>
+  <g id="star">
+    <path d="M0 -10 Q2 -2 10 0 Q2 2 0 10 Q-2 2 -10 0 Q-2 -2 0 -10Z" fill="#ffd08a"/>
+  </g>
+</defs>
+
+<!-- SKY AND GLOW -->
+<rect width="1440" height="580" fill="url(#sky)"/>
+<rect width="1440" height="600" fill="url(#glow)"/>
+
+<!-- FAR SKYLINE ACROSS THE WATER -->
+<g fill="#3a1827" stroke="#22101b" stroke-width="3" stroke-linejoin="round">
+  <path d="M480 566 L480 505 L520 490 L545 505 L610 505 L640 488 L690 505 L780 505 L800 492 L880 492 L900 505 L900 566Z"/>
+  <path d="M430 566 L437 410 L424 402 L424 384 L494 384 L494 402 L481 410 L488 566Z"/>
+  <path d="M552 566 L570 290 L563 268 L581 206 L599 268 L592 290 L610 566Z"/>
+  <path d="M690 566 L700 350 L684 338 L684 316 L772 316 L772 338 L756 350 L766 566Z"/>
+  <path d="M806 566 L810 430 Q843 372 876 430 L880 566Z"/>
+  <path d="M836 388 L843 336 L850 388Z"/>
+</g>
+<g stroke="#5a3345" stroke-width="4" stroke-linecap="round" opacity=".7">
+  <path d="M692 380 H764"/><path d="M694 420 H762"/>
+  <path d="M556 360 H606"/><path d="M558 420 H604"/>
+</g>
+<g fill="#ffb35a" opacity=".6">
+  <circle cx="500" cy="525" r="3"/><circle cx="525" cy="525" r="3"/>
+  <circle cx="630" cy="522" r="3"/><circle cx="722" cy="525" r="3"/>
+  <circle cx="752" cy="525" r="3"/><circle cx="842" cy="470" r="3"/>
+</g>
+<!-- far smoke -->
+<g fill="#3a1827" stroke="#22101b" stroke-width="3" opacity=".9">
+  <circle cx="704" cy="294" r="18"/><circle cx="678" cy="266" r="24"/><circle cx="640" cy="240" r="30"/>
+</g>
+
+<!-- WATER -->
+<rect y="566" width="1440" height="154" fill="url(#water)"/>
+<g fill="#ffb35a">
+  <ellipse cx="1060" cy="648" rx="150" ry="10" opacity=".3" fill="#ff7a3d"/>
+  <rect x="1010" y="640" width="100" height="6" rx="3" opacity=".35"/>
+  <rect x="1030" y="656" width="70" height="6" rx="3" opacity=".3"/>
+  <rect x="980" y="670" width="124" height="6" rx="3" opacity=".28"/>
+  <rect x="1040" y="688" width="60" height="6" rx="3" opacity=".22"/>
+  <rect x="1110" y="702" width="90" height="6" rx="3" opacity=".18"/>
+</g>
+<g stroke="#b7a3a6" stroke-width="3" stroke-linecap="round" opacity=".14">
+  <path d="M120 640 H280"/><path d="M300 668 H420"/><path d="M60 700 H260"/><path d="M430 630 H520"/><path d="M560 690 H700"/>
+</g>
+
+<!-- DRAPED CHAIN FROM THE GANTRY TO THE FAR SPIRE -->
+<path d="M1190 112 Q880 336 586 214" fill="none" stroke="#0b050b" stroke-width="13" stroke-linecap="round" stroke-dasharray="15 7"/>
+<path d="M1190 112 Q880 336 586 214" fill="none" stroke="#8a6471" stroke-width="6" stroke-linecap="round" stroke-dasharray="15 7"/>
+
+<!-- PIPE LOOPING OUT OF THE FORGE WALL -->
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M880 520 H830 Q800 520 800 490 Q800 460 770 460 Q740 460 740 490 V620" stroke="#0b050b" stroke-width="30"/>
+  <path d="M880 520 H830 Q800 520 800 490 Q800 460 770 460 Q740 460 740 490 V620" stroke="#4a2a3a" stroke-width="22"/>
+  <path d="M880 520 H830 Q800 520 800 490 Q800 460 770 460 Q740 460 740 490 V620" stroke="#a07a8a" stroke-width="4" opacity=".5" transform="translate(-5 -3)"/>
+</g>
+<g fill="#6b4b58" stroke="#0b050b" stroke-width="3">
+  <rect x="822" y="503" width="10" height="34" rx="3"/>
+  <rect x="724" y="552" width="32" height="10" rx="3"/>
+  <rect x="724" y="590" width="32" height="10" rx="3"/>
+</g>
+
+<!-- FORGE BUILDING -->
+<path d="M880 604 L880 412 Q880 380 912 380 L1268 380 Q1300 380 1300 412 L1300 604Z" fill="#241220" stroke="#0b050b" stroke-width="5" stroke-linejoin="round"/>
+<path d="M880 604 L880 412 Q880 380 912 380 L1268 380 Q1300 380 1300 412 L1300 604Z" fill="url(#glow)" opacity=".55"/>
+<path d="M884 398 H1296" stroke="#3a1f2c" stroke-width="6"/>
+<path d="M990 604 L990 530 Q990 458 1060 458 Q1130 458 1130 530 L1130 604" fill="none" stroke="#3a1f2c" stroke-width="10"/>
+<path d="M1000 604 L1000 532 Q1000 470 1060 470 Q1120 470 1120 532 L1120 604Z" fill="url(#mouth)" stroke="#0b050b" stroke-width="5"/>
+<path d="M1030 604 Q1020 560 1040 540 Q1044 560 1056 548 Q1060 520 1074 500 Q1086 540 1096 556 Q1100 540 1106 548 Q1112 580 1096 604Z" fill="#ffe9a0" opacity=".9"/>
+<g fill="#ffb35a" stroke="#0b050b" stroke-width="4">
+  <path d="M904 456 V440 A12 12 0 0 1 928 440 V456Z"/>
+  <path d="M1166 456 V440 A12 12 0 0 1 1190 440 V456Z"/>
+  <path d="M1232 456 V440 A12 12 0 0 1 1256 440 V456Z"/>
+</g>
+
+<!-- smoke from the forge chimneys (drawn first so chimneys overlap it) -->
+<g fill="#4a2230" stroke="#0b050b" stroke-width="3">
+  <circle cx="930" cy="140" r="22"/><circle cx="900" cy="106" r="28"/><circle cx="858" cy="80" r="34"/><circle cx="810" cy="64" r="28"/>
+  <circle cx="1118" cy="172" r="18"/><circle cx="1094" cy="148" r="22"/><circle cx="1062" cy="128" r="26"/>
+  <circle cx="1030" cy="216" r="16"/><circle cx="1008" cy="194" r="20"/>
+</g>
+
+<!-- chimneys -->
+<g fill="#1f111c" stroke="#0b050b" stroke-width="5" stroke-linejoin="round">
+  <path d="M920 384 L926 200 L912 190 L912 168 L982 168 L982 190 L968 200 L974 384Z"/>
+  <path d="M1020 384 L1025 266 L1012 258 L1012 240 L1072 240 L1072 258 L1059 266 L1064 384Z"/>
+  <path d="M1110 384 L1115 222 L1102 214 L1102 196 L1160 196 L1160 214 L1147 222 L1152 384Z"/>
+</g>
+<g stroke="#4a2a3a" stroke-width="5" stroke-linecap="round">
+  <path d="M923 262 H973"/><path d="M922 306 H973"/>
+  <path d="M1022 306 H1063"/><path d="M1021 346 H1063"/>
+  <path d="M1112 262 H1151"/><path d="M1111 306 H1151"/>
+</g>
+<g stroke="#ff9a4d" stroke-width="4" stroke-linecap="round" opacity=".55">
+  <path d="M971 372 L967 214"/><path d="M1061 372 L1058 276"/><path d="M1149 372 L1145 232"/>
+</g>
+
+<!-- GANTRY AND BELL -->
+<rect x="1368" y="96" width="40" height="508" fill="#170b14" stroke="#0b050b" stroke-width="5"/>
+<rect x="1368" y="96" width="40" height="508" fill="url(#lattice)"/>
+<path d="M1290 122 L1368 200 L1368 122Z" fill="#170b14" stroke="#0b050b" stroke-width="4" stroke-linejoin="round"/>
+<rect x="1170" y="96" width="238" height="26" rx="4" fill="#241220" stroke="#0b050b" stroke-width="5"/>
+<path d="M1250 122 V262" stroke="#0b050b" stroke-width="14" stroke-linecap="round" stroke-dasharray="16 6"/>
+<path d="M1250 122 V262" stroke="#a8814a" stroke-width="7" stroke-linecap="round" stroke-dasharray="16 6"/>
+<rect x="1238" y="252" width="24" height="14" rx="4" fill="#7a4a1e" stroke="#0b050b" stroke-width="4"/>
+<path d="M1190 402 C1206 382 1206 342 1210 312 C1214 280 1230 262 1250 262 C1270 262 1286 280 1290 312 C1294 342 1294 382 1310 402 Q1250 420 1190 402Z" fill="url(#bell)" stroke="#0b050b" stroke-width="5" stroke-linejoin="round"/>
+<path d="M1190 402 C1206 382 1206 342 1210 312 C1214 280 1230 262 1250 262 C1270 262 1286 280 1290 312 C1294 342 1294 382 1310 402 Q1250 420 1190 402Z" fill="url(#glow)" opacity=".4"/>
+<path d="M1214 332 C1216 304 1226 284 1240 274" fill="none" stroke="#fff0c0" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+<path d="M1195 402 Q1250 416 1305 402" fill="none" stroke="#ff7a3d" stroke-width="3" stroke-linecap="round"/>
+<path d="M1250 410 V420" stroke="#0b050b" stroke-width="5"/>
+<circle cx="1250" cy="428" r="13" fill="#7a4a1e" stroke="#0b050b" stroke-width="4"/>
+
+<!-- CRATES -->
+<g stroke="#0b050b" stroke-width="4" stroke-linejoin="round">
+  <rect x="1314" y="566" width="46" height="40" fill="#3a2230"/>
+  <rect x="1322" y="530" width="32" height="36" fill="#4a2a3a"/>
+</g>
+<g stroke="#241220" stroke-width="4" stroke-linecap="round">
+  <path d="M1318 570 L1356 602 M1356 570 L1318 602"/>
+  <path d="M1326 534 L1350 562 M1350 534 L1326 562"/>
+</g>
+
+<!-- DECK, POSTS, FOREGROUND PROPS -->
+<g fill="#170b14" stroke="#0b050b" stroke-width="4">
+  <rect x="790" y="626" width="22" height="50" rx="3"/>
+  <rect x="920" y="626" width="22" height="58" rx="3"/>
+  <rect x="1050" y="626" width="22" height="52" rx="3"/>
+  <rect x="1180" y="626" width="22" height="60" rx="3"/>
+  <rect x="1310" y="626" width="22" height="50" rx="3"/>
+</g>
+<g fill="none" stroke="#ffb35a" stroke-width="3" opacity=".35">
+  <ellipse cx="801" cy="676" rx="22" ry="5"/><ellipse cx="931" cy="684" rx="22" ry="5"/>
+  <ellipse cx="1061" cy="678" rx="22" ry="5"/><ellipse cx="1191" cy="686" rx="22" ry="5"/>
+  <ellipse cx="1321" cy="676" rx="22" ry="5"/>
+</g>
+<rect x="770" y="600" width="670" height="34" fill="#1a0e17" stroke="#0b050b" stroke-width="5"/>
+<g stroke="#3a1f2c" stroke-width="3">
+  <path d="M826 606 V630"/><path d="M886 606 V630"/><path d="M946 606 V630"/><path d="M1006 606 V630"/>
+  <path d="M1066 606 V630"/><path d="M1126 606 V630"/><path d="M1186 606 V630"/><path d="M1246 606 V630"/>
+  <path d="M1306 606 V630"/><path d="M1366 606 V630"/><path d="M1426 606 V630"/>
+</g>
+<path d="M1000 604 H1436" stroke="#ff9a4d" stroke-width="3" opacity=".4"/>
+
+<!-- bollard and coiled rope -->
+<path transform="translate(130 0)" d="M800 600 L806 574 Q790 572 790 562 Q790 556 806 556 H826 Q842 556 842 562 Q842 572 826 574 L832 600Z" fill="#241220" stroke="#0b050b" stroke-width="4" stroke-linejoin="round"/>
+<g fill="#6b4b58" stroke="#0b050b" stroke-width="3">
+  <ellipse cx="846" cy="596" rx="34" ry="9"/>
+  <ellipse cx="846" cy="588" rx="28" ry="8"/>
+</g>
+
+<!-- lantern -->
+<circle cx="1236" cy="540" r="52" fill="url(#lamp)"/>
+<path d="M1262 602 V520 H1236" fill="none" stroke="#0b050b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1262 602 V520 H1236" fill="none" stroke="#3a1f2c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1226" y="528" width="20" height="26" rx="5" fill="#ffd08a" stroke="#0b050b" stroke-width="3"/>
+
+<!-- EMBERS -->
+<g>
+  <use href="#star" transform="translate(1004 396) scale(.9)"/>
+  <use href="#star" transform="translate(1088 352) scale(.7)"/>
+  <use href="#star" transform="translate(1146 290) scale(1)"/>
+  <use href="#star" transform="translate(1034 214) scale(.6)"/>
+  <use href="#star" transform="translate(1210 220) scale(.8)"/>
+  <use href="#star" transform="translate(1336 300) scale(.7)"/>
+  <use href="#star" transform="translate(940 460) scale(.6)"/>
+  <use href="#star" transform="translate(1180 500) scale(.7)"/>
+  <use href="#star" transform="translate(880 300) scale(.5)"/>
+  <use href="#star" transform="translate(1280 176) scale(.5)"/>
+  <use href="#star" transform="translate(760 380) scale(.5)"/>
+  <use href="#star" transform="translate(1100 100) scale(.6)"/>
+</g>
+<g fill="#ffb35a">
+  <circle cx="1020" cy="440" r="3"/><circle cx="1052" cy="372" r="4"/><circle cx="1096" cy="300" r="3"/>
+  <circle cx="1070" cy="250" r="2.5"/><circle cx="1122" cy="330" r="2.5"/><circle cx="1196" cy="270" r="3"/>
+  <circle cx="1270" cy="236" r="2.5"/><circle cx="1334" cy="400" r="3"/><circle cx="1402" cy="250" r="3"/>
+  <circle cx="960" cy="420" r="3"/><circle cx="930" cy="330" r="2.5"/><circle cx="1240" cy="480" r="3"/>
+</g>
+<g fill="#ff7a3d">
+  <circle cx="1008" cy="330" r="3"/><circle cx="1148" cy="410" r="4"/><circle cx="1216" cy="190" r="2.5"/>
+  <circle cx="980" cy="260" r="2.5"/><circle cx="1304" cy="340" r="3"/><circle cx="1380" cy="480" r="3"/>
+  <circle cx="860" cy="420" r="3"/><circle cx="1040" cy="480" r="3"/><circle cx="1160" cy="150" r="2.5"/>
+  <circle cx="700" cy="420" r="2"/><circle cx="820" cy="250" r="2"/><circle cx="1260" cy="130" r="2"/>
+</g>
+<g fill="#ffd08a">
+  <circle cx="1048" cy="300" r="2"/><circle cx="1130" cy="460" r="2.5"/><circle cx="1190" cy="340" r="2"/>
+  <circle cx="1320" cy="220" r="2"/><circle cx="900" cy="380" r="2"/><circle cx="1230" cy="410" r="2"/>
+</g>
+
+<!-- VIGNETTES: keep the left third dark for a title -->
+<rect width="1440" height="260" fill="url(#vTop)"/>
+<rect width="600" height="720" fill="url(#vLeft)"/>
+<rect y="560" width="1440" height="160" fill="url(#vBottom)"/>
+
+<!-- OPTIONAL: the crimson thread. Delete this group if the page draws its own. -->
+<g id="thread">
+  <path d="M60 0 V248" stroke="#EC555B" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="60" cy="260" r="9" fill="#130B13" stroke="#EC555B" stroke-width="3"/>
+</g>
+</svg>

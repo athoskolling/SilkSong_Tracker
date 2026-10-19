@@ -1,0 +1,87 @@
+{
+  "dataVersion": 1,
+  "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
+  "items": [
+    {
+      "id": "sample-ability",
+      "name": "Sample ability",
+      "kind": "collectible",
+      "type": "ability",
+      "regionId": "sample-region-a",
+      "how": "Sample text. A collectible with no requirements, so it is available from the start.",
+      "requires": [],
+      "missable": false,
+      "step": 1,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-ability"
+    },
+    {
+      "id": "sample-key",
+      "name": "Sample key",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-a",
+      "area": "Sample sub-area",
+      "how": "Sample text. A collectible that needs the sample ability first.",
+      "requires": ["sample-ability"],
+      "missable": false,
+      "step": 2,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-key"
+    },
+    {
+      "id": "sample-door",
+      "name": "Open the sample door",
+      "kind": "task",
+      "type": "door",
+      "regionId": "sample-region-a",
+      "area": "Sample sub-area",
+      "how": "Sample text. A task: tracked, but it adds nothing to the counts. It needs the sample key.",
+      "requires": ["sample-key"],
+      "missable": false,
+      "step": 3,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-door"
+    },
+    {
+      "id": "sample-shard",
+      "name": "Sample shard",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "sample-region-a",
+      "how": "Sample text. A collectible behind the sample door, two steps down a chain.",
+      "requires": ["sample-door"],
+      "missable": false,
+      "step": 4,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-shard"
+    },
+    {
+      "id": "sample-boss",
+      "name": "Defeat the sample boss",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sample-region-b",
+      "how": "Sample text. A task in the second Region. Its Region needs the sample ability.",
+      "requires": [],
+      "missable": false,
+      "step": 5,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-boss"
+    },
+    {
+      "id": "sample-charm",
+      "name": "Sample charm",
+      "kind": "collectible",
+      "type": "upgrade",
+      "regionId": "sample-region-b",
+      "how": "Sample text. A collectible that can be missed, to show the missable warning.",
+      "requires": ["sample-shard"],
+      "missable": true,
+      "missableNote": "Sample note. It is only here to show where the reason for a missable entry goes.",
+      "step": 6,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-charm"
+    }
+  ]
+}

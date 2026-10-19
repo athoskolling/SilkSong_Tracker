@@ -1,0 +1,20 @@
+{
+  "dataVersion": 1,
+  "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
+  "endings": [
+    {
+      "id": "sample-ending-one",
+      "name": "Sample ending one",
+      "conditions": ["sample-shard", "sample-boss"],
+      "locksOut": ["sample-ending-two"],
+      "source": "https://example.invalid/sample-ending-one"
+    },
+    {
+      "id": "sample-ending-two",
+      "name": "Sample ending two",
+      "conditions": ["sample-charm"],
+      "locksOut": [],
+      "source": "https://example.invalid/sample-ending-two"
+    }
+  ]
+}

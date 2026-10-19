@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+# Claude Code local-only files
+.claude/settings.local.json
+.claude/worktrees/
+# Local drafts from tools/draft-from-wiki.js stay out of the repo until a human rewrites them
+tools/drafts/
+
+img/incoming/

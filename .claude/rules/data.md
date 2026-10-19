@@ -1,0 +1,20 @@
+---
+paths:
+  - "data/**"
+  - "tools/**"
+  - "scripts/validate-data.js"
+---
+
+# Rules for game data
+
+- **Structure:** exactly the shapes in `docs/CONTRACTS.md`. Raise `dataVersion` on every content revision.
+- **Permanent ids.** An id is a lowercase slug and is never renamed once published. A wrong id is fixed by adding a new entry and retiring the old one (ADR 0003). Ids are unique across `regions.json`, `items.json` and `endings.json`.
+- **Our own words.** `how`, `summary` and every other text are written in our own words. Never paste wiki text. Keep `how` short (under about 300 characters).
+- **Every entry has a `source`** (a link to the wiki or MapGenie page). It is a reference, not a copy.
+- **Never scrape MapGenie.** Read single pages by hand if you must; do not collect its data.
+- **The wiki draft script** (`tools/draft-from-wiki.js`) only reads the main wiki, only after Athos has reviewed its license and terms (see `docs/PHASE-0-CHECKLIST.md`), with request limits and a delay. Its output goes to `tools/drafts/` (git-ignored), never straight into `data/`. A person rewrites and verifies every entry before it enters `data/`. The script never downloads images or audio.
+- **No facts from memory.** Do not fill in game facts, step numbers or requirements from what you think you remember. Anything in `docs/design/` and `data/sample/` is invented layout content, not data.
+- **Collectible or Task.** Only Collectibles count. A Task goes into batch 1 only if it unlocks a Collectible.
+- **`missable`** is optional (default `false`). If `true`, `missableNote` says when and why.
+- **Run the validator** (`node scripts/validate-data.js`) before you hand off any change to `data/`.
+- Content ships in batches. Batch 1 is Moss Grotto, The Marrow and Deep Docks (to be confirmed on the wiki). Do not add entries for a Region outside the batch being worked on.

@@ -1,0 +1,27 @@
+{
+  "dataVersion": 1,
+  "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
+  "regions": [
+    {
+      "id": "sample-region-a",
+      "name": "Sample Region A",
+      "order": 1,
+      "summary": "A made-up Region that is open from the start.",
+      "requires": []
+    },
+    {
+      "id": "sample-region-b",
+      "name": "Sample Region B",
+      "order": 2,
+      "summary": "A made-up Region that opens after one entry in Sample Region A.",
+      "requires": ["sample-ability"]
+    },
+    {
+      "id": "sample-region-c",
+      "name": "Sample Region C",
+      "order": 3,
+      "summary": "A made-up Region with no entries yet, to show the Not in the guide yet state.",
+      "requires": ["sample-boss"]
+    }
+  ]
+}
