@@ -1,0 +1,109 @@
+/* base.css: tokens (docs/DESIGN.md section 3), reset, typography, page frame and focus.
+   Every color in the site comes from a custom property defined here; other files use var(...). */
+
+:root {
+  /* Tokens from DESIGN.md section 3. Do not change a value here to pass a contrast check; report it. */
+  --night: #130B13;
+  --lacquer: #1F111C;
+  --ivory: #F2E9D8;
+  --ash: #B7A3A6;
+  --silk: #EC555B;
+  --bronze: #D9A650;
+  --ember: #FF7A3D;
+  --thread: #8A6471;
+
+  /* Derived from the mockups (DESIGN.md names --track; the others are the plate gradient and the switch). */
+  --track: #4A3340;
+  --plate-top: #22121D;
+  --plate-bottom: #1A0E17;
+  --switch-off: #3A2631;
+
+  /* Translucent versions are built from the tokens above, so no color is written twice. */
+  --scrim-strong: color-mix(in srgb, var(--night) 88%, transparent);
+  --scrim-mid: color-mix(in srgb, var(--night) 80%, transparent);
+  --scrim-side: color-mix(in srgb, var(--night) 60%, transparent);
+  --plate-border: color-mix(in srgb, var(--ivory) 30%, transparent);
+  --next-border: color-mix(in srgb, var(--silk) 60%, transparent);
+  --next-fill: color-mix(in srgb, var(--silk) 7%, transparent);
+
+  /* System fallbacks per DESIGN.md section 4, so the page reads fine before (or without) the web fonts. */
+  --font-display: Gloock, Georgia, serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+
+  --frame: 1120px;
+  --gutter: 40px;
+}
+
+@media (max-width: 600px) {
+  :root { --gutter: 16px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden; /* a safety net; the layout itself is built not to need it at 390px */
+}
+
+h1, h2, h3, p { margin: 0; }
+
+a { color: var(--ivory); text-underline-offset: 3px; }
+a:hover { color: var(--silk); }
+
+button { font: inherit; color: inherit; }
+
+/* One visible focus ring everywhere (DESIGN.md section 5). */
+:focus-visible { outline: 2px solid var(--silk); outline-offset: 3px; }
+
+/* <main> is focusable only so the skip link can move focus there; it is not a control. */
+main:focus { outline: none; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: 8px;
+  z-index: 10;
+  padding: 8px 14px;
+  background: var(--ivory);
+  color: var(--night);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+.skip-link:hover { color: var(--night); }
+
+/* Page frame: content column max 1120px, side padding 40px (16px on a phone). */
+.frame {
+  position: relative;
+  max-width: var(--frame);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+/* Everything that moves because of the page loading (not because of a click) is turned off here. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
