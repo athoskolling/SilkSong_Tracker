@@ -176,7 +176,9 @@ configureProgress({ items /* the items array */, dataVersion /* integer */ }) ->
 // "doing something there means Visited" rule should live in one place, not in the interface.
 
 loadProgress() -> Promise<{ done: Set<string>, visited: Set<string> }>
-// Local first. If signed in, also reads the cloud copy, merges with mergeLocalAndCloud, and returns the result.
+// Local first: resolves at once from localStorage and never waits on the network. When signed in,
+// the cloud copy is read and merged in the background; the merged result arrives through
+// onProgressChange and onSyncStatus. (Changed in Phase 1: a slow network must never block the page.)
 
 setDone(itemId, value /* boolean */) -> Promise<void>
 // Writes locally always, to the cloud when signed in. Stamps updatedAt. Notifies subscribers.
@@ -224,12 +226,18 @@ clearProgress() -> Promise<void>
 useStorage(storageLike) -> void
 // Test seam only: swaps localStorage for an in-memory stand-in and resets in-session state.
 // The interface never calls it.
+
+useCloud(fake /* { onAuthChange, readProgressDoc, writeProgressDoc, deleteProgressDoc, watchProgressDoc } | null */) -> void
+// Test seam only: replaces the firebase.js functions with fakes (null stops the cloud half).
+// In the browser progress.js wires the real firebase.js by itself; the interface never calls this.
 ```
 
 Behaviour that is not a function:
 
 - `progress.js` subscribes to `onAuthChange` itself. On sign-in it reads the cloud copy, merges, writes the result to both sides and starts `watchProgressDoc`. The interface never calls the merge.
 - Local Progress also stores `syncedUid` (the account it was last merged with). It is never written to the cloud document or to a backup file. **Signing out clears `syncedUid`**, so anything marked while signed out is combined by union at the next sign-in instead of being overwritten by an older cloud copy.
+- "Start a new run" clears this device and deletes the cloud copy. Another device that still has the old run keeps it and writes it back on its next change (newer wins). The Account screen must not promise that a new run clears every device.
+- `combined` in the sync status is reported only on a first sign-in where a cloud copy already existed.
 - Known cost (ADR 0001): after the first sign-in, "newer wins as a whole object" means two devices editing at the same time keep only the newer side.
 
 ## 4. `js/firebase.js`
@@ -284,6 +292,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 ## 7. Changes after approval
 
 - 2026-10-19, Phase 1: `configureProgress` added to `progress.js` (entry -> Region map and `dataVersion`); `watchProgressDoc` gets an optional `onError`; behaviours found while building T1 recorded (no-op changes, immediate `onSyncStatus` call, how `clearProgress` writes locally, the `useStorage` test seam). Approved by Athos.
+- 2026-10-19, Phase 1 (T3): `loadProgress` returns local Progress at once and delivers the cloud merge through `onProgressChange`, instead of waiting for the cloud (a slow network must never block the page; Athos let the orchestrator decide). `useCloud` test seam recorded. Known costs recorded in section 3: "Start a new run" deletes the cloud copy, but another device still holding the old run writes it back on its next change (ADR 0001, newer wins); `combined` is reported only when a cloud copy existed.
 - 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
 
 ## 8. Open contract questions
