@@ -132,8 +132,8 @@ Nothing in these four tasks touches `js/progress.js`, `js/firebase.js`, `firesto
 ### Risks to existing behaviour (and how the tasks avoid them)
 
 - **The headline number moves.** This only happens if `counts: false` data lands before P5-3. Order rule 4 prevents it.
-- **Region "Complete" needs tracker entries.** Once a Memento is in a Region, the Region shows Complete only when the Memento is done too. Current data is unaffected; the Trackers mockups decide whether to keep this (contract section 8).
-- **Tracker entries on the Route.** A Memento or a map has a `step`, so it shows on the Route and can be "Next on the route". Current data is unaffected; the same open point applies.
+- **Region "Complete" needs tracker entries.** Once a Memento is in a Region, the Region shows Complete only when the Memento is done too. Current data is unaffected; the Trackers mockups decide whether to keep this (contract section 8). *Decided 2026-10-20: see "The Route rule" below.*
+- **Tracker entries on the Route.** A Memento or a map has a `step`, so it shows on the Route and can be "Next on the route". Current data is unaffected; the same open point applies. *Decided 2026-10-20: see "The Route rule" below.*
 - **Validator output on current data.** P5-2's done criterion pins it to the pre-change output, so an unintended new warning shows at once.
 
 ## Athos's second answers and the contract changes (2026-10-20)
@@ -158,7 +158,7 @@ Same rule as before: everything additive, one branch merged at a time, `node --t
 1. **Now** (P5-1 to P5-4 are already merged on the working branch, checked 2026-10-20, so their dependencies below are met): P5-5 and P5-6 (rules), P5-7 and P5-8 (Progress fields), P5-9 (rule 13), P5-10 (mockup addendum), and P5-13 once Athos confirms the Hunter Crest's place.
 2. **Gate G1 (Athos):** after P5-5 and P5-6 are merged and the Emulator run passes, Athos publishes `firestore.rules` and tells the orchestrator. **P5-7 and P5-8 are not merged before G1**, because every merge is pushed and goes live: the new `progress.js` would send keys the published rules refuse (local data stays safe, but sync shows an error for everyone who saves a Build or starts a new run).
 3. P5-11 (sample data) after P5-2 and P5-9. Then P5-12 (Trackers page), P5-13 (Drifter's Cloak and Hunter Crest, after P5-1 to P5-4), P5-14 (build fields on existing entries, after Athos's go). QA 2 pass.
-4. Mementos and Equipment: sheet 2 (orchestrator research, Athos approves), P5-15, P5-16. Then the Rosaries page, P5-17, and the price batch, P5-18, after sheet 3. QA 2 pass.
+4. Mementos and Equipment: sheet 2 (orchestrator research, Athos approves), P5-15, then the Route rule (P5-25 to P5-28, section "The Route rule" below), then P5-16. Then the Rosaries page, P5-17, and the price batch, P5-18, after sheet 3. QA 2 pass.
 5. Builds: P5-19 and P5-20 (`builds.js` may start any time after P5-11), P5-21 (after G1, P5-7 and P5-19), P5-22 (sync rehearsal). QA 2 pass.
 6. Last: P5-23 (save file spike), P5-24 (read-only preview, after Athos's answer on the key).
 
@@ -255,8 +255,8 @@ Nothing in P5-5 to P5-11 touches `data/`, the four existing pages, `main.js` or 
 
 ### P5-16 (dev-c): Mementos and Equipment
 
-- **Files:** `data/*.json`. **Depends on:** sheet 2 approved, P5-15 and P5-12 merged.
-- **Scope:** only the Regions already in `data/`; the rest waits for the Act 2 and Act 3 batches. All `counts: false`. **Done when:** validator clean, tests pass, the Home headline is unchanged, and the Mementos and Equipment tabs show the new entries.
+- **Files:** `data/*.json`. **Depends on:** sheet 2 approved, P5-15 and P5-12 merged, and P5-25 to P5-27 merged (the Route rule; without it the new entries would join the Route and knock Complete Regions back).
+- **Scope:** only the Regions already in `data/`; the rest waits for the Act 2 and Act 3 batches. All `counts: false`. **Done when:** validator clean, tests pass, the Home headline is unchanged, and the Mementos and Equipment tabs show the new entries. Also: none of the new entries is on the Route (`routeIds` before and after differ by nothing), so the Route page, "Next on the route", "Holding you up" and every Region card state are the same before and after; a throwaway script prints `routeIds(...).size` before and after (62 and 62 on today's data) and the handoff pastes it.
 
 ### P5-17 (dev-b): the Rosaries page, its header link and the Shell Shards number
 
