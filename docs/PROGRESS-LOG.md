@@ -75,6 +75,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T19 merged** (`dev-b/second-pass-fixes`): a dark band behind hero text on Regions with a picture (two new derived tokens in `base.css`, no existing value changed), so the title stays at least 4.9:1 and the intro 5.2:1 even over a white picture; "Blocks …" names each Region once ("Blocks the region X and its 2 entries."); the Route legend is the last line of the list on every width. Orchestrator ran: 185 tests pass, validator passes on both folders, all pages clean, hero screenshots at 1280 and 390 px looked at (picture still reads). QA second-pass findings G2-2, G2-3, G2-4 closed. Pushed.
 
+- **Phase 2 review** (orchestrator, against `docs/AGENT-PLAN.md` section 8, on cf5f2b0): passed: validator, `requirements.js` tests (185 in all), Progress without login and backup files, starts empty, Locked and spoiler behaviour, rules in the Emulator (22 of 22, re-run today), source and attribution, QA with no critical or major findings open. Not checked yet (Athos): sign-in and two-device sync, sign-in on the published domain. V1 content (batch 1, five Endings) waits on checklist items 4 and 8. Phase 2 code is done.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
