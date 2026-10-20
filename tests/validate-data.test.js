@@ -829,6 +829,323 @@ test('the command prints 0 warning(s) on the sample, as before Phase 5', () => {
   assert.match(run.stdout, /passed for .*data\/sample: 0 warning\(s\)\./);
 });
 
+// ------------------------------------------------------------------ Phase 5, second round: rule 13 and effect
+// Contract section 1 (the Build fields), section 6 rule 13 (their checks) and rule 10 (effect over 200
+// characters). Each test changes one thing in a copy of the sample, so a failure names one rule.
+// sample-key is a counted Tool, sample-tool-two a second Tool, sample-crest a Crest, sample-door a Task.
+
+// A full slot-count object (all four colours), with the given colours changed.
+const slotsOf = (overrides = {}) => ({ red: 0, blue: 0, yellow: 0, white: 0, ...overrides });
+const COLORS = ['red', 'blue', 'yellow', 'white'];
+
+// Validates a copy in `dir` and asserts it is clean (no errors and no warnings).
+const assertCleanDir = (dir) => assertClean(validate(dir));
+
+// ---- clean: valid Build fields give no message
+
+test('rule 13: slots with all four colours on a Crest is accepted', () => {
+  assertCleanDir(withEntry('sample-crest', 'collectible', { slots: slotsOf({ red: 2, blue: 1 }) }));
+});
+
+test('rule 13: slots of 0 in every colour is accepted (0 or more)', () => {
+  assertCleanDir(withEntry('sample-crest', 'collectible', { slots: slotsOf() }));
+});
+
+test('rule 13: slotsMax above slots in every colour is accepted', () => {
+  const dir = withEntry('sample-crest', 'collectible', {
+    slots: slotsOf({ red: 1 }),
+    slotsMax: slotsOf({ red: 2, blue: 1 }),
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 13: slotsMax equal to slots is accepted', () => {
+  const dir = withEntry('sample-crest', 'collectible', { slots: slotsOf({ red: 1 }), slotsMax: slotsOf({ red: 1 }) });
+  assertClean(validate(dir));
+});
+
+test('rule 13: grantsSlots with one colour on an entry that is not a Crest is accepted', () => {
+  assertCleanDir(withEntry('sample-shard', 'collectible', { grantsSlots: { white: 1 } }));
+});
+
+test('rule 13: grantsSlots on a Task is accepted', () => {
+  assertCleanDir(withEntry('sample-door', 'task', { grantsSlots: { red: 1, white: 2 } }));
+});
+
+test('rule 13: an upgrade with counts false is accepted', () => {
+  assertCleanDir(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-tool-two', counts: false }));
+});
+
+test('rule 13: upgradeOf on a Task is accepted, because a Task never counts', () => {
+  assertCleanDir(withEntry('sample-door', 'task', { upgradeOf: 'sample-tool-two' }));
+});
+
+test('rule 13: a toolColor on a Tool with no base is accepted', () => {
+  assertCleanDir(withEntry('sample-key', 'collectible', { toolColor: 'red' }));
+});
+
+test('rule 13: an upgrade with the same colour as its base is accepted', () => {
+  const dir = withEntry('sample-key', 'collectible', { toolColor: 'red', counts: false, upgradeOf: 'sample-tool-two' });
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-tool-two').toolColor = 'red';
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 13: an upgrade whose base has no colour is accepted', () => {
+  assertCleanDir(withEntry('sample-key', 'collectible', { toolColor: 'red', counts: false, upgradeOf: 'sample-tool-two' }));
+});
+
+test('rule 13: a short effect is accepted', () => {
+  assertCleanDir(withEntry('sample-key', 'collectible', { effect: 'Adds one slot to a Crest.' }));
+});
+
+test('rule 13: an effect of exactly 200 characters gives no warning', () => {
+  assertCleanDir(withEntry('sample-key', 'collectible', { effect: 'a'.repeat(200) }));
+});
+
+// ---- errors: slots and slotsMax
+
+test('rule 13: slots on an entry that is not a Crest is an error', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { slots: slotsOf() }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.errors[0].message, /"slots" is only for a Crest/);
+});
+
+test('rule 13: slotsMax on an entry that is not a Crest is an error', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { slots: slotsOf(), slotsMax: slotsOf() }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.ok(result.errors.some((e) => /"slotsMax" is only for a Crest/.test(e.message)), 'names slotsMax');
+});
+
+test('rule 13: slotsMax on a Crest with no slots is an error', () => {
+  const result = validate(withEntry('sample-crest', 'collectible', { slotsMax: slotsOf({ red: 2 }) }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.equal(result.errors.length, 1, 'only the missing slots');
+  assert.match(result.errors[0].message, /"slotsMax" is given without "slots"/);
+});
+
+for (const colour of COLORS) {
+  test(`rule 13: slots with no "${colour}" key is an error`, () => {
+    const slots = slotsOf();
+    delete slots[colour];
+    const result = validate(withEntry('sample-crest', 'collectible', { slots }));
+    assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+    assert.match(result.errors[0].message, new RegExp(`has no "${colour}" key`));
+  });
+}
+
+test('rule 13: slots with a key that is not a colour is an error', () => {
+  const result = validate(withEntry('sample-crest', 'collectible', { slots: { ...slotsOf(), green: 1 } }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.match(result.errors[0].message, /"green", which is not a colour/);
+});
+
+for (const bad of [-1, 1.5, '2', null]) {
+  test(`rule 13: slots.red of ${JSON.stringify(bad)} is an error (a whole number, 0 or more)`, () => {
+    const result = validate(withEntry('sample-crest', 'collectible', { slots: slotsOf({ red: bad }) }));
+    assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+    assert.match(result.errors[0].message, /"slots\.red" must be a whole number, 0 or more/);
+  });
+}
+
+for (const bad of [[0, 0, 0, 0], 'red']) {
+  test(`rule 13: slots as ${JSON.stringify(bad)} (not an object of colours) is an error`, () => {
+    const result = validate(withEntry('sample-crest', 'collectible', { slots: bad }));
+    assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+    assert.match(result.errors[0].message, /"slots" must be an object with the keys red, blue, yellow and white/);
+  });
+}
+
+test('rule 13: slotsMax with no "white" key is an error', () => {
+  const slotsMax = slotsOf();
+  delete slotsMax.white;
+  const result = validate(withEntry('sample-crest', 'collectible', { slots: slotsOf(), slotsMax }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.match(result.errors[0].message, /"slotsMax" has no "white" key/);
+});
+
+test('rule 13: slotsMax with a negative count is an error', () => {
+  const result = validate(withEntry('sample-crest', 'collectible', { slots: slotsOf(), slotsMax: slotsOf({ blue: -1 }) }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.match(result.errors[0].message, /"slotsMax\.blue" must be a whole number, 0 or more/);
+});
+
+test('rule 13: slotsMax below slots in one colour is an error that names the colour', () => {
+  const dir = withEntry('sample-crest', 'collectible', { slots: slotsOf({ red: 2 }), slotsMax: slotsOf({ red: 1 }) });
+  const result = validate(dir);
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.equal(result.errors.length, 1, 'one colour, one error');
+  assert.match(result.errors[0].message, /"slotsMax\.red" is 1, less than "slots\.red" \(2\)/);
+});
+
+// ---- errors: grantsSlots
+
+test('rule 13: grantsSlots on a Crest is an error', () => {
+  const result = validate(withEntry('sample-crest', 'collectible', { grantsSlots: { white: 1 } }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.match(result.errors[0].message, /"grantsSlots" is on a Crest/);
+});
+
+test('rule 13: grantsSlots with no colour is an error', () => {
+  const result = validate(withEntry('sample-shard', 'collectible', { grantsSlots: {} }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-shard' });
+  assert.match(result.errors[0].message, /"grantsSlots" must be an object with one or more of the keys/);
+});
+
+test('rule 13: grantsSlots with a count of 0 is an error (1 or more)', () => {
+  const result = validate(withEntry('sample-shard', 'collectible', { grantsSlots: { white: 0 } }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-shard' });
+  assert.match(result.errors[0].message, /"grantsSlots\.white" must be a whole number, 1 or more, found 0/);
+});
+
+test('rule 13: grantsSlots with a key that is not a colour is an error', () => {
+  const result = validate(withEntry('sample-shard', 'collectible', { grantsSlots: { green: 1 } }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-shard' });
+  assert.match(result.errors[0].message, /"green", which is not a colour/);
+});
+
+test('rule 13: grantsSlots as text is an error', () => {
+  const result = validate(withEntry('sample-shard', 'collectible', { grantsSlots: 'white' }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-shard' });
+});
+
+// ---- errors: upgradeOf
+
+test('rule 13: upgradeOf names the entry itself, and only that is reported', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-key', counts: false }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 1, 'a self link is one error, not also a loop');
+  assert.match(result.errors[0].message, /own id/);
+});
+
+test('rule 13: upgradeOf names a Region id, which is not an entry', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-region-a', counts: false }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.errors[0].message, /"sample-region-a", which is a Region id/);
+});
+
+test('rule 13: upgradeOf names an Ending id, which is not an entry', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-ending-one', counts: false }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.errors[0].message, /"sample-ending-one", which is an Ending id/);
+});
+
+test('rule 13: upgradeOf names an id that does not exist', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'ghost-entry', counts: false }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.errors[0].message, /"ghost-entry", which does not exist in items\.json/);
+});
+
+test('rule 13: upgradeOf that is not text is an error', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 7, counts: false }));
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.errors[0].message, /must be the id of another entry/);
+});
+
+test('rule 13: two upgrades that name each other are a loop', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    Object.assign(entry(json, 'sample-key'), { upgradeOf: 'sample-tool-two', counts: false });
+    Object.assign(entry(json, 'sample-tool-two'), { upgradeOf: 'sample-key', counts: false });
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 13, { file: 'items.json' });
+  assert.ok(
+    result.errors.some((e) => e.message.includes('sample-key -> sample-tool-two -> sample-key')),
+    `the loop is spelled out:\n${result.errors.map(formatProblem).join('\n')}`
+  );
+});
+
+test('rule 13: a loop through three upgrades is named in order', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    Object.assign(entry(json, 'sample-key'), { upgradeOf: 'sample-tool-two', counts: false });
+    Object.assign(entry(json, 'sample-tool-two'), { upgradeOf: 'sample-crest', counts: false });
+    Object.assign(entry(json, 'sample-crest'), { upgradeOf: 'sample-key', counts: false });
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 13, { file: 'items.json' });
+  assert.ok(
+    result.errors.some((e) => e.message.includes('sample-key -> sample-tool-two -> sample-crest -> sample-key')),
+    `the loop is spelled out:\n${result.errors.map(formatProblem).join('\n')}`
+  );
+});
+
+test('rule 13: a chain that runs into a loop reports the loop once, from its first entry', () => {
+  // sample-key leads into the loop sample-tool-two -> sample-crest -> sample-tool-two. The loop is one
+  // problem, so it is reported once; sample-key itself is not part of the loop.
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    Object.assign(entry(json, 'sample-key'), { upgradeOf: 'sample-tool-two', counts: false });
+    Object.assign(entry(json, 'sample-tool-two'), { upgradeOf: 'sample-crest', counts: false });
+    Object.assign(entry(json, 'sample-crest'), { upgradeOf: 'sample-tool-two', counts: false });
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 13, { file: 'items.json' });
+  const loops = result.errors.filter((e) => e.message.includes('loops back on itself'));
+  assert.equal(loops.length, 1, `one loop:\n${result.errors.map(formatProblem).join('\n')}`);
+  assert.match(loops[0].message, /sample-tool-two -> sample-crest -> sample-tool-two/);
+});
+
+// ---- errors: effect
+
+for (const bad of ['', '   ', 5]) {
+  test(`rule 13: effect ${JSON.stringify(bad)} is an error (non-empty text when given)`, () => {
+    const result = validate(withEntry('sample-key', 'collectible', { effect: bad }));
+    assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-key' });
+    assert.match(result.errors[0].message, /"effect" must be a non-empty text/);
+  });
+}
+
+// ---- warnings: upgradeOf that counts, toolColor, colours of an upgrade and its base, effect length
+
+test('rule 13: upgradeOf on a counted Collectible is a warning, not an error', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-tool-two' }));
+  assertOnlyWarningRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /set on a counted Collectible/);
+});
+
+test('rule 13: upgradeOf with counts true is a warning', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { upgradeOf: 'sample-tool-two', counts: true }));
+  assertOnlyWarningRule(result, 13, { file: 'items.json', id: 'sample-key' });
+});
+
+test('rule 13: toolColor on a Crest is a warning, not an error', () => {
+  const result = validate(withEntry('sample-crest', 'collectible', { toolColor: 'red' }));
+  assertOnlyWarningRule(result, 13, { file: 'items.json', id: 'sample-crest' });
+  assert.match(result.warnings[0].message, /Only a Tool has a colour/);
+});
+
+test('rule 13: toolColor on a Task is a warning, not an error', () => {
+  const result = validate(withEntry('sample-door', 'task', { toolColor: 'blue' }));
+  assertOnlyWarningRule(result, 13, { file: 'items.json', id: 'sample-door' });
+  assert.match(result.warnings[0].message, /of type "door"/);
+});
+
+test('rule 13: an upgrade whose colour differs from its base is a warning that names both', () => {
+  const dir = withEntry('sample-key', 'collectible', { toolColor: 'red', counts: false, upgradeOf: 'sample-tool-two' });
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-tool-two').toolColor = 'blue';
+  });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 13, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /differs from the colour of its base "sample-tool-two", which is "blue"/);
+});
+
+test('rule 13: effect over 200 characters is a rule 10 warning, not an error', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { effect: 'a'.repeat(201) }));
+  assertOnlyWarningRule(result, 10, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /"effect" is 201 characters \(over 200\)/);
+});
+
+test('rule 13: the command prints a Build field error with file, id and rule, and exits 1', () => {
+  const dir = withEntry('sample-crest', 'collectible', { slots: slotsOf({ red: -1 }) });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 1, run.stdout + run.stderr);
+  assert.match(run.stderr, /ERROR items\.json, id "sample-crest", rule 13: "slots\.red" must be a whole number, 0 or more/);
+});
+
 // ------------------------------------------------------------------ extras: section 1 field checks
 
 test('shape: spoiler outside 0, 1, 2', () => {
