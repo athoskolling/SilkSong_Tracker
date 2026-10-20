@@ -66,6 +66,11 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T17 merged** (`dev-b/qa-fixes`): focus ring drawn around the visible mark, so it is whole at 390 px (every Tab stop on all four pages measured by Dev B); `img/favicon.svg` from the logo mark on all pages; `main.js` passes `sample` to `configureProgress`; the sample Account page says sample mode never syncs. Orchestrator ran: 185 tests pass, validator passes, and an end-to-end browser check: marking on `?data=sample` writes only `silksong-guide:progress:sample:v1`, marking on real data only `silksong-guide:progress:v1`; no console errors. QA findings F1, F4, F5, F6 closed. Pushed.
 
+- **T18 merged** (`qa-manual/second-pass`): whole site on 4fb3abd, 334 rows, 0 critical, 0 major, 4 minor; first-pass findings all closed; published site identical to `main` and clean; 185 tests and the validator pass. Triage:
+  - G2-1 hero taller than 380 px at 390 px when the title wraps: accepted ("at least 380 px", DESIGN).
+  - Next tasks, not started yet (usage limit): **T19 (Dev B)**: G2-2 strengthen the title scrim so the hero title passes 3:1 and the intro 4.5:1 over any picture; G2-3 name each Region once in "Blocks …" text (`blocksText`); G2-4 legend after the list on a phone. **T20 (Dev A)**: delete `tools/auth-check.html` (the Account page replaces it; Pages publishes `tools/`) and update the comment in `js/firebase.js` that points at it.
+  - Then: orchestrator's Phase 2 review against the V1 definition of done.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

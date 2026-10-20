@@ -93,7 +93,7 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 - **Locked Region:** only the name and what is missing. Heading "Locked. You cannot enter yet. Finish what is below and this region opens." Then the missing requirements in route order, each with its Region and a Collected / Not done yet state, a "Go to <Region>" link, and the Region itself as the last step ("Opens when the steps above are done."). Below it: "Its entries stay hidden" with "They appear once you visit the region. Turn on show everything if you want to read ahead." and the same show-everything toggle.
 - **What spoiler hiding covers** (decided 2026-10-20, QA finding F3): a Region's *own* entries stay hidden until it is Visited. The names of the requirements a Locked Region or a Locked entry still needs are always shown, with their Region, because "what is missing" is the point of the guide (`docs/STRUCTURE.md` section 2: "show only the name and what is missing"). The next step on Home and the Route is always shown too.
 - **Region not Visited and Available:** entries are hidden behind the same notice until the player marks the Region Visited, completes something in it, or turns on show everything.
-- Phone layout (390 px): one column, 16px side padding, hero `380px` tall, the title smaller (`clamp` handles it), the totals after the entry list. (`07-region-phone.png` shows them before it; this text wins, so the entries come first on a small screen. Decided 2026-10-20, QA finding F7.)
+- Phone layout (390 px): one column, 16px side padding, hero at least `380px` tall (it grows when a long title wraps; QA G2-1, accepted 2026-10-20), the title smaller (`clamp` handles it), the totals after the entry list. (`07-region-phone.png` shows them before it; this text wins, so the entries come first on a small screen. Decided 2026-10-20, QA finding F7.)
 
 ### Route (`route.html`)
 - Title "Route", intro "Every step across all regions, in order. Anything waiting on something else shows what it needs."
@@ -103,7 +103,7 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 - **Holding you up** rail (right on desktop, above the list on a phone).
 - A "Can be missed" flag on missable entries, with the reason in the entry body.
 - **Choice point** marker: "The next step closes at least one ending for good. The guide names which ones before you get there, so you can plan for it." The data rule that drives it is still open (see `docs/CONTRACTS.md`).
-- A legend line at the bottom: "A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing."
+- A legend line at the bottom of the list, on a phone too (QA G2-4, decided 2026-10-20): "A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing."
 
 ### Account and backup (`account.html`)
 - Title "Account and backup"; intro "Your progress is saved on this device. Sign in to keep it in sync everywhere."
