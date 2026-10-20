@@ -1,5 +1,5 @@
 {
-  "dataVersion": 1,
+  "dataVersion": 3,
   "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
   "items": [
     {
@@ -191,6 +191,300 @@
       "step": 13,
       "spoiler": 1,
       "source": "https://example.invalid/sample-shard-two"
+    },
+    {
+      "id": "sample-cloak",
+      "name": "Sample cloak",
+      "kind": "collectible",
+      "type": "ability",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A collectible the game would not count, which other entries and Sample Region G need.",
+      "requires": [],
+      "missable": false,
+      "step": 14,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-cloak",
+      "counts": false,
+      "effect": "Sample effect. Lets the player reach the sample ledges."
+    },
+    {
+      "id": "sample-crest-one",
+      "name": "Sample crest one",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A counted crest with slots, available from the start.",
+      "requires": [],
+      "missable": false,
+      "step": 15,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-crest-one",
+      "slots": {
+        "red": 1,
+        "blue": 1,
+        "yellow": 0,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 1,
+        "blue": 2,
+        "yellow": 1,
+        "white": 1
+      },
+      "effect": "Sample effect. A short line about what the crest changes."
+    },
+    {
+      "id": "sample-crest-two",
+      "name": "Sample crest two",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "sample-region-f",
+      "area": "Sample high hall",
+      "how": "Sample text. A counted crest with slots but no slotsMax, behind the sample cloak.",
+      "requires": [
+        "sample-cloak"
+      ],
+      "missable": false,
+      "step": 16,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-crest-two",
+      "slots": {
+        "red": 2,
+        "blue": 0,
+        "yellow": 1,
+        "white": 1
+      }
+    },
+    {
+      "id": "sample-crest-three",
+      "name": "Sample crest three",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A crest the game would not count and whose slots are not in the guide yet.",
+      "requires": [],
+      "missable": false,
+      "step": 17,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-crest-three",
+      "counts": false
+    },
+    {
+      "id": "sample-red-tool",
+      "name": "Sample red tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A red tool available from the start.",
+      "requires": [],
+      "missable": false,
+      "step": 18,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-red-tool",
+      "toolColor": "red",
+      "effect": "Sample effect. Throws a sample spike."
+    },
+    {
+      "id": "sample-red-tool-two",
+      "name": "Second sample red tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A second red tool, so a crest with one red slot can run out of room.",
+      "requires": [],
+      "missable": false,
+      "step": 19,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-red-tool-two",
+      "toolColor": "red"
+    },
+    {
+      "id": "sample-blue-tool",
+      "name": "Sample blue tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A blue tool sold in a sample shop, available from the start.",
+      "requires": [],
+      "missable": false,
+      "step": 20,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-blue-tool",
+      "toolColor": "blue",
+      "price": 80
+    },
+    {
+      "id": "sample-yellow-tool",
+      "name": "Sample yellow tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A yellow tool sold in a sample shop once the sample cloak is done.",
+      "requires": [
+        "sample-cloak"
+      ],
+      "missable": false,
+      "step": 21,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-yellow-tool",
+      "toolColor": "yellow",
+      "price": 150
+    },
+    {
+      "id": "sample-plain-tool",
+      "name": "Sample tool with no colour",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A tool with no colour in the data yet, so the build picker cannot place it.",
+      "requires": [],
+      "missable": false,
+      "step": 22,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-plain-tool"
+    },
+    {
+      "id": "sample-red-tool-plus",
+      "name": "Sample red tool, upgraded",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. The upgraded sample red tool, sold once the base tool is done. Not counted again.",
+      "requires": [
+        "sample-red-tool"
+      ],
+      "missable": false,
+      "step": 23,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-red-tool-plus",
+      "counts": false,
+      "toolColor": "red",
+      "upgradeOf": "sample-red-tool",
+      "price": 120
+    },
+    {
+      "id": "sample-slot-upgrade",
+      "name": "Sample slot upgrade",
+      "kind": "task",
+      "type": "upgrade",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A task bought in a sample shop that adds a slot to every crest.",
+      "requires": [
+        "sample-cloak"
+      ],
+      "missable": false,
+      "step": 24,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-slot-upgrade",
+      "price": 300,
+      "grantsSlots": {
+        "blue": 1,
+        "yellow": 1
+      }
+    },
+    {
+      "id": "sample-white-skill",
+      "name": "Sample white skill",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "sample-region-f",
+      "how": "Sample text. A silk skill for white slots, available from the start.",
+      "requires": [],
+      "missable": false,
+      "step": 25,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-white-skill",
+      "effect": "Sample effect. A short sample burst."
+    },
+    {
+      "id": "sample-memento",
+      "name": "Sample memento",
+      "kind": "collectible",
+      "type": "memento",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A keepsake sold in a sample shop. Tracked, not counted.",
+      "requires": [],
+      "missable": false,
+      "step": 26,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-memento",
+      "counts": false,
+      "price": 90
+    },
+    {
+      "id": "sample-map",
+      "name": "Sample map",
+      "kind": "collectible",
+      "type": "map",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A piece of equipment sold in a sample shop. Tracked, not counted.",
+      "requires": [],
+      "missable": false,
+      "step": 27,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-map",
+      "counts": false,
+      "price": 40
+    },
+    {
+      "id": "sample-crest-four",
+      "name": "Sample crest four",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "sample-region-g",
+      "how": "Sample text. A counted crest in a Locked Region, with no slots left to open.",
+      "requires": [],
+      "missable": false,
+      "step": 28,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-crest-four",
+      "slots": {
+        "red": 0,
+        "blue": 1,
+        "yellow": 1,
+        "white": 2
+      },
+      "slotsMax": {
+        "red": 0,
+        "blue": 1,
+        "yellow": 1,
+        "white": 2
+      }
+    },
+    {
+      "id": "sample-yellow-tool-two",
+      "name": "Second sample yellow tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-g",
+      "how": "Sample text. A yellow tool sold in a Locked Region. Its price is in the total but not in what can be bought now.",
+      "requires": [],
+      "missable": false,
+      "step": 29,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-yellow-tool-two",
+      "toolColor": "yellow",
+      "price": 220
+    },
+    {
+      "id": "sample-memento-two",
+      "name": "Second sample memento",
+      "kind": "collectible",
+      "type": "memento",
+      "regionId": "sample-region-g",
+      "how": "Sample text. A keepsake in a Locked Region. Tracked, not counted.",
+      "requires": [],
+      "missable": false,
+      "step": 30,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-memento-two",
+      "counts": false
     }
   ]
 }
