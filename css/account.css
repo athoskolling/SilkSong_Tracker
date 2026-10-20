@@ -1,0 +1,81 @@
+/* account.css: only what the Account page's later sections need beyond components.css
+   (Backup file, Start a new run, How saving works, Guide data). Colors come from base.css tokens. */
+
+/* Two columns, as in docs/design/screens/06-account-signed-in.png: plates on the left, "How saving
+   works" on the right. Below about 880px the side plate wraps under the column. */
+.account-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 48px 72px;
+}
+.account-layout > .account-column { flex: 999 1 520px; min-width: 0; }
+.account-side { flex: 1 1 280px; max-width: 340px; min-width: 0; gap: 26px; }
+
+/* Buttons not in components.css. "Start a new run" is the destructive one: --silk border and text. */
+.button--danger {
+  border-color: var(--silk);
+  color: var(--silk);
+}
+.button--danger:hover:not(:disabled) { background: var(--next-fill); }
+
+/* Only inside the confirmation plate, where it is the final, irreversible choice. */
+.button--danger-solid { background: var(--silk); color: var(--night); }
+.button--danger-solid:hover:not(:disabled) { background: var(--ivory); }
+
+/* Cancel is a plain underlined link-style button, as in the design. */
+.button--text { padding: 0 8px; text-decoration: underline; text-underline-offset: 3px; }
+.button--text:hover { color: var(--silk); }
+
+/* The confirmation plate reuses .callout; it only needs its own text size and a button gap. */
+.confirm { display: flex; flex-direction: column; gap: 18px; }
+.confirm:focus { outline: none; } /* focus is moved here on purpose; its buttons carry the visible ring */
+.confirm[hidden] { display: none; }
+.confirm-text { font-size: 16px; font-weight: 500; line-height: 1.6; }
+
+/* How saving works: three rows, each with the same shape language as the thread. */
+.saving-list { display: flex; flex-direction: column; gap: 20px; margin: 0; padding: 0; list-style: none; }
+.saving-row { display: flex; align-items: flex-start; gap: 14px; }
+.saving-title { font-size: 16px; font-weight: 600; }
+.saving-row .plate-help { margin-top: 3px; }
+
+.saving-mark {
+  flex: none;
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border: 2px solid transparent;
+}
+.saving-mark--device { border-radius: 50%; background: var(--bronze); }
+.saving-mark--account { border-radius: 50%; background: var(--night); border-color: var(--ivory); }
+.saving-mark--differ { border-radius: 1px; background: var(--night); border-color: var(--silk); transform: rotate(45deg); }
+
+/* Guide data: label left, value right, dashed rule between rows. */
+.data-heading { margin-bottom: 6px; font-size: 15px; font-weight: 600; }
+.data-list { margin: 0; font-size: 14px; line-height: 1.5; }
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-top: 1px dashed var(--track);
+}
+.data-row dt { color: var(--ash); }
+.data-value { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+
+@media (max-width: 600px) {
+  .account-layout { gap: 32px 0; }
+  .account-side { max-width: none; flex-basis: 100%; }
+}
+
+/* A class that sets `display` would otherwise beat the hidden attribute. */
+.button-row[hidden] { display: none; }
+
+/* A message line inside a plate is always in the page (so screen readers hear it), but while it is
+   empty it must not add a gap: min-height 0 and a negative margin that cancels the plate's flex gap. */
+.plate .form-message { min-height: 0; }
+.plate .form-message:empty { margin-top: -24px; }
+
+/* Same for main.js's sign-in message line, which sits between the column's plates. */
+.account-column > .form-message:empty { min-height: 0; margin-top: -24px; }
