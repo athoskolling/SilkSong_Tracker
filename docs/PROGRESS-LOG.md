@@ -98,6 +98,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T25 merged** (`qa-tests/rule-12`): validator rule 12 warns on Collectible types outside the approved list and suggests the near miss ("Tool" -> "tool"). 27 new tests. QA 1 kept the rule that tests never read real `data/` (my brief asked for one; QA 1 was right) and checked real data from the command line. Orchestrator ran: 212 tests pass; validator passes on both folders with 0 warnings; a deliberate bad type in a scratch copy warned with rule 12 and exit 0. Pushed.
 
+- **T24 merged** (`dev-a/emulator-sync`): Emulator mode (localhost or 127.0.0.1 plus `?emulator`, `demo-` project; guard in `js/firebase-emulator.js`, 4 tests) and `tools/sync-rehearsal.mjs`, which signs three browser profiles in by email link against the local Emulators and checks marking, live updates, unmarking, first-sign-in union with the "Progress combined" plate, sign-out, the sync line and sample mode. No bug found. Orchestrator re-ran everything: 216 tests, 22 rules tests, rehearsal 26 of 26, all requests local or the pinned SDK. Not proven by it: the real Google popup, real email delivery, the published domain and the deployed rules. Athos's two-device check stays the final word. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

@@ -45,6 +45,7 @@ There is no build. These exist once the matching files do:
 - Serve locally: `python3 -m http.server 8000` in the repository root, then open `http://localhost:8000/`.
 - Tests: `node --test tests/`
 - Validate data: `node scripts/validate-data.js` (add a folder to check another, for example `data/sample`)
+- Sync rehearsal (two browser profiles against the Emulators): `firebase emulators:exec --only auth,firestore --project demo-silksong-guide "node tools/sync-rehearsal.mjs"` (see `tools/README.md`)
 - Firestore rules tests: `firebase emulators:exec --only firestore --project demo-silksong-guide "node --test tests/firestore-rules.test.js"` (Emulator only; never `firebase deploy`)
 
 ## Agents (`.claude/agents/`)

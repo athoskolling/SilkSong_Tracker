@@ -41,7 +41,7 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 | Path | Owner |
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
-| `data/*.json`, `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
+| `data/*.json`, `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `js/account-page.js`, `img/` | Dev B (Phase 2: `dev-a` may act as Dev B for named UI files, one task at a time, when it speeds things up; Athos, 2026-10-19) |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
