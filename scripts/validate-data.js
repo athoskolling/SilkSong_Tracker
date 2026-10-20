@@ -24,13 +24,18 @@
 //  13  the Build fields (Phase 5, second round): errors for the shape and links of slots, slotsMax,
 //      grantsSlots, upgradeOf (including loops through it) and effect; warnings for an upgrade that
 //      counts, a toolColor on a non-Tool, and an upgrade whose colour differs from its base's
+//  14  warning: an Ending condition is not on the Route (routeIds). Runs only when rules 1 to 5 pass
+//      and every requires list is a list of ids, because routeIds cannot read anything else
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
-// the tests run.
+// the tests run. It imports isCounted and routeIds from js/requirements.js, which is plain ES module
+// code with no imports of its own, so the counting and Route rules are written once.
 
 import { readFileSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { isCounted, routeIds } from '../js/requirements.js';
 
 // heroImage paths are relative to the site root (the folder with index.html), which is the
 // repository root here, not the data folder (section 1 and 6, rule 8).
@@ -128,6 +133,11 @@ function isObject(value) {
 
 function isText(value) {
   return typeof value === 'string' && value.trim() !== '';
+}
+
+// A list of ids is an array of text. Anything else is a shape error (checkIdList reports it).
+function isIdList(value) {
+  return Array.isArray(value) && value.every((id) => typeof id === 'string');
 }
 
 function isWebLink(value) {
@@ -278,7 +288,7 @@ function checkReference(ctx, rule, ref, field, id, wanted) {
 // A list of ids (requires, unlocks, conditions, locksOut). Returns the list, or [] when it is malformed.
 function checkIdList(ctx, rule, ref, record, field, wanted) {
   const value = record[field];
-  if (!Array.isArray(value) || !value.every((id) => typeof id === 'string')) {
+  if (!isIdList(value)) {
     ctx.report.error('shape', ref, `"${field}" must be a list of ids (text), for example ["some-id"].`);
     return [];
   }
@@ -583,7 +593,7 @@ function checkUpgradeOf(ctx, ref, item) {
 
 // Warnings (rule 13). They do not fail the check, because each can be right on purpose.
 function warnBuildFields(ctx, ref, item, base) {
-  if (item.upgradeOf !== undefined && isCountedEntry(item)) {
+  if (item.upgradeOf !== undefined && isCounted(item)) {
     ctx.report.warning(13, ref, '"upgradeOf" is set on a counted Collectible. The game counts a Tool once whatever its version, so an upgrade should say "counts": false, or the headline number counts the same thing twice.');
   }
   if (item.toolColor !== undefined && item.type !== 'tool') {
@@ -593,12 +603,6 @@ function warnBuildFields(ctx, ref, item, base) {
   if (base !== null && TOOL_COLORS.includes(item.toolColor) && TOOL_COLORS.includes(base.toolColor) && item.toolColor !== base.toolColor) {
     ctx.report.warning(13, ref, `"toolColor" "${item.toolColor}" differs from the colour of its base "${base.id}", which is "${base.toolColor}". Check both: the colour decides which Crest slots the Tool fits.`);
   }
-}
-
-// Same test as isCounted in js/requirements.js (contract section 1, ADR 0005). The validator keeps its
-// own copy so it never loads the browser code.
-function isCountedEntry(item) {
-  return item.kind === 'collectible' && item.counts !== false;
 }
 
 // Rule 13: an upgrade must not lead back into itself. Each entry has at most one upgradeOf, so the
@@ -707,6 +711,39 @@ function reportLoops(ctx, graph, file) {
   }
 }
 
+// ------------------------------------------------------------------ rule 14: Ending conditions on the Route
+
+// Rule 14 (warning): the Route must lead to every Ending, so each condition of an Ending has to be on
+// it. A condition off the Route would never be "Next on the route" and would never show in "Holding
+// you up". Which entries are on the Route is routeIds (contract section 2), so the rule is not copied
+// here. The fix is a contract change (Ending conditions become a root of routeIds), not a data edit,
+// so this only warns and says so.
+function checkEndingsOnRoute(ctx, byKey) {
+  if (!canWorkOutRoute(ctx, byKey)) return;
+  const onRoute = routeIds(byKey.items.list, byKey.regions.list);
+  forEachRecord(byKey.endings, (ending, ref) => {
+    if (!isObject(ending) || !isIdList(ending.conditions)) return;
+    for (const id of ending.conditions) {
+      if (onRoute.has(id)) continue;
+      ctx.report.warning(
+        14,
+        ref,
+        `"conditions" lists "${id}", which is not on the Route. The Route must lead to every Ending. Do not just edit the data: the orchestrator decides the fix (Ending conditions become a root of routeIds, a contract change).`
+      );
+    }
+  });
+}
+
+// routeIds may run only when it can read the data: all three files loaded, no error from rules 1 to 5
+// (the contract's gate, because routeIds throws on those data bugs), and a requires list of ids on every
+// entry and Region. The list check goes beyond the contract's gate: a requires that is text is only a
+// shape error, and routeIds would throw on each letter it reads as an id.
+function canWorkOutRoute(ctx, byKey) {
+  if (!ctx.complete) return false;
+  if (ctx.report.errors.some((error) => typeof error.rule === 'number' && error.rule <= 5)) return false;
+  return [...byKey.items.list, ...byKey.regions.list].every((record) => isObject(record) && isIdList(record.requires));
+}
+
 // ------------------------------------------------------------------ the whole check
 
 // Checks the three JSON files in `dir`. `siteRoot` is where heroImage paths are looked up
@@ -728,6 +765,8 @@ export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   checkEndings(ctx, byKey.endings);
   reportLoops(ctx, requirementGraph(ctx, byKey.items), byKey.items.file);
   checkUpgradeLoops(ctx, byKey.items);
+  // Last, so that every rule 1 to 5 error is already in the report when the gate looks at it.
+  checkEndingsOnRoute(ctx, byKey);
   return { errors: report.errors, warnings: report.warnings };
 }
 

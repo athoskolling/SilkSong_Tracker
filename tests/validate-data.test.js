@@ -1183,6 +1183,304 @@ test('rule 13: the command prints a Build field error with file, id and rule, an
   assert.match(run.stderr, /ERROR items\.json, id "sample-crest", rule 13: "slots\.red" must be a whole number, 0 or more/);
 });
 
+// ------------------------------------------------------------------ rule 14: Ending conditions on the Route (warning)
+// Contract section 6, rule 14, and section 1 "On the Route or not". The validator asks routeIds whether each
+// Ending condition is on the Route. Every test changes one thing in a copy of the sample. The sample's own
+// conditions are all on the Route (sample-shard is counted, sample-boss a Task, sample-charm missable), so the
+// untouched sample gives no rule 14 warning.
+
+const rule14 = (result) => result.warnings.filter((w) => w.rule === 14);
+
+// The (Ending id, condition id) of each rule 14 warning, sorted, so a test can compare the whole list at once.
+function rule14Pairs(result) {
+  return rule14(result)
+    .map((w) => `${w.id}|${/lists "([^"]+)"/.exec(w.message)[1]}`)
+    .sort();
+}
+
+// Adds a counts-false Collectible to a copy of the sample. Nothing requires it, so it is off the Route unless
+// a test makes a Route entry need it or makes it missable. `fields` overrides the defaults.
+function addTrackedCollectible(dir, id, fields = {}) {
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      id,
+      name: `Sample tracked ${id}`,
+      kind: 'collectible',
+      type: 'relic',
+      regionId: 'sample-region-a',
+      how: 'Sample text, not game data.',
+      requires: [],
+      missable: false,
+      step,
+      source: `https://example.invalid/${id}`,
+      counts: false,
+      ...fields,
+    });
+  });
+}
+
+// Adds one condition to an Ending of a copy of the sample.
+function addCondition(dir, endingId, conditionId) {
+  edit(dir, 'endings.json', (json) => {
+    ending(json, endingId).conditions.push(conditionId);
+  });
+}
+
+test('rule 14: the untouched sample gives no rule 14 warning', () => {
+  assert.deepEqual(rule14(validate(SAMPLE)), []);
+});
+
+test('rule 14: an Ending condition that is a counts false Collectible nothing needs gives one warning', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14, { file: 'endings.json', id: 'sample-ending-one' });
+  assert.equal(result.warnings.length, 1, `exactly one warning:\n${result.warnings.map(formatProblem).join('\n')}`);
+  assert.match(result.warnings[0].message, /"conditions" lists "sample-extra-relic", which is not on the Route/);
+  assert.match(result.warnings[0].message, /The Route must lead to every Ending/);
+  assert.match(result.warnings[0].message, /the orchestrator decides the fix/);
+});
+
+test('rule 14: the command prints the WARNING with file, Ending id and rule, exits 0 and counts it', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(
+    run.stderr,
+    /WARNING endings\.json, id "sample-ending-one", rule 14: "conditions" lists "sample-extra-relic", which is not on the Route/
+  );
+  assert.match(run.stdout, /passed.*1 warning/);
+});
+
+test('rule 14: the command works from any folder, because the import of js/requirements.js is relative to the script', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8', cwd: tempFolder() });
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stderr, /rule 14/);
+});
+
+test('rule 14: a condition that the sample already has off the Route (sample-memento) warns', () => {
+  const dir = copySample();
+  addCondition(dir, 'sample-ending-two', 'sample-memento');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14, { file: 'endings.json', id: 'sample-ending-two' });
+  assert.deepEqual(rule14Pairs(result), ['sample-ending-two|sample-memento']);
+});
+
+// Each Ending condition the Route reaches some other way gives no warning. Each test puts it on the Route
+// a different way, so a mutation that checks only one of them fails by name.
+test('rule 14: a condition that a counted entry requires is on the Route, so no warning', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').requires.push('sample-extra-relic');
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 14: a condition that a Region requires is on the Route, so no warning', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'regions.json', (json) => {
+    region(json, 'sample-region-b').requires.push('sample-extra-relic');
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 14: a condition the Route needs two links down a counted entry\'s chain is on the Route, so no warning', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addTrackedCollectible(dir, 'sample-extra-link', { requires: ['sample-extra-relic'] });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').requires.push('sample-extra-link');
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 14: a missable counts false entry is on the Route, so no warning', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic', { missable: true, missableNote: 'Sample note: it can be missed.' });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  assertClean(validate(dir));
+});
+
+test('rule 14: a condition that only an entry off the Route needs is off the Route too, so it warns', () => {
+  // "Needed by an entry on the Route", not "needed by any entry" (section 2, routeIds).
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addTrackedCollectible(dir, 'sample-extra-trinket', { requires: ['sample-extra-relic'] });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14, { file: 'endings.json', id: 'sample-ending-one' });
+  assert.deepEqual(rule14Pairs(result), ['sample-ending-one|sample-extra-relic']);
+});
+
+test('rule 14: each off-Route condition in each Ending gets its own warning, naming both ids', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addTrackedCollectible(dir, 'sample-extra-token');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-token');
+  addCondition(dir, 'sample-ending-two', 'sample-extra-token');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14);
+  assert.deepEqual(rule14Pairs(result), [
+    'sample-ending-one|sample-extra-relic',
+    'sample-ending-one|sample-extra-token',
+    'sample-ending-two|sample-extra-token',
+  ]);
+});
+
+// Rule 14 runs only when rules 1 to 5 pass (contract section 6). Each copy breaks one of them, and has an
+// off-Route condition so that rule 14 would fire if the gate let it run. The rule 3 copy also makes routeIds
+// throw (an unknown id in requires), so there the gate is the only thing that keeps the command from crashing.
+const RULES_1_TO_5 = [
+  {
+    rule: 1,
+    file: 'endings.json',
+    breakIt: (dir) => edit(dir, 'endings.json', (json) => { json.dataVersion = 2; }),
+  },
+  {
+    rule: 2,
+    file: 'items.json',
+    breakIt: (dir) => edit(dir, 'items.json', (json) => { entry(json, 'sample-flea').id = 'sample-crest'; }),
+  },
+  {
+    rule: 3,
+    file: 'items.json',
+    breakIt: (dir) => edit(dir, 'items.json', (json) => { entry(json, 'sample-key').requires = ['ghost-entry']; }),
+  },
+  {
+    rule: 4,
+    file: 'items.json',
+    breakIt: (dir) => edit(dir, 'items.json', (json) => { entry(json, 'sample-ability').requires = ['sample-charm']; }),
+  },
+  {
+    rule: 5,
+    file: 'items.json',
+    breakIt: (dir) => edit(dir, 'items.json', (json) => { entry(json, 'sample-key').step = 1; }),
+  },
+];
+
+for (const { rule, file, breakIt } of RULES_1_TO_5) {
+  test(`rule 14: a rule ${rule} error stops rule 14, and the check does not crash`, () => {
+    const dir = copySample();
+    addTrackedCollectible(dir, 'sample-extra-relic');
+    addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+    breakIt(dir);
+    const result = validate(dir);
+    assertOnlyRule(result, rule, { file });
+    assert.deepEqual(rule14(result), [], 'no rule 14 warning');
+  });
+}
+
+test('rule 14: a missing regions.json gives rule 1 only, with no crash and no rule 14', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  rmSync(path.join(dir, 'regions.json'));
+  assertOnlyRule(validate(dir), 1, { file: 'regions.json' });
+});
+
+// The file is there and parses, but has no regions list. Rule 1 does not fire (the file is readable), so only
+// the all-files check keeps routeIds from being given a list that is not there.
+test('rule 14: a regions.json with no regions list gives a shape error alone, with no crash and no rule 14', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'regions.json', (json) => {
+    delete json.regions;
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 'shape', { file: 'regions.json' });
+  assert.deepEqual(rule14(result), [], 'no rule 14 warning');
+});
+
+// A warning from another rule does not stop rule 14: the gate is on errors from rules 1 to 5 only.
+test('rule 14 still runs beside a warning from another rule (rule 12 here)', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').type = 'gizmo';
+  });
+  const result = validate(dir);
+  assert.deepEqual(result.errors.map(formatProblem), [], 'no errors');
+  assert.deepEqual([...new Set(result.warnings.map((w) => w.rule))].sort(), [12, 14]);
+  assert.deepEqual(rule14Pairs(result), ['sample-ending-one|sample-extra-relic']);
+});
+
+// The gate is rules 1 to 5 by contract, so an error from a later rule does not stop rule 14. This test pins that
+// choice: if the gate is tightened, it fails by name and the contract changes with it.
+test('rule 14 still runs beside an error from a rule after 5 (rule 6 here)', () => {
+  const dir = copySample();
+  addTrackedCollectible(dir, 'sample-extra-relic');
+  addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').missable = true; // no missableNote: rule 6
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.deepEqual(rule14Pairs(result), ['sample-ending-one|sample-extra-relic']);
+});
+
+// routeIds reads every requires list. A list that is not a list of ids is a shape error, which rules 1 to 5 do
+// not report, and routeIds would throw on each letter it takes for an id. So rule 14 waits for well-formed lists.
+// Each copy has an off-Route condition, so a missing guard would print rule 14 or crash.
+const SHAPE_BREAKS = [
+  {
+    name: 'an entry requires is text',
+    file: 'items.json',
+    id: 'sample-key',
+    breakIt: (json) => { entry(json, 'sample-key').requires = 'sample-ability'; },
+  },
+  {
+    name: 'an entry requires holds a number',
+    file: 'items.json',
+    id: 'sample-key',
+    breakIt: (json) => { entry(json, 'sample-key').requires = [5]; },
+  },
+  {
+    name: 'a Region requires is text',
+    file: 'regions.json',
+    id: 'sample-region-b',
+    breakIt: (json) => { region(json, 'sample-region-b').requires = 'sample-ability'; },
+  },
+  {
+    name: 'an Ending conditions is text',
+    file: 'endings.json',
+    id: 'sample-ending-one',
+    breakIt: (json) => { ending(json, 'sample-ending-one').conditions = 'sample-extra-relic'; },
+  },
+  {
+    name: 'an Ending conditions holds a number',
+    file: 'endings.json',
+    id: 'sample-ending-one',
+    breakIt: (json) => { ending(json, 'sample-ending-one').conditions.push(7); },
+  },
+];
+
+for (const { name, file, id, breakIt } of SHAPE_BREAKS) {
+  test(`rule 14: a shape error (${name}) is reported alone, and rule 14 does not run`, () => {
+    const dir = copySample();
+    addTrackedCollectible(dir, 'sample-extra-relic');
+    addCondition(dir, 'sample-ending-one', 'sample-extra-relic');
+    edit(dir, file, breakIt);
+    const result = validate(dir);
+    assertOnlyRule(result, 'shape', { file, id });
+    assert.deepEqual(rule14(result), [], 'no rule 14 warning');
+  });
+}
+
 // ------------------------------------------------------------------ extras: section 1 field checks
 
 test('shape: spoiler outside 0, 1, 2', () => {
