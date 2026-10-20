@@ -35,7 +35,9 @@ async function loadFile(folder, name) {
     );
   }
   if (response.status === 404) {
-    throw new DataLoadError(`Guide data could not be loaded: ${path} is missing.`);
+    const missing = new DataLoadError(`Guide data could not be loaded: ${path} is missing.`);
+    missing.notFound = true; // lets the optional loaders treat a 404 as "not shipped yet"
+    throw missing;
   }
   if (!response.ok) {
     throw new DataLoadError(
@@ -82,6 +84,44 @@ export async function loadData() {
   const dataVersion = Number.isInteger(regionsFile.json.dataVersion) ? regionsFile.json.dataVersion : null;
 
   return { regions, items, endings, dataVersion, sample };
+}
+
+// Optional files (Places, Build templates). They may not be shipped yet, and they are never
+// needed to show a page, so a failure here must never block it:
+//   - 404 = "not shipped yet": empty lists, error null.
+//   - any other failure (network, status, bad JSON, wrong shape): empty lists, and `error` holds
+//     the reason so a page can show one small line if it wants to. It never rejects.
+// A page calls these only after loadData() and only the page that needs the file calls them.
+async function loadOptionalFile(name, listKeys) {
+  const folder = isSampleMode() ? 'data/sample' : 'data';
+  const empty = { dataVersion: null, error: null };
+  for (const key of listKeys) empty[key] = [];
+  let file;
+  try {
+    file = await loadFile(folder, name);
+  } catch (error) {
+    // loadFile marks a 404 with notFound, so the two cases are told apart without a second request.
+    return error.notFound ? empty : { ...empty, error: error.message };
+  }
+  const result = { ...empty };
+  for (const key of listKeys) {
+    if (!file.json || !Array.isArray(file.json[key])) {
+      return { ...empty, error: `Guide data could not be loaded: ${file.path} has no "${key}" list.` };
+    }
+    result[key] = file.json[key];
+  }
+  result.dataVersion = Number.isInteger(file.json.dataVersion) ? file.json.dataVersion : null;
+  return result;
+}
+
+// Returns { places, dataVersion, error }.
+export function loadPlaces() {
+  return loadOptionalFile('places', ['places']);
+}
+
+// Returns { templates, synergies, dataVersion, error }. The file is data/builds.json.
+export function loadTemplates() {
+  return loadOptionalFile('builds', ['templates', 'synergies']);
 }
 
 // Keeps ?data=sample on links between pages while the switch is on.
