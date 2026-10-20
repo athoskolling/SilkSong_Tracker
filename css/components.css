@@ -314,6 +314,19 @@
 .entry-meta .flag-next { color: var(--silk); font-weight: 500; }
 .entry-meta .flag-missable { color: var(--ember); }
 
+/* "Source" link. The visible text stays small; padding with an equal negative margin grows the
+   hit area to about 44px without moving the line. position: relative keeps it above the text
+   blocks that follow it, which would otherwise swallow the clicks on the padding. */
+.entry-meta .source-link {
+  position: relative;
+  display: inline-block;
+  padding: 15px 6px;
+  margin: -15px -6px;
+  color: var(--ash);
+  line-height: 1.2;
+}
+.entry-meta .source-link:hover { color: var(--silk); }
+
 .entry-how { margin-top: 10px; max-width: 60ch; font-size: 15px; line-height: 1.6; color: var(--ash); }
 
 .entry-needs { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--ash); }
