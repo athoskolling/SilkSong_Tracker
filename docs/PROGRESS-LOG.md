@@ -53,8 +53,12 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T14 merged** (`dev-a/unknown-ids`): unknown ids inside `requires` throw in `isAvailable`, `nextStep`, `missingFor`, `missingForRegion`, `holdingYouUp`; also when the id is in doneSet. `isRegionAvailable` checks what it can without `items` (orchestrator kept the signature; contract section 2 says so). Orchestrator ran: 173 tests, 0 fail, 0 todo; validator passes on both folders. Pushed.
 
+- **T15 merged** (`dev-b/attribution`): "Source" link at the end of every entry's meta line (also on the next plate and the Locked list; opens in a new tab, labelled per entry) and the approved data-source line in every footer. Orchestrator ran: 173 tests pass, validator passes; all pages show the credit line with no console errors; Source links appear only on entries that are shown (none for hidden entries). Pushed.
+- Housekeeping: stopped four local web servers left by finished workers (T10, T11, T15, an earlier session). T15's worktree stays until its agent process ends (git keeps it locked).
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
 - Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.
 - Phase 2 (Dev B): on the Account page at 390 px the start thread runs over the intro's second line. Account page still lacks backup, new run, how saving works, guide data and its hero art. `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
+- No favicon: every page logs one harmless 404 for `/favicon.ico`. Small Dev B task when convenient.
