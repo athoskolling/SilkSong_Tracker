@@ -515,6 +515,7 @@ const APPROVED_TYPES = [
   'needle-upgrade',
   'ancestral-art',
   'silk-skill',
+  'ability',
   'crest',
   'tool',
   'crafting-kit-upgrade',
@@ -561,6 +562,20 @@ test('rule 12: a Collectible with no type gets the shape error only, not a secon
   assert.deepEqual(rule12(result), []);
 });
 
+// "ability" is for a counted ability that is neither an Ancestral Art nor a Silk Skill (contract
+// section 6, rule 12, added 2026-10-20 for Needle Strike). Its own test, so a future edit to the
+// list cannot drop it without a named failure.
+test('rule 12: a Collectible with the type "ability" gives no warning', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    assert.equal(entry(json, 'sample-key').kind, 'collectible', 'sample-key is the Collectible this test relies on');
+    entry(json, 'sample-key').type = 'ability';
+  });
+  const result = validate(dir);
+  assert.deepEqual(result.errors.map(formatProblem), []);
+  assert.deepEqual(result.warnings.map(formatProblem), []);
+});
+
 // Task types stay free: a Task can use any label, approved or not, and never warns.
 const TASK_TYPES = ['door', 'Boss fight', 'gizmo', 'mask-shards', 'Tool', 'silk_skill', 'tool'];
 for (const type of TASK_TYPES) {
@@ -596,6 +611,7 @@ const NEAR_MISSES = [
   { type: 'Tool', suggestion: 'tool' },
   { type: 'silk_skill', suggestion: 'silk-skill' },
   { type: 'Silk_Skills', suggestion: 'silk-skill' }, // the steps combine
+  { type: 'Ability', suggestion: 'ability' },
 ];
 for (const { type, suggestion } of NEAR_MISSES) {
   test(`rule 12: the near miss "${type}" suggests "${suggestion}"`, () => {
