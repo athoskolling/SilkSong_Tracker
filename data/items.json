@@ -1,5 +1,5 @@
 {
-  "dataVersion": 10,
+  "dataVersion": 11,
   "items": [
     {
       "id": "moss-mother",
@@ -1398,6 +1398,24 @@
       "source": "https://rogueranker.com/hollow-knight-silksong-last-judge/"
     },
     {
+      "id": "pilgrims-rest-supplies",
+      "name": "Pilgrim's Rest Supplies",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "far-fields",
+      "area": "Pilgrim's Rest",
+      "how": "A delivery wish from the couriers Tipp and Pill in Bellhart: carry the Courier's Swag to Mort in Pilgrim's Rest without breaking it (hits, hard landings and fast travel damage or destroy it). Mort pays 180 Rosaries.",
+      "requires": [
+        "my-missing-courier",
+        "fourth-chorus",
+        "last-judge"
+      ],
+      "missable": true,
+      "missableNote": "Not offered once Act 3 begins.",
+      "step": 652,
+      "source": "https://prodigygamers.com/2025/09/18/hollow-knight-silksong-things-you-will-lose-forever-in-act-3/"
+    },
+    {
       "id": "spool-fragment-grand-gate",
       "name": "Spool Fragment, Grand Gate",
       "kind": "collectible",
@@ -1624,6 +1642,20 @@
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
     },
     {
+      "id": "mask-shard-savage-beastfly",
+      "name": "Mask Shard, Savage Beastfly",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "bellhart",
+      "how": "Savage Beastfly, an Act 2 Grand Hunt on the Bellhart Wishwall: track it by its shed shell to the Far Fields arena where the Fourth Chorus fell, beat it and bring its Horn Fragment back to the Wishwall.",
+      "requires": [
+        "savage-beastfly",
+        "cogwork-dancers"
+      ],
+      "step": 825,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-wish-quest-list-all-tasks-and-rewards"
+    },
+    {
       "id": "spool-fragment-whiteward",
       "name": "Spool Fragment, Whiteward",
       "kind": "collectible",
@@ -1671,6 +1703,23 @@
       ],
       "step": 860,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/clawline"
+    },
+    {
+      "id": "garmond-and-zaza-duel",
+      "name": "Garmond and Zaza, duel",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "They wait on a platform right of the Songclave, reached through the top right of the Whispering Vaults' main room. Help them with a wave of foes, then talk to Garmond to start a friendly duel. No item; it adds their Journal entry.",
+      "requires": [
+        "vaultkeepers-melody",
+        "clawline"
+      ],
+      "missable": true,
+      "missableNote": "Act 2 only. One guide says they also leave for good if they move into the Songclave.",
+      "step": 865,
+      "source": "https://deltiasgaming.com/?p=345743"
     },
     {
       "id": "spool-fragment-underworks-cauldron",
@@ -1812,6 +1861,20 @@
       ],
       "step": 960,
       "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "forebrothers-signis-and-gron",
+      "name": "Forebrothers Signis & Gron",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "deep-docks",
+      "how": "Open the locked door under the Forge Daughter's shop with a Simple Key, hang on the Clawline hook to raise the gate, use the lever bridge and head left to a lava arena. Beat both brothers. This opens the way down to the old diving bell. It can wait until Act 3, where it is harder.",
+      "requires": [
+        "simple-key",
+        "clawline"
+      ],
+      "step": 965,
+      "source": "https://deltiasgaming.com/?p=350619"
     },
     {
       "id": "sharpdart",
@@ -2209,6 +2272,17 @@
       "source": "https://deltiasgaming.com/?p=341943"
     },
     {
+      "id": "simple-key-sands-of-karak",
+      "name": "Simple Key, Sands of Karak",
+      "kind": "task",
+      "type": "key",
+      "regionId": "sands-of-karak",
+      "how": "On a corpse by the bench at the eastern tip of the Sands of Karak. Any Simple Key opens any locked door; the guide spends this one on the Green Prince's cell in Sinner's Road, which leads to Lost Verdania in Act 3.",
+      "requires": [],
+      "step": 1255,
+      "source": "https://deltiasgaming.com/hollow-knight-silksong-where-to-use-the-simple-key"
+    },
+    {
       "id": "hivesteel-needle",
       "name": "Hivesteel Needle",
       "kind": "collectible",
@@ -2240,36 +2314,6 @@
       ],
       "step": 1270,
       "source": "https://allthings.how/silksongs-huntress-how-to-start-and-finish-the-broodfeast-quest/"
-    },
-    {
-      "id": "witch-crest",
-      "name": "Witch Crest",
-      "kind": "collectible",
-      "type": "crest",
-      "regionId": "bellhart",
-      "how": "Find the Twisted Bud in Bilewater through the hidden east end of the Whispering Vaults; give it to Greyroot (Rite of Rebirth), which curses you. Yarnaby in Bellhart lifts it for Steel Spines bought on Sinner's Road.",
-      "slots": {
-        "red": 2,
-        "blue": 0,
-        "yellow": 0,
-        "white": 1
-      },
-      "slotsMax": {
-        "red": 2,
-        "blue": 3,
-        "yellow": 0,
-        "white": 1
-      },
-      "effect": "Long whip-like slashes. Its Bind sends out roots that hit nearby enemies and heal a Mask per hit.",
-      "requires": [
-        "pollip-pouch",
-        "clawline",
-        "cogwork-dancers"
-      ],
-      "missable": true,
-      "missableNote": "Finishing the Witch Crest quest (the Twisted Bud and the curse lifted) locks out the Twisted Child ending, according to one group of sources. The Crest itself is not lost.",
-      "step": 1280,
-      "source": "https://deltiasgaming.com/?p=339934"
     },
     {
       "id": "spool-fragment-fleas",
@@ -2378,15 +2422,134 @@
       "source": "https://deltiasgaming.com/?p=345659"
     },
     {
+      "id": "shakra-duel",
+      "name": "Shakra, duel",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "greymoor",
+      "how": "After Trail's End, hit the pole holding a ring in Greymoor to call Shakra for a duel. No item; it adds her Journal entry.",
+      "requires": [
+        "throwing-ring"
+      ],
+      "missable": true,
+      "missableNote": "Shakra no longer duels once Act 3 begins.",
+      "step": 1360,
+      "source": "https://prodigygamers.com/2025/09/18/hollow-knight-silksong-things-you-will-lose-forever-in-act-3/"
+    },
+    {
+      "id": "egg-of-flealia",
+      "name": "Egg of Flealia",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "putrified-ducts",
+      "area": "Fleatopia",
+      "how": "Fleamaster Mooshka's last reward: rescue every lost flea and come back to the Flea Caravan in Fleatopia. It lowers the Silk cost of Silk Skills while your health is full, and it opens the Festival of the Flea in Act 3.",
+      "requires": [
+        "tool-pouch-fleatopia"
+      ],
+      "step": 1370,
+      "source": "https://game-checklists.com/silksong/guides/all-unique-fleas-guide.html"
+    },
+    {
+      "id": "tool-pouch-nuu",
+      "name": "Tool Pouch upgrade, Nuu",
+      "kind": "collectible",
+      "type": "tool-pouch-upgrade",
+      "regionId": "greymoor",
+      "area": "Halfway Home",
+      "how": "Nuu's wish, Bugs of Pharloom: record 100 different foes in the Hunter's Journal she gave you, then go back to her at Halfway Home in Greymoor.",
+      "requires": [],
+      "step": 1380,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-wish-quest-list-all-tasks-and-rewards"
+    },
+    {
+      "id": "grand-mother-silk-bind",
+      "name": "Grand Mother Silk, Bind",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-cradle",
+      "how": "Past Lace, at the top of The Cradle, fight Grand Mother Silk while not cursed and Bind her at the end: the Weaver Queen Ending. The save then reloads at the last Cradle bench, so the other fights stay open.",
+      "requires": [
+        "lace-cradle"
+      ],
+      "missable": true,
+      "missableNote": "Lost once Act 3 begins: the Snared Silk Ending closes this fight for the run.",
+      "step": 1390,
+      "source": "https://noobfeed.com/articles/hollow-knight-silksong-weaver-queen-ending"
+    },
+    {
+      "id": "rite-of-rebirth",
+      "name": "Rite of Rebirth",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "shellwood",
+      "how": "Take the Twisted Bud from a hidden room in Bilewater, reached through the east end of the Whispering Vaults, and give it to Greyroot in Shellwood after the Pollip wish. You are cursed: no healing, and your Crest, Tools and Skills are taken until it is lifted.",
+      "requires": [
+        "pollip-pouch",
+        "clawline",
+        "cogwork-dancers"
+      ],
+      "step": 1400,
+      "source": "https://www.gamerguides.com/hollow-knight-silksong/guide/items/exploration/twisted-bud"
+    },
+    {
+      "id": "grand-mother-silk-cursed",
+      "name": "Grand Mother Silk, cursed",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-cradle",
+      "how": "While still cursed, and before Silk and Soul, beat Grand Mother Silk at the top of The Cradle: the Twisted Child Ending. You cannot heal. The save reloads at the last Cradle bench; then lift the curse for the Witch Crest.",
+      "requires": [
+        "rite-of-rebirth",
+        "lace-cradle"
+      ],
+      "missable": true,
+      "missableNote": "Lost once Act 3 begins, and once the curse is lifted (Witch Crest).",
+      "step": 1410,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-how-to-get-every-ending"
+    },
+    {
+      "id": "witch-crest",
+      "name": "Witch Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "greymoor",
+      "how": "Infestation Operation: while cursed, visit Yarnaby at the top left of Greymoor, buy Steel Spines from Crull and Benjin in the Sinner's Road jail (260 Rosaries in most guides, 160 in one) and bring them to her. The curse lifts and the Cursed Crest becomes the Witch Crest.",
+      "slots": {
+        "red": 2,
+        "blue": 0,
+        "yellow": 0,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 2,
+        "blue": 3,
+        "yellow": 0,
+        "white": 1
+      },
+      "effect": "Long whip-like slashes. Its Bind sends out roots that hit nearby enemies and heal a Mask per hit.",
+      "requires": [
+        "rite-of-rebirth"
+      ],
+      "missable": true,
+      "missableNote": "Lifting the curse locks out the Twisted Child ending, so do the cursed Grand Mother Silk fight first. The Crest itself is not lost: the wish can still be done in Act 3.",
+      "step": 1420,
+      "source": "https://deltiasgaming.com/?p=339934"
+    },
+    {
       "id": "silk-and-soul",
       "name": "Silk and Soul",
       "kind": "task",
       "type": "quest",
       "regionId": "choral-chambers",
       "area": "Songclave",
-      "how": "The Caretaker's wish. Bring him three souls (Maiden's in Bone Bottom, Hermit's behind a fake wall below the Bellhart Bellway, Seeker's in an empty bellhome by the top Bilewater bench) and the Snare Setter; he builds the Soul Snare.",
+      "how": "Appears on the Bellhart Wishwall, or from the Caretaker in Songclave, once you have 17 wish points; most Act 2 wishes give one. Bring the Caretaker three souls (Maiden's in Bone Bottom, Hermit's below the Bellhart Bellway, Seeker's by the top Bilewater bench) and the Snare Setter.",
       "requires": [
-        "snare-setter"
+        "snare-setter",
+        "lace-cradle",
+        "tool-pouch-fleatopia",
+        "bellhome-key",
+        "throwing-ring"
       ],
       "step": 2000,
       "source": "https://deltiasgaming.com/?p=340771"
@@ -2399,7 +2562,8 @@
       "regionId": "the-cradle",
       "how": "With the Soul Snare ready, fight Grand Mother Silk and play the Needolin at the end instead of Binding her. This is the Snared Silk Ending; reloading the save starts Act 3.",
       "requires": [
-        "silk-and-soul"
+        "silk-and-soul",
+        "lace-cradle"
       ],
       "step": 2010,
       "source": "https://deltiasgaming.com/?p=339099"
@@ -2429,7 +2593,8 @@
       "regionId": "deep-docks",
       "how": "In Act 3 the Caretaker's family at the Ruined Chapel sends you to the Deep Docks. Ballow moves above the old diving bell at the very bottom and hands you its key.",
       "requires": [
-        "grand-mother-silk-snared"
+        "grand-mother-silk-snared",
+        "forebrothers-signis-and-gron"
       ],
       "step": 2020,
       "source": "https://nerdschalk.com/your-guide-to-unlocking-old-diving-bell-in-silksong/"
@@ -2572,9 +2737,10 @@
       "type": "memento",
       "regionId": "greymoor",
       "area": "Lost Verdania",
-      "how": "The Clover Dancers' heart. Play the Elegy of the Deep at the right wall of Craw Lake, clear the 12 orbs in a row in Lost Verdania and beat the Dancers. It can stand in for one Old Heart; the heart you keep becomes a Memento.",
+      "how": "Free the Green Prince from his Sinner's Road cell with a Simple Key and meet him twice in the Citadel. In Act 3 play the Elegy of the Deep at the right wall of Craw Lake, clear 12 orbs in a row in Lost Verdania and beat the Clover Dancers. Their heart can stand in for one Old Heart.",
       "requires": [
-        "elegy-of-the-deep"
+        "elegy-of-the-deep",
+        "simple-key-sands-of-karak"
       ],
       "step": 2086,
       "source": "https://backyarddrunkard.com/game-guides/silksong-conjoined-heart/"
@@ -2664,6 +2830,19 @@
       "source": "https://game-checklists.com/silksong/100-percent.html"
     },
     {
+      "id": "pale-nails",
+      "name": "Pale Nails",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "the-cradle",
+      "how": "In Act 3 the lift to The Cradle no longer works: from the upper right hall of the Choral Chambers, Silk Soar up through the ruined Cogwork Core into The Cradle. Climb to Grand Mother Silk's old arena and bind her severed arm.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2135,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-every-silk-skill-and-ancestral-art"
+    },
+    {
       "id": "pin-badge",
       "name": "Pin Badge",
       "kind": "collectible",
@@ -2689,7 +2868,8 @@
       "how": "Needs the last Pale Oil: beat the fleas' best scores in all three Festival of the Flea games (Mooshka's Act 3 wish, Putrified Ducts). Free Plinney from a gauntlet in a Shellwood graveyard; back in Bellhart he forges it for Rosaries.",
       "requires": [
         "silk-soar",
-        "hivesteel-needle"
+        "hivesteel-needle",
+        "egg-of-flealia"
       ],
       "step": 2150,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
@@ -2719,7 +2899,7 @@
       "type": "quest",
       "regionId": "putrified-ducts",
       "area": "Pale Lake",
-      "how": "A riddle tablet in a hidden cave at the top right of Pale Lake starts it. Find Mister Mushroom in seven places, in order: Moss Grotto, Bone Bottom, Far Fields, Greymoor, The Slab, Mount Fay, The Cradle. **Only if Athos keeps it** (Endings plan, question E2).",
+      "how": "A riddle tablet in a hidden cave at the top right of Pale Lake starts it. Find Mister Mushroom in seven places, in order: Moss Grotto, Bone Bottom, Far Fields, Greymoor, The Slab, Mount Fay, The Cradle.",
       "requires": [
         "silk-soar"
       ],
