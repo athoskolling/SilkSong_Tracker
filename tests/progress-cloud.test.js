@@ -7,6 +7,9 @@ import assert from 'node:assert/strict';
 import {
   useStorage,
   useCloud,
+  configureProgress,
+  exportProgress,
+  importProgress,
   loadProgress,
   setDone,
   setVisited,
@@ -625,4 +628,92 @@ test('only firebase.js loads the Firebase SDK, and no page loads a script from e
     const remoteScripts = [...html.matchAll(/<script[^>]*\ssrc="(https?:[^"]*)"/g)].map((m) => m[1]);
     assert.deepEqual(remoteScripts, [], `${file} loads a script from another address`);
   }
+});
+
+// ------------------------------------------------------------- sample mode
+// In sample mode (configureProgress({ sample: true })) the cloud is never touched,
+// whichever happens first: the sign-in or the switch.
+
+const SAMPLE_KEY = 'silksong-guide:progress:sample:v1';
+
+test('sample mode: a fake user signing in after the switch starts no cloud call', async () => {
+  const cloud = makeCloud(doc(['cloud-id'], 9000));
+  useCloud(cloud.api);
+  listen();
+  const subscribed = cloud.authCallback; // the listener is running before the switch
+  assert.ok(subscribed);
+  configureProgress({ sample: true });
+  assert.equal(cloud.authCallback, null, 'the auth listener was stopped');
+
+  // Even an event from a listener that was somehow still alive starts nothing.
+  subscribed({ uid: 'u1', email: 'a@example.invalid', displayName: '', provider: 'google' });
+  await flush();
+  await setDone('fake', true);
+  await flush();
+
+  assert.deepEqual(cloud.calls, []);
+  assert.ok(statuses.every((s) => s.state === 'local'));
+  assert.deepEqual(Object.keys(JSON.parse(storage.data.get(SAMPLE_KEY)).done), ['fake']);
+  assert.equal(storage.data.has(KEY), false, 'the real key was never written');
+});
+
+test('sample mode: useCloud after the switch does not subscribe to sign-in', async () => {
+  const cloud = makeCloud(doc(['cloud-id'], 9000));
+  configureProgress({ sample: true });
+  useCloud(cloud.api);
+  assert.equal(cloud.authCallback, null);
+  await setDone('fake', true);
+  await flush();
+  assert.deepEqual(cloud.calls, []);
+});
+
+test('sample mode: a session already merged is cut off by the switch', async () => {
+  useStorage((storage = seed({ done: { real: true }, visited: {}, updatedAt: 1000, dataVersion: 1 })));
+  const cloud = makeCloud(doc(['cloud-id'], 500));
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  const callsBefore = cloud.calls.length;
+  assert.ok(cloud.watchCallback, 'the real session had a watch');
+  const realBefore = storage.data.get(KEY);
+
+  listen();
+  configureProgress({ sample: true });
+  assert.equal(cloud.watchCallback, null, 'the watch was stopped');
+
+  await setDone('fake', true);
+  await clearProgress();
+  await flush();
+  assert.deepEqual(cloud.calls.slice(callsBefore), [['unwatch', 'u1']], 'only the unwatch, no read, write or delete');
+  assert.equal(storage.data.get(KEY), realBefore, 'the real key is as the real session left it');
+  assert.equal(statuses.at(-1).state, 'local');
+});
+
+test('sample mode: a read still in flight when the switch happens is dropped', async () => {
+  useStorage((storage = seed({ done: { real: true }, visited: {}, updatedAt: 1000, dataVersion: 1 })));
+  const cloud = makeCloud(doc(['cloud-id'], 500));
+  let release;
+  cloud.readGate = new Promise((resolve) => (release = resolve));
+  useCloud(cloud.api);
+  cloud.authCallback({ uid: 'u1' });
+  configureProgress({ sample: true });
+  release();
+  await flush();
+
+  assert.equal(cloud.writes().length, 0);
+  assert.ok(!cloud.calls.some(([kind]) => kind === 'watch'));
+  assert.deepEqual(Object.keys(stored(storage).done), ['real'], 'no merge reached the real key');
+  assert.equal(storage.data.has(SAMPLE_KEY), false, 'no merge reached the sample key');
+});
+
+test('sample mode: export, import and clear make no cloud call', async () => {
+  const cloud = makeCloud(doc(['cloud-id'], 9000));
+  useCloud(cloud.api);
+  configureProgress({ sample: true });
+  await setDone('fake', true);
+  await importProgress(new File([JSON.stringify({ done: { 'fake-two': true } })], 'backup.json'));
+  const exported = JSON.parse(await exportProgress().text());
+  assert.deepEqual(Object.keys(exported.done).sort(), ['fake', 'fake-two']);
+  await clearProgress();
+  await flush();
+  assert.deepEqual(cloud.calls, []);
 });

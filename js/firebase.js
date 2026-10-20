@@ -64,20 +64,20 @@ async function loadServices() {
 const FRIENDLY_MESSAGES = {
   'auth/popup-blocked':
     'The browser blocked the sign-in window. Allow pop-ups for this site and try again.',
-  'auth/popup-closed-by-user': 'The sign-in window was closed before it finished.',
+  'auth/popup-closed-by-user': 'The sign-in window was closed before it finished. Try again when you are ready.',
   'auth/cancelled-popup-request': 'Another sign-in window was already open. Try again.',
-  'auth/operation-not-allowed': 'This sign-in method is not enabled for the site yet.',
+  'auth/operation-not-allowed': 'This sign-in method is not enabled for the site yet. Choose another method.',
   'auth/unauthorized-domain':
     'This address is not allowed to sign in. Open the site from its normal address or from localhost.',
   'auth/network-request-failed': 'Could not reach the sign-in service. Check your connection.',
-  'auth/invalid-email': 'That email address does not look right.',
+  'auth/invalid-email': 'That email address does not look right. Check it and try again.',
   'auth/too-many-requests': 'Too many attempts. Wait a few minutes and try again.',
   'auth/account-exists-with-different-credential':
     'An account with this email already exists with another sign-in method. Use that method.',
   'auth/invalid-action-code': 'This sign-in link is not valid or was already used. Ask for a new one.',
   'auth/expired-action-code': 'This sign-in link has expired. Ask for a new one.',
   'permission-denied': 'The cloud copy could not be accessed. Sign in again and retry.',
-  unavailable: 'Could not reach the cloud copy. Your local Progress is safe.',
+  unavailable: 'Could not reach the cloud copy. Your local Progress is safe; try again later.',
 };
 
 // Wraps an SDK error into an Error with a readable message and the original code.
@@ -179,7 +179,7 @@ export async function signIn(provider, email) {
     await sdk.signInWithPopup(auth, authProvider);
   } catch (error) {
     if (error && error.code === 'auth/operation-not-allowed' && provider === 'github') {
-      throw friendlyError(error, 'GitHub sign-in is not enabled for this site yet.');
+      throw friendlyError(error, 'GitHub sign-in is not enabled for this site yet. Choose another method.');
     }
     throw friendlyError(error, 'Sign-in failed. Try again.');
   }
@@ -263,7 +263,7 @@ export async function readProgressDoc(uid) {
     const snapshot = await services.sdk.getDoc(progressRef(services, uid));
     return snapshot.exists() ? snapshot.data() : null;
   } catch (error) {
-    throw friendlyError(error, 'Could not read the cloud copy.');
+    throw friendlyError(error, 'Could not read the cloud copy. Your local Progress is safe; try again later.');
   }
 }
 
@@ -284,7 +284,7 @@ export async function writeProgressDoc(uid, progress) {
     // setDoc without merge replaces the whole document, so an unmarked id really disappears.
     await services.sdk.setDoc(progressRef(services, uid), body);
   } catch (error) {
-    throw friendlyError(error, 'Could not save to the cloud copy.');
+    throw friendlyError(error, 'Could not save to the cloud copy. Your local Progress is safe; try again later.');
   }
 }
 
@@ -293,7 +293,7 @@ export async function deleteProgressDoc(uid) {
   try {
     await services.sdk.deleteDoc(progressRef(services, uid));
   } catch (error) {
-    throw friendlyError(error, 'Could not delete the cloud copy.');
+    throw friendlyError(error, 'Could not delete the cloud copy. Try again later.');
   }
 }
 
