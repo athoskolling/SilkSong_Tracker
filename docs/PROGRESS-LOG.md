@@ -111,6 +111,7 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Athos widened the batch: "do everything of the first act if possible, do whatever you want, we can fix later."** Read as: the orchestrator researches Act 1 facts itself (guides, one page at a time; never hollowknight.wiki or Fextralife), writes them in our words, and Dev A turns them into data. Guardrail kept: Act 1 data is merged locally but **not pushed** until Athos approves the id list (ids are permanent once published, ADR 0003).
 - **Act 1 research** (orchestrator): `docs/PHASE-3-ACT-1.md`: 12 Regions, 61 entries (49 Collectibles, 12 Tasks) in Route order, and a deferred list (anything needing Clawline, Faydown Cloak, Silk Soar, the Citadel or Act 3). Decisions recorded there: Drifter's Cloak is a Task (it does not count); Needle Strike counts, type `ability`; wishes fold into their reward; conservative Region gates. Contract: rule 12 gains `ability`, `source` may point at the guide page read (section 7). GLOSSARY: Needle Strike named. `.claude/rules/data.md` points at the sheet.
 - **T26 started** (`dev-a/act-1-data`): Act 1 into `data/*.json`. **T27 started** (`qa-tests/ability-type`): rule 12 accepts `ability`.
+- **T27 merged** (`qa-tests/ability-type`): rule 12 accepts `ability`; 3 new tests (219 pass); validator passes on both folders with 0 warnings. QA 1 noted the plural "abilities" gets no near-miss suggestion (still warns); left for later.
 
 ## Open
 
