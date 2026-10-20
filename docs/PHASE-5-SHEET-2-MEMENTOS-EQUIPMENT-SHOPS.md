@@ -45,7 +45,13 @@
 
 ## 3. Shops
 
-(being written)
+**How to read the tables.** "Status": **C** = counted Collectible (already a counted type), **K** = tracked, not counted (`counts: false`, or a Task as today), **X** = consumable or material, **not tracked** (no entry; bought again and again, or used up). "Price" is in Rosaries; **bold = confirmed** (two independent sources agree). Material costs (Craftmetal, Pale Oil, the Ruined Tool) stay in `how` (Act 1 decision 7); `price` holds only the Rosaries. "In data" gives the existing id, or **new**.
+
+**Currency.** Every shop price found is in Rosaries. **No shop priced in Shell Shards turned up** in any result (the Shard Bundle is bought *with* Rosaries and gives Shell Shards). So the contract's "no `currency` field" stands. Some places also take Rosaries without selling anything: Mort's door (30 per entry until its cog is broken) and toll machines for benches, Bellways and Ventrica stations [wiki (snippet) Rosary page, SR-V, TG-M]. Those are not shop entries.
+
+**Selling, not buying.** Relic Seeker Scrounge buys Relics, and Vaultkeeper Cardinius receives Psalm Cylinders [G8-REL, GC-COL, G4G-REL, wiki (snippet)]. The contract records purchase prices only, so what they pay is noted in section 2 for the player's information and never goes in `price`.
+
+(merchant tables being written)
 
 ## 4. Already in `data/items.json` versus new
 

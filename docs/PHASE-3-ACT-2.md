@@ -32,20 +32,22 @@ Search-result pages only; none was opened. The link after "`source`:" is the one
 - **RR**: Rogue Ranker: [Last Judge](https://rogueranker.com/hollow-knight-silksong-last-judge/), [Trobbio](https://rogueranker.com/?p=10606)
 - **TA**: TrueAchievements: [Harmonious](https://www.trueachievements.com/a589288/harmonious-achievement), [Completion (comment: what counts, read from the game files)](https://www.trueachievements.com/a589295/completion-achievement)
 - **DES**: [Destructoid, Sawtooth Circlet](https://www.destructoid.com/how-to-get-sawtooth-circlet-in-hollow-knight-silksong/). **PRIMA**: [Prima Games, Great Taste of Pharloom](https://primagames.com/tips/hollow-knight-silksong-how-to-complete-the-great-taste-of-pharloom). **STEAM**: [Steam 100 percent guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3573435111). **SSC**: [silksong.codes checklist](https://www.silksong.codes/en/guides/completion-checklist/)
-- `low`: **PM** [postmode.org](https://postmode.org/hollow-knight-silksong-guides-hub-mask-shards-spool-fragments-simple-key-pimpillo-tool-upgrade-locations/), **GPM** Gaming ProMax, **GB** [gamerblurb Act 2 checklist](https://gamerblurb.com/articles/hollow-knight-silksong-act-2-checklist), **AC** Acer community, **FB** thefilibusterblog.
+- `low`: **PM** [postmode.org](https://postmode.org/hollow-knight-silksong-guides-hub-mask-shards-spool-fragments-simple-key-pimpillo-tool-upgrade-locations/), **GPM** Gaming ProMax, **GBL** [gamerblurb Act 2 checklist](https://gamerblurb.com/articles/hollow-knight-silksong-act-2-checklist), **AC** Acer community, **FB** thefilibusterblog.
+- Codes followed by "(S1)" or not listed here (GB = GamingBolt's Tools list, GB-SS, GLB, STD, TSM, NEO, XP, BYD, GRX, GRX-W, GC-WW, HG-FF, SCC, NC-SB, NC-A, G8-TP, Noobfeed) are defined in S1's Sources section or were seen in this session's results under that site's name.
 - **wiki (snippet)**: hollowknight.wiki text as quoted in search results; never opened. The results also showed that the wiki's Songclave, First Shrine, Grand Bellway and Citadel Spa pages carry the title "Choral Chambers" (they are parts of it), its Voltnest and Coral Tower pages the title "Sands of Karak", and its Fleatopia and Pale Lake pages the title "Putrified Ducts".
 - **S1**: `docs/PHASE-5-SHEET-1-BUILDS.md` (Crest, Tool and upgrade research), cited with that sheet's own codes where a fact here rests on it.
 
 ## Decisions taken (orchestrator, under Athos's delegation; he may overrule any)
 
-1. **Act 2 = the 14 areas GC's hub lists under Act 2** (Grand Gate, Underworks, Choral Chambers, Cogwork Core, Whispering Vaults, Whiteward, High Halls, The Slab, Mount Fay, Memorium, Putrified Ducts, Wisp Thicket, Bilewater, Sands of Karak), **plus The Cradle**, where Act 2 ends [GB low, NL route; GC's maps guide has a Shakra map there]. Songclave, the First Shrine and the Grand Bellway are Sub-areas of the Choral Chambers; The Cauldron of the Underworks; The Stage of the Whispering Vaults; Exhaust Organ, Bilehaven and Weavenest Murglin of Bilewater; Voltnest and Coral Tower of Sands of Karak; Fleatopia of the Putrified Ducts; The Forum of the High Halls.
+1. **Act 2 = the 14 areas GC's hub lists under Act 2** (Grand Gate, Underworks, Choral Chambers, Cogwork Core, Whispering Vaults, Whiteward, High Halls, The Slab, Mount Fay, Memorium, Putrified Ducts, Wisp Thicket, Bilewater, Sands of Karak), **plus The Cradle**, where Act 2 ends [GBL low, NL route; GC's maps guide has a Shakra map there]. Songclave, the First Shrine and the Grand Bellway are Sub-areas of the Choral Chambers; The Cauldron of the Underworks; The Stage of the Whispering Vaults; Exhaust Organ, Bilehaven and Weavenest Murglin of Bilewater; Voltnest and Coral Tower of Sands of Karak; Fleatopia of the Putrified Ducts; The Forum of the High Halls.
 2. **Act 1's rules carry over**: only counted things are Collectibles; a wish folds into its reward; a Task exists only for a boss, quest or key that opens two or more things or that a Region needs; gates stay conservative (a Region shows Locked a little longer rather than Available too early); a shop entry belongs to the Region where it can first be bought.
-3. **The Faydown Cloak is a Task (type `ability`)**, like the Drifter's Cloak in Act 1. Conflict: TA (a commenter quoting the game files), STEAM and SSC count six abilities without it; Gamer Guides, GameRant and Game8 list it as counted. The list without it is the one taken from the game's data, and it keeps Act 1's rule. **Athos to confirm in game** (the completion screen).
+3. **The Faydown Cloak is a Collectible with `counts: false` (type `ability`)**, exactly like the Drifter's Cloak since P5-13 (contract section 1, "one entry per thing": an obtained thing the story needs is a Collectible, uncounted when the game does not count it). Conflict on counting: TA (a commenter quoting the game files), STEAM and SSC count six abilities without it; Gamer Guides, GameRant and Game8 list it as counted. The list without it is the one taken from the game's data. **Athos to confirm in game** (the completion screen); if it counts, only `counts: false` is removed, the id stays.
+   Keys (White Key, the Simple Keys, Key of Apostate) and the three melodies stay **Tasks**, as `simple-key` is in `data/` today and as contract section 8 proposes for the Keys Tracker. If Athos wants keys to become uncounted Collectibles too, that is one change for all keys at once, including `simple-key`.
 4. **Act 1's deferred entries come in here** when Act 2 makes them reachable (marked "A1" in the Region column). They live in their Act 1 Region; only their `step` is new.
 5. **Simple Keys are used up.** There are four keys and four doors [wiki (snippet), NL, GBT; the key-to-door pairs differ between guides]. Any key opens any door, but `requires` cannot say "any one of four", so the Route pairs them: Pebb's key (`simple-key`, Act 1) opens the Deep Docks gate to Flintslate (already in data); the Sinner's Road key opens the lower Wormways door (Plasmium Phial, Sharpdart); Jubilana's key opens the High Halls door (Rosary Cannon); the Sands of Karak key opens the Green Prince's cell, which leads to Act 3, so it waits for that sheet. The `how` of each key says that any key works.
 6. **Choice points are written as one entry.** The Silkshot (repair the Ruined Tool at one of three places, the others are then gone [S1]) is one Collectible; its `how` names the three places.
 7. **"25 Tools" cannot be a `requires`.** The Architect Crest needs the player to own 25 Tools before the key is sold [several]. The entry requires only the Clawline, says "25 Tools" in its `how`, and sits late in the Route so most Tools come first. Same idea for flea counts (Mooshka's rewards).
-8. **Phase 5 fields** (`price` for shop entries, `toolColor` for Tools) are listed in their own column and are **pending**: they go into `data/` only after P5-1, P5-2 and P5-3 are merged (`docs/PHASE-5-FULL-TRACKER-PLAN.md`, order rule 4). No entry here needs `counts: false`; the tracked-only candidates are listed separately.
+8. **Phase 5 fields** (`counts`, `price` for shop entries, `toolColor` for Tools) are in their own column. P5-1, P5-2 and P5-3 are merged (checked in `git log` while writing this sheet; P5-13 already put `counts: false` into `data/`), so they can go into `data/` with the rest. `price` holds Rosaries only; a Craftmetal or Pale Oil cost stays in `how` (contract section 8). Where two prices conflict, the column gives the one with more sources and marks the conflict. A Tool colour that S1 marks as disputed (Memory Crystal) is left out, as contract section 8 says for disputed build facts. The second-round Build fields (`slots`, `effect`, `upgradeOf` and so on) are not filled in here: their text awaits Athos's review. Other tracked-only candidates are listed separately.
 
 ## Regions
 
@@ -79,16 +81,16 @@ Gate notes:
 - **Mount Fay:** past The Slab; the climb needs the Clawline [several]. The Faydown Cloak at the top needs Swift Step, Cling Grip, Needolin and Clawline [NL].
 - **Memorium:** a platform in the top right of the Choral Chambers that needs the Faydown Cloak [DG, one source].
 - **Putrified Ducts:** from the Memorium; the Faydown Cloak is required [DG, AT, SK]. A second way in from Bilewater's Bilehaven after Groal the Great [wiki (snippet), AT].
-- **Wisp Thicket:** the Faydown Cloak is required [DG, SK, GB low].
+- **Wisp Thicket:** the Faydown Cloak is required [DG, SK, GBL low].
 - **Bilewater:** reachable in Act 1 from Sinner's Road. Conflict on the ability: Swift Step [PCG], Cling Grip [SHK], Cling Grip and Drifter's Cloak [one more]. Cling Grip is the latest and already implies the other two through Act 1's chain. A second way in from the Songclave needs the Faydown Cloak and Clawline [PCG]. GC lists Bilewater under Act 2, so its entries sit in the Act 2 part of the Route.
 - **Sands of Karak:** Clawline required [AT, wiki (snippet)]; the wiki (snippet) adds the Faydown Cloak in Act 2 (Silk Soar in Act 3). Both are used.
 - **The Cradle:** play the Threefold Melody in the room where the Cogwork Dancers fell; a lift rises to Lace's arena, and the rest of the Cradle opens after her [wiki (snippet), GS, NL]. The three melodies are the gate, so no separate "Threefold Melody" Task is needed.
 
 ## Entries, in Route order
 
-Kind: C = Collectible, T = Task. `requires` names entries in this sheet or in `data/items.json`. Steps continue after Act 1's last (610), in tens. "A1" in the Region column = an Act 1 deferred entry placed now. The last column is the pending Phase 5 data (see decision 8). Proposed ids are slugs, checked against the 62 ids in `data/items.json` and the 12 Region ids: no collision.
+Kind: C = Collectible, T = Task. `requires` names entries in this sheet or in `data/items.json`. Steps continue after Act 1's last (610), in tens. "A1" in the Region column = an Act 1 deferred entry placed now. The last column is the Phase 5 data (see decision 8). Proposed ids are slugs, checked against the 63 ids in `data/items.json` (dataVersion 5, which includes P5-13's `hunter-crest`) and the 12 Region ids: no collision.
 
-| step | id (proposed) | Name | Kind, type | Region (Sub-area) | requires | how (our words) | sources | P5 (pending) |
+| step | id (proposed) | Name | Kind, type | Region (Sub-area) | requires | how (our words) | sources | P5 fields |
 |---|---|---|---|---|---|---|---|---|
 | 620 | `simple-key-sinners-road` | Simple Key, Sinner's Road | T, key | Sinner's Road (A1) | | Beat the Roachkeeper at the top of the tall room at the east end of the upper Sinner's Road. Any Simple Key opens any locked door; the guide spends this one on the lower Wormways door. | PCG, NL, RR; Nerdschalk says a chest | |
 | 630 | `plasmium-phial` | Plasmium Phial | C, tool | Wormways (A1) | Simple Key, Sinner's Road | Open the lower Wormways door with a Simple Key and climb to Alchemist Zylotol's lab. His wish, Alchemist's Assistant, gives a Needle Phial: draw three Plasmium samples in the Wormways and bring them back. | PCG, DG, GRX (S1). Conflict: one database says High Halls, Act 3 | toolColor red |
@@ -129,9 +131,9 @@ Kind: C = Collectible, T = Task. `requires` names entries in this sheet or in `d
 | 980 | `cross-stitch` | Cross Stitch | C, silk-skill | Bilewater (Exhaust Organ) | Needolin | Cross the Mist west of Bilewater (play the Needolin to follow the white moths) to the Exhaust Organ, and beat the Phantom. | wiki (snippet), AT, NL, SK | |
 | 990 | `silkshot` | Silkshot | C, tool | Bilewater (Weavenest Murglin) | Needolin | Take the Ruined Tool from Weavenest Murglin, behind a Needolin door in the southeast of Bilewater. Repair it once, with a Craftmetal: Forge Daughter, Twelfth Architect or the table near Mount Fay's top. Each gives a different Silkshot; the others are then gone. | GG, wiki (snippet), S1 | toolColor red |
 | 1000 | `quick-sling` | Quick Sling | C, tool | Bilewater | | In a secret room above the Mothleaf Lagnia area, behind breakable ceilings. | AC low, BYD, XP (S1); exact spot from one source | toolColor blue |
-| 1010 | `faydown-cloak` | Faydown Cloak | T, ability | Mount Fay | | Climb Mount Fay with the Clawline before the cold wins, and call at the peak. Gives a double jump and resistance to the cold. | NL, wiki (snippet), several | |
+| 1010 | `faydown-cloak` | Faydown Cloak | C, ability | Mount Fay | | Climb Mount Fay with the Clawline before the cold wins, and call at the peak. Gives a double jump and resistance to the cold. | NL, wiki (snippet), several | counts false |
 | 1020 | `mask-shard-mount-fay` | Mask Shard, Mount Fay | C, mask-shard | Mount Fay | Faydown Cloak | Floating near the western bench; reach it with the double jump. | GC (16); NL describes a hollow pillar in a far-left dead end | |
-| 1030 | `memory-crystal` | Memory Crystal | C, tool | Mount Fay | | Behind a wall of ice in a room near the western bench. | GC, GLB, STD | toolColor blue (conflict: yellow, TSM) |
+| 1030 | `memory-crystal` | Memory Crystal | C, tool | Mount Fay | | Behind a wall of ice in a room near the western bench. | GC, GLB, STD | none: colour disputed (blue STD, yellow TSM) |
 | 1040 | `mask-shard-skull-cavern` | Mask Shard, Skull Cavern | C, mask-shard | Far Fields (A1) | Clawline, Faydown Cloak | In the Skull Cavern at the bottom right of Far Fields: survive the enemy waves while the lava rises, then ride the wind to the top niche. | GC (6, Clawline only), AT (Clawline, Drifter's and Faydown Cloak) | |
 | 1050 | `mask-shard-blasted-steps` | Mask Shard, Blasted Steps | C, mask-shard | Blasted Steps (A1) | Faydown Cloak | A secret jump near the west edge of the Blasted Steps; needs the double jump. | GC (9), NL | |
 | 1060 | `spool-fragment-grindle` | Spool Fragment, Grindle | C, spool-fragment | Blasted Steps (A1) | Faydown Cloak | Sold by Grindle in his hideout high in the Blasted Steps, reached with the double jump, for 680 Rosaries. | GC (7), GBT, wiki (snippet) | price 680 |
@@ -181,23 +183,23 @@ Disagreements kept in mind (Athos may want to look first): Faydown Cloak counted
 | Whiteward | 4 | 0 |
 | High Halls | 4 | 1 |
 | The Slab | 3 | 0 |
-| Mount Fay | 2 | 1 |
+| Mount Fay | 3 (one, the Faydown Cloak, not counted) | 0 |
 | Memorium | 2 | 0 |
 | Putrified Ducts | 3 | 1 |
 | Wisp Thicket | 2 | 0 |
 | Bilewater | 5 | 0 |
 | Sands of Karak | 2 | 0 |
 | The Cradle | 1 | 1 |
-| Act 1 Regions (A1 rows and Bellhart upgrades) | 16 | 2 |
-| **Total** | **63** | **11** (74 entries) |
+| Act 1 Regions (A1 rows and Bellhart upgrades) | 15 | 2 |
+| **Total** | **63** (62 counted) | **11** (74 entries) |
 
-Act 1 Regions in detail: Blasted Steps 8 Collectibles (Magnetite Dice, two Mask Shard and Spool rows, Grindle's four) plus the Last Judge; Wormways 2; Sinner's Road 1 Task; Bellhart 3 (Shining and Hivesteel Needle, Witch Crest); Far Fields 1; Deep Docks 1; Weavenest Atla 1.
+Act 1 Regions in detail: Blasted Steps 7 Collectibles (Magnetite Dice, a Mask Shard, the flea Spool Fragment, and Grindle's four wares: Spool Fragment, Snitch Pick, Thief's Mark, Crafting Kit) plus the Last Judge; Wormways 2; Sinner's Road 1 Task; Bellhart 3 (Shining and Hivesteel Needle, Witch Crest); Far Fields 1; Deep Docks 1; Weavenest Atla 1.
 
-By type, counted: 9 Mask Shards, 13 Spool Fragments, 2 Silk Hearts, 1 Ancestral Art (Clawline), 3 Silk Skills, 2 Crests, 27 Tools, 2 Needle upgrades, 2 Crafting Kit upgrades, 1 Tool Pouch upgrade. With Act 1's 50 Collectibles that makes 113 of the game's counted things placed after two acts; the 27 Tools here plus Act 1's 23 make 50 of the 51 the Arsenal achievement counts (S1), and the two left (Pin Badge, Egg of Flealia) are Act 3: one over, which matches S1's open question that one name in its list is not a Tool.
+By type, counted: 9 Mask Shards, 13 Spool Fragments, 2 Silk Hearts, 1 Ancestral Art (Clawline), 3 Silk Skills, 2 Crests, 27 Tools, 2 Needle upgrades, 2 Crafting Kit upgrades, 1 Tool Pouch upgrade (62). Not counted: the Faydown Cloak. With Act 1's 49 counted Collectibles that makes 111 counted things placed after two acts. The 27 Tools here plus Act 1's 23 make 50; with the two left for Act 3 (Pin Badge, Egg of Flealia) that is 52, one more than the 51 the Arsenal achievement counts, which matches S1's open question that one name in its list is not a Tool.
 
 ## Tracked-only candidates (not entries yet)
 
-They need `counts: false` and the tracked-only types from Phase 5, so they wait for P5-1 to P5-3 and for Athos's Equipment and Mementos decisions: the **Needle Phial** (from Zylotol; S1 says it is not counted and is gone after two wishes), the **Hunter Crest** evolutions and **Vesticrest** slots from Eva (S1; her thresholds conflict), the three **Slab keys** other than Apostate and the **Surgeon's Key** (key items), **Memory Lockets** in Act 2 Regions (a key-items sheet), and the Craftmetal and Shakra maps.
+They would be `counts: false` entries whose type and Tracker are not settled yet (contract section 8; the Mementos and Equipment sheet), so they wait for that: the **Needle Phial** (from Zylotol; S1 says it is not counted and is gone after two wishes), the **Hunter Crest** evolutions and **Vesticrest** slots from Eva (S1; her thresholds conflict), the three **Slab keys** other than Apostate and the **Surgeon's Key** (key items), **Memory Lockets** in Act 2 Regions (a key-items sheet), and the Craftmetal and Shakra maps.
 
 ## Deferred to Act 3
 
@@ -210,16 +212,16 @@ They need `counts: false` and the tracked-only types from Phase 5, so they wait 
 
 ## Checks on this sheet (orchestrator, 2026-10-20)
 
-- **Structure, by hand only.** Every `requires` id exists in this sheet or in `data/items.json`; no id repeats an existing entry or Region id; walking the Route in step order, each entry's own `requires` and its Region's `requires` are met by earlier steps (Act 1 ends at 610). **Not yet run** through `scripts/validate-data.js` and `js/requirements.js` as the Act 1 sheet was; that is the first proposed check below.
-- **Not checked at all:** anything in game; any guide page beyond its search snippet.
+- **Structure, run with the real tools.** The two tables were parsed by a throwaway script into a data folder outside the repository (today's `data/` with its 63 entries, plus the 15 Regions and 74 entries here, the P5 column applied, `dataVersion` 6, a placeholder `source`). `scripts/validate-data.js`: passed, 0 warnings. `js/requirements.js`: following `nextStep` from an empty Progress reaches all 137 entries, in exactly the Route's step order. `isCounted` gives 111 counted Collectibles; `rosariesToSpend` gives 7,500 Rosaries for the 16 priced entries; 26 Tools carry a `toolColor` (Memory Crystal left out). No `how` is over 300 characters. This proves the sheet is consistent with the contracts, not that the facts are right.
+- **Not checked at all:** anything in game; any guide page beyond its search snippet; the real `source` links (the check used a placeholder).
 
 ## Brief for Dev C: Act 2 into `data/` (not handed out yet)
 
 - **Goal:** turn the Regions and Entries tables above into `data/regions.json` and `data/items.json`, nothing more and nothing less. Do not add, drop or merge entries; if a row looks wrong, keep it and say so in the handoff.
-- **Before it starts (orchestrator):** Athos approves the id list and answers the open questions he wants answered first; `.claude/rules/data.md` is updated to name this sheet as the current batch (it still says Act 1); the Route check below has passed on a throwaway copy.
+- **Before it starts (orchestrator):** Athos approves the id list and answers the open questions he wants answered first; `.claude/rules/data.md` is updated to name this sheet as the current batch (it still says Act 1, so without that change the rule tells Dev C not to add these Regions); the structure check above is rerun if `data/` has changed since.
 - **Files (Dev C owns them for this task):** `data/regions.json`, `data/items.json`, `data/endings.json` (only to raise `dataVersion`). Nothing else.
-- **Rules:** `dataVersion` becomes 4 in all three files (`endings` stays `[]`). Region `id` = slug of its name (`grand-gate`, `underworks`, `choral-chambers`, `cogwork-core`, `whispering-vaults`, `whiteward`, `high-halls`, `the-slab`, `mount-fay`, `memorium`, `putrified-ducts`, `wisp-thicket`, `bilewater`, `sands-of-karak`, `the-cradle`), `order` as in the table. Entry ids, `step`, `requires` (ids of the named entries), `area` (the Sub-area in brackets, without "A1"), `how` and `summary` as written (each under 300 characters). `source` = the first source code's `source` link in the Sources section, or for a GC-first row the GC 100 percent page. The A1 rows go in their Act 1 Region. No `spoiler`, no `unlocks`, no hero images; `missable` only where Athos confirms it. **The P5 column goes in only if P5-1, P5-2 and P5-3 are all merged** when the task starts; otherwise leave it out and say so.
-- **Done when:** `node scripts/validate-data.js` passes with 0 warnings (the Act 2 types are all in the approved list: `mask-shard`, `spool-fragment`, `silk-heart`, `ancestral-art`, `silk-skill`, `crest`, `tool`, `needle-upgrade`, `crafting-kit-upgrade`, `tool-pouch-upgrade`); `node --test "tests/*.test.js"` passes; following `nextStep` from an empty Progress reaches all 136 entries (62 + 74) in Route order; Home, Region, Route and Account load locally with no console errors. The handoff lists every new id, any row Dev C doubts, and what was not checked.
+- **Rules:** `dataVersion` goes up by one from whatever `data/` holds when the task starts (5 while this sheet was written) in all three files (`endings` stays `[]`). Region `id` = slug of its name (`grand-gate`, `underworks`, `choral-chambers`, `cogwork-core`, `whispering-vaults`, `whiteward`, `high-halls`, `the-slab`, `mount-fay`, `memorium`, `putrified-ducts`, `wisp-thicket`, `bilewater`, `sands-of-karak`, `the-cradle`), `order` as in the table. Entry ids, `step`, `requires` (ids of the named entries), `area` (the Sub-area in brackets, without "A1"), `how` and `summary` as written (each under 300 characters). `source` = the first source code's `source` link in the Sources section, or for a GC-first row the GC 100 percent page. The A1 rows go in their Act 1 Region. No `spoiler`, no `unlocks`, no hero images; `missable` only where Athos confirms it. The P5 column goes in as written: `counts: false` on the Faydown Cloak, `price` and `toolColor` where given, nothing where the cell says "none" or is empty. No second-round Build fields.
+- **Done when:** `node scripts/validate-data.js` passes with 0 warnings (the Act 2 types are all in the approved list: `mask-shard`, `spool-fragment`, `silk-heart`, `ancestral-art`, `ability`, `silk-skill`, `crest`, `tool`, `needle-upgrade`, `crafting-kit-upgrade`, `tool-pouch-upgrade`); `node --test "tests/*.test.js"` passes; following `nextStep` from an empty Progress reaches all 137 entries (63 + 74) in Route order; Home, Region, Route and Account load locally with no console errors. The handoff lists every new id, any row Dev C doubts, and what was not checked.
 - **Not pushed to `main`** until Athos approves the id list (ADR 0003).
 
 ## Handoff
@@ -228,7 +230,7 @@ Kept short; the detail is above.
 
 **Riskiest facts** (one source, or sources disagree, and the row's place in the Route depends on it):
 
-1. Faydown Cloak counted or not (decision 3): changes the headline count by one.
+1. Faydown Cloak counted or not (decision 3): changes the headline count by one (only the `counts` flag moves).
 2. Sawtooth Circlet, Spool Extender, Scuttlebrace, Snare Setter, Cogfly: locations disagree with S1; this sheet takes the two-source side.
 3. Key of Apostate in the Putrified Ducts or Bilewater; Rune Rage needing one key or all three.
 4. Reserve Bind's prerequisites (Cogheart, Building Up Songclave) are not modelled, so the entry may show Available too early.
@@ -248,7 +250,7 @@ Kept short; the detail is above.
 
 **Proposed checks:**
 
-1. Run this sheet's tables through `scripts/validate-data.js` and a `nextStep` walk on a throwaway data folder (as done for Act 1) before Dev C starts.
+1. Rerun the structure check (done once, passed) if `data/` changes before Dev C starts.
 2. Athos checks in game, first: the Faydown Cloak on the completion screen, the Simple Key doors he has opened, Jubilana's prices, and Grindle's shop.
 3. When a guide page can be opened again (the proxy and DNS block game-checklists.com from here), read GC's Act 2 area pages one by one and replace "one source" marks.
 4. QA 2: compare the per-type totals here with GC's 100 percent counts (20 Mask Shards, 18 Spool Fragments, 3 Silk Hearts, 51 Tools).
