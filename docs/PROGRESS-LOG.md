@@ -32,6 +32,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T9 merged** (`dev-a/slice-pages`): temporary `index.html` (opens the Region with the lowest `order`; fallback link for no JavaScript), `account.html` with the sign-in half (Google, email link, signed-in state, sync line, "Progress combined"; GitHub hidden), `completeEmailLinkSignIn` on every page, Route link hidden until Phase 2. Orchestrator checked after merging: 88 tests pass; `/`, `/account.html`, the Region page and "Region not found" load with no console errors and no link to a missing page. Not checked by an agent: real Google sign-in, the email link, sync against live Firestore.
 
+- **Athos: the orchestrator pushes whenever there is something new**, no need to ask (recorded in `docs/AGENT-PLAN.md` section 6). Exception kept: unconfirmed data facts are not published.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
