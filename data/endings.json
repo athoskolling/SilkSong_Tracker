@@ -1,4 +1,44 @@
 {
-  "dataVersion": 10,
-  "endings": []
+  "dataVersion": 11,
+  "endings": [
+    {
+      "id": "weaver-queen",
+      "name": "Weaver Queen",
+      "conditions": [
+        "grand-mother-silk-bind"
+      ],
+      "locksOut": [],
+      "source": "https://noobfeed.com/articles/hollow-knight-silksong-weaver-queen-ending"
+    },
+    {
+      "id": "twisted-child",
+      "name": "Twisted Child",
+      "conditions": [
+        "grand-mother-silk-cursed"
+      ],
+      "locksOut": [],
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-how-to-get-every-ending"
+    },
+    {
+      "id": "snared-silk",
+      "name": "Snared Silk",
+      "conditions": [
+        "grand-mother-silk-snared"
+      ],
+      "locksOut": [
+        "weaver-queen",
+        "twisted-child"
+      ],
+      "source": "https://deltiasgaming.com/?p=339099"
+    },
+    {
+      "id": "sister-of-the-void",
+      "name": "Sister of the Void",
+      "conditions": [
+        "lost-lace"
+      ],
+      "locksOut": [],
+      "source": "https://deltiasgaming.com/?p=339099"
+    }
+  ]
 }
