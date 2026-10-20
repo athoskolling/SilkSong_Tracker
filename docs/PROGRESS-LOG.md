@@ -42,6 +42,11 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T11 merged** (`dev-a/account-backup`, dev-a acting as Dev B): Backup file (download, add with union), Start a new run with confirmation (Escape cancels, focus handled), How saving works, Guide data. Orchestrator checked: 88 tests pass, Account loads with no console errors at 1280 and 390 px, layout matches the design. Dev A drove download, add, reject and clear in a headless browser (29 checks). The `.account-column` meeting point with `render.js` recorded in contract section 5. **Not pushed yet**: its header links to `route.html`, which arrives with T10.
 
+## 2026-10-20
+
+- **T10 merged** (`dev-b/home-route`): Home (next on the route, what is holding you up, your thread with Collectibles by type, five Region card states) and Route (steps grouped by Region, filters, holding-you-up rail, spoiler counts, legend); Route link back; start thread no longer runs over the intro on short heroes or the Region page at 390 px. Shared pieces moved into `render.js`. Orchestrator checked after merging T10 on top of T11: 88 tests pass; Home, Route, Region and Account load with no console errors and no broken links, with real and sample data; Account still builds all four sections (the `account-column` meeting point holds). **Pushed** with T11.
+- Decisions from T10 for Athos: the next step is shown on Route even in a Region not yet Visited; "Complete" means every entry done (Collectibles and Tasks); new copy for empty states. Contrast: all text passes AA; five decorative borders and tracks are below 3:1, with the information also carried by text.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
