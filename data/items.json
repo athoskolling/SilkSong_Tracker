@@ -1,5 +1,5 @@
 {
-  "dataVersion": 9,
+  "dataVersion": 10,
   "items": [
     {
       "id": "moss-mother",
@@ -21,6 +21,19 @@
       "type": "crest",
       "regionId": "moss-grotto",
       "how": "The starting Crest; you have it from the beginning. Tick it to use it in the Build picker.",
+      "slots": {
+        "red": 1,
+        "blue": 1,
+        "yellow": 1,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 2,
+        "blue": 2,
+        "yellow": 2,
+        "white": 1
+      },
+      "effect": "The starting Crest: a plain forward slash and a diagonal down-attack.",
       "requires": [],
       "step": 11,
       "source": "https://www.keengamer.com/articles/guides/hollow-knight-silksong-all-crest-locations"
@@ -631,6 +644,19 @@
       "regionId": "hunters-march",
       "area": "Chapel of the Beast",
       "how": "Bind the great husk in the chapel after the fight.",
+      "slots": {
+        "red": 2,
+        "blue": 0,
+        "yellow": 0,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 2,
+        "blue": 0,
+        "yellow": 2,
+        "white": 1
+      },
+      "effect": "Savage strikes. Its Bind sends Hornet into a fury that heals through hits instead of the normal heal.",
       "requires": [
         "savage-beastfly"
       ],
@@ -670,6 +696,19 @@
       "regionId": "greymoor",
       "area": "Chapel of the Reaper",
       "how": "In the arena of the Chapel of the Reaper.",
+      "slots": {
+        "red": 1,
+        "blue": 1,
+        "yellow": 1,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 2,
+        "blue": 2,
+        "yellow": 2,
+        "white": 1
+      },
+      "effect": "Bigger, slower swings with a wide down-attack. After a Bind, hits make Silk pieces that refill a little Silk when picked up.",
       "requires": [],
       "step": 310,
       "source": "https://game-checklists.com/silksong/greymoor.html"
@@ -956,6 +995,7 @@
       "how": "Sold in Bellhart for 880 Rosaries once the courier quest is done.",
       "price": 880,
       "toolColor": "blue",
+      "effect": "Bind heals more, up to four Masks.",
       "requires": [
         "my-missing-courier"
       ],
@@ -1086,6 +1126,19 @@
       "regionId": "moss-grotto",
       "area": "Bonegrave",
       "how": "In the Chapel of the Wanderer at Bonegrave, west of the Ruined Chapel; you fight a few waves of enemies for it. Cling Grip gets you there down the main funnel in Bone Bottom; guides also describe a way in with a Simple Key through the Wormways.",
+      "slots": {
+        "red": 1,
+        "blue": 0,
+        "yellow": 2,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 1,
+        "blue": 2,
+        "yellow": 3,
+        "white": 1
+      },
+      "effect": "Much faster, narrower slashes, with a small chance of triple-damage hits while Silk is at least one Bind's worth.",
       "requires": [
         "cling-grip"
       ],
@@ -1311,6 +1364,7 @@
       "regionId": "wormways",
       "how": "Open the lower Wormways door with a Simple Key and climb to Alchemist Zylotol's lab. His wish, Alchemist's Assistant, gives a Needle Phial: draw three Plasmium samples in the Wormways and bring them back.",
       "toolColor": "red",
+      "effect": "A heal that can take health up to three above the maximum.",
       "requires": [
         "simple-key-sinners-road"
       ],
@@ -1325,6 +1379,7 @@
       "regionId": "blasted-steps",
       "how": "Lumble the Lucky, left and down from the Blasted Steps Bellway, plays dice for Rosaries. Win until he has no Rosaries left and he pays with his dice. If he dies first (around mid Act 2), take them from his body.",
       "toolColor": "yellow",
+      "effect": "A chance to cancel a hit from a foe, not from hazards. The chance grows with each hit taken and resets when it triggers.",
       "requires": [],
       "step": 640,
       "source": "https://www.shacknews.com/article/146158/unlock-magnetic-dice-silksong"
@@ -1361,6 +1416,7 @@
       "regionId": "underworks",
       "how": "On a table in the southwest of the Underworks. It drills through fragile walls.",
       "toolColor": "red",
+      "effect": "Hornet drills downward into a foe.",
       "requires": [],
       "step": 670,
       "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-59-tool-locations"
@@ -1459,6 +1515,7 @@
       "how": "Sold by Jubilana in the Songclave for 720 Rosaries.",
       "price": 720,
       "toolColor": "blue",
+      "effect": "Holds Silk beyond the normal maximum.",
       "requires": [
         "wandering-merchant"
       ],
@@ -1596,6 +1653,7 @@
       "regionId": "whiteward",
       "how": "On the east side of Whiteward.",
       "toolColor": "blue",
+      "effect": "A faster Bind.",
       "requires": [],
       "step": 850,
       "source": "https://gameranx.com/features/id/551986/article/hollow-knight-silksong-how-to-access-the-whiteward-white-key-location/"
@@ -1637,6 +1695,7 @@
       "how": "Sold by the Twelfth Architect, right of the northeast bench, for 360 Rosaries and a Craftmetal.",
       "price": 360,
       "toolColor": "red",
+      "effect": "A thrown circular saw.",
       "requires": [
         "clawline"
       ],
@@ -1667,6 +1726,7 @@
       "how": "Sold by the Twelfth Architect for 230 Rosaries and a Craftmetal.",
       "price": 230,
       "toolColor": "blue",
+      "effect": "Spinning blades circle Hornet when she uses a cloak.",
       "requires": [
         "clawline"
       ],
@@ -1720,6 +1780,7 @@
       "regionId": "high-halls",
       "how": "Down a hidden spike path in the High Halls, cleared with the Clawline; build it at the workbench there with a Craftmetal.",
       "toolColor": "red",
+      "effect": "A winged helper that attacks foes.",
       "requires": [],
       "step": 940,
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
@@ -1732,6 +1793,7 @@
       "regionId": "high-halls",
       "how": "Open the Simple Key door west of the High Halls bench, cross the platforms, break the wall into the treasury and hit the ceiling to drop the cannon.",
       "toolColor": "red",
+      "effect": "Fires Rosaries as shots.",
       "requires": [
         "simple-key-jubilana"
       ],
@@ -1788,6 +1850,7 @@
       "area": "Weavenest Murglin",
       "how": "Take the Ruined Tool from Weavenest Murglin, behind a Needolin door in the southeast of Bilewater. Repair it once, with a Craftmetal: Forge Daughter, Twelfth Architect or the table near Mount Fay's top. Each gives a different Silkshot; the others are then gone.",
       "toolColor": "red",
+      "effect": "A piercing shot. It comes in three versions and only one is kept per run.",
       "requires": [
         "needolin"
       ],
@@ -1802,6 +1865,7 @@
       "regionId": "bilewater",
       "how": "In a secret room above the Mothleaf Lagnia area, behind breakable ceilings.",
       "toolColor": "blue",
+      "effect": "Throws two red Tools at once for two charges. A few Tools do not double.",
       "requires": [],
       "step": 1000,
       "source": "https://backyarddrunkard.com/games/silksong-quick-sling/"
@@ -1838,6 +1902,8 @@
       "type": "tool",
       "regionId": "mount-fay",
       "how": "Behind a wall of ice in a room near the western bench.",
+      "toolColor": "blue",
+      "effect": "An ice statue that explodes when Hornet is hit.",
       "requires": [],
       "step": 1030,
       "source": "https://game-checklists.com/silksong/100-percent.html"
@@ -1892,6 +1958,7 @@
       "how": "Sold by Grindle for 740 Rosaries.",
       "price": 740,
       "toolColor": "blue",
+      "effect": "Makes the Clawline steal Rosaries and Shell Shards, and hit harder.",
       "requires": [
         "faydown-cloak"
       ],
@@ -1907,6 +1974,7 @@
       "how": "Sold by Grindle for 350 Rosaries.",
       "price": 350,
       "toolColor": "yellow",
+      "effect": "More Rosaries from foes, but some are lost when Hornet is hit.",
       "requires": [
         "faydown-cloak"
       ],
@@ -1935,6 +2003,7 @@
       "regionId": "weavenest-atla",
       "how": "In a secret room of Weavenest Atla: double jump into a hidden gap in the ceiling, climb, and take it from the table at the top of the big room.",
       "toolColor": "red",
+      "effect": "A Silk rune trap that bursts on contact.",
       "requires": [
         "faydown-cloak"
       ],
@@ -1988,6 +2057,7 @@
       "regionId": "memorium",
       "how": "Through the vents to the room at the top of the Memorium; clear it and open the locked container.",
       "toolColor": "red",
+      "effect": "An electric throwing Tool.",
       "requires": [],
       "step": 1140,
       "source": "https://deltiasgaming.com/?p=346335"
@@ -2027,6 +2097,7 @@
       "regionId": "putrified-ducts",
       "how": "On a large floating platform at the end of a hidden room near the Huntress's bench, past a breakable wall.",
       "toolColor": "blue",
+      "effect": "Keeps Muckmaggots off. A bench mends it.",
       "requires": [],
       "step": 1170,
       "source": "https://deltiasgaming.com/?p=346369"
@@ -2090,6 +2161,7 @@
       "regionId": "wisp-thicket",
       "how": "Beat the Father of the Flame at the west end of Wisp Thicket; hit the braziers, not his body.",
       "toolColor": "blue",
+      "effect": "Spends Silk to send homing wisps at foes.",
       "requires": [],
       "step": 1220,
       "source": "https://deltiasgaming.com/?p=345658"
@@ -2117,6 +2189,7 @@
       "area": "Coral Tower",
       "how": "Beat the Raging Conchfly at the shrine up the Coral Tower; the tool is in the tower.",
       "toolColor": "red",
+      "effect": "A piercing shell that bounces off walls.",
       "requires": [],
       "step": 1240,
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
@@ -2130,6 +2203,7 @@
       "area": "Voltnest",
       "how": "Climb to the bridge at the top of the Sands, take the hidden path in the top right into the Voltnest, and beat the Voltvyrm.",
       "toolColor": "blue",
+      "effect": "Silk Skills carry an electric charge.",
       "requires": [],
       "step": 1250,
       "source": "https://deltiasgaming.com/?p=341943"
@@ -2158,6 +2232,7 @@
       "regionId": "putrified-ducts",
       "how": "The Huntress's wish, Broodfeast: bring organs from foes killed with Flintslate, Longpin and a shredding Tool such as the Cogwork Wheel or Conchcutter. In Act 3 the same wish comes from Runt.",
       "toolColor": "blue",
+      "effect": "Longer Needle reach.",
       "requires": [
         "flintslate",
         "longpin",
@@ -2173,6 +2248,19 @@
       "type": "crest",
       "regionId": "bellhart",
       "how": "Find the Twisted Bud in Bilewater through the hidden east end of the Whispering Vaults; give it to Greyroot (Rite of Rebirth), which curses you. Yarnaby in Bellhart lifts it for Steel Spines bought on Sinner's Road.",
+      "slots": {
+        "red": 2,
+        "blue": 0,
+        "yellow": 0,
+        "white": 1
+      },
+      "slotsMax": {
+        "red": 2,
+        "blue": 3,
+        "yellow": 0,
+        "white": 1
+      },
+      "effect": "Long whip-like slashes. Its Bind sends out roots that hit nearby enemies and heal a Mask per hit.",
       "requires": [
         "pollip-pouch",
         "clawline",
@@ -2230,6 +2318,19 @@
       "regionId": "underworks",
       "how": "Own 25 Tools, then buy the Architect's Key from the Twelfth Architect for 110 Rosaries. Open the chapel above him and bind the crest. The door shuts for good once you leave.",
       "price": 110,
+      "slots": {
+        "red": 3,
+        "blue": 0,
+        "yellow": 0,
+        "white": 0
+      },
+      "slotsMax": {
+        "red": 3,
+        "blue": 2,
+        "yellow": 2,
+        "white": 0
+      },
+      "effect": "The Needle becomes a drill: many quick hits, chargeable for double damage. No white slot, so no Silk Skills.",
       "requires": [
         "clawline"
       ],
@@ -2268,6 +2369,7 @@
       "regionId": "bilewater",
       "how": "Buy every one of Shakra's maps (the last ones are in Mount Fay, the Sands of Karak and The Cradle); her wish, Trail's End, then appears in Bellhart. Follow her trail of rings to Bilewater.",
       "toolColor": "red",
+      "effect": "A thrown ring that bounces.",
       "requires": [
         "faydown-cloak",
         "lace-cradle"
@@ -2311,6 +2413,7 @@
       "regionId": "far-fields",
       "area": "Practice room above the Bellway",
       "how": "An upgrade of the Curveclaw, found in Act 3. In the practice room above the Far Fields Bellway, hit every target with one Curveclaw throw (the Pollip Pouch does not work). A Skarr scout takes it; rest at a bench and the Curvesickle is left behind.",
+      "upgradeOf": "curveclaw",
       "requires": [
         "curveclaw",
         "grand-mother-silk-snared"
@@ -2352,6 +2455,7 @@
       "regionId": "whispering-vaults",
       "area": "The Stage",
       "how": "An upgrade of the Claw Mirror. In Act 3 the Songclave wish Pain, Anguish and Misery sends you to beat Tormented Trobbio on the Stage; the Dark Mirror then joins your Claw Mirror. Needs the Claw Mirror and Silk Soar.",
+      "upgradeOf": "claw-mirror",
       "requires": [
         "claw-mirror",
         "silk-soar"
@@ -2397,6 +2501,19 @@
       "regionId": "moss-grotto",
       "area": "Ruined Chapel",
       "how": "In the Snail Shamans' chapel, go to the dead end on the east side, Silk Soar up through the gap above and Bind the big snail shell.",
+      "slots": {
+        "red": 0,
+        "blue": 0,
+        "yellow": 0,
+        "white": 3
+      },
+      "slotsMax": {
+        "red": 0,
+        "blue": 2,
+        "yellow": 0,
+        "white": 3
+      },
+      "effect": "Built around Silk Skills: they hit harder and attacks become short-range energy waves. Its Bind starts with a ground slam, so it does not heal in mid-air.",
       "requires": [
         "silk-soar"
       ],
@@ -2554,6 +2671,8 @@
       "regionId": "mount-fay",
       "area": "peak",
       "how": "Fatal Resolve, an Act 3 wish (a note in the Pinstress's hut, or the Bellhart Wishwall once you have Silk Soar): find the Pinstress asleep at the peak of Mount Fay, wake her and win the duel.",
+      "toolColor": "blue",
+      "effect": "Needle Strike charges faster.",
       "requires": [
         "needle-strike",
         "silk-soar"
