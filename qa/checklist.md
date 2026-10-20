@@ -2,7 +2,7 @@
 
 Owner: QA 2 (`qa-manual`). Source: `docs/DESIGN.md` sections 5 to 8, `docs/AGENT-PLAN.md` section 8 (V1 definition of done), `docs/CONTRACTS.md` sections 3 and 5.
 
-Updated 2026-10-20 (fourth pass, T23): N-10 follows Athos's Endings decision (four Endings in total, their data ships with the late-game batch, so V1 has none); the late-game check is N-18. Earlier: third pass (T22), where the wiki lines (N-13, N-14, N-15, N-17) follow the item 4 decision in `docs/PHASE-0-CHECKLIST.md`; no line assumes a draft script or bulk reading. Earlier still: second pass (T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
+Updated 2026-10-20 (fifth pass, full pass by QA 2): sections O to S added for the Phase 5 pages, the Route rule, the player choices and the backup rules (CONTRACTS sections 2, 3, 5; PHASE-5-FULL-TRACKER-PLAN done criteria); M-4 follows DESIGN section 4 (self-hosted fonts). Earlier: fourth pass, T23: N-10 follows Athos's Endings decision (four Endings in total, their data ships with the late-game batch, so V1 has none); the late-game check is N-18. Earlier: third pass (T22), where the wiki lines (N-13, N-14, N-15, N-17) follow the item 4 decision in `docs/PHASE-0-CHECKLIST.md`; no line assumes a draft script or bulk reading. Earlier still: second pass (T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
 
 Each line is one checkable statement. **Fails as** is the severity if the line fails: **critical**, **major** or **minor**. A critical line that fails stops V1.
 
@@ -205,7 +205,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | M-1 | No root-absolute paths (`href="/..."`, `src="/..."`, `url(/...)`, fetch of `/...`) in HTML, CSS or JS. | Search the repository. | major | |
 | M-2 | Every internal link and every asset resolves to an existing file. | Check each `href` and `src`. | major | |
 | M-3 | The site works from a sub-path (`/<repository>/`): Region and Account load with no 404 for CSS, JS or data. | Copy the site under a folder and serve it; load both pages. | major | |
-| M-4 | Scripts come only from the site, and from the Firebase SDK at one pinned version (only `js/firebase.js` imports it). Fonts come from the Google Fonts stylesheet (DESIGN section 4). | Read the script and link tags; list network hosts. | major | |
+| M-4 | Scripts come only from the site, and from the Firebase SDK at one pinned version (only `js/firebase.js` imports it). Fonts are self-hosted from `css/fonts/` (DESIGN section 4, 2026-10-20); the Google Fonts links in `docs/design/mockups/` are mockup-only. | Read the script and link tags; list network hosts. | major | |
 | M-5 | No console errors and no failed requests on load (favicon counted until M-6 is fixed). | Devtools log on each page. | major | |
 | M-6 | A favicon is served or linked, so no 404 for `/favicon.ico` on every load. | Server log. | minor | |
 | M-7 | The published site serves the same pages and sign-in works on its domain. | Open the published address; sign in. | major | Athos (pages part run in the second pass) |
@@ -233,6 +233,67 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | N-16 | Each entry's `source` links to a page about that entry, not only to its Region's page. | Read the URLs. | minor | Athos decides |
 | N-17 | Per batch, at least 10 percent of entries (rounded up) and never fewer than 5, spread across Regions, are checked against the main wiki. | Athos picks the entries and checks each one by hand (the N-13 method). QA 2 records the picked ids, the count per Region, the batch's entry count and the batch total in `qa/reports/`. A batch with fewer than 5 entries cannot meet the minimum: open question Q12. | major | Athos picks and checks. QA 2 records the picks. Wiki by hand (item 4, 2026-10-20) |
 | N-18 | Four Endings are stored, each with `conditions`, `locksOut` and `source`, and each condition is an existing entry in `items.json`. | Not run in V1. When the late-game batch ships: read `data/endings.json`, count four Endings, and find each condition's id in `data/items.json`. | major | Not run in V1. Replaces N-10 when the late-game batch ships (decided 2026-10-20, Athos). |
+
+---
+
+## O. Trackers (`trackers.html`, Phase 5)
+
+| ID | Check (expected) | How to check | Fails as | Note |
+|---|---|---|---|---|
+| O-1 | Six tabs (Crests, Tools and Skills, Abilities, Equipment, Mementos, Keys and key items) in a `tablist` with an accessible name; one tab selected, `tabindex` 0. Each tab's "done of total" is its hand count: at dataVersion 9, 18, 58, 11, 18, 7, 7 with nothing marked. | Count the entries by type in `data/items.json`; compare. | major | |
+| O-2 | Arrow Left and Arrow Right move the selection and the focus, and wrap at the ends. | Keyboard only. | minor | Home and End are not implemented; optional in the ARIA pattern. |
+| O-3 | A tab's total counts every entry in it, counted or not. Marking an entry moves only its tab; the Home headline does not move for a tracked-only entry. | Mark a Tool, then a Memento; read Home. | major | |
+| O-4 | An entry with `counts: false` carries "Not counted" on its row. | Mementos tab. | minor | |
+| O-5 | The Hunter Crest can be ticked on the Crests tab (Route rule, section 7). | Crests tab; tick it; the tab reads 1 of 18. | major | |
+| O-6 | Entries of Regions that are not Visited are hidden here too, until "Show everything" is on. | Trackers, empty profile. | major | |
+| O-7 | Every type is on one tab. Types on no tab are listed in the handoff (CONTRACTS section 8, open). | Count the entries on no tab. | major | Open decision: 51 counted Collectibles and 25 Tasks have no tab today. |
+| O-8 | Relics and Mementos are kept apart (glossary); a Memento total is not inflated by Relics. | Read the Mementos tab. | minor | |
+| O-9 | Keys and key items: the label avoids "item" (glossary). | Read the tab label. | minor | |
+
+## P. Rosaries (`rosaries.html`, Phase 5)
+
+| ID | Check (expected) | How to check | Fails as | Note |
+|---|---|---|---|---|
+| P-1 | "Still needed" is the sum of the prices of the priced entries not marked bought: 14,100 for 44 entries at dataVersion 9; 1,000 for 7 entries in `data/sample`. | Sum the `price` fields by hand. | major | |
+| P-2 | "Buyable now" is the sum over the priced entries that are Available: 500 (real), 210 (sample). | Read Available from the Region cards. | major | |
+| P-3 | "Next to buy" is the first buyable priced entry in route order; "Nothing you can buy yet" when none. | Mark the first; read the page. | major | |
+| P-4 | Marking "bought" goes through the entry's id in `done`. Progress holds no Rosaries number: its keys are `done`, `visited`, `updatedAt`, `dataVersion`. | Read localStorage after a mark. | critical | ADR 0005. |
+| P-5 | No Shell Shards number is shown until Athos confirms the reading (P5-17). | Read the page. | minor | Absent is correct today. |
+
+## Q. Builds (`builds.html`, Phase 5)
+
+| ID | Check (expected) | How to check | Fails as | Note |
+|---|---|---|---|---|
+| Q-1 | Only Crests marked done are offered. A Crest without `slots` reads "Not in the guide yet" and has no Save control. | Real data: every Crest has no `slots` today. | major | |
+| Q-2 | Slots per colour = `slots` + opened (capped at `slotsMax` − `slots`) + `grantsSlots` of done entries. Sample Crest one: 1 red, 1 blue, 1 white; blue opens up to 1. | `data/sample`; step the opened slots. | major | |
+| Q-3 | Tools offered per colour are the owned Tools with that `toolColor`; Silk Skills under white; a Tool without `toolColor` is not offered; an upgrade counts as its base. | Sample: "Tools and Silk Skills you own: 4". | major | |
+| Q-4 | A saved Build survives a reload; the Crest's opened slots survive too; "Remove saved Build" deletes only the Build. | Save; reload; remove. | major | |
+| Q-5 | A saved Build that no longer fits shows each problem and removes nothing. | Unmark a Tool in a saved Build. | major | |
+| Q-6 | Game facts in the Build copy come from `data/`, not from interface code (L-6). | Read the rail and "Opened slots" copy. | major | |
+| Q-7 | A Build saved on one device appears on the other after sync. | Two devices (Athos; the rehearsal is QA 1 / P5-22). | major | Athos |
+
+## R. The Route rule (Phase 5)
+
+| ID | Check (expected) | How to check | Fails as | Note |
+|---|---|---|---|---|
+| R-1 | The Route page lists exactly the entries `routeIds` returns: 155 with the real data, 25 with the sample. | "Show everything" on; count the rows. | major | |
+| R-2 | "Next on the route" is Moss Mother, then Silk Spear; it is never an entry off the Route; ticking Steps in order reaches the last one. | Walk the Route in the UI. | major | |
+| R-3 | A Region card is Complete when every Route entry in it is done (Tasks included). | Check the card at each Region's last Route entry. | major | |
+| R-4 | "Everything on the route is done" appears on Home when every Route entry is done. | Mark the whole Route. | minor | |
+| R-5 | "Holding you up" never lists an entry off the Route. | Read the list with nothing done. | major | |
+| R-6 | An entry off the Route reads "Not on the route" on its Region page, in place of "Step N". | Hunter Crest on Moss Grotto. | minor | |
+
+## S. Player choices and backups (Phase 5, ADR 0006)
+
+| ID | Check (expected) | How to check | Fails as | Note |
+|---|---|---|---|---|
+| S-1 | A backup file has `crestSlots` and `builds` when they are set, and no `syncedUid`. | Set them; download; read the file. | major | |
+| S-2 | A backup made before Phase 5 (four keys) imports; the Phase 5 fields it does not have stay absent in Progress. | Import a four-key file over a Progress that has Builds. | critical | "Missing is not empty", CONTRACTS section 1. |
+| S-3 | A file with a malformed Phase 5 field is refused whole, with the file message, and adds nothing. | A `crestSlots` value of `"two"`. | major | |
+| S-4 | Import never replaces a Build saved here; opened slots take the larger number; the message counts the additions. | Import a file with a second Build for the same Crest. | major | |
+| S-5 | "Start a new run" writes `crestSlots` {} and `builds` {}, so a saved Build is gone. | Save a Build; start a new run; read storage. | major | |
+| S-6 | `shellShards` is built only when Athos confirms the reading. Until then the field is absent everywhere. | Read `js/progress.js`. | minor | Checked absent on 2026-10-20. |
+| S-7 | The new fields survive two devices (sync rehearsal, P5-22). | Emulator rehearsal. | major | QA 1 / Athos. |
 
 ---
 
