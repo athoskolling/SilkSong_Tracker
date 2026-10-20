@@ -478,6 +478,11 @@ function scheduleCloudWrite() {
   });
 }
 
+// True when the merge has a player choice that local lacks entirely (absent, not just empty).
+function gainsAChoice(local, merged) {
+  return CHOICE_FIELDS.some(({ key }) => local[key] === undefined && merged[key] !== undefined);
+}
+
 // Compares the cloud copy with local Progress and applies the rule of docs/CONTRACTS.md
 // section 3: first sign-in on this device = union; afterwards the larger updatedAt wins
 // as a whole object, and a cloud copy that is older or equal is ignored. Used for the
@@ -494,7 +499,11 @@ function reconcile(uid, cloudCopy) {
   else if (firstSignIn) pushLocal = true; // the union is new to the cloud
   else pushLocal = theirs.updatedAt < local.updatedAt; // local is newer: the cloud copy is behind
 
-  if (firstSignIn || cloudIsNewer) writeLocal(merged); // otherwise local is already the result
+  // Save the merge whenever it holds something local does not. When this device is newer, merged
+  // is local plus any player choice it lacked (an older page never wrote it), taken from the cloud
+  // copy. Without this save the cloud write below would read local and erase that field from the
+  // cloud. Saved with writeLocal, not commit: nothing is stamped, updatedAt stays local's.
+  if (firstSignIn || cloudIsNewer || gainsAChoice(local, merged)) writeLocal(merged);
   cloudReady = true;
   if (theirs && firstSignIn) {
     combinedNote = {
