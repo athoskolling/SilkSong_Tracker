@@ -47,6 +47,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **T10 merged** (`dev-b/home-route`): Home (next on the route, what is holding you up, your thread with Collectibles by type, five Region card states) and Route (steps grouped by Region, filters, holding-you-up rail, spoiler counts, legend); Route link back; start thread no longer runs over the intro on short heroes or the Region page at 390 px. Shared pieces moved into `render.js`. Orchestrator checked after merging T10 on top of T11: 88 tests pass; Home, Route, Region and Account load with no console errors and no broken links, with real and sample data; Account still builds all four sections (the `account-column` meeting point holds). **Pushed** with T11.
 - Decisions from T10 for Athos: the next step is shown on Route even in a Region not yet Visited; "Complete" means every entry done (Collectibles and Tasks); new copy for empty states. Contrast: all text passes AA; five decorative borders and tracks are below 3:1, with the information also carried by text.
 
+- **T12 merged** (`qa-tests/validator`): `scripts/validate-data.js` (contract section 6, rules 1 to 10, plus shape checks now rule 11) and 171 tests (one todo: unknown ids inside `requires`). Orchestrator ran after merging on top of T10 and T11: 170 pass, 1 todo, 0 fail; validator passes on `data/` and `data/sample`. QA 1 also checked that the tests catch deliberate bugs (23 of 23 validator mutations, 20 of 22 logic mutations; the 2 survivors change nothing).
+- **Athos agreed** with T10's three choices (Complete = every entry done; next step shown on Route; new copy) and with the "Source" link and footer credit line. Recorded in `docs/DESIGN.md`.
+- **Decided (orchestrator):** unknown ids inside `requires` throw in every `requirements.js` function (contract sections 2 and 7).
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

@@ -76,7 +76,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 | `area` | string | no | Sub-area label, text only |
 | `how` | string | yes | our own words |
 | `requires` | string[] | yes | entry ids that must be done first; `[]` = always available |
-| `unlocks` | string[] | no | derived from `requires` by the validator; do not hand-write unless the data needs it |
+| `unlocks` | string[] | no | not used in V1 and not derived by anything; if present, it must list entry ids (validator). Do not hand-write it |
 | `missable` | boolean | no | default `false` |
 | `missableNote` | string | if `missable` | when and why |
 | `step` | integer | yes | position in the one global Route; unique across all entries |
@@ -130,7 +130,8 @@ Walking the chain: start from the requirements of X; for each id not in doneSet,
 isAvailable(itemId, doneSet, items, regions) -> boolean
 // true when every id in the entry's requirements (its own `requires` and its Region's `requires`)
 // is in doneSet. No requirements = true.
-// Unknown itemId: throw an Error (validate data on load; do not hide data bugs).
+// Unknown itemId, or an unknown id inside any `requires` it reads: throw an Error (validate data on load;
+// do not hide data bugs). This holds for every function in this module, not only missingFor.
 
 missingFor(itemId, doneSet, items, regions) -> string[]
 // Entry ids still not done that stand between the player and the entry, walking the chain as
@@ -289,6 +290,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
+11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids.
 
 ## 7. Changes after approval
 
@@ -296,6 +298,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - 2026-10-19, Phase 1 (T3): `loadProgress` returns local Progress at once and delivers the cloud merge through `onProgressChange`, instead of waiting for the cloud (a slow network must never block the page; Athos let the orchestrator decide). `useCloud` test seam recorded. Known costs recorded in section 3: "Start a new run" deletes the cloud copy, but another device still holding the old run writes it back on its next change (ADR 0001, newer wins); `combined` is reported only when a cloud copy existed.
 - 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
 - 2026-10-19, Phase 2: `account.html` loads `js/account-page.js` as well as `main.js` (section 5), so Home, Route and the rest of Account can be built in parallel with one owner per file. No signature changed. The slice taught nothing else that changes a contract.
+- 2026-10-20, Phase 2 (T12): validator rule 11 (shape checks from section 1) added; `unlocks` is not derived in V1; an unknown id inside `requires` throws in every `requirements.js` function, not only in `missingFor` and `holdingYouUp` (before, `isAvailable`, `nextStep` and `isRegionAvailable` quietly answered false or null, which hides a data bug). Orchestrator's decision; Athos may overrule.
 
 ## 8. Open contract questions
 
