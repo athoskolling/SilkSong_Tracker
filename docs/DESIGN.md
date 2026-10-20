@@ -103,7 +103,7 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 - **Holding you up** rail (right on desktop, above the list on a phone).
 - A "Can be missed" flag on missable entries, with the reason in the entry body.
 - **Choice point** marker: "The next step closes at least one ending for good. The guide names which ones before you get there, so you can plan for it." The data rule that drives it is still open (see `docs/CONTRACTS.md`).
-- A legend line at the bottom of the list, on a phone too (QA G2-4, decided 2026-10-20): "A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing."
+- A legend line at the bottom of the list, on a phone too (QA G2-4, decided 2026-10-20): "A bead is a collectible. Most count toward your totals; a few are only tracked and do not. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing."
 
 ### Account and backup (`account.html`)
 - Title "Account and backup"; intro "Your progress is saved on this device. Sign in to keep it in sync everywhere."
