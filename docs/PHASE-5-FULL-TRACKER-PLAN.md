@@ -55,7 +55,7 @@
 
 **Answers.** (1) Mementos and Equipment are tracked and **not** counted in the headline 100 percent number; each Tracker tab shows its own done and total. (2) Rosaries are **not** a typed number: the player ticks shop entries as bought, and the amount still to spend is worked out from the prices of the shop entries not bought. (3) Builds: a picker from what the player owns, no fixed templates. (4) New screens get mockups first (Dev B). (5) Save file import is in scope; the soundtrack is out. (6) Trackers come before Acts 2 and 3. **Hard rule:** every change is additive and backward compatible. Home, Region, Route and Account, Progress, sync and the 62 Act 1 entries keep working unchanged, and the current `data/` passes the validator untouched.
 
-**What this replaces above.** Answer 2 drops item 3 of "Proposed approach" (a numbers block in Progress) and the "numbers in Progress" part of step 2 of "Order of work". Progress stays ids only, so there is no ADR 0001 addendum and no sync change. ADR 0005 records why. The text above is kept as the record of what was proposed.
+**What this replaces above.** Answer 2 drops item 3 of "Proposed approach" (a numbers block in Progress) and the "numbers in Progress" part of step 2 of "Order of work". Progress stays ids only, so there is no ADR 0001 addendum and no sync change. ADR 0005 records why. The text above is kept as the record of what was proposed. (Rosaries still hold; the "Progress stays ids only" part is superseded by the second round below and ADR 0006.)
 
 **Contract changes** (`docs/CONTRACTS.md` sections 1, 2, 5, 6, 7 and 8; awaiting Athos's review of the exact text):
 
@@ -135,3 +135,182 @@ Nothing in these four tasks touches `js/progress.js`, `js/firebase.js`, `firesto
 - **Region "Complete" needs tracker entries.** Once a Memento is in a Region, the Region shows Complete only when the Memento is done too. Current data is unaffected; the Trackers mockups decide whether to keep this (contract section 8).
 - **Tracker entries on the Route.** A Memento or a map has a `step`, so it shows on the Route and can be "Next on the route". Current data is unaffected; the same open point applies.
 - **Validator output on current data.** P5-2's done criterion pins it to the pre-change output, so an unintended new warning shows at once.
+
+## Athos's second answers and the contract changes (2026-10-20)
+
+**Answers.**
+
+1. The contract text of the first round is approved. P5-1 to P5-4 run as written above.
+2. **One entry per thing.** A Collectible the story needs is still one Collectible entry, with `counts: false` when the game does not count it, and it holds back other entries through their `requires`. The Drifter's Cloak (today a Task of type `ability`) becomes `kind: "collectible"`, `counts: false`, same id. The Hunter Crest is a normal entry the player ticks, `counts: false`. Mementos and Equipment are tracked, not counted.
+3. **Navigation:** a Trackers link plus links to Rosaries and Builds in the header; on phones the last link reads "Account" (option A; its accessible name stays "Account and backup").
+4. **Next to buy:** as designed: the first shop entry not bought that can be bought now (lowest `step` among priced entries that are not done and are Available). No check of whether the player can afford it.
+5. **Shell Shards:** no panel, only a visible place showing how many the player has. **Orchestrator's reading, to be confirmed by Athos:** a number the player types (`shellShards` in Progress). The other reading, a count of Shell Shard sources found, needs no Progress field.
+6. **Builds:** the picker **and** saving a Build (one per Crest). Memory Lockets spent per Crest are stored as a small number map (`crestSlots`). No templates and no `data/builds.json`: the Build fields go on entries in `items.json`, which causes no error in the current code (the validator ignores unknown fields; nothing reads them).
+7. **Out of scope:** Steel Soul mode. **Not checked now:** the ten disputed facts in `docs/PHASE-5-SHEET-1-BUILDS.md` section 5; they stay open and nothing that depends on them enters `data/`.
+8. **Save file import** is in scope, last, with a read-only preview first. Whether the repository may ship the game's decryption key is Athos's question (open).
+
+**What this changes.** Progress gets three optional player-choice fields (`crestSlots`, `builds`, provisional `shellShards`), so the first round's "Progress stays ids only" no longer holds: ADR 0006, an addendum to ADR 0001, and `firestore.rules` must accept the three keys as optional. Step 5 of "Order of work" (synergy pairs, templates) becomes the picker plus saving. Exact text: `docs/CONTRACTS.md` sections 1, 2a, 3, 5, 6 (rule 13) and 7; open points in section 8. The field is called `builds`, not "loadouts", because Build is the glossary word ("Loadout" is on its avoid list).
+
+### Order of these tasks
+
+Same rule as before: everything additive, one branch merged at a time, `node --test "tests/*.test.js"` and both validator commands after each merge, and a QA 2 pass after each new page.
+
+1. **Now** (P5-1 to P5-4 are already merged on the working branch, checked 2026-10-20, so their dependencies below are met): P5-5 and P5-6 (rules), P5-7 and P5-8 (Progress fields), P5-9 (rule 13), P5-10 (mockup addendum), and P5-13 once Athos confirms the Hunter Crest's place.
+2. **Gate G1 (Athos):** after P5-5 and P5-6 are merged and the Emulator run passes, Athos publishes `firestore.rules` and tells the orchestrator. **P5-7 and P5-8 are not merged before G1**, because every merge is pushed and goes live: the new `progress.js` would send keys the published rules refuse (local data stays safe, but sync shows an error for everyone who saves a Build or starts a new run).
+3. P5-11 (sample data) after P5-2 and P5-9. Then P5-12 (Trackers page), P5-13 (Drifter's Cloak and Hunter Crest, after P5-1 to P5-4), P5-14 (build fields on existing entries, after Athos's go). QA 2 pass.
+4. Mementos and Equipment: sheet 2 (orchestrator research, Athos approves), P5-15, P5-16. Then the Rosaries page, P5-17, and the price batch, P5-18, after sheet 3. QA 2 pass.
+5. Builds: P5-19 and P5-20 (`builds.js` may start any time after P5-11), P5-21 (after G1, P5-7 and P5-19), P5-22 (sync rehearsal). QA 2 pass.
+6. Last: P5-23 (save file spike), P5-24 (read-only preview, after Athos's answer on the key).
+
+Nothing in P5-5 to P5-11 touches `data/`, the four existing pages, `main.js` or `render.js`.
+
+### P5-5 (dev-a): Firestore rules accept the player choices
+
+- **Goal:** `firestore.rules` accept `crestSlots`, `builds` and `shellShards` as optional keys; everything else stays as it is.
+- **Files:** `firestore.rules` only (Dev A). Tests are P5-6.
+- **Exact change:** in `isProgressShape`, `hasOnly` lists the four keys plus the three; `hasAll` stays the four. When present: `crestSlots is map`, `builds is map`, and `shellShards == null || (shellShards is int && shellShards >= 0 && shellShards <= 999999)`. Nested values are not checked, as `done` and `visited` are not today (the 1 MiB document limit bounds them). `get`, `create`, `update` and `delete` keep `isOwner(uid)`; the catch-all deny stays. Update the comment ("exactly these four keys, always" becomes four required and three optional, ADR 0006; `syncedUid` still refused). If Athos has not confirmed the Shell Shards reading when this starts, leave `shellShards` out.
+- **Done when:** the existing Emulator rules tests pass unchanged (`firebase emulators:exec --only firestore --project demo-silksong-guide "node --test tests/firestore-rules.test.js"`). Never deploy. Handoff as usual.
+
+### P5-6 (qa-tests): rules tests for the player choices
+
+- **Files:** `tests/firestore-rules.test.js` (QA 1). Written against the contract; merged after P5-5.
+- **Cases:** a four-key document (an older page) is still accepted; each new key alone and all three together are accepted for the owner; `crestSlots` or `builds` as a list, string or number is refused; `shellShards` of `-1`, `1.5`, `"10"` and `1000000` is refused, `null` and `0` are accepted; `syncedUid` is still refused when the new keys are present; a key outside the seven is refused; another user's document carrying the new keys is refused for get, create and update; signed out is refused.
+- **Done when:** all pass in the Emulator after P5-5 is merged; the handoff lists the command and each case.
+
+### P5-7 (dev-a): the player choices in `progress.js`
+
+- **Goal:** `crestSlots`, `builds` and (if confirmed) `shellShards` as in `docs/CONTRACTS.md` sections 1 and 3, with every existing behaviour unchanged.
+- **Files:** `js/progress.js` only (Dev A). Not `firebase.js` (it already writes whatever object it gets), not the tests (P5-8).
+- **Depends on:** the contract text approved by Athos. May be written now; **merged only after G1**.
+- **Exact changes:**
+  1. `normalize` keeps each field when present: well-formed parts kept, malformed parts (one bad Crest, colour or id) dropped silently, `done` and `visited` never affected by them. An absent field stays absent; defaults (`{}`, `null`) are applied only when handing values out (`loadProgress`, the `onProgressChange` payload).
+  2. `setCrestSlots`, `setBuild` and `setShellShards` as contracted: `TypeError` and no write on a bad argument; a call that changes nothing does nothing; otherwise `commit` (stamp, local write, cloud write, notify). Zeros, empty lists and empty Builds are not stored.
+  3. `setDone`, `setVisited` and every other `commit` never add an absent field ("missing is not empty").
+  4. `mergeLocalAndCloud`: the per-field first-sign-in rules (larger number per Crest and colour; every Crest's Build kept, same Crest from the copy with the larger original `updatedAt`, tie local; `shellShards` from the newer copy, `null` gives way to a number); a field on one side only is taken; afterwards newer wins, and a field absent from the winner is taken from the other copy.
+  5. `reconcile`: the "did anything change" check and the notification also compare the three fields (today `sameIds` compares ids only, so a cloud copy that differs only in a Build would not reach the page).
+  6. `forCloud` and `exportProgress` leave absent fields absent. `parseBackup` and `importProgress` follow the contract: a malformed present field rejects the whole file; the result gains `addedSlots`, `addedBuilds` and `tookShellShards`, and `commit` runs when any of the five shows a change.
+  7. `clearProgress` writes `crestSlots: {}`, `builds: {}` and `shellShards: null` explicitly.
+  8. Keep the localStorage key, the cloud flow and every exported name. Update the header comment's stored shape.
+- **Done when:** `node --test "tests/*.test.js"` passes with no test edited. A throwaway script (not committed) shows that a Progress string saved before Phase 5, a backup file made before Phase 5 and a four-key cloud copy all load with the same `done` and `visited` as before; paste its output. Handoff says how each numbered change was met.
+
+### P5-8 (qa-tests): Progress tests for the player choices
+
+- **Files:** `tests/progress.test.js`, `tests/progress-cloud.test.js` (QA 1). Written against the contract; merged after P5-7.
+- **Cases:** Progress without the fields loads, with `{}`, `{}` and `null` handed out and nothing written; malformed fields in storage are dropped without losing a done id; each setter stores, a repeated call does not stamp, notify or write to the cloud, zeros and empty Builds delete keys, and each `TypeError` case writes nothing; `setDone` on a Progress without the fields does not add them; `mergeLocalAndCloud` on first sign-in (larger number per colour; Builds for different Crests both kept; same Crest, newer copy wins, tie local; `shellShards` from the newer copy, `null` gives way; field on one side only; on neither stays absent) and afterwards (newer wins with the fields; a field absent from the winner comes from the other copy); `clearProgress` writes the empty fields and they beat an older cloud copy that has Builds; export keeps absent fields absent; import of a pre-Phase-5 backup adds ids only; import takes the larger slot numbers and reports `addedSlots`, adds Builds only for Crests without one, takes `shellShards` only when none is set; a backup with a malformed `builds` is rejected and changes nothing; with the fake cloud, a newer four-key snapshot keeps the local Builds, writes carry the fields, and a snapshot that differs only in `builds` calls `onProgressChange`.
+- **Done when:** all pass after P5-7 is merged.
+
+### P5-9 (qa-tests): validator rule 13 and the `effect` warning
+
+- **Files:** `scripts/validate-data.js`, `tests/validate-data.test.js` (QA 1). Starts after P5-2 is merged (same files).
+- **Exact changes:** rule 13 as written in `docs/CONTRACTS.md` section 6 (errors for the shape of `slots`, `slotsMax`, `grantsSlots`, `upgradeOf` and `effect`; warnings for a counted entry with `upgradeOf`, `toolColor` on a non-Tool, and a colour that differs from the base's); rule 10 also warns for `effect` over 200 characters; header comment matches section 6.
+- **Tests:** each error and each warning on its own, plus an `upgradeOf` loop and an `upgradeOf` pointing at a Region id.
+- **Done when:** all tests pass, and `node scripts/validate-data.js` and `node scripts/validate-data.js data/sample` print exactly what they printed before.
+
+### P5-10 (dev-b): mockup addendum for saving Builds, opened slots, Shell Shards and six links
+
+- **Goal:** mockups for what Athos's second answers add, before any code. Invented content only.
+- **Files:** new or changed files in `docs/design/trackers/` only (Dev B).
+- **Scope:**
+  1. Build picker: remove the "Guide suggestion" flag and its wording (no templates); for each slot a choice among owned Tools of that colour (Silk Skills for white); "Save this Build" with saved and unsaved states; a saved Build that no longer fits, with each problem shown and nothing removed; an "Opened slots" control per colour for the chosen Crest (Memory Lockets) with its limit; a Crest whose layout is not in the guide yet.
+  2. Rosaries page: a small place for the Shell Shards number the player types (a labelled number, not a panel), marked provisional until Athos confirms the reading.
+  3. The header with six links (Regions, Route, Trackers, Rosaries, Builds, Account) under option A, at 390, 360 and 320px. If it does not fit one row, show the problem and two options; do not choose.
+- **Done when:** desktop and phone screenshots as in T30, and Athos approves (the orchestrator records it). Nothing outside the folder changes.
+
+### P5-11 (orchestrator): sample data for the new pages
+
+- **Files:** `data/sample/*` (orchestrator). After P5-2 and P5-9 are merged.
+- **Scope:** invented entries only, in a **new** sample Region so the `regionProgress` numbers P5-4 pins for the existing sample Regions do not move: Crests with `slots` and `slotsMax`, one Crest without `slots`, an entry with `grantsSlots`, Tools of each colour and one without `toolColor`, an upgrade with `upgradeOf`, a Silk Skill, priced entries (some Available, some behind a requirement), a `counts: false` Memento and Equipment entry, and a `counts: false` Collectible that other entries require. Raise the sample `dataVersion`.
+- **Done when:** `node scripts/validate-data.js data/sample` gives no error and no warning, and the tests pass. If a pinned test still breaks, it goes to QA 1; no test is edited here.
+
+### P5-12 (dev-b): the Trackers page and its header link
+
+- **Goal:** `trackers.html` as in the T30 Trackers mockups, and the Trackers link in every header.
+- **Files:** new `trackers.html`, `js/trackers-page.js`, `css/trackers.css`; the header only in `index.html`, `region.html`, `route.html`, `account.html`; `css/components.css` (the option A label rule only); `js/render.js` (new exports only, no behaviour change) if needed.
+- **Depends on:** P5-3 merged; P5-10 approved (for the header check); P5-11 merged.
+- **Scope:** `data-page="trackers"`; tabs and their keyboard behaviour as in the mockup. A tab's done and total include every entry in it, counted or not (they are not completion counts). The type-to-tab table from `docs/CONTRACTS.md` section 8 is one constant at the top of `trackers-page.js`, with a comment saying it is a proposal awaiting Athos; types with no tab are not shown, and the handoff lists them. A tab with no entries reads "Not in the guide yet". Marking goes through `setDone`. Spoilers follow the mockup; where it is silent, use the Region page rule (hidden while the Region is not Visited, with the show-everything option) and say so. The header gets "Trackers" on all five pages, with `aria-current` on this one.
+- **Done when:** with the current data and with `?data=sample`, each tab's numbers match a hand count (say which), every Home, Region and Route number is unchanged, the header fits one row at 390, 360 and 320px, the tabs work with the keyboard, and the tests and validator pass.
+
+### P5-13 (dev-c): Drifter's Cloak becomes a Collectible; the Hunter Crest entry
+
+- **Goal:** the two "one entry per thing" cases from answer 2, with ids unchanged.
+- **Files:** `data/items.json`; `data/regions.json` and `data/endings.json` for `dataVersion` only (Dev C).
+- **Depends on:** P5-1, P5-2, P5-3 and P5-4 merged (before P5-3, Home counts by `kind` and the headline would grow by one). Athos confirms the Hunter Crest's Region, `step` and `how` (proposal: `moss-grotto`, a free step before 10).
+- **Exact changes, in this order:**
+  1. `drifters-cloak`: `kind` `"task"` becomes `"collectible"`, add `"counts": false`. Keep `id`, `name`, `type`, `regionId`, `how`, `requires`, `step` and `source` exactly. No new id, no second entry.
+  2. New `hunter-crest`: `kind` `"collectible"`, `type` `"crest"`, `counts: false`, `requires: []`, Region and `step` as Athos confirms, `how` in our words ("the starting Crest, owned from the beginning"), `source` from the sheet (owned from the start: KG, SK, GR, GS). No `slots`: its white slot is one of the disputed facts.
+  3. Raise `dataVersion` by one in all three files.
+- **Done when:** the validator gives no error and no warning; the tests pass; served locally, the Home Collectibles headline and "Collectibles by type" are unchanged, the Tasks total is one lower, the Far Fields numbers are unchanged, the Drifter's Cloak row shows as a Collectible (bead, "Collected": expected), `mask-shard-far-fields`, `fourth-chorus` and Hunter's March stay Locked until it is done as before, and a Progress that had `drifters-cloak` done still shows it done. The handoff gives the numbers before and after.
+
+### P5-14 (dev-c): build fields on the entries already in `data/`
+
+- **Files:** `data/*.json` (Dev C).
+- **Depends on:** P5-9 and P5-13 merged; Athos says which undisputed facts of `docs/PHASE-5-SHEET-1-BUILDS.md` may enter data.
+- **Scope:** only entries that already exist: `toolColor` on the 23 Tools, `effect` where the sheet has one, `slots` and `slotsMax` only on Crests whose layout is not in section 5 and that Athos cleared. Nothing from the ten disputed points; no new entries (new Tools and Crests come with the Act 2 and Act 3 batches). Raise `dataVersion`.
+- **Done when:** validator clean, tests pass, the handoff maps each field to its sheet row.
+
+### P5-15 (qa-tests): tracked-only types from the Mementos and Equipment sheet
+
+- **Files:** `scripts/validate-data.js`, `tests/validate-data.test.js`. **Depends on:** sheet 2 approved by Athos.
+- **Scope:** add the sheet's types to `TRACKED_TYPES`, with a test for each. **Done when:** tests pass and both validator outputs are unchanged.
+
+### P5-16 (dev-c): Mementos and Equipment
+
+- **Files:** `data/*.json`. **Depends on:** sheet 2 approved, P5-15 and P5-12 merged.
+- **Scope:** only the Regions already in `data/`; the rest waits for the Act 2 and Act 3 batches. All `counts: false`. **Done when:** validator clean, tests pass, the Home headline is unchanged, and the Mementos and Equipment tabs show the new entries.
+
+### P5-17 (dev-b): the Rosaries page, its header link and the Shell Shards number
+
+- **Files:** new `rosaries.html`, `js/rosaries-page.js`; `css/trackers.css`; the header only in the five existing pages; `js/render.js` (new exports only) if needed.
+- **Depends on:** P5-1 and P5-12 merged; the T30 Rosaries mockups. The Shell Shards part also needs Athos's confirmation, P5-7 merged (after G1) and P5-10 approved; without them, ship the page without it.
+- **Scope:** `data-page="rosaries"`; numbers from `rosariesToSpend` (`total`, `available`); entries in `ids` order; "Next to buy" = the first id in `ids` that `isAvailable` says is Available, with no affordability check; marking bought through `setDone`; the four mockup states (partial, nothing marked, complete, not in the guide yet); the Shell Shards number through `setShellShards`, shown from `loadProgress` and `onProgressChange`. The header gets "Rosaries".
+- **Done when:** with `?data=sample` the totals match a hand sum of the sample prices (say which), Next to buy moves when it is marked, the header fits at 320px, and tests and validator pass.
+
+### P5-18 (dev-c): shop prices
+
+- **Files:** `data/*.json`. **Depends on:** sheet 3 (shops and prices) approved by Athos; P5-2 merged.
+- **Scope:** `price` on existing shop entries from the sheet, only where the price is not disputed. **Done when:** validator clean, tests pass, the Rosaries page totals match the sheet.
+
+### P5-19 (dev-a): `js/builds.js`
+
+- **Files:** new `js/builds.js` (Dev A). **Depends on:** the contract text (section 2a) approved; can start any time after P5-11.
+- **Scope:** `slotsFor`, `ownedByColour`, `checkBuild` exactly as in section 2a; pure; build an id index once per call, as `requirements.js` does.
+- **Done when:** a throwaway script against `data/sample` prints the three results for each sample Crest (paste it); `node --test "tests/*.test.js"` still passes.
+
+### P5-20 (qa-tests): tests for `builds.js`
+
+- **Files:** new `tests/builds.test.js`. Covers the list under section 2a. Merged after P5-19.
+
+### P5-21 (dev-b): the Build picker and its header link
+
+- **Files:** new `builds.html`, `js/builds-page.js`; `css/trackers.css`; the header only in the six existing pages; `js/render.js` (new exports only) if needed.
+- **Depends on:** G1 and P5-7 merged, P5-19 merged, P5-10 approved, P5-11 merged.
+- **Scope:** `data-page="builds"`; the Crests offered are the Crest entries marked done (the Hunter Crest too, once ticked; no special case); slots from `slotsFor` (null = "Not in the guide yet"); choices from `ownedByColour`; save through `setBuild`; opened slots through `setCrestSlots`, limited to `slotsMax - slots`; problems from `checkBuild`, shown and never removed by the page; the saved Build and opened slots follow `onProgressChange` (another device). The header gets "Builds".
+- **Done when:** with `?data=sample`, choosing, saving, reloading, opening a slot up to its limit, and a saved Build that stops fitting after unmarking a Tool all behave as the mockup says (list each); header fits at 320px; tests and validator pass.
+
+### P5-22 (dev-a): sync rehearsal for the player choices
+
+- **Files:** `tools/sync-rehearsal.mjs`, `tools/README.md` (Dev A). **Depends on:** P5-21 merged. Emulator only, never the real project.
+- **Scenarios:** device A saves a Build and opens a slot, device B shows both; a first sign-in where both devices saved Builds (different Crests both kept; the same Crest keeps the newer); opened slots take the larger number; a newer four-key document written straight to the Emulator (an older page) leaves B's Builds in place, and B's next change writes them back; "Start a new run" on A clears A's Builds, and B's after A's next change.
+- **Done when:** the rehearsal command in `CLAUDE.md` passes; output in the handoff.
+
+### P5-23 (dev-a): save file spike (research only)
+
+- **Files:** none in the repository. Throwaway work in the scratchpad; findings in the handoff, which the orchestrator files in `docs/research/`.
+- **Questions:** the format layers and what decrypting in a browser needs; where the decrypted data keeps Tools, Crests, Mask Shards, Spool Fragments, Mementos and wishes (from the community tools' public descriptions, or a save file Athos supplies himself); how large a save-flag-to-entry-id table would be and how it would follow game patches; the licences of the community tools. Do not copy the decryption key into the repository or the handoff; say where it comes from.
+- **Done when:** the handoff answers each question and says what could not be checked.
+
+### P5-24 (dev-a, acting as Dev B for one page): read-only save preview
+
+- **Depends on:** P5-23, Athos's answer on shipping the key, and the reader's contract (the orchestrator writes it after the spike).
+- **Outline (exact files and signatures come with that contract):** the player picks their save file; it is read in the browser and never uploaded or sent anywhere; the page lists what it says as entry names, plus anything it could not map; it writes nothing to Progress. An "add to my Progress" step, if Athos wants one, is a later task that goes through the union import.
+
+### Risks of the second round (and how the tasks avoid them)
+
+- **Sync errors if `progress.js` goes live before the rules.** Gate G1: P5-7 waits for Athos to publish.
+- **An older page erases saved Builds.** "Missing is not empty" (contract section 1), tested in P5-8 and rehearsed in P5-22.
+- **Sample data moves pinned test numbers.** P5-11 adds everything in a new sample Region.
+- **Six links may not fit a 320px header.** P5-10 checks first; if they do not fit, Athos chooses.
+- **The Drifter's Cloak change moves the Tasks total by one** and changes its row from knot to bead. Expected; P5-13's done criteria list it so it is not mistaken for a bug.
+- **Shell Shards may mean something else.** Built only after Athos confirms.
+- **Unchecked facts reaching data.** Disputed facts stay out; undisputed ones need Athos's go (P5-14).
+- **The game's decryption key in a public repository.** P5-24 waits for Athos.

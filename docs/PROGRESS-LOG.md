@@ -122,6 +122,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Full-tracker scope** (Athos, 2026-10-20: everything possible, Hollow-Thingy as the model). Answers: Mementos and equipment tracked and not counted in the headline; Rosaries by ticking shop entries (prices on entries, Progress stays ids only); a Build picker from what the player owns; mockups first; save-file import in, soundtrack out; trackers before Acts 2 and 3. Plan: `docs/PHASE-5-FULL-TRACKER-PLAN.md`. **Contracts drafted** (orchestrator): optional `counts`, `price`, `toolColor`; `isCounted` and `rosariesToSpend`; validator rules; ADR 0005; briefs P5-1 to P5-4. **Athos reviews the contract text before P5-1 and P5-2 start.** Rule: no data with the new fields until P5-1, P5-2 and P5-3 are merged (else the headline count moves). Running: Crest/Tool sheet (orchestrator), mockups T30 (dev-b), Act 2 and 3 sheets (orchestrator).
 
+- **Phase 5 contracts, second round** (orchestrator, from Athos's answers of 2026-10-20; **the text awaits his review**; not committed). First-round contract text approved. New: one entry per thing (Drifter's Cloak becomes a `counts: false` Collectible, same id, after P5-3; Hunter Crest a normal `counts: false` entry); Build fields on entries (`slots`, `slotsMax`, `grantsSlots`, `upgradeOf`, `effect`; no `data/builds.json`); `js/builds.js` (pure); Progress gets optional `crestSlots`, `builds` and provisional `shellShards` with per-field merge and import rules and "missing is not empty" (ADR 0006, ADR 0001 addendum); `firestore.rules` must accept them as optional keys, and Athos publishes that before the new `progress.js` merges (gate G1); three new pages and header links. Briefs P5-5 to P5-24 in `docs/PHASE-5-FULL-TRACKER-PLAN.md`. Files: `docs/CONTRACTS.md`, `GLOSSARY.md`, `docs/STRUCTURE.md`, `docs/AGENT-PLAN.md`, ADRs 0001, 0005, 0006.
+
 ## Open
 
 - Athos: are `firestore.rules` published to the Firebase project? (T8 merged; when last recorded the published rules still denied everything.) Then the two-device check on the real site, which closes Phase 1.
@@ -131,3 +133,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - Athos: the wiki's license name (checklist item 4) and hero images (item 9).
 - `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
 - Act 1 deferred entries (`docs/PHASE-3-ACT-1.md`, last section) wait for the batch that adds Clawline, Faydown Cloak, Silk Soar and the Citadel.
+- Athos: review the second-round Phase 5 contract text (`docs/CONTRACTS.md` section 7, last entry; ADR 0006).
+- Athos: Shell Shards, a number he types or a count of sources found? (`shellShards` is provisional.)
+- Athos: may sheet 1's undisputed facts enter `data/` (P5-14)? The ten disputed ones stay open.
+- Athos: the Trackers tab for the counted upgrade types (a seventh tab or none), and the type-to-tab proposal (contract section 8).
+- Athos: may the public repository ship the game's save decryption key (P5-24)?
+- Gate G1: Athos publishes `firestore.rules` after P5-5 and P5-6 pass in the Emulator; P5-7 and P5-8 are not merged before that.
+- `CLAUDE.md` rule 5 and `.claude/rules/sync.md` still say Progress stores only ids; they need Athos's go-ahead to be updated (ADR 0006).
