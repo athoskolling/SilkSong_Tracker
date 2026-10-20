@@ -53,7 +53,7 @@ Accepted below 3:1 (2026-10-20, QA finding F8), because each is decoration or it
 - **Body and UI: Instrument Sans**, weights 400, 500 and 600.
 - Scale used by the mockups: 100/52 title, 24 logo, 19 entry name (600), 18 intro, 15 body and nav, 14 helper text, 13 meta (type label, "Step N"). Step numbers use `font-variant-numeric: tabular-nums`.
 - Body line length is capped at about 60 characters (`max-width: 60ch`); the region intro at 46ch.
-- Loading: the mockups use Google Fonts. The real site may use that with `display=swap` or self-host the woff2 files. Dev B decides and records it in the handoff note. Either way, give a system-font fallback (`Georgia, serif` for Gloock, `system-ui, sans-serif` for Instrument Sans).
+- Loading: **self-hosted** (Athos, 2026-10-20), so a visitor's browser does not contact Google for fonts. The woff2 files, their SIL Open Font License texts and their sources are in `css/fonts/`; `@font-face` in `css/base.css` uses `font-display: swap`. The mockups still load Google Fonts; that is only the mockups. Either way, give a system-font fallback (`Georgia, serif` for Gloock, `system-ui, sans-serif` for Instrument Sans).
 - Sentence case everywhere. No all-caps labels.
 
 ## 5. Components

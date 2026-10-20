@@ -77,6 +77,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Phase 2 review** (orchestrator, against `docs/AGENT-PLAN.md` section 8, on cf5f2b0): passed: validator, `requirements.js` tests (185 in all), Progress without login and backup files, starts empty, Locked and spoiler behaviour, rules in the Emulator (22 of 22, re-run today), source and attribution, QA with no critical or major findings open. Not checked yet (Athos): sign-in and two-device sync, sign-in on the published domain. V1 content (batch 1, five Endings) waits on checklist items 4 and 8. Phase 2 code is done.
 
+- **T21 merged** (`dev-b/self-host-fonts`): Gloock and Instrument Sans (variable) served from `css/fonts/` (127 KB of woff2, unmodified conversions of the `google/fonts` files at recorded commits, OFL texts beside them); Google Fonts links removed from every page. Orchestrator ran: 185 tests pass, validator passes; in a real browser every page contacts only the site and `www.gstatic.com` (the Firebase SDK), both fonts render, no 4xx. Recorded in `docs/DESIGN.md` section 4. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

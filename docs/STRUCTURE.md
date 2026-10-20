@@ -68,7 +68,8 @@ silksong-guide/
 ├── account.html            # sign-in, backup file, new run
 ├── css/
 │   ├── base.css            # reset, variables (tokens), typography
-│   └── components.css      # entry rows, plates, thread/progress bars
+│   ├── components.css      # entry rows, plates, thread/progress bars
+│   └── fonts/              # self-hosted Gloock and Instrument Sans, with their OFL licenses
 ├── js/
 │   ├── main.js             # entry point; picks behaviour by <body data-page="...">
 │   ├── firebase.js         # init + auth + Firestore
