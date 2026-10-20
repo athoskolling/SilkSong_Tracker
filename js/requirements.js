@@ -150,12 +150,42 @@ export function missingFor(itemId, doneSet, items, regions) {
   return itemMissing(buildIndex(items, regions), itemId, doneSet);
 }
 
-// How many Collectibles in the Region are done, out of how many. Tasks never count, because they
-// add nothing to the completion counts. (Regions are not needed: an entry names its own Region.)
+// Is this entry part of the completion counts? Only a Collectible the game itself counts toward
+// 100 percent: kind "collectible" and `counts` not false (a Memento or a piece of Equipment has
+// counts: false; ADR 0005). This is the one place the rule is written, so the Home numbers and the
+// Region numbers cannot disagree. A Task is never counted, whatever its `counts` says. It looks
+// nothing up, so it never throws.
+export function isCounted(item) {
+  return item.kind === 'collectible' && item.counts !== false;
+}
+
+// How many counted Collectibles in the Region are done, out of how many. Tasks never count, because
+// they add nothing to the completion counts, and neither do Collectibles with counts: false.
+// (Regions are not needed: an entry names its own Region.)
 export function regionProgress(regionId, doneSet, items) {
-  const collectibles = items.filter((item) => item.regionId === regionId && item.kind === 'collectible');
+  const collectibles = items.filter((item) => item.regionId === regionId && isCounted(item));
   const done = collectibles.filter((item) => doneSet.has(item.id)).length;
   return { done, total: collectibles.length };
+}
+
+// Rosaries the guide still expects the player to spend: the prices of shop entries (entries with a
+// `price`) that are not done. `total` is all of them; `available` is the part the player can buy now
+// (the entry is Available); `ids` lists those entries in route order. Entries without a price are
+// ignored, and counted or not makes no difference (a Rosary is spent either way). Progress stores no
+// Rosaries number (ADR 0005), so this is worked out from ids and prices every time.
+export function rosariesToSpend(doneSet, items, regions) {
+  const index = buildIndex(items, regions);
+  const shopEntries = itemsInRouteOrder(items).filter(
+    (item) => item.price !== undefined && item.price !== null && !doneSet.has(item.id)
+  );
+
+  let total = 0;
+  let available = 0;
+  for (const item of shopEntries) {
+    total += item.price;
+    if (itemIsAvailable(index, item.id, doneSet)) available += item.price;
+  }
+  return { total, available, ids: shopEntries.map((item) => item.id) };
 }
 
 // Can the player enter the Region? True when every id in the Region's `requires` is done.
