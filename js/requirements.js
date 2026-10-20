@@ -240,6 +240,18 @@ export function missingForRegion(regionId, doneSet, regions, items) {
   return regionMissing(buildIndex(items, regions), regionId, doneSet);
 }
 
+// Like missingFor, but for a Place (places.json, ADR 0007): what is still missing for the player to
+// reach it, in route order. Its requirements are its own `requires` plus its Region's, walked exactly
+// like an entry's. It takes the Place object, not an id, because Places are not in `items` and this
+// module never sees places.json. A Place cannot be part of a cycle (nothing requires a Place), so no
+// start id goes on the walk's path; a cycle among entries is still caught. The object is not changed.
+export function missingForPlace(place, doneSet, items, regions) {
+  const index = buildIndex(items, regions);
+  const regionRequires = requirementsOfRegion(index, place.regionId);
+  const missing = walkMissing(index, doneSet, [...(place.requires ?? []), ...regionRequires]);
+  return sortByStep(index, missing);
+}
+
 // "Next on the route": the not-done, Available entry on the Route with the lowest `step`.
 // An entry off the Route is never returned, even when it is Available and has the lowest `step`.
 // null when nothing Available is left on the Route.
