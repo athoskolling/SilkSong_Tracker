@@ -302,6 +302,11 @@ export async function writeProgressDoc(uid, progress) {
     updatedAt: progress.updatedAt,
     dataVersion: progress.dataVersion,
   };
+  // The player's choices (ADR 0006) are copied only when present: "missing is not
+  // empty", so a Progress that never had them must not gain empty ones in the cloud.
+  for (const key of ['crestSlots', 'builds']) {
+    if (progress[key] !== undefined) body[key] = progress[key];
+  }
   const services = await getServices();
   try {
     // setDoc without merge replaces the whole document, so an unmarked id really disappears.

@@ -16,6 +16,8 @@ import {
   onProgressChange,
   onSyncStatus,
   clearProgress,
+  setCrestSlots,
+  setBuild,
 } from '../js/progress.js';
 import { onAuthChange, watchProgressDoc } from '../js/firebase.js';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -628,6 +630,220 @@ test('only firebase.js loads the Firebase SDK, and no page loads a script from e
     const remoteScripts = [...html.matchAll(/<script[^>]*\ssrc="(https?:[^"]*)"/g)].map((m) => m[1]);
     assert.deepEqual(remoteScripts, [], `${file} loads a script from another address`);
   }
+});
+
+// ------------------------------------- player choices (ADR 0006), through the cloud
+// crestSlots and builds ride along in the one Progress document. "Missing is not empty": a copy
+// without them came from an older page and must not erase them (docs/CONTRACTS.md section 3).
+
+const CREST = 'reaper-crest';
+const CREST_B = 'second-crest';
+const BUILD_A = { red: ['tool-one'] };
+const BUILD_B = { blue: ['tool-two'] };
+
+// Signed in, with one Build saved on this device and already pushed to the cloud.
+async function signedInWithBuild() {
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setBuild(CREST, BUILD_A);
+  await flush();
+  return cloud;
+}
+
+test('first sign-in: the player choices are united on both sides and the union is written to the cloud', async () => {
+  useStorage(
+    (storage = seed({
+      done: { a: true },
+      visited: {},
+      updatedAt: 1000,
+      dataVersion: 1,
+      crestSlots: { [CREST]: { blue: 2 } },
+      builds: { [CREST_B]: BUILD_A },
+    }))
+  );
+  const cloud = makeCloud({
+    ...doc(['b'], 500),
+    crestSlots: { [CREST]: { blue: 1, red: 3 } },
+    builds: { [CREST]: BUILD_B },
+  });
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+
+  const expectedSlots = { [CREST]: { red: 3, blue: 2 } };
+  const expectedBuilds = { [CREST]: BUILD_B, [CREST_B]: BUILD_A };
+  assert.deepEqual(stored(storage).crestSlots, expectedSlots);
+  assert.deepEqual(stored(storage).builds, expectedBuilds);
+  assert.deepEqual(cloud.doc.crestSlots, expectedSlots);
+  assert.deepEqual(cloud.doc.builds, expectedBuilds);
+  assert.equal('syncedUid' in cloud.doc, false);
+});
+
+test('first sign-in with no cloud copy pushes a device whose only content is a Build', async () => {
+  useStorage((storage = seed({ done: {}, visited: {}, updatedAt: 1000, dataVersion: 1, builds: { [CREST]: BUILD_A } })));
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  assert.equal(cloud.writes().length, 1, 'a Build is content: it must reach the cloud');
+  assert.deepEqual(cloud.doc.builds, { [CREST]: BUILD_A });
+});
+
+test('first sign-in on a device without the fields takes the cloud copy\'s fields', async () => {
+  useStorage((storage = seed({ done: { a: true }, visited: {}, updatedAt: 1000, dataVersion: 1 })));
+  const cloud = makeCloud({ ...doc(['b'], 500), builds: { [CREST]: BUILD_A }, crestSlots: { [CREST]: { blue: 1 } } });
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A });
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { blue: 1 } });
+});
+
+test('a Build saved while signed out is combined with the cloud Builds at the next sign-in', async () => {
+  const cloud = makeCloud({ ...doc(['b'], 100), builds: { [CREST_B]: BUILD_B } });
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await cloud.signOut();
+  await setBuild(CREST, BUILD_A); // marked while signed out
+  await flush();
+  await cloud.signIn('u1');
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A, [CREST_B]: BUILD_B });
+  assert.deepEqual(cloud.doc.builds, { [CREST]: BUILD_A, [CREST_B]: BUILD_B });
+});
+
+test('a newer cloud copy with no player choices (an older page wrote it) keeps the Build saved here', async () => {
+  const cloud = await signedInWithBuild();
+  listen();
+  const writes = cloud.writes().length;
+  cloud.watchCallback(doc(['x'], Date.now() + 10_000)); // four keys only, and newer
+  await flush();
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A });
+  assert.deepEqual([...changes.at(-1).done], ['x'], 'the newer ids are taken');
+  assert.deepEqual(changes.at(-1).builds, { [CREST]: BUILD_A }, 'and the page keeps the Build');
+  assert.equal(cloud.writes().length, writes, 'not pushed back before the next change');
+});
+
+test('the next change after that writes the kept Build back to the cloud', async () => {
+  const cloud = await signedInWithBuild();
+  cloud.watchCallback(doc(['x'], Date.now() + 10_000));
+  await flush();
+  await setDone('y', true);
+  await flush();
+  assert.deepEqual(cloud.doc.builds, { [CREST]: BUILD_A });
+  assert.deepEqual(Object.keys(cloud.doc.done).sort(), ['x', 'y']);
+});
+
+test('a cloud copy that differs only in its Builds reaches the page', async () => {
+  const cloud = await signedInWithBuild();
+  listen();
+  cloud.watchCallback({ ...doc([], Date.now() + 10_000), builds: { [CREST]: BUILD_B } });
+  await flush();
+  assert.equal(changes.length, 1);
+  assert.deepEqual(changes[0].builds, { [CREST]: BUILD_B });
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_B });
+});
+
+test('a cloud copy that differs only in its opened slots reaches the page', async () => {
+  const cloud = await signedInWithBuild();
+  listen();
+  cloud.watchCallback({ ...doc([], Date.now() + 10_000), crestSlots: { [CREST]: { blue: 1 } } });
+  await flush();
+  assert.equal(changes.length, 1);
+  assert.deepEqual(changes[0].crestSlots, { [CREST]: { blue: 1 } });
+  assert.deepEqual(changes[0].builds, { [CREST]: BUILD_A }, 'a field the cloud copy lacks keeps this device\'s value');
+});
+
+test('an older cloud copy that differs only in its Builds is ignored', async () => {
+  const cloud = await signedInWithBuild();
+  listen();
+  cloud.watchCallback({ ...doc([], 1), builds: { [CREST]: BUILD_B } });
+  await flush();
+  assert.equal(changes.length, 0);
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A });
+});
+
+test('the watch echo of a Build this device wrote changes nothing', async () => {
+  const cloud = await signedInWithBuild();
+  listen();
+  cloud.watchCallback(structuredClone(cloud.doc));
+  await flush();
+  assert.equal(changes.length, 0);
+});
+
+test('writes carry the player choices, and no write carries syncedUid', async () => {
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, BUILD_A);
+  await flush();
+  assert.deepEqual(cloud.doc.crestSlots, { [CREST]: { blue: 2 } });
+  assert.deepEqual(cloud.doc.builds, { [CREST]: BUILD_A });
+  assert.ok(cloud.writes().length >= 1);
+  for (const [, , payload] of cloud.writes()) assert.equal('syncedUid' in payload, false);
+});
+
+test('an ordinary change does not add the player choices to a cloud document that has none', async () => {
+  const cloud = makeCloud(doc(['b'], 100));
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setDone('a', true);
+  await flush();
+  const last = cloud.writes().at(-1)[2];
+  assert.deepEqual(Object.keys(last.done).sort(), ['a', 'b']);
+  assert.equal('crestSlots' in last, false);
+  assert.equal('builds' in last, false);
+  assert.equal('crestSlots' in cloud.doc, false);
+});
+
+test('a setter called again with the same value writes nothing to the cloud', async () => {
+  const cloud = await signedInWithBuild();
+  const writes = cloud.writes().length;
+  await setBuild(CREST, BUILD_A);
+  await setCrestSlots(CREST_B, {}); // nothing opened: nothing to store
+  await flush();
+  assert.equal(cloud.writes().length, writes);
+});
+
+test('clearProgress: the empty fields beat an older cloud copy that still has Builds', async () => {
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, BUILD_A);
+  await flush();
+  await clearProgress();
+  await flush();
+  assert.equal(cloud.doc, null, 'the cloud copy was deleted');
+
+  // Another device still holds the old run and sends it back. Its copy is older than the clear.
+  cloud.watchCallback({ ...doc(['old'], 1), crestSlots: { [CREST]: { blue: 2 } }, builds: { [CREST]: BUILD_A } });
+  await flush();
+  assert.deepEqual(stored(storage).builds, {}, 'the cleared Builds stay cleared');
+  assert.deepEqual(stored(storage).crestSlots, {});
+  assert.equal(stored(storage).done.old, undefined);
+  assert.deepEqual(cloud.doc.builds, {}, 'the empty value is written back over the old copy');
+  assert.deepEqual(cloud.doc.crestSlots, {});
+});
+
+// A newer local copy that has no Builds: the Build from the cloud must survive on both sides.
+// Scenario: this device was offline while another device saved a Build. Its own copy is newer,
+// and it was written by a page that never had the field. The merge rule keeps the cloud's value
+// (docs/CONTRACTS.md section 3, "afterwards"), so the result has to reach this device and the cloud.
+test('a newer local copy without Builds keeps the cloud Builds, here and in the cloud', async () => {
+  useStorage((storage = seed({ done: { a: true }, visited: {}, updatedAt: 3000, dataVersion: 1, syncedUid: 'u1' })));
+  const cloud = makeCloud({ ...doc(['b'], 2000), builds: { [CREST]: BUILD_A } });
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A }, 'this device keeps the cloud Build');
+  assert.deepEqual(cloud.doc.builds, { [CREST]: BUILD_A }, 'and the write does not erase it');
+});
+
+test('a newer local copy without opened slots keeps the cloud opened slots, here and in the cloud', async () => {
+  useStorage((storage = seed({ done: { a: true }, visited: {}, updatedAt: 3000, dataVersion: 1, syncedUid: 'u1' })));
+  const cloud = makeCloud({ ...doc(['b'], 2000), crestSlots: { [CREST]: { blue: 2 } } });
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { blue: 2 } }, 'this device keeps the cloud slots');
+  assert.deepEqual(cloud.doc.crestSlots, { [CREST]: { blue: 2 } }, 'and the write does not erase them');
 });
 
 // ------------------------------------------------------------- sample mode

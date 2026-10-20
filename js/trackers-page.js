@@ -206,6 +206,7 @@ async function runTrackersPage(app) {
       panel: panelView(TABS.find((tab) => tab.id === state.selected)),
       showAll: state.showAll,
       rosariesHref: pageHref('rosaries.html', {}, sample),
+      buildsHref: pageHref('builds.html', {}, sample),
     };
   }
 
