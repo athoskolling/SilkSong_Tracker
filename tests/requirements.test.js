@@ -608,6 +608,8 @@ test('data/sample: regionProgress numbers for every Region are pinned', () => {
     'sample-region-c': 0, // no entries yet
     'sample-region-e': 3, // crest, silk heart, second tool (the lever and the delivery are Tasks)
     'sample-region-d': 2, // silk skill, second shard
+    'sample-region-f': 8, // eight counted; the Task and the five counts: false entries are left out
+    'sample-region-g': 2, // crest four and second yellow tool (the memento is counts: false)
   };
   assert.deepEqual(regions.map((r) => r.id).sort(), Object.keys(totals).sort());
 
@@ -626,4 +628,10 @@ test('data/sample: regionProgress numbers for every Region are pinned', () => {
   assert.deepEqual(regionProgress('sample-region-c', some, items), { done: 0, total: 0 });
   assert.deepEqual(regionProgress('sample-region-e', some, items), { done: 1, total: 3 });
   assert.deepEqual(regionProgress('sample-region-d', some, items), { done: 0, total: 2 });
+
+  // Regions F and G: the done set also holds things that do not count (the cloak, a memento, a Task),
+  // so none of them may add to done. Only crest one, the red tool and crest four are counted here.
+  const someFG = done('sample-crest-one', 'sample-red-tool', 'sample-cloak', 'sample-slot-upgrade', 'sample-memento', 'sample-crest-four');
+  assert.deepEqual(regionProgress('sample-region-f', someFG, items), { done: 2, total: 8 });
+  assert.deepEqual(regionProgress('sample-region-g', someFG, items), { done: 1, total: 2 });
 });
