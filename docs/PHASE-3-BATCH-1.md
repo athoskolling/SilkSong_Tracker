@@ -6,7 +6,7 @@ This page gives the shape only. It contains no game facts.
 
 ## Before the entries: two questions for you
 
-1. **What counts as a Collectible?** `GLOSSARY.md` says stat items, Needle upgrades, abilities, Crests and Tools. List every kind the counters should include (for example: does each flea count, does each map?). Anything you leave out is either a Task (if it unlocks a Collectible) or not in V1.
+1. **What counts as a Collectible?** Decided 2026-10-20: what the game itself counts toward 100 percent (the list is in `GLOSSARY.md`). Anything else (fleas, maps, bosses, Wishes) is a Task only if it opens a Collectible or an Ending needs it; otherwise it is not in V1.
 2. **Which Tasks?** V1 keeps only Tasks that unlock a Collectible (`docs/STRUCTURE.md` section 2), plus anything an Ending depends on.
 
 ## How to write it
@@ -35,4 +35,4 @@ Entry: ______
 
 ## Endings (for V1, any time)
 
-V1 stores five Endings. For each: its name, the entries it needs (by name; anything it needs that is not already an entry becomes a Task), which other Endings it closes for good (Lockout), and its main wiki page.
+V1 stores the **four main Endings** (decided 2026-10-20). They depend on late-game entries, so they are written when those Regions are; the validator only accepts conditions that are existing entries. For each: its name, the entries it needs (by name; anything it needs that is not already an entry becomes a Task), which other Endings it closes for good (Lockout), and its main wiki page.

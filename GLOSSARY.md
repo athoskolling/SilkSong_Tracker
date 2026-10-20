@@ -5,7 +5,7 @@ A progress guide for Hollow Knight: Silksong that helps a player reach maximum c
 ## Language
 
 **Collectible**:
-A permanent thing a player can obtain that counts toward the site's completion counts (stat items, Needle upgrades, abilities, Crests, Tools).
+A permanent thing a player can obtain that counts toward the site's completion counts. The site follows what the game itself counts toward 100 percent (Athos, 2026-10-20): stat items (Mask Shards, Spool Fragments), Silk Hearts, Needle upgrades, abilities (Ancestral Arts and Silk Skills), Crests, Tools (an upgraded Tool is not counted again), Crafting Kit and Tool Pouch upgrades, Sylphsong and Everbloom.
 _Avoid_: Item, pickup, loot
 
 **Task**:
