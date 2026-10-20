@@ -577,7 +577,9 @@ test('rule 12: a Collectible with the type "ability" gives no warning', () => {
 });
 
 // Task types stay free: a Task can use any label, approved or not, and never warns.
-const TASK_TYPES = ['door', 'Boss fight', 'gizmo', 'mask-shards', 'Tool', 'silk_skill', 'tool'];
+// "key" is the type of simple-key in data/ (a Task), so it must stay free on a Task even though it is
+// now a tracked-only type for Collectibles.
+const TASK_TYPES = ['door', 'Boss fight', 'gizmo', 'mask-shards', 'Tool', 'silk_skill', 'tool', 'key'];
 for (const type of TASK_TYPES) {
   test(`rule 12: a Task with the type "${type}" does not warn`, () => {
     const dir = copySample();
@@ -675,9 +677,10 @@ function assertClean(result) {
   assert.deepEqual(result.warnings.map(formatProblem), [], 'no warnings');
 }
 
-// The tracked-only list from docs/CONTRACTS.md section 6, rule 12. Written out here on purpose, like
-// APPROVED_TYPES: when the Mementos and Equipment sheet grows the list, these tests show the change.
-const TRACKED_TYPES = ['memento', 'relic', 'map'];
+// The tracked-only list from docs/CONTRACTS.md section 6, rule 12, with the five types the Mementos and
+// Equipment sheet adds (docs/PHASE-5-SHEET-2-MEMENTOS-EQUIPMENT-SHOPS.md, section 2.2, P5-15). Written
+// out here on purpose, like APPROVED_TYPES: when the list grows, these tests show the change.
+const TRACKED_TYPES = ['memento', 'relic', 'map', 'map-tool', 'memory-locket', 'key', 'key-item', 'furnishing'];
 
 // ---- counts (shape, and rule 6 for a Task)
 
@@ -783,6 +786,40 @@ test('rule 12: counts false with the near miss "Relics" suggests "relic"', () =>
   const result = validate(dir);
   assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
   assert.match(result.warnings[0].message, /Did you mean "relic"\?$/);
+});
+
+// With counts: false, a near miss is looked up in both lists, so the suggestion can name a tracked-only
+// type (the sheet's five and the older three) or a counted one. Written out per type, so a missing
+// list entry fails by name.
+const BOTH_LISTS_NEAR_MISSES = [
+  { type: 'Memory_Lockets', suggestion: 'memory-locket' },
+  { type: 'Keys', suggestion: 'key' },
+  { type: 'key_items', suggestion: 'key-item' },
+  { type: 'map-tools', suggestion: 'map-tool' },
+  { type: 'Furnishings', suggestion: 'furnishing' },
+  { type: 'mask_shard', suggestion: 'mask-shard' }, // a counted type, found from the counts: false side
+];
+for (const { type, suggestion } of BOTH_LISTS_NEAR_MISSES) {
+  test(`rule 12: counts false with the near miss "${type}" suggests "${suggestion}" from either list`, () => {
+    const result = validate(withEntry('sample-key', 'collectible', { type, counts: false }));
+    assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+    assert.equal(
+      result.warnings[0].message,
+      `"type" "${type}" is not on the approved list for Collectibles. Did you mean "${suggestion}"?`
+    );
+  });
+}
+
+// fleas are Tasks (sheet 2, section 2.2, E4 open), and a Task's type is free, so no flea entry is needed
+// on either list. A Collectible of type flea is not on the list, so it gets the usual nudge.
+test('rule 12: a Task of type "flea" does not warn, so fleas need no list entry', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { type: 'flea' })));
+});
+
+test('rule 12: a Collectible of type "flea" with counts false warns, because fleas are Tasks', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { type: 'flea', counts: false }));
+  assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /"type" "flea" is not on the approved list for Collectibles/);
 });
 
 test('rule 12: counts false with a type on neither list names both lists and suggests nothing', () => {
