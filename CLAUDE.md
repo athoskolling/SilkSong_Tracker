@@ -14,7 +14,7 @@ Read the doc a task needs; do not load everything.
 - `docs/DESIGN.md` and `docs/design/`: the finished visual design (PNG screens, HTML mockups, tokens).
 - `docs/IMAGES.md`: hero image rules and credits.
 - `docs/PHASE-PROMPTS.md` and `docs/PHASE-0-CHECKLIST.md`: how each phase starts; what Athos must do himself.
-- `docs/adr/`: why: local-first with union merge (0001), permanent ids (0003), own Firebase project with Emulator-tested rules (0004, replaces 0002).
+- `docs/adr/`: why: local-first with union merge (0001), permanent ids (0003), own Firebase project with Emulator-tested rules (0004, replaces 0002), counts follow the game while trackers are wider (0005).
 - `.claude/rules/`: path-scoped rules (data, ui, tests, sync). They load when you touch matching files.
 - `athos-notes-pt-br/`: Athos's original Portuguese planning notes, for reference only. The English docs in `docs/` are the current ones.
 

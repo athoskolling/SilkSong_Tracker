@@ -1,6 +1,6 @@
 # Contracts
 
-**Status: approved by Athos, 2026-10-19 (Phase 0).** Still hypotheses until the vertical slice (Phase 1) proves them; changes after this are recorded with their reason. Changing a contract is the orchestrator's job; no one else edits this file. A doubt about a contract is a question for the orchestrator, never something to improvise.
+**Status: approved by Athos, 2026-10-19 (Phase 0).** Still hypotheses until the vertical slice (Phase 1) proves them; changes after this are recorded with their reason. **The Phase 5 (full tracker) additions of 2026-10-20 (`counts`, `price`, `toolColor`, `isCounted`, `rosariesToSpend`, rules 6, 11 and 12) follow Athos's answers in `docs/PHASE-5-FULL-TRACKER-PLAN.md`, but their exact text awaits his review before anyone builds them.** Changing a contract is the orchestrator's job; no one else edits this file. A doubt about a contract is a question for the orchestrator, never something to improvise.
 
 Terms follow `GLOSSARY.md`. In code and JSON, an entry is stored in `items.json` and its `kind` is `collectible` or `task`.
 
@@ -70,7 +70,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 |---|---|---|---|
 | `id` | string | yes | permanent slug |
 | `name` | string | yes | |
-| `kind` | `"collectible"` \| `"task"` | yes | only `collectible` counts in counters |
+| `kind` | `"collectible"` \| `"task"` | yes | only counted Collectibles count in counters (`kind: "collectible"` and `counts` not `false`; see "Counted and tracked entries" below) |
 | `type` | string | yes | free label, for example `ability`, `tool`, `crest`, `upgrade`, `boss`, `quest`, `flea`, `door`, `mask-shard` |
 | `regionId` | string | yes | must exist in `regions.json` |
 | `area` | string | no | Sub-area label, text only |
@@ -82,6 +82,15 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 | `step` | integer | yes | position in the one global Route; unique across all entries |
 | `spoiler` | `0` \| `1` \| `2` | no | lets an entry stay hidden until the player gets there. What each level means is still open (see section 7); V1 only needs "hidden while its Region is not Visited" versus "shown", so treat every entry as hidden-until-Visited unless Athos says otherwise |
 | `source` | string (URL) | yes | link to the page the entry was checked against (the main wiki, MapGenie, or for Act 1 the guide page the orchestrator read, until Athos swaps it); a reference, not a copy |
+| `counts` | boolean | no | Phase 5. Default `true` for a `collectible`, so every existing entry means what it meant before. `false` = a Collectible the game does not count toward 100 percent (a Memento, a piece of Equipment): it is tracked on its Tracker but never in the headline counts or in `regionProgress` (ADR 0005). A Task never counts, so `counts: true` on a Task is an error (rule 6) |
+| `price` | integer, 1 or more | no | Phase 5. Rosaries a vendor asks for this entry (a shop entry). Marking it done means "bought". "Rosaries still to spend" is derived from the prices of shop entries not done (`rosariesToSpend`, section 2), so Progress stays ids only (ADR 0005). Purchase prices only: what a vendor pays the player (for a Relic, for example) is not recorded. Every source read so far has shops taking Rosaries only, so there is no `currency` field; it is added (default Rosaries) only if a shop entry priced in Shell Shards turns up |
+| `toolColor` | `"red"` \| `"blue"` \| `"yellow"` | no | Phase 5. For `type: "tool"`: the Tool's colour, which decides which Crest slots it fits; the Build picker reads it. Optional so the existing Tools stay valid; the Crest and Tool sheet fills it in |
+
+#### Counted and tracked entries (Phase 5, ADR 0005)
+
+The headline numbers (Home totals, "Collectibles by type", Region cards and `regionProgress`) follow the game's own 100 percent list and use **counted Collectibles** only: `kind === "collectible"` and `counts !== false`. The one place that rule is written in code is `isCounted(item)` in `js/requirements.js` (section 2); the interface uses it instead of testing `kind` itself. Every entry, counted or not, still has a Region, a `step`, `requires` and a `source`, takes part in requirement chains exactly as before, and is marked done in Progress the same way.
+
+A Tracker shows one category of entries with its own done and total, counted or not. Which Tracker an entry belongs on is decided by its `type`; the grouping of types into Trackers belongs to the design pass (section 8). The `type` of a Collectible is checked against two approved lists (rule 12): counted types (the existing list) and tracked-only types (`memento`, `relic`, `map` for now). A Collectible with `counts: false` may also use a counted type (for example an ability the game does not count).
 
 ### `endings.json`
 
@@ -117,6 +126,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 - `updatedAt` is milliseconds since the epoch, set by `progress.js` on every change.
 - `dataVersion` is the version of `data/` the Progress was last saved against. Progress is never migrated or dropped because of a version change; ids that no longer exist are ignored by the interface and kept in storage.
 - localStorage key: `silksong-guide:progress:v1`. Firestore: `silksong_progress/{uid}`, same shape.
+- Phase 5 adds nothing here (Athos, 2026-10-20): a Memento found or a shop entry bought is an id in `done` like any other entry, so union merge, import, export and the Firestore rules are unchanged. There is no Rosaries number in Progress (ADR 0005).
 
 ## 2. `js/requirements.js` (pure functions, no I/O)
 
@@ -143,7 +153,21 @@ missingFor(itemId, doneSet, items, regions) -> string[]
 // An id already in doneSet is never listed. Only entry ids are ever returned.
 
 regionProgress(regionId, doneSet, items) -> { done: number, total: number }
-// Counts entries with kind === 'collectible' in the Region. Tasks never count.
+// Counts the entries in the Region for which isCounted(entry) is true. Tasks never count, and
+// neither do Collectibles with counts: false (Phase 5). For data with no `counts` field this is the
+// same as kind === 'collectible', so no existing number moves.
+
+isCounted(item /* one entry object */) -> boolean
+// Phase 5. The one place the counting rule lives: item.kind === 'collectible' && item.counts !== false.
+// A Task is never counted, whatever its `counts` says. Does not look anything up, so it never throws.
+// The interface uses it for the headline numbers (Home totals, "Collectibles by type") instead of
+// testing `kind` itself, so the Home and Region numbers cannot disagree.
+
+rosariesToSpend(doneSet, items, regions) -> { total: number, available: number, ids: string[] }
+// Phase 5, needed for the Rosaries panel (step 4 of the plan). Over every entry with a `price` that is
+// not in doneSet: `total` is the sum of their prices, `available` the sum for those that are Available
+// now, `ids` those entries ordered by `step`. Entries without `price` are ignored. Counted or not makes
+// no difference (a Rosary is spent either way). Unknown ids in `requires` throw, as everywhere here.
 
 isRegionAvailable(regionId, doneSet, regions) -> boolean
 // true when every id in the Region's `requires` is in doneSet.
@@ -164,7 +188,7 @@ holdingYouUp(doneSet, items, regions) -> Array<{ id: string, blocks: string[] }>
 // Needed in Phase 2 (Home and Route); Athos may write it then.
 ```
 
-Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`.
+Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`. Phase 5: `regionProgress` leaves out a Collectible with `counts: false` and keeps one with `counts: true` or no `counts`; `isCounted` is false for every Task, even one with `counts: true`; an entry with `counts: false` or a `price` still works in `requires` chains, `nextStep` and `holdingYouUp` exactly like any other entry; `rosariesToSpend` leaves out done entries and entries without a price, and splits Available from not Available.
 
 Athos delegated this module to Dev A on 2026-10-19 (Phase 1) and reviews it. Agents write tests against these signatures.
 
@@ -287,6 +311,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - Each page sets `<body data-page="home|region|route|account">`; `main.js` picks behaviour from it.
 - Exception (Phase 2): `account.html` also loads `js/account-page.js`, which builds the Backup file, Start a new run, How saving works and Guide data sections. `main.js` keeps the sign-in plate. Why: it lets the Account page and the Home and Route pages be built at the same time without two people editing `main.js` and `render.js`. It may be folded into `main.js` later. **The one point where they meet:** `account-page.js` finds the element with class `account-column` that `render.js` builds on the Account page and adds its sections after the sign-in plate. `render.js` must keep that class on the Account page's main column; renaming it breaks the Account page without an error.
 - Every state in the design has a visible equivalent in the interface: Available, Locked, Visited, Complete, Not in the guide yet, next on the route, missable, needs something, done.
+- Phase 5: any number that claims to be a completion count (Home totals, "Collectibles by type", Region cards) selects entries with `isCounted` from `requirements.js`, never with `kind === 'collectible'` directly. This must be in `main.js` before the first entry with `counts: false` reaches `data/`, or the headline number would include it.
 
 ## 6. Cross-checks the validator must enforce (`scripts/validate-data.js`)
 
@@ -295,13 +320,13 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 3. `regionId` of every entry exists; every id in `requires` (entries and Regions) and `conditions` exists **and is an entry id** in `items.json`.
 4. No cycles in `requires`, where an entry also depends on its Region's `requires` (so a Region that requires an entry inside itself is a cycle).
 5. `step` is a unique integer across all entries.
-6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`.
+6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
 7. Every entry has `source`, `how` and a non-empty `name`.
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
-11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids.
-12. A warning (not an error) when an entry with `kind: "collectible"` has a `type` outside the approved list, which follows what the game counts toward 100 percent (`GLOSSARY.md`, Athos, 2026-10-20): `mask-shard`, `spool-fragment`, `silk-heart`, `needle-upgrade`, `ancestral-art`, `silk-skill`, `ability`, `crest`, `tool`, `crafting-kit-upgrade`, `tool-pouch-upgrade`, `sylphsong`, `everbloom`. Why: one misspelt type would split the "Collectibles by type" counts without any error. Task types stay free. `ability` (added 2026-10-20, Act 1) is for a counted ability that is neither an Ancestral Art nor a Silk Skill, such as Needle Strike.
+11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids. Phase 5: `counts`, when given, is `true` or `false`; `price`, when given, is an integer of 1 or more; `toolColor`, when given, is `red`, `blue` or `yellow`.
+12. A warning (not an error) when an entry with `kind: "collectible"` has a `type` outside the approved list, which follows what the game counts toward 100 percent (`GLOSSARY.md`, Athos, 2026-10-20): `mask-shard`, `spool-fragment`, `silk-heart`, `needle-upgrade`, `ancestral-art`, `silk-skill`, `ability`, `crest`, `tool`, `crafting-kit-upgrade`, `tool-pouch-upgrade`, `sylphsong`, `everbloom`. Why: one misspelt type would split the "Collectibles by type" counts without any error. Task types stay free. `ability` (added 2026-10-20, Act 1) is for a counted ability that is neither an Ancestral Art nor a Silk Skill, such as Needle Strike. Phase 5 adds a second list, **tracked-only types**, for Collectibles the game does not count: `memento`, `relic`, `map` (more are added when the Mementos and Equipment sheet names them). The check depends on `counts`: a counted Collectible (no `counts`, or `counts: true`) must use a counted type, and when its type is on the tracked-only list the warning says to add `counts: false` (that mistake would raise the headline number); a Collectible with `counts: false` may use a type from either list. A type on neither list is a warning in both cases. Existing data has no `counts` field, so it is checked exactly as before.
 
 ## 7. Changes after approval
 
@@ -313,6 +338,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - 2026-10-20, Phase 2 (T13 findings): `configureProgress` takes an optional `sample` flag (section 3). No other signature changed.
 - 2026-10-20, Phase 2 (T12): validator rule 11 (shape checks from section 1) added; `unlocks` is not derived in V1; an unknown id inside `requires` throws in every `requirements.js` function, not only in `missingFor` and `holdingYouUp` (before, `isAvailable`, `nextStep` and `isRegionAvailable` quietly answered false or null, which hides a data bug). Orchestrator's decision; Athos may overrule.
 - 2026-10-20, Phase 3 (Act 1, delegated by Athos): `ability` added to the approved Collectible types (rule 12), for Needle Strike, which the sources count but list neither as an Ancestral Art nor as a Silk Skill. `source` may point at the guide page actually read (the orchestrator cannot open the main wiki); Athos swaps it when he checks the entry. No signature changed.
+- 2026-10-20, Phase 5 (full tracker), written by the orchestrator from Athos's answers in `docs/PHASE-5-FULL-TRACKER-PLAN.md`; **the text awaits his review**. All additive, so the existing 62 entries, Progress, sync and the four screens keep their meaning: entries get the optional fields `counts` (default `true` for a Collectible; `false` = tracked, not counted), `price` (Rosaries, for shop entries) and `toolColor` (for the Build picker); `requirements.js` gets `isCounted` and `rosariesToSpend`, and `regionProgress` counts with `isCounted`; validator rules 6, 11 and 12 get the matching checks, with a second approved type list for tracked-only Collectibles; the interface counts with `isCounted` (section 5). Progress does not change: the plan's "numbers block" for Rosaries was dropped, because Athos chose ticking shop entries as bought over typing a number (ADR 0005), so ADR 0001's union merge still covers everything. Why `counts` and not a third `kind`: every check, screen and test that reads `kind` keeps working, and a Memento stays a thing you obtain (a Collectible), not a thing you do (a Task). No `currency` field: no source read shows a shop priced in Shell Shards. No Crest slot field yet: sources disagree on slot layouts (section 8).
 
 ## 8. Open contract questions
 
@@ -320,3 +346,10 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - How a `step` that depends on a player choice (an Ending's `locksOut`) is represented in the Route. The Route screen has a "Choice point" marker; the data rule is open.
 - What the three `spoiler` levels mean, and whether any of them needs behaviour in V1 (assumed: no; the original plan only says the field lets entries stay hidden until the player gets there).
 - The localStorage key (`silksong-guide:progress:v1`) and the `firebase-config.js` file name are proposals, not decisions.
+- Phase 5 (full tracker), waiting on research or the design pass:
+  - **Crest slot layout.** The Build picker needs each Crest's slots. Sources agree that Tools are red, blue or yellow and that Silk Skills take white slots, but disagree on how many slots each Crest has, and the layout changes with Crest upgrades and with Memory Lockets (where a Locket is spent is a player choice, not an id, so Progress cannot hold it). A likely shape is an optional `slots` object on Crest entries, for example `{ "red": 1, "blue": 1, "yellow": 1, "white": 1 }` for the base layout, but nothing is approved until the Crest and Tool sheet settles the facts.
+  - **Whether a Build is stored.** Assumed not: the picker is worked out from Progress each time, so Progress stays ids only. Keeping a chosen Build would need a new field or key and a decision from Athos.
+  - **Which types make up Equipment**, and which Tracker each type goes on. `relic` and `map` are on the tracked-only list because sources show those categories exist outside 100 percent; the rest comes from the Mementos and Equipment sheet and the Trackers mockups. Whether an existing Task that is really an uncounted thing the player obtains (Drifter's Cloak is a Task of type `ability` in the Act 1 data) moves to `kind: "collectible"` with `counts: false` is a data decision for Athos; the id would not change, so Progress is safe either way.
+  - **Shop entries with a material cost** (a vendor that also asks for Craftmetal or Pale Oil) and entries sold in more than one place or at more than one price. `price` holds Rosaries only; the material is a `requires` if it is an entry, otherwise text in `how`.
+  - **Tracker entries on the Route and in Region states.** They have a `step`, so they appear on the Route and can be "Next on the route"; a Region shows Complete only when every entry in it is done, so a Memento there would have to be done too. Both are left as they are until the Trackers mockups say otherwise.
+  - **Save file import.** In scope (last). It will likely need an optional per-entry field naming the save file's flag for that entry, and should add to Progress through the existing union import. Nothing is written until a research spike on the save format.

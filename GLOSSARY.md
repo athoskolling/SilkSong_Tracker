@@ -5,8 +5,24 @@ A progress guide for Hollow Knight: Silksong that helps a player reach maximum c
 ## Language
 
 **Collectible**:
-A permanent thing a player can obtain that counts toward the site's completion counts. The site follows what the game itself counts toward 100 percent (Athos, 2026-10-20): stat items (Mask Shards, Spool Fragments), Silk Hearts, Needle upgrades, abilities (Ancestral Arts, Silk Skills and Needle Strike), Crests, Tools (an upgraded Tool is not counted again), Crafting Kit and Tool Pouch upgrades, Sylphsong and Everbloom.
+A permanent thing a player can obtain. Most Collectibles are **counted**: they count toward the site's completion counts, which follow what the game itself counts toward 100 percent (Athos, 2026-10-20): stat items (Mask Shards, Spool Fragments), Silk Hearts, Needle upgrades, abilities (Ancestral Arts, Silk Skills and Needle Strike), Crests, Tools (an upgraded Tool is not counted again), Crafting Kit and Tool Pouch upgrades, Sylphsong and Everbloom. A few are tracked but **not counted**, because the game does not count them (Mementos and Equipment; Athos, 2026-10-20): they appear on their Tracker with their own count and never in the headline number (ADR 0005).
 _Avoid_: Item, pickup, loot
+
+**Memento**:
+A keepsake Collectible the game does not count toward 100 percent. Tracked on its own Tracker, not counted.
+_Avoid_: Relic (in the game a Relic is a different thing, sold to a vendor), trophy, souvenir
+
+**Equipment**:
+A Collectible the game does not count toward 100 percent that is not a Memento (for example a map). Tracked on its own Tracker, not counted. Which things belong here comes from research, not memory.
+_Avoid_: Gear, inventory. Do not use Equipment, "equipped" or "loadout" for the Tools and Crest the player has on: that is a Build.
+
+**Tracker**:
+One tab of the Trackers page: every entry of one category (for example Tools, Crests, Mementos), counted or not, with its own done and total, separate from the headline completion count.
+_Avoid_: Checklist, list, collection (for the tab)
+
+**Build**:
+A Crest plus the Tools and Silk Skills placed in its slots. The site offers a picker from what the player has marked done; a Build is not stored in Progress.
+_Avoid_: Loadout, setup, kit (Crafting Kit is a Collectible), charm build
 
 **Task**:
 Something a player must do that is tracked but adds nothing to the counts by itself, usually because it unlocks a Collectible (a quest, a boss fight, a delivery).

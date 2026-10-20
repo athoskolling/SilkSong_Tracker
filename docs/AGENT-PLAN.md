@@ -42,9 +42,11 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 | Path | Owner |
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
-| `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data) |
+| `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data). In Phase 5 Dev C adds the tracker content (`counts`, `price`, `toolColor`) from approved sheets only |
 | `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `js/account-page.js`, `img/` | Dev B (Phase 2: `dev-a` may act as Dev B for named UI files, one task at a time, when it speeds things up; Athos, 2026-10-19) |
+| Phase 5 interface: the Trackers page, the Build picker and any page script they need (names come with the mockups), and the Phase 5 mockup files (in the folder Dev B's mockup task names; an exception to the orchestrator owning `docs/`) | Dev B (the orchestrator names the exact files in the task; mockups need Athos's review before code) |
+| Phase 5 save file reader (a pure module that turns a save file into entry ids; name set when the research spike ends) | Dev A |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
 | `docs/PROGRESS-LOG.md` | Orchestrator (the tutor only reads it) |
@@ -57,7 +59,7 @@ The orchestrator writes this file **before** releasing parallel work. The contra
 
 Summary (the exact signatures and data shapes are in `docs/CONTRACTS.md`):
 
-- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`
+- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`, and from Phase 5 `isCounted` and `rosariesToSpend`
 - `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`)
 - `firebase.js`: `signIn`, `completeEmailLinkSignIn`, `signOut`, `onAuthChange`; and, for `progress.js` only, `readProgressDoc`, `writeProgressDoc`, `deleteProgressDoc`, `watchProgressDoc`
 
@@ -94,6 +96,11 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Merge one branch at a time, with tests after each merge.
 - QA 2 runs the checklist; findings in `qa/reports/` are routed to the file owner.
 - Repeat until the checklist passes.
+
+**Phase 5: The full tracker (Athos, 2026-10-20; before the Act 2 and Act 3 data)**
+- Plan, order and task briefs: `docs/PHASE-5-FULL-TRACKER-PLAN.md`. Contract changes: `docs/CONTRACTS.md` section 7; why: ADR 0005.
+- Every change is additive: Home, Region, Route and Account, Progress, sync and the Act 1 entries keep working unchanged, and the current data passes the validator untouched.
+- Dev A: `isCounted`, `regionProgress` and later `rosariesToSpend` in `requirements.js`; later the save file reader. QA 1: validator rules 6, 11 and 12 and their tests. Dev B: the counts in `main.js` switch to `isCounted` (before any `counts: false` data), then mockups, then the Trackers page and the Build picker. Dev C: tracker content from approved sheets. QA 2: a pass after each step.
 
 `docs/PHASE-PROMPTS.md` has a ready-to-paste kickoff prompt for each phase.
 
@@ -133,10 +140,18 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Data has `source` and attribution, with no copied text.
 - QA checklist with no critical findings.
 
+**Phase 5 adds (full tracker):**
+- The current `data/` passes the validator with no edit and the same warnings as before Phase 5; every Home, Region and Route number for the current data is the same as before.
+- No Collectible with `counts: false` appears in a headline count; each Tracker shows its own done and total.
+- Rosaries still to spend follow from the shop entries not done; Progress still holds only ids, and the Firestore rules and sync are unchanged.
+- The Build picker offers only what the player has marked done.
+- Every new screen matches a mockup Athos approved.
+
 ## 9. Changes from the Portuguese original
 
 - Added the role-to-agent mapping, the Claude Code mechanics (section 7) and the pointer to `docs/PHASE-0-CHECKLIST.md` for Athos's Phase 0 tasks.
 - `index.html`, `route.html`, `account.html` and `img/` added to Dev B's files.
 - Haiku "extra" mapped to `xhigh`.
 - Stage 1 clarified: `dev-a` acts as both devs, with the orchestrator naming the owner of each task.
+- Phase 5 (2026-10-20): Phase 5 (full tracker) added to the phases and the definition of done; owners for its new files; Dev C writes the tracker content.
 - Phase 1 (2026-10-19): `requirements.js` delegated to Dev A; `firestore.rules` and its Emulator tests moved into Phase 1, because sync between two devices (the slice's done criterion) cannot work without them; contract summary in section 4 brought up to date; `firebase/` added to the owner table.
