@@ -83,6 +83,12 @@ test('merge: same uid, newer local wins as a whole object', () => {
   assert.equal(result.syncedUid, 'u1');
 });
 
+test('merge: the result carries this uid, whatever syncedUid the cloud copy had', () => {
+  const local = { done: { a: true }, visited: {}, updatedAt: 3000, dataVersion: 1, syncedUid: 'u1' };
+  const cloud = { done: { b: true }, visited: {}, updatedAt: 2000, dataVersion: 1, syncedUid: 'someone-else' };
+  assert.equal(mergeLocalAndCloud(local, cloud, 'u1').syncedUid, 'u1');
+});
+
 test('merge: does not change its inputs', () => {
   const local = { done: { a: true }, visited: {}, updatedAt: 1, dataVersion: 1 };
   const cloud = { done: { b: true }, visited: {}, updatedAt: 2, dataVersion: 1 };
@@ -145,6 +151,32 @@ test('a change that changes nothing does not notify or move updatedAt', async ()
   await setDone('never-done', false);
   assert.equal(calls, 0);
   assert.equal(stored(storage).updatedAt, stamp);
+});
+
+test('a Visited change that changes nothing does not notify or move updatedAt', async () => {
+  await setVisited('r1', true);
+  const stamp = stored(storage).updatedAt;
+  let calls = 0;
+  onProgressChange(() => (calls += 1));
+  await setVisited('r1', true);
+  await setVisited('never-visited', false);
+  assert.equal(calls, 0);
+  assert.equal(stored(storage).updatedAt, stamp);
+});
+
+test('before configureProgress, setDone works but cannot mark the Region Visited', async () => {
+  // beforeEach resets the configuration, so this test starts without it.
+  await setDone('mask-1', true);
+  const { done, visited } = await loadProgress();
+  assert.ok(done.has('mask-1'));
+  assert.equal(visited.size, 0);
+});
+
+test('marking an entry that is not Available is allowed (the player may be out of order)', async () => {
+  // progress.js does not know requirements, so it has no reason to refuse; the guide only shows what is missing.
+  configureProgress({ items: [{ id: 'late-one', regionId: 'r1' }] });
+  await setDone('late-one', true);
+  assert.ok((await loadProgress()).done.has('late-one'));
 });
 
 // ----------------------------------------------------------- subscriptions
@@ -242,6 +274,17 @@ test('import of a smaller backup removes nothing', async () => {
   assert.equal((await loadProgress()).done.size, 2);
 });
 
+test('an import that adds nothing does not notify or move updatedAt', async () => {
+  await setDone('a', true);
+  const stamp = stored(storage).updatedAt;
+  let calls = 0;
+  onProgressChange(() => (calls += 1));
+  const result = await importProgress(fileOf(JSON.stringify({ done: { a: true }, visited: {} })));
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0 });
+  assert.equal(calls, 0);
+  assert.equal(stored(storage).updatedAt, stamp);
+});
+
 test('import notifies subscribers when something was added', async () => {
   useStorage(fakeStorage({ [KEY]: JSON.stringify({ done: {}, visited: {}, updatedAt: 1, dataVersion: 1, syncedUid: 'u1' }) }));
   let calls = 0;
@@ -270,6 +313,12 @@ test('import rejects bad files with a message the interface can show', async () 
     }, `should reject: ${text}`);
   }
   assert.equal((await loadProgress()).done.size, 0, 'a rejected file changes nothing');
+});
+
+test('export has exactly the Progress keys: done, visited, updatedAt, dataVersion', async () => {
+  useStorage(fakeStorage({ [KEY]: JSON.stringify({ done: { a: true }, visited: {}, updatedAt: 9, dataVersion: 1, syncedUid: 'u1' }) }));
+  const exported = JSON.parse(await exportProgress().text());
+  assert.deepEqual(Object.keys(exported).sort(), ['dataVersion', 'done', 'updatedAt', 'visited']);
 });
 
 test('export then import on a clean device round-trips', async () => {

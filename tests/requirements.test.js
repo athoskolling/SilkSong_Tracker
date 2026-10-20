@@ -58,6 +58,15 @@ test('isAvailable: an unknown entry id throws', () => {
   assert.throws(() => isAvailable('nope', done(), [item('a', 1)], [region('r1', 1)]), /nope/);
 });
 
+// Contract question, not a confirmed bug: section 2 says unknown ids throw, but isAvailable only
+// throws for the itemId argument. An unknown id inside `requires` makes it return false here,
+// while missingFor and holdingYouUp throw. The orchestrator decides which behaviour is wanted.
+test('isAvailable: an unknown id inside requires throws (open question, see todo reason)', {
+  todo: 'open question: isAvailable returns false for an unknown requires id; missingFor and holdingYouUp throw',
+}, () => {
+  assert.throws(() => isAvailable('a', done(), [item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+});
+
 // ------------------------------------------------------------------ missingFor
 
 test('missingFor: no requirements means nothing missing', () => {
@@ -141,6 +150,19 @@ test('missingFor: does not change what it was given', () => {
   assert.deepEqual(items.map((i) => i.id), ['a', 'b']);
 });
 
+test('missingFor: never returns a Region id, even when the walk passes through a Region', () => {
+  // top needs far (in r2); r2 needs gate (in r0). Only entry ids may come back.
+  const items = [
+    item('gate', 1, [], { regionId: 'r0' }),
+    item('far', 2, [], { regionId: 'r2' }),
+    item('top', 3, ['far'], { regionId: 'r0' }),
+  ];
+  const regions = [region('r0', 1), region('r1', 2), region('r2', 3, ['gate'])];
+  const ids = missingFor('top', done(), items, regions);
+  assert.deepEqual(ids, ['gate', 'far']);
+  assert.ok(ids.every((id) => items.some((i) => i.id === id)));
+});
+
 // ------------------------------------------------------------------ regionProgress
 
 test('regionProgress: counts Collectibles only; Tasks never count', () => {
@@ -191,6 +213,34 @@ test('missingForRegion: a cycle throws, and so does an unknown Region', () => {
   const regions = [region('r1', 1, ['b'])];
   assert.throws(() => missingForRegion('r1', done(), regions, items), /Cycle/);
   assert.throws(() => missingForRegion('nope', done(), regions, items), /nope/);
+});
+
+test('missingForRegion: a diamond lists the shared requirement once, in step order', () => {
+  const items = [
+    item('base', 1, [], { regionId: 'r0' }),
+    item('left', 2, ['base'], { regionId: 'r0' }),
+    item('right', 3, ['base'], { regionId: 'r0' }),
+    item('top', 4, ['left', 'right'], { regionId: 'r0' }),
+  ];
+  const regions = [region('r0', 1), region('r1', 2, ['top'])];
+  assert.deepEqual(missingForRegion('r1', done(), regions, items), ['base', 'left', 'right', 'top']);
+});
+
+test('missingForRegion: ordered by step even when the walk finds the ids in another order', () => {
+  // The Region lists x (step 5) first, then y (step 2); the answer is in step order, not list order.
+  const items = [item('x', 5, [], { regionId: 'r0' }), item('y', 2, [], { regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['x', 'y'])];
+  assert.deepEqual(missingForRegion('r1', done(), regions, items), ['y', 'x']);
+});
+
+test('missingForRegion: a done requirement is not walked, even if its own requirements are not done', () => {
+  const items = [
+    item('gate', 1, [], { regionId: 'r0' }),
+    item('key', 2, ['gate'], { regionId: 'r0' }),
+  ];
+  const regions = [region('r0', 1), region('r1', 2, ['key'])];
+  assert.deepEqual(missingForRegion('r1', done('key'), regions, items), []);
+  assert.deepEqual(missingForRegion('r1', done(), regions, items), ['gate', 'key']);
 });
 
 // ------------------------------------------------------------------ nextStep
@@ -267,6 +317,27 @@ test('holdingYouUp: a done entry is never listed as held up', () => {
   // b is done (out of order), so it holds nothing up and is not blocked by anything.
   const items = [item('a', 1), item('b', 2, ['a'])];
   assert.deepEqual(holdingYouUp(done('b'), items, [region('r1', 1)]), []);
+});
+
+test('holdingYouUp: a cycle throws the same clear error as missingFor', () => {
+  const items = [item('a', 1, ['b']), item('b', 2, ['a'])];
+  assert.throws(() => holdingYouUp(done(), items, [region('r1', 1)]), /Cycle in requires/);
+});
+
+test('holdingYouUp: an unknown id inside requires throws (it is a data bug)', () => {
+  const items = [item('a', 1, ['ghost'])];
+  assert.throws(() => holdingYouUp(done(), items, [region('r1', 1)]), /ghost/);
+});
+
+test('nextStep and holdingYouUp do not change what they were given', () => {
+  const items = [item('a', 1), item('b', 2, ['a']), item('c', 3, ['b'])];
+  const regions = [region('r1', 1)];
+  const set = done('a');
+  const itemsBefore = structuredClone(items);
+  nextStep(set, items, regions);
+  holdingYouUp(set, items, regions);
+  assert.deepEqual([...set], ['a']);
+  assert.deepEqual(items, itemsBefore);
 });
 
 // ------------------------------------------------------------------ the sample data
