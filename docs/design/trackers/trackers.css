@@ -1,0 +1,238 @@
+/* trackers.css: the few new pieces the Trackers, Rosaries and Builds screens need.
+   Everything else comes from css/base.css and css/components.css (tokens, header, hero, plates, thread,
+   beads and knots, bars, switches, buttons). Colors are tokens only; no hex value is written here.
+   If these screens are built, this file becomes css/trackers.css, loaded only by the new pages, so Home,
+   Region, Route and Account are untouched. */
+
+/* ------------------------------------------------------------------ mockup only */
+
+/* The strip that links the state files together. Not part of the design; hidden in the screenshots. */
+.mock-states { font-weight: 500; }
+.mock-states a, .mock-states a:hover { color: var(--night); }
+.mock-states a[aria-current="page"] { font-weight: 600; text-decoration: none; }
+
+/* ----------------------------------------------------------------- Trackers tabs */
+
+/* Desktop: a row of text tabs on a dashed thread. The selected tab is stitched with a solid silk line
+   (a thicker line and a heavier weight, so it is not color alone). The count sits under the name so six
+   tabs fit the column. */
+.tk-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  margin: 0 0 44px;
+  padding: 0;
+  border-bottom: 2px dashed var(--track);
+}
+
+.tk-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+  min-height: 56px;
+  margin-bottom: -2px;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ash);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+}
+.tk-tab:hover { color: var(--ivory); }
+.tk-tab[aria-selected="true"] { color: var(--ivory); font-weight: 600; border-bottom-color: var(--silk); }
+
+.tk-tab-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ash);
+}
+.tk-tab.is-complete .tk-tab-count { color: var(--bronze); }
+.tk-tab.is-complete .state-dot { width: 8px; height: 8px; }
+
+/* Phone: two columns of buttons. Selected is solid silk with a faint fill, the others dashed, so the
+   difference is a line style as well as a color. Each cell is at least 56px tall. */
+@media (max-width: 600px) {
+  .tk-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 36px;
+    border-bottom: 0;
+  }
+  .tk-tab {
+    margin: 0;
+    padding: 8px 12px;
+    border: 1.5px dashed var(--thread);
+  }
+  .tk-tab[aria-selected="true"] { border: 1.5px solid var(--silk); background: var(--next-fill); }
+}
+
+/* ------------------------------------------------------------------- tab panel */
+
+.tk-panel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.tk-panel-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1.1;
+}
+.tk-state { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ash); }
+
+.tk-summary { max-width: 440px; margin-top: 22px; }
+.tk-note { max-width: 60ch; margin-top: 16px; font-size: 14px; line-height: 1.6; color: var(--ash); }
+.tk-list { margin-top: 40px; }
+.tk-list .entry { padding-bottom: 32px; }
+.tk-list .entry:last-child { padding-bottom: 0; }
+
+/* "Not counted": a quiet outlined tag. Text is ash on night (well above 4.5 to 1); the dashed outline is
+   decoration, the words carry the meaning. */
+.entry-meta .flag-uncounted {
+  padding: 0 8px;
+  border: 1px dashed var(--thread);
+  color: var(--ash);
+  line-height: 1.5;
+}
+.entry-meta .flag-done { color: var(--bronze); font-weight: 500; }
+
+.tk-hint { margin-top: 28px; font-size: 15px; }
+
+/* ----------------------------------------------------------------------- Rosaries */
+
+.tk-need {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(52px, 7vw, 68px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tk-need-label { margin-top: 8px; font-size: 15px; line-height: 1.5; color: var(--ash); }
+.tk-need-zero { color: var(--bronze); }
+
+.tk-price {
+  flex: none;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.entry.is-done .tk-price { font-weight: 400; color: var(--ash); }
+/* On a phone the price always sits on its own line under the name, so rows with long and short names
+   look the same instead of wrapping at random. */
+@media (max-width: 600px) {
+  .tk-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+
+.tk-next .next-name { font-size: clamp(26px, 3.4vw, 34px); }
+.tk-price-line { margin-top: 10px; font-size: 16px; color: var(--ivory); font-variant-numeric: tabular-nums; }
+
+.tk-done-plate { padding: 26px 30px 28px; border: 1.5px dashed var(--bronze); background: var(--lacquer); }
+@media (max-width: 600px) {
+  .tk-done-plate { padding: 22px 20px 24px; }
+}
+.tk-done-plate .next-label { color: var(--bronze); }
+
+.tk-group + .tk-group { margin-top: 12px; }
+.tk-group-title { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1.1; overflow-wrap: anywhere; }
+.tk-section-heading { margin-bottom: 28px; }
+
+/* -------------------------------------------------------------------- Build picker */
+
+.tk-crests { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.tk-crest { position: relative; }
+.tk-crest input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+.tk-crest label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 1.5px dashed var(--thread);
+  cursor: pointer;
+}
+.tk-crest label:hover { border-color: var(--silk); }
+.tk-crest-dot { position: relative; flex: none; width: 16px; height: 16px; border: 2px solid var(--ivory); border-radius: 50%; }
+.tk-crest-name { display: block; font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.tk-crest-sub { display: block; font-size: 13px; color: var(--ash); }
+
+/* Selected: solid silk outline, a faint fill and a filled dot inside the ring. Shape and line style
+   change as well as color. */
+.tk-crest input:checked + label { border: 1.5px solid var(--silk); background: var(--next-fill); }
+.tk-crest input:checked + label .tk-crest-dot::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--silk);
+}
+.tk-crest input:focus-visible + label { outline: 2px solid var(--silk); outline-offset: 3px; }
+
+.tk-crest-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(32px, 4.4vw, 44px);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.tk-crest-meta { margin-top: 10px; font-size: 14px; color: var(--ash); }
+.tk-slots { margin-top: 40px; }
+
+.tk-slot-name { font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.1; }
+.tk-slot-meta { font-size: 14px; color: var(--ash); }
+.tk-slot .entry { padding-bottom: 28px; }
+
+/* A suggested Tool the player owns is a static filled bead on the thread (owned = done). */
+.entry-meta .flag-editorial {
+  padding: 0 8px;
+  border: 1px dashed var(--thread);
+  color: var(--ash);
+  line-height: 1.5;
+}
+
+.tk-rail-text { font-size: 14px; line-height: 1.6; color: var(--ash); }
+.tk-rail-text strong { color: var(--ivory); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* -------------------------------------------------------------------- Navigation mockup */
+
+.nav-demo { margin-top: 36px; }
+.nav-demo-label { max-width: 62ch; margin-bottom: 14px; font-size: 14px; line-height: 1.6; color: var(--ash); }
+.nav-demo-label strong { color: var(--ivory); font-weight: 600; }
+.nav-demo-strip {
+  position: relative;
+  height: 112px;
+  overflow: hidden;
+  border: 1.5px dashed var(--plate-border-faint);
+  background: linear-gradient(180deg, var(--lacquer), var(--night));
+}
+.nav-demo-strip .site-header { position: absolute; }
+.nav-demo-strip.is-tall { height: 176px; }
+
+/* ---------------------------------------------------------------- header, phone width */
+
+/* The one change the new header link forces. At 390px "Regions  Route  Account and backup" fills one row;
+   adding "Trackers" makes the last link wrap to a third row that runs over the page title (the hero
+   reserves room for two rows only). On a phone the last link therefore reads "Account"; the words
+   " and backup" stay in the accessible name. The other way out is to keep the full label and raise the
+   hero's phone top padding by one nav row (navigation.html, option B), which moves every page's title.
+   This rule would move to components.css and is the only edit to an existing stylesheet. */
+@media (max-width: 600px) {
+  .nav-short .nav-extra {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
