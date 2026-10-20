@@ -33,6 +33,6 @@ Entry: ______
   Source (main wiki page): ______
 ```
 
-## Endings (for V1, any time)
+## Endings (not in batch 1)
 
-V1 stores the **four main Endings** (decided 2026-10-20). They depend on late-game entries, so they are written when those Regions are; the validator only accepts conditions that are existing entries. For each: its name, the entries it needs (by name; anything it needs that is not already an entry becomes a Task), which other Endings it closes for good (Lockout), and its main wiki page.
+The **four main Endings** (decided 2026-10-20) ship with the late-game batch, not in V1: they depend on late-game entries, and the validator only accepts conditions that are existing entries. For each: its name, the entries it needs (by name; anything it needs that is not already an entry becomes a Task), which other Endings it closes for good (Lockout), and its main wiki page.

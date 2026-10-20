@@ -90,6 +90,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos decided:** Collectibles follow the game's own 100 percent list (adds Silk Hearts, Crafting Kit and Tool Pouch upgrades, Sylphsong, Everbloom to the glossary); V1 stores **four** Endings (the four main ones), replacing "five". Recorded in GLOSSARY, STRUCTURE, CONTRACTS section 1, `docs/PHASE-3-BATCH-1.md`. QA checklist line N-10 still says five: QA 2 updates it in its next task. Endings are written when the late-game entries they need exist.
 
+- **Athos: V1 ships without Endings data** (option 1); the four Endings arrive with the late-game batch. Recorded in STRUCTURE (sections 2, 3, 5), CONTRACTS section 1, `docs/PHASE-3-BATCH-1.md`. T23 started (`qa-manual/endings-line`): checklist line N-10.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

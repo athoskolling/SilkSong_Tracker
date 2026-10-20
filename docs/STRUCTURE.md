@@ -24,7 +24,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Backup:** export and import progress as JSON.
 - **Site language:** English only (names, text and interface). No translation layer.
 - **Two kinds of entry:** Collectible (counts toward progress) and Task (tracked, but does not count). The "X of Y" counters use Collectibles only. See `GLOSSARY.md`.
-- **Endings in the V1 model:** four endings in the data (the four main endings; Athos, 2026-10-20, replacing the earlier "five"), with conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
+- **Endings:** four (the four main endings; Athos, 2026-10-20, replacing the earlier "five"). The model supports them in V1, but **their data ships with the late-game batch, not in V1** (Athos, 2026-10-20): an Ending's conditions must be existing entries, and those entries are late-game. When they ship, each has with conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
 - **Our own counts:** per-category counters ("Tools: 12 of 51"), never claiming to reproduce the game's completion percentage.
 - **One Run per account** in V1. "New run" offers an export before clearing.
 - **First sign-in:** union of local and cloud Progress; after that, the latest write wins.
@@ -56,6 +56,7 @@ Out of V1 (later):
 - Content for Regions outside the first batch (arrives in later batches, as it is verified).
 - Reading the game's save file automatically.
 - The complete endings screen and a total completion percentage.
+- Endings data (ships with the late-game batch; Athos, 2026-10-20).
 - Search, advanced filters and a full offline mode.
 
 ## 4. Folder structure (proposal)
@@ -139,7 +140,7 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 ### Ending (`endings.json`)
 - `id`, `name`, `conditions` (list of entry ids; anything an Ending depends on is an entry, a Task if it does not count)
 - `locksOut` (list of ending ids that can no longer be reached after this one)
-- In V1: the four main endings, with requirements and `locksOut`, written by Athos and checked against the main wiki.
+- The four main endings, with requirements and `locksOut`, written by Athos and checked against the main wiki, ship with the late-game batch. In V1, `endings.json` is empty.
 
 ### Data metadata
 - `dataVersion` at the top of each file in `data/`: one number shared by all three files, raised in all of them on every content revision (patch or DLC).

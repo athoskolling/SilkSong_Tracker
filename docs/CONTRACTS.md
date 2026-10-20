@@ -100,7 +100,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 }
 ```
 
-`conditions` are entry ids only. `locksOut` are ending ids that stop being reachable once this one is reached. V1 stores four endings (Athos, 2026-10-20) and does not build the full endings screen. The number is content, not code: nothing depends on it.
+`conditions` are entry ids only. `locksOut` are ending ids that stop being reachable once this one is reached. There are four endings (Athos, 2026-10-20). Their data ships with the late-game batch, so in V1 `endings` is an empty array; V1 does not build the endings screen. The number is content, not code: nothing depends on it.
 
 ### Progress
 
