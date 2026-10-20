@@ -13,20 +13,30 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // The shape js/firebase.js writeProgressDoc sends: exactly these four keys, always.
+    // The shape js/firebase.js writeProgressDoc sends: four required keys, plus two
+    // optional ones (ADR 0006).
+    // - Required: done, visited, updatedAt, dataVersion. progress.js always sends all
+    //   four (it builds every write from a normalized local Progress), and an older
+    //   page sends only these four, so a four-key document must stay accepted.
+    // - Optional: crestSlots and builds (maps). When present they must be maps. A
+    //   field that is absent is fine: "missing" means a page that does not know the
+    //   field, not "empty" (ADR 0006).
     // - syncedUid and any other key are refused: syncedUid belongs to one device and
     //   must never reach the cloud (contract section 3).
-    // - All four are required, because progress.js always sends all four (it builds
-    //   every write from a normalized local Progress; see the handoff note).
-    // - There is no size cap on the maps: the 1 MiB document limit already bounds
-    //   them, and any number would be a guess at the game's entry count.
+    // - There is no size cap on the maps and nested values are not checked, as done
+    //   and visited are not: the 1 MiB document limit already bounds them, and any
+    //   number would be a guess at the game's entry count.
+    // - shellShards is NOT accepted yet: Athos has not confirmed that reading
+    //   (ADR 0006, provisional). Until then a document carrying it is refused.
     function isProgressShape(data) {
-      return data.keys().hasOnly(['done', 'visited', 'updatedAt', 'dataVersion'])
+      return data.keys().hasOnly(['done', 'visited', 'updatedAt', 'dataVersion', 'crestSlots', 'builds'])
         && data.keys().hasAll(['done', 'visited', 'updatedAt', 'dataVersion'])
         && data.done is map
         && data.visited is map
         && data.updatedAt is number
-        && data.dataVersion is int;
+        && data.dataVersion is int
+        && (!('crestSlots' in data) || data.crestSlots is map)
+        && (!('builds' in data) || data.builds is map);
     }
 
     match /silksong_progress/{uid} {
