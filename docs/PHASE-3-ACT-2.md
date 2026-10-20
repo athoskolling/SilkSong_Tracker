@@ -254,3 +254,15 @@ Kept short; the detail is above.
 2. Athos checks in game, first: the Faydown Cloak on the completion screen, the Simple Key doors he has opened, Jubilana's prices, and Grindle's shop.
 3. When a guide page can be opened again (the proxy and DNS block game-checklists.com from here), read GC's Act 2 area pages one by one and replace "one source" marks.
 4. QA 2: compare the per-type totals here with GC's 100 percent counts (20 Mask Shards, 18 Spool Fragments, 3 Silk Hearts, 51 Tools).
+
+## Athos's answers and the orchestrator's searches (2026-10-20)
+
+Answers to the open questions at the end of this sheet:
+
+1. **Pairing each Simple Key with one door: yes.** Keys and melodies stay Tasks, like `simple-key`.
+2. **The Cradle as an Act 2 Region:** "yes if it is on the wiki". Search results quoting the wiki page ([The Cradle](https://hollowknight.wiki/w/The_Cradle), snippet only) and [Silksong Map](https://silksongmap.info/regions/the-cradle) call it the Act 2 Region at the top of Pharloom, reached by the lift at the top of Cogwork Core, with Grand Mother Silk at its peak. [Game8](https://game8.co/games/Hollow-Knight-Silksong/archives/550189) also has a Cradle map page. **Decision: The Cradle is an Act 2 Region.** (Nerdschalk describes a different route through the Weavers' tunnels; one source, ignored.)
+3. **Grand Mother Silk, the Soul Snare and the Silk and Soul wish: both.** They appear in the Act 3 sheet as the route to Act 3 and again in the endings batch as the Ending conditions; the endings batch must reuse the same entry ids, never create a second entry for the same thing.
+4. **Ascendant's Grip missable:** searched. Guides ([Deltia's Gaming](https://deltiasgaming.com/hollow-knight-silksong-how-to-get-ascendants-grip/), [Game8](https://game8.co/games/Hollow-Knight-Silksong/archives/549948), [silksongtools.com](https://silksongtools.com/tools/ascendants-grip/)) say Jubilana in Songclave sells it for 350 Rosaries (one Steam comment says 450) and that her shop opens only by completing the Wandering Merchant wish, which can be accepted and completed only in Act 2. None says outright that it is lost in Act 3. **Decision: mark it `missable: true`** with a note that it is sold only after a wish that is Act 2 only (unconfirmed whether it can be done later), because a wrongly marked entry costs a warning and a missed one costs the Collectible.
+5. **Witch Crest lockout of the Twisted Child ending: both.** Record it now as a `missable` note on the Witch Crest entry, and again as the lockout in the endings batch. The note does not change `requires`.
+
+Header (separate from this sheet): when the header has six links, Athos wants two rows of three links.
