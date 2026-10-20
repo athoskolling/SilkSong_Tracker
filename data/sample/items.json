@@ -6,7 +6,7 @@
       "id": "sample-ability",
       "name": "Sample ability",
       "kind": "collectible",
-      "type": "ability",
+      "type": "ancestral-art",
       "regionId": "sample-region-a",
       "how": "Sample text. A collectible with no requirements, so it is available from the start.",
       "requires": [],
@@ -77,9 +77,9 @@
     },
     {
       "id": "sample-charm",
-      "name": "Sample charm",
+      "name": "Sample needle upgrade",
       "kind": "collectible",
-      "type": "upgrade",
+      "type": "needle-upgrade",
       "regionId": "sample-region-b",
       "how": "Sample text. A collectible that can be missed, to show the missable warning.",
       "requires": [
@@ -120,9 +120,9 @@
     },
     {
       "id": "sample-flea",
-      "name": "Sample flea",
+      "name": "Sample silk heart",
       "kind": "collectible",
-      "type": "flea",
+      "type": "silk-heart",
       "regionId": "sample-region-e",
       "how": "Sample text. A collectible that needs an entry from another Region (the sample key).",
       "requires": [

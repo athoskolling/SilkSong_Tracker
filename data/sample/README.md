@@ -15,4 +15,6 @@ The Region states Complete and Visited come from Progress, not from the data: ma
 
 Owner: the orchestrator. QA 1 runs the validator on this folder to check the validator itself: `node scripts/validate-data.js data/sample` must pass, and tests may copy these files and break them on purpose (a cycle, a missing id, a duplicate step) to prove each rule fires.
 
+Collectible `type` values use the approved list (`docs/CONTRACTS.md` section 6, rule 12). Ids never change because tests use them, so a few names no longer match their id (`sample-flea` is now "Sample silk heart", `sample-charm` is "Sample needle upgrade"); that is fine for invented data.
+
 The top-level `_note` key is ignored by the code and the validator.

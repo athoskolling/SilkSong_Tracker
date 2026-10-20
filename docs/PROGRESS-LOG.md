@@ -94,6 +94,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T23 merged** (`qa-manual/endings-line`): N-10 now checks that V1's `endings.json` is valid and empty; new N-18 (four Endings, conditions existing entries) for the late-game batch. Orchestrator decided QA 2's note c: on a Locked page a Task reads "Done", a Collectible "Collected" (DESIGN section 6). Notes a and b (data checks for the new Collectible rules; no total percentage shown) go into QA 2's batch 1 review.
 
+- **Contract additions** (orchestrator, explained to Athos): validator rule 12 warns on Collectible types outside the approved list; Emulator mode in `firebase.js` (localhost and `?emulator` only, `demo-` project) so sync can be rehearsed end to end. Sample Collectible types moved to the approved list (ids unchanged). T24 (dev-a: Emulator mode and a two-profile sync rehearsal) and T25 (qa-tests: rule 12) started.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

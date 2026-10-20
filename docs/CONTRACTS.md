@@ -273,6 +273,7 @@ watchProgressDoc(uid, callback /* (progress | null) => void */, onError /* optio
 // sync status 'error'. Snapshots that are only the echo of this device's own pending write are skipped.
 ```
 
+- **Emulator mode** (added 2026-10-20, for testing only): when the page is served from `localhost` or `127.0.0.1` **and** the address has `?emulator`, `firebase.js` connects Auth and Firestore to the local Firebase Emulators under the project id `demo-silksong-guide`, so it can never reach the real project. On any other host the flag is ignored. Why: sync between two devices is the riskiest path and had never run end to end with the real SDK; this lets a script rehearse it with two browser profiles before Athos's check on the real site.
 - It initializes Firebase from a config object in `js/firebase-config.js` (owned by Dev A; the web config is not a secret, see ADR 0004). It never exports Firestore or Auth handles.
 - **The Firebase SDK is the one exception to "no CDN script"** (decided with Athos, Phase 0): it is imported from `https://www.gstatic.com/firebasejs/<version>/...` at one pinned version, **only by `firebase.js`**, and loaded so that a failure to reach it leaves the site working locally. Copying the SDK into the repository was rejected because its files import each other by absolute gstatic URLs and would need hand edits on every update (Dev A confirms this when building the module).
 - `firebase.js` may keep the address an email link was sent to in localStorage under `silksong-guide:email-for-sign-in`. This is the one localStorage key outside `progress.js`; it holds no Progress.
@@ -299,6 +300,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
+12. A warning (not an error) when an entry with `kind: "collectible"` has a `type` outside the approved list, which follows what the game counts toward 100 percent (`GLOSSARY.md`, Athos, 2026-10-20): `mask-shard`, `spool-fragment`, `silk-heart`, `needle-upgrade`, `ancestral-art`, `silk-skill`, `crest`, `tool`, `crafting-kit-upgrade`, `tool-pouch-upgrade`, `sylphsong`, `everbloom`. Why: one misspelt type would split the "Collectibles by type" counts without any error. Task types stay free.
 11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids.
 
 ## 7. Changes after approval
@@ -307,6 +309,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - 2026-10-19, Phase 1 (T3): `loadProgress` returns local Progress at once and delivers the cloud merge through `onProgressChange`, instead of waiting for the cloud (a slow network must never block the page; Athos let the orchestrator decide). `useCloud` test seam recorded. Known costs recorded in section 3: "Start a new run" deletes the cloud copy, but another device still holding the old run writes it back on its next change (ADR 0001, newer wins); `combined` is reported only when a cloud copy existed.
 - 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
 - 2026-10-19, Phase 2: `account.html` loads `js/account-page.js` as well as `main.js` (section 5), so Home, Route and the rest of Account can be built in parallel with one owner per file. No signature changed. The slice taught nothing else that changes a contract.
+- 2026-10-20, Phase 2: validator rule 12 (approved Collectible types, warning only) and Emulator mode in `firebase.js` (section 4). No signature changed.
 - 2026-10-20, Phase 2 (T13 findings): `configureProgress` takes an optional `sample` flag (section 3). No other signature changed.
 - 2026-10-20, Phase 2 (T12): validator rule 11 (shape checks from section 1) added; `unlocks` is not derived in V1; an unknown id inside `requires` throws in every `requirements.js` function, not only in `missingFor` and `holdingYouUp` (before, `isAvailable`, `nextStep` and `isRegionAvailable` quietly answered false or null, which hides a data bug). Orchestrator's decision; Athos may overrule.
 
