@@ -149,6 +149,8 @@ The only order that keeps every Ending and every Collectible on one run, as far 
 - **B. One optional field on an Ending: `lostWhen: string[]`** (entry ids; the Ending can no longer be reached once any of them is done). Twisted Child: `["A2: Witch Crest", "grand-mother-silk-snared"]`; Weaver Queen: `["grand-mother-silk-snared"]`. The Route shows "Choice point" on any entry named in some `lostWhen`, derived, so it lives in one place. A pure `endingStatus(endingId, doneSet, ...)` -> `'reached' | 'open' | 'lost'` could follow later. Validator: ids exist and are entries; an Ending never names its own conditions.
 - **C. The same link on entries: `locksOutEndings: string[]`** on items. Equivalent to B, but spreads Ending rules over `items.json`.
 
+Section 8 of the contract also lists a likely `oneOf` group field for choices between entries (the three Silkshot versions). That is a different kind of choice (entry against entry); B is entry against Ending. Both can feed the same "Choice point" marker, so if both are adopted the Route derives the marker from either.
+
 **Recommendation: A now (it ships with the data and needs no code), B when the endings screen is built** (it keeps all Ending rules in `endings.json`, and `locksOut` stays as the summary). Not C. Athos decides; the orchestrator then writes the contract change.
 
 **Also open:** `requires` cannot say "3 of 4" (the Conjoined Heart). Recommendation: do not add an "any of" rule; use the three standard hearts and say it in `how`.
