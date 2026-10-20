@@ -9,6 +9,10 @@ This page gives the shape only. It contains no game facts.
 1. **What counts as a Collectible?** Decided 2026-10-20: what the game itself counts toward 100 percent (the list is in `GLOSSARY.md`). Anything else (fleas, maps, bosses, Wishes) is a Task only if it opens a Collectible or an Ending needs it; otherwise it is not in V1.
 2. **Which Tasks?** V1 keeps only Tasks that unlock a Collectible (`docs/STRUCTURE.md` section 2), plus anything an Ending depends on.
 
+## Starting list
+
+For Moss Grotto, the orchestrator prepared a candidate list from three guides (names, kinds, places only): `docs/research/2026-10-20-moss-grotto-candidates.md`. Confirm or strike each line, answer the three questions at its top, then write each confirmed entry below in your words.
+
 ## How to write it
 
 - Send it a Region at a time, in this file or in a message. Plain text is fine; Dev A turns it into JSON.

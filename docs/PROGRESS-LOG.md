@@ -102,6 +102,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Docs refreshed** (orchestrator): README status (site built, content next) and file table; STRUCTURE folder map (`firebase-emulator.js`, `tools/sync-rehearsal.mjs`; no CI, the validator runs after every merge). Nothing else can move without Athos: the two-device check, Moss Grotto for batch 1, the wiki's license name.
 
+- **Athos approved a starting list per Region** (amends item 4: guides give names, kinds and places; Athos confirms or strikes each). Orchestrator prepared Moss Grotto's: `docs/research/2026-10-20-moss-grotto-candidates.md`. 12 Collectible candidates and 5 Tasks from three guides (game-checklists.com, Game8, TheGamer; no wiki or Fextralife opened). Open for Athos: Weavenest Atla and Bonegrave (Sub-areas or Regions), late and Act 3 items, the disputed Spool Fragment, the Wanderer Crest's requirement, the starting Crest.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
