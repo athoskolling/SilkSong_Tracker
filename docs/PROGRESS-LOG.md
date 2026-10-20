@@ -92,6 +92,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos: V1 ships without Endings data** (option 1); the four Endings arrive with the late-game batch. Recorded in STRUCTURE (sections 2, 3, 5), CONTRACTS section 1, `docs/PHASE-3-BATCH-1.md`. T23 started (`qa-manual/endings-line`): checklist line N-10.
 
+- **T23 merged** (`qa-manual/endings-line`): N-10 now checks that V1's `endings.json` is valid and empty; new N-18 (four Endings, conditions existing entries) for the late-game batch. Orchestrator decided QA 2's note c: on a Locked page a Task reads "Done", a Collectible "Collected" (DESIGN section 6). Notes a and b (data checks for the new Collectible rules; no total percentage shown) go into QA 2's batch 1 review.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
