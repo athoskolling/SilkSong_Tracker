@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="../../../css/components.css">
   <link rel="stylesheet" href="trackers.css">
   <link rel="stylesheet" href="trackers-addendum.css">
+  <link rel="stylesheet" href="trackers-places.css">
 </head>
 <body data-page="rosaries">
   <a class="skip-link" href="#app">Skip to the content</a>
-  <div class="banner mock-states">Mockup with invented content, not guide data. Other states: <a href="addendum-rosaries-shells-empty.html" aria-current="page">Shell Shards empty</a> &middot; <a href="addendum-rosaries-shells-set.html">Shell Shards typed</a> &middot; <a href="addendum-rosaries-shells-error.html">Shell Shards error</a> &middot; <a href="addendum-rosaries-no-shells.html">Without Shell Shards</a> &middot; <a href="addendum-builds-saved.html">Builds</a> &middot; <a href="addendum-header-six.html">Header</a></div>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other states: <a href="addendum-places-visited.html">Visited</a> &middot; <a href="addendum-places-anchor.html">Landing on a Place</a> &middot; <a href="addendum-places-hidden.html">Not Visited</a> &middot; <a href="addendum-places-locked.html">Locked, show everything</a> &middot; <a href="addendum-places-only.html">No entries, Visited</a> &middot; <a href="addendum-places-only-hidden.html">No entries, not Visited</a> &middot; <a href="addendum-places-sold-by.html" aria-current="page">Rosaries: Sold by</a> &middot; <a href="addendum-places-sold-by-hidden.html">Rosaries: unvisited</a> &middot; <a href="addendum-templates-list.html">Builds: Templates</a></div>
   <div class="page opt-wrap tablet-fix">
     <header class="site-header">
       <div class="frame">
@@ -24,7 +25,7 @@
           <a href="index.html">Regions</a>
           <a href="route.html">Route</a>
           <a href="trackers-crests-partial.html">Trackers</a>
-          <a href="addendum-rosaries-shells-set.html" aria-current="page">Rosaries</a>
+          <a href="addendum-rosaries.html" aria-current="page">Rosaries</a>
           <a href="addendum-builds-saved.html">Builds</a>
           <a href="account.html">Account<span class="nav-extra"> and backup</span></a>
         </nav>
@@ -60,14 +61,6 @@
           </div>
               <p class="plate-help">The total follows what you tick and is worked out from the prices. You never type it. It counts entries you cannot buy yet too.</p>
             </div>
-            <div class="rail-section rail-section--rule ss-block">
-              <div class="ss-field">
-                <label class="field-label" for="shell-shards">Shell Shards you have</label>
-                <input class="field-input ss-input num" id="shell-shards" type="text" inputmode="numeric" autocomplete="off" maxlength="7" value="" aria-describedby="shell-help">
-                <p class="ss-help" id="shell-help" aria-live="polite">Type the number you have. Leave it empty if you do not want to keep track.</p>
-              </div>
-              <p class="mock-note"><strong>Mockup note, not part of the page.</strong> Provisional: Athos has not confirmed that Shell Shards is a number the player types. To drop it, delete this block (the label, the field and this note). The Rosaries total above does not use it.</p>
-            </div>
             <div class="toggles"><label class="switch"><input type="checkbox" class="switch-input"><span class="switch-track" aria-hidden="true"></span><span class="switch-text">Show everything, spoilers included</span></label></div>
           </aside>
           <div class="main-column">
@@ -76,6 +69,7 @@
               <h2 class="next-name">Sample shop entry three</h2>
               <div class="entry-meta next-meta"><span>Tool</span><span>Sample region A</span></div>
               <p class="tk-price-line">150 Rosaries. Buying it leaves 1,400 still needed.</p>
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold by <a href="addendum-places-anchor.html#place-shop-one">Sample vendor one in Sample region A</a></li><li>Sold by <a href="addendum-places-anchor.html#place-shop-two">Sample vendor two in Sample region B</a></li></ul>
               <p class="next-how">The first shop entry on the route that you can buy now and have not bought.</p>
               <div class="next-actions"><button type="button" class="button button--secondary">Mark as bought</button><a href="region.html">Open Sample region A</a></div>
             </div>
@@ -98,6 +92,7 @@
                 <div class="entry-head tk-head"><span class="entry-name">Sample shop entry one</span><span class="tk-price num">80 Rosaries</span></div>
                 <div class="entry-meta"><span>Tool</span><span class="flag-done">Bought</span></div>
                 
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold by <a href="addendum-places-anchor.html#place-shop-one">Sample vendor one in Sample region A</a></li></ul>
               </div>
             </li>
             <li class="entry is-done">
@@ -109,6 +104,7 @@
                 <div class="entry-head tk-head"><span class="entry-name">Sample shop entry two</span><span class="tk-price num">120 Rosaries</span></div>
                 <div class="entry-meta"><span>Crafting upgrade</span><span class="flag-done">Bought</span></div>
                 
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold by <a href="addendum-places-anchor.html#place-shop-one">Sample vendor one in Sample region A</a></li></ul>
               </div>
             </li>
             <li class="entry">
@@ -120,6 +116,7 @@
                 <div class="entry-head tk-head"><span class="entry-name">Sample shop entry three</span><span class="tk-price num">150 Rosaries</span></div>
                 <div class="entry-meta"><span>Tool</span></div>
                 
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold by <a href="addendum-places-anchor.html#place-shop-one">Sample vendor one in Sample region A</a></li><li>Sold by <a href="addendum-places-anchor.html#place-shop-two">Sample vendor two in Sample region B</a></li></ul>
               </div>
             </li>
             <li class="entry">
@@ -153,6 +150,7 @@
                 <div class="entry-head tk-head"><span class="entry-name">Sample shop entry five</span><span class="tk-price num">180 Rosaries</span></div>
                 <div class="entry-meta"><span>Tool</span><span class="flag-done">Bought</span></div>
                 
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold by <a href="addendum-places-anchor.html#place-shop-two">Sample vendor two in Sample region B</a></li><li>Sold in a region you have not visited</li></ul>
               </div>
             </li>
             <li class="entry">
@@ -164,6 +162,7 @@
                 <div class="entry-head tk-head"><span class="entry-name">Sample shop entry six</span><span class="tk-price num">300 Rosaries</span></div>
                 <div class="entry-meta"><span>Tool</span></div>
                 <p id="needs-shop-1-1" class="entry-needs is-missing">Needs Sample key item</p>
+                <ul class="tk-sold" aria-label="Where to buy"><li>Sold in a region you have not visited</li></ul>
               </div>
             </li>
             <li class="entry">
