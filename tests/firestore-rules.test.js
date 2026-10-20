@@ -3,7 +3,7 @@
 // Run with (the demo- project id makes the Emulator refuse to reach any real project):
 //   firebase emulators:exec --only firestore --project demo-silksong-guide "node --test tests/firestore-rules.test.js"
 // Without FIRESTORE_EMULATOR_HOST (set by emulators:exec) the whole file is skipped,
-// so `node --test tests/` still passes with no Emulator running.
+// so `node --test "tests/*.test.js"` still passes with no Emulator running.
 //
 // No dependency: plain fetch against the Emulator's REST API.
 
@@ -56,6 +56,7 @@ const bool = (b) => ({ booleanValue: b });
 const str = (s) => ({ stringValue: s });
 const dbl = (n) => ({ doubleValue: n });
 const map = (obj) => ({ mapValue: { fields: obj } });
+const list = (values) => ({ arrayValue: { values } });
 
 // Same shape as the body that writeProgressDoc builds in js/firebase.js:
 //   { done: {...}, visited: {...}, updatedAt: <ms>, dataVersion: <integer> }
@@ -256,6 +257,105 @@ describe('firestore.rules', { skip: SKIP }, () => {
         dataVersion: int(1),
       };
       allowed(await call('PATCH', 'silksong_progress/alice', { as: 'alice', fields: body }));
+    });
+  });
+
+  describe('(h) the player choices: crestSlots and builds (ADR 0006)', () => {
+    // The rules check that these two keys are maps and nothing more: the values inside
+    // are not checked (as done and visited are not). So the values here are placeholders
+    // of the right kind, not real Crest or entry ids.
+    const path = 'silksong_progress/alice';
+    const withSlots = { crestSlots: map({ 'example-crest': map({ blue: int(1) }) }) };
+    const withBuilds = { builds: map({ 'example-crest': map({ red: list([str('example-tool')]) }) }) };
+    const withBoth = { ...withSlots, ...withBuilds };
+
+    test('crestSlots alone is accepted for the owner', async () => {
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields(withSlots) }));
+    });
+
+    test('builds alone is accepted for the owner', async () => {
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields(withBuilds) }));
+    });
+
+    test('both keys together are accepted, and the Emulator keeps their values', async () => {
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields(withBoth) }));
+      const read = await call('GET', path, { as: 'alice' });
+      allowed(read);
+      const slot = read.body.fields.crestSlots.mapValue.fields['example-crest'].mapValue.fields.blue;
+      assert.equal(slot.integerValue, '1');
+      const tool = read.body.fields.builds.mapValue.fields['example-crest'].mapValue.fields.red.arrayValue.values[0];
+      assert.equal(tool.stringValue, 'example-tool');
+    });
+
+    test('an update that adds the new keys to an existing four-key document is accepted', async () => {
+      await seed(path);
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields(withBoth) }));
+    });
+
+    test('empty maps are accepted (clearProgress writes them on purpose)', async () => {
+      const empty = { crestSlots: map({}), builds: map({}) };
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields(empty) }));
+    });
+
+    test('a four-key document from an older page is accepted over a copy that has the new keys', async () => {
+      // An older page writes only the four keys. Its write must not be refused, even when it
+      // replaces a copy that holds Builds: keeping those Builds is the job of the merge in
+      // progress.js, not of the rules (ADR 0006).
+      await seed(path, progressFields(withBoth));
+      allowed(await call('PATCH', path, { as: 'alice', fields: progressFields() }));
+    });
+
+    test('crestSlots or builds that is not a map is refused (a list, a string, a number or null)', async () => {
+      // null is refused too: the contract gives these keys an object, and a Crest with
+      // nothing opened or saved has no key (docs/CONTRACTS.md section 1).
+      const notMaps = [list([str('example-crest')]), str('example-crest'), int(3), { nullValue: null }];
+      for (const key of ['crestSlots', 'builds']) {
+        for (const value of notMaps) {
+          refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ [key]: value }) }));
+        }
+      }
+    });
+
+    test('syncedUid is still refused when the new keys are present', async () => {
+      refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ ...withBoth, syncedUid: str('alice') }) }));
+    });
+
+    test('a key outside the accepted set is refused, even next to the new keys', async () => {
+      // Near misses of the accepted names: a singular or a changed case would otherwise slip through.
+      for (const key of ['build', 'crestSlot', 'crestslots']) {
+        refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ ...withBoth, [key]: map({}) }) }));
+      }
+    });
+
+    test("another user's document carrying the new keys is refused for get, create and update", async () => {
+      await seed(path, progressFields(withBoth));
+      refused(await call('GET', path, { as: 'bob' }));
+      refused(await call('PATCH', path, { as: 'bob', fields: progressFields(withBoth) }));
+      refused(await call('PATCH', 'silksong_progress/carol', { as: 'bob', fields: progressFields(withBoth) }));
+      // The refused writes changed nothing: alice's copy still holds its Builds.
+      const read = await call('GET', path, { as: 'alice' });
+      allowed(read);
+      assert.ok(read.body.fields.builds);
+    });
+
+    test('signed out is refused for a document with the new keys', async () => {
+      await seed(path, progressFields(withBoth));
+      refused(await call('GET', path));
+      refused(await call('PATCH', path, { fields: progressFields(withBoth) }));
+      refused(await call('PATCH', 'silksong_progress/dave', { fields: progressFields(withBoth) }));
+    });
+  });
+
+  describe('(i) shellShards is not accepted yet (ADR 0006)', () => {
+    // TEMPORARY refusal test. It must be FLIPPED, not deleted, when shellShards is added.
+    // shellShards is provisional: Athos has not confirmed the typed-number reading, so
+    // firestore.rules refuse any document that carries the key. When Athos confirms it and
+    // firestore.rules accept it (docs/CONTRACTS.md section 1: an integer from 0 to 999999, or null), replace
+    // this test with the acceptance cases: null and 0 accepted; -1, 1.5, "10" and 1000000 refused.
+    test('shellShards is refused for the owner (flip this when the rules add the key)', async () => {
+      const path = 'silksong_progress/alice';
+      refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ shellShards: int(120) }) }));
+      refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ shellShards: { nullValue: null } }) }));
     });
   });
 });
