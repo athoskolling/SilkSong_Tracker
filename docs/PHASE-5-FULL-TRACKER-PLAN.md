@@ -144,8 +144,8 @@ Nothing in these four tasks touches `js/progress.js`, `js/firebase.js`, `firesto
 2. **One entry per thing.** A Collectible the story needs is still one Collectible entry, with `counts: false` when the game does not count it, and it holds back other entries through their `requires`. The Drifter's Cloak (today a Task of type `ability`) becomes `kind: "collectible"`, `counts: false`, same id. The Hunter Crest is a normal entry the player ticks, `counts: false`. Mementos and Equipment are tracked, not counted.
 3. **Navigation:** a Trackers link plus links to Rosaries and Builds in the header; on phones the last link reads "Account" (option A; its accessible name stays "Account and backup").
 4. **Next to buy:** as designed: the first shop entry not bought that can be bought now (lowest `step` among priced entries that are not done and are Available). No check of whether the player can afford it.
-5. **Shell Shards:** no panel, only a visible place showing how many the player has. **Orchestrator's reading, to be confirmed by Athos:** a number the player types (`shellShards` in Progress). The other reading, a count of Shell Shard sources found, needs no Progress field.
-6. **Builds:** the picker **and** saving a Build (one per Crest). Memory Lockets spent per Crest are stored as a small number map (`crestSlots`). No templates and no `data/builds.json`: the Build fields go on entries in `items.json`, which causes no error in the current code (the validator ignores unknown fields; nothing reads them).
+5. **Shell Shards:** no panel, only a visible place showing how many the player has. **Orchestrator's reading, to be confirmed by Athos:** a number the player types (`shellShards` in Progress). The other reading, a count of Shell Shard sources found, needs no Progress field. *(Third round: Athos chose "like the Rosaries, from entries"; `shellShards` is dropped. Every Shell Shards item below in P5-5 to P5-17 is void; see "Athos's third answers".)*
+6. **Builds:** the picker **and** saving a Build (one per Crest). Memory Lockets spent per Crest are stored as a small number map (`crestSlots`). No templates and no `data/builds.json` *(reversed in the third round: templates and synergies now live in `data/builds.json`)*: the Build fields go on entries in `items.json`, which causes no error in the current code (the validator ignores unknown fields; nothing reads them).
 7. **Out of scope:** Steel Soul mode. **Not checked now:** the ten disputed facts in `docs/PHASE-5-SHEET-1-BUILDS.md` section 5; they stay open and nothing that depends on them enters `data/`.
 8. **Save file import** is in scope, last, with a read-only preview first. Whether the repository may ship the game's decryption key is Athos's question (open).
 
@@ -311,7 +311,7 @@ Nothing in P5-5 to P5-11 touches `data/`, the four existing pages, `main.js` or 
 - **Sample data moves pinned test numbers.** P5-11 adds everything in a new sample Region.
 - **Six links may not fit a 320px header.** P5-10 checks first; if they do not fit, Athos chooses.
 - **The Drifter's Cloak change moves the Tasks total by one** and changes its row from knot to bead. Expected; P5-13's done criteria list it so it is not mistaken for a bug.
-- **Shell Shards may mean something else.** Built only after Athos confirms.
+- **Shell Shards may mean something else.** Built only after Athos confirms. *(Settled in the third round: it did mean something else; `shellShards` was never built and is dropped.)*
 - **Unchecked facts reaching data.** Disputed facts stay out; undisputed ones need Athos's go (P5-14).
 - **The game's decryption key in a public repository.** P5-24 waits for Athos.
 
@@ -405,3 +405,154 @@ Nothing in these four tasks touches `data/`, `data/sample/`, `js/progress.js`, `
 - **A `requires` left out of the data drops an entry off the Route without an error** (a key that opens a counted entry but is not in its `requires`). Each data batch's handoff lists the tracked entries that land on the Route and why; QA 2 compares the Route with the sheet.
 - **A player never ticks the Hunter Crest** because the Route no longer shows it, and the Build picker then offers no Crest. Its `how` already says to tick it; P5-21's empty state should point to the Crests tab.
 - **The legend** ("A bead is a collectible and counts toward your totals") is already wrong for `counts: false` Collectibles since P5-13; this rule does not change that. Open point for Dev B's next pass on `render.js`.
+
+## Athos's third answers: Templates, Synergies, Places, MapGenie, Shell Shards (2026-10-20)
+
+**Answers** (relayed to the orchestrator; the contract text written from them awaits Athos's review). (a) He now **wants Build templates** (reversing answer 6 of the second round). (b) He **wants points of interest** like Hollow-Thingy's (benches, Bellway stations, vendors, NPCs, per Region) "whenever needed" (reversing "optional, later"). (c) He allows a **MapGenie link for Silksong as a `source`** "in case needed". (d) **Shell Shards work like the Rosaries**, worked out from entries: no typed number, no Progress field, no rules change. Everything else in the earlier rounds stands.
+
+**Decisions** (exact text: `docs/CONTRACTS.md` sections 1, 2, 2a, 3, 5, 6, 7 and 8; why: ADR 0007; glossary: Template, Synergy, Place):
+
+1. **Templates and Synergies in a new optional `data/builds.json`**, not on Crest entries: a Template groups several entries and belongs to none; a Synergy is a pair. A Template's `build` has the saved Build's shape, so "Use as my Build" is a copy into the draft (it never saves) and `checkBuild` judges it. `editorial` (required) says whether the grouping is ours ("Our suggestion") or a guide's ("From a guide"). A Synergy is never editorial: its source must name both entries.
+2. **Places in a new optional `data/places.json`**: `kind` from a short list (bench, bellway, shop, npc, wishboard, arena, door, other), `requires` with the entries' meaning, `sells` on shops. Not entries: no `step`, never done, no Progress, no effect on counts or the Route. Hidden until the Region is Visited, like entries.
+3. **Links point one way** (new files to `items.json`, never back), so the current data stays valid untouched, and pages that do not load the new files cannot change. That is why a shop lists what it `sells` instead of entries carrying a `soldAt`.
+4. **One `dataVersion` and one id space** across all five files, as before.
+5. **No new page and no new header link.** The Region page gains "Places in this region"; the Rosaries page says "Sold by"; the Build picker gains Templates and Synergies.
+6. **The validator uses the picker's own code** (`checkBuild` from `builds.js`) to prove a Template fits its Crest with every slot opened, as rule 14 uses `routeIds`.
+7. **MapGenie is a citation only**: allowed as a `source` for where something is, never the origin of our text; agents never fetch it (`CLAUDE.md` rule 9), so such links are listed as unchecked.
+8. **`shellShards` dropped** from Progress and from the import result; the rules already refuse it, so Athos has nothing to publish. Which entries carry a Shell Shards cost waits for research (P5-46).
+
+**Two facts that shape the order.** (i) **All seven Crests in `data/` already have `slots` and `slotsMax`** (`dataVersion` 10), so Templates can be checked for every Crest as soon as sheet 4 is approved; a Template that uses a slot sheet 1 disputes (Witch, Shaman, the Hunter Crest's white slot) inherits the dispute and the sheet says so. No entry has `grantsSlots` yet (no Vesticrest entry), so no Template can count on those slots. (ii) **Places need research first**: sheet 2 covers the vendors and their stock for Acts 1 and 2, but benches, Bellway stations, NPCs and wish boards have no sheet yet.
+
+### Order of these tasks (fast lanes; one branch merged at a time, tests and both validator commands after each)
+
+- **Now, no gate** (orchestrator; research only, nothing built): P5-37 (Templates and Synergies sheet: **draft written**, `docs/PHASE-6-SHEET-BUILD-TEMPLATES.md`, 20 Templates and 18 Synergies, awaiting Athos), P5-38 (Places sheet: **in progress**, `docs/PHASE-6-SHEET-PLACES.md`), P5-46 (which entries cost Shell Shards).
+- **Gate G2: Athos reviews this contract text** (sections 1, 2, 2a, 3, 5, 6 and 7 of `docs/CONTRACTS.md`, ADR 0007, the glossary). Everything below waits for it.
+- **Wave 1, in parallel right after G2** (all different files): P5-31 (Dev B, mockups), P5-40 (Dev B, loaders), P5-32 (QA 1, validator), P5-33 and P5-34 (Dev A, two worktrees), P5-35 (QA 1, tests), P5-45a and P5-45b (Dev A and QA 1, cleanup). Merge order inside the wave: P5-40; P5-32; P5-33 then its half of P5-35; P5-34 then the other half; P5-45a then P5-45b straight after.
+- **Gate G3: Athos approves the P5-31 mockups.** The orchestrator then updates `docs/DESIGN.md` (Region page Places section, Rosaries "Sold by", Build picker Templates and Synergies).
+- **Wave 2** (after P5-32 merged): P5-36 (orchestrator, sample files); P5-43 (Dev C, Places for Act 1, once sheet 5 part 1 and its id list are approved); P5-39 (Dev C, `data/builds.json`, once sheet 4 and its id list are approved). Data can land before the pages: no page reads the files until P5-41 and P5-42. Dev C's merges go one at a time, because each raises `dataVersion` in every file.
+- **Wave 3** (after G3, P5-36 and P5-40; P5-41 also after P5-33, P5-42 also after P5-34): P5-41 and P5-42 in parallel (Dev B, two worktrees). Both add to `render.js`: each keeps its code in its own new functions; the second to merge rebases on the first, and a conflict goes back to Dev B.
+- **Wave 4:** P5-47 (QA 2 pass); P5-44 (Places for Acts 2 and 3, after sheet 5 part 2 is approved).
+- **Any time after Athos's go on the Vesticrest facts** (independent of G2, because `grantsSlots` is already contracted and checked by rule 13): P5-48 (Dev C, the two Vesticrest entries), then the 8 Vesticrest Templates join `builds.json`.
+
+Nothing in P5-31 to P5-47 changes Home, the Route page, the Trackers page, the Account page, `routeIds`, any count or any Progress field except the removal of the always-false `tookShellShards` key.
+
+### P5-30 (orchestrator): the contract (this task)
+
+- **Files:** `docs/CONTRACTS.md`, `docs/STRUCTURE.md`, `GLOSSARY.md`, `docs/AGENT-PLAN.md`, this plan, `docs/adr/0006-player-choices-in-progress.md`, new `docs/adr/0007-build-templates-and-places-in-their-own-data-files.md`.
+- **Still to do by the orchestrator after Athos's review** (files this task could not touch): `docs/adr/0001-local-first-progress-with-union-merge.md` (its addendum still names `shellShards`), `.claude/rules/data.md` (MapGenie citation rule; the two new files), `docs/PROGRESS-LOG.md`; and, with Athos's go-ahead, `CLAUDE.md` rule 1 (add Place, Template, Synergy to the glossary words).
+
+### P5-31 (dev-b): mockups for Places, Templates, Synergies and "Sold by"
+
+- **Goal:** mockups before code, as for every Phase 5 screen. Invented content only (never names from `data/` or the sheets).
+- **Files:** new files in `docs/design/trackers/` only (`addendum-places-*`, `addendum-templates-*`), plus removing the provisional Shell Shards place from the existing addendum mockups (10 lines mention it).
+- **Scope:** (1) Region page, "Places in this region": groups per `kind`; a bench, a Bellway station, an NPC; a shop with its stock (priced, unpriced, one "Bought"); a Place that "Needs X"; the Visited, not Visited (hidden), Locked with "Show everything" and "no entries but Places" states; phone at 390 and 320px. A Place row must not look tickable. (2) Rosaries page: "Sold by A in X", two vendors, and "Sold in a region you have not visited", in a row and in "Next to buy". (3) Build picker: the Crest's Templates (ready, needs X with one hidden name, needs more slots), "Our suggestion" versus "From a guide", Source links, "Use as my Build" with and without unsaved changes (how the page asks), the draft after using one (left-out ids announced, an id with no slot), "Works together" and "Pairs well with". Reuse the T30 "Guide suggestion" styling where it fits. Say whether the Build picker needs a "Show everything" switch for hidden names, with two options if unsure; do not choose.
+- **Done when:** desktop and phone screenshots as in T30 and P5-10; Athos approves (G3).
+
+### P5-32 (qa-tests): validator rules 1, 2, 10, 15 and 16
+
+- **Files:** `scripts/validate-data.js`, `tests/validate-data.test.js` (QA 1).
+- **Exact changes:** as `docs/CONTRACTS.md` section 6 says. The two files are read only when present; their `dataVersion` joins rule 1 and their ids join rule 2. Rule 15 imports `checkBuild` from `../js/builds.js` (plain module, no imports) and runs its fit check only when rules 1 to 5 and 13 found no error; "every slot opened" means passing `{ [crestId]: slotsMax - slots per colour }` as `crestSlots` and every entry id as `doneSet`. Rule 16 includes the MapGenie address warning for every `source` in every file. Update the header comment's rule list.
+- **Tests** (temporary copies of `data/sample` with files written by the test; never `data/`): no new file gives no new message; each rule 15 error alone (unknown `crestId`; a non-Crest; a Crest without `slotsMax`; an unknown colour key; an empty list; 13 ids; an id twice across colours; an upgrade id; a Region id in `build`; a blue Tool under `red`; one id more than the Crest holds at its most; missing `editorial`; a bad `source`); a Template that fits only with every slot opened passes; one that fits only thanks to a `grantsSlots` entry passes; the duplicate-Template warning; `goal` and synergy `effect` length warnings; each synergy error (`a` equal to `b`; the same pair reversed; a Crest as `a`; an upgrade; unknown id); with a rule 13 error present, rule 15's fit check is skipped and nothing crashes. Rule 16: unknown `kind`; unknown `regionId`; a Region id in `requires`; `sells` on an `npc`; empty `sells`; an id twice in `sells`; an unknown id in `sells`; a Place id equal to an entry id (rule 2); a `dataVersion` that differs (rule 1); `how` over 300 (warning); a MapGenie Hollow Knight address on an entry's `source` (warning) and a Silksong one (no warning).
+- **Done when:** all tests pass, and `node scripts/validate-data.js` and `node scripts/validate-data.js data/sample` print exactly what they print before the change (`0 warning(s)` on 2026-10-20).
+
+### P5-33 (dev-a): `missingForPlace`
+
+- **Files:** `js/requirements.js` only. **Exact change:** `export function missingForPlace(place, doneSet, items, regions)` as section 2 says, reusing the walk `missingFor` uses (the place's own `requires` plus `requirementsOfRegion(place.regionId)`); a comment says why it takes an object. Nothing else changes.
+- **Done when:** `node --test "tests/*.test.js"` passes with no test edited; both validator commands unchanged; a throwaway script prints `missingForPlace` for three invented Place objects against `data/sample` (empty `requires` in an open Region, one in a Locked Region, one with a chain); paste the output.
+
+### P5-34 (dev-a): `fitTemplate`, `synergiesIn`, `synergyPartners`
+
+- **Files:** `js/builds.js` only. **Exact changes:** as section 2a says; `fitTemplate` builds on `ownedIds` and `checkBuild` (no second copy of the rules). Nothing else changes.
+- **Done when:** tests pass with none edited; a throwaway script prints the three results for invented templates and synergies against `data/sample` (one ready, one with a missing id, one with an id past the slots); paste it.
+
+### P5-35 (qa-tests): tests for P5-33 and P5-34
+
+- **Files:** `tests/requirements.test.js`, `tests/builds.test.js` (QA 1). Written against the contract while P5-33 and P5-34 are built; each half merged straight after its function.
+- **Cases:** the third-round sentences under "Rules the tests must cover" in sections 2 and 2a.
+- **Done when:** all pass after both merges; the handoff lists each case.
+
+### P5-36 (orchestrator): sample files
+
+- **Files:** new `data/sample/builds.json` and `data/sample/places.json`; `dataVersion` raised in every sample file. **After** P5-32 is merged.
+- **Scope:** invented content only, on the sample Crests that already have `slots` and `slotsMax`: a Template ready with nothing opened, one that needs an opened slot, one that needs a `grantsSlots` entry, one with an id that is off the Route, one `editorial: false`; two Synergies (one that can be active, one that only pairs). Places of every `kind` across at least three sample Regions, including a Locked one and an unvisited one; two shops that sell the same priced entry; a shop selling an unpriced entry; a Place with a two-step `requires`; one `source` on the MapGenie Silksong path (a link only, never opened).
+- **Done when:** `node scripts/validate-data.js data/sample` gives no error and no warning, and the tests pass (pinned sample numbers do not move: the new files change no count).
+
+### P5-37 (orchestrator): sheet 4, Templates and Synergies (research)
+
+- **File:** `docs/PHASE-6-SHEET-BUILD-TEMPLATES.md` ("sheet 4" below; **draft written 2026-10-20**: 20 Templates, 18 Synergies, search results only, checked against `data/` at `dataVersion` 10). Web search results only; never hollowknight.wiki, Fextralife or MapGenie. What the draft found that shapes the data: 8 Templates fit only with the Vesticrest slots, which no entry grants yet (P5-48); two ids are missing from `data/` (`pale-nails`, `egg-of-flealia`); one Synergy is stated by its sources only for the upgrade (Curvesickle), so with the base id `curveclaw` it is a weaker claim.
+- **Scope:** per Crest: Builds that guides recommend (candidates for `editorial: false`, with the page) and our groupings (`editorial: true`, each Tool justified by the `effect` already in `data/`); Synergy pairs only where one page names both Tools and the effect; every Tool must have an undisputed `toolColor` in `data/`. Disputed facts are flagged, never used. Proposed ids. For each Template, which slots it uses and whether any of them is one sheet 1 disputes (so Athos can hold it back).
+- **Done when:** Athos approves the sheet and its id list.
+
+### P5-38 (orchestrator): sheet 5, Places (research)
+
+- **File:** `docs/PHASE-6-SHEET-PLACES.md` ("sheet 5" below; **in progress**, a skeleton on 2026-10-20), in two parts: Act 1 Regions first, then Acts 2 and 3, so Dev C can start on part 1.
+- **Scope:** per Region: benches, Bellway stations, shops (from sheet 2 section 3, with `sells` mapped to existing entry ids), NPCs worth finding, wish boards, and other fixed spots the guides name; `requires` as existing entry ids (only what a source says gates it); proposed ids in the `<kind>-<name>` form; a source per Place; conflicts flagged. A MapGenie link only if Athos supplies one. Nothing that is already an entry is repeated as a Place.
+- **Done when:** Athos approves each part and its id list.
+
+### P5-39 (dev-c): `data/builds.json`
+
+- **Files:** new `data/builds.json`; `dataVersion` raised in every `data/` file. **Depends on:** sheet 4 and its id list approved; P5-32 merged.
+- **Scope:** only Templates whose ids are all in `data/` (Tools with a `toolColor`, Silk Skills), that fit with the `grantsSlots` entries already in `data/`, and that Athos did not hold back for a disputed slot; only Synergies whose two Tools have a `toolColor`. Everything else in the sheet waits for the entries it needs (the 8 Vesticrest Templates for P5-48; those using `pale-nails` or `egg-of-flealia` for the batch that adds them), and joins `builds.json` in a later small task.
+- **Done when:** validator clean on both folders; tests pass; a throwaway script prints `fitTemplate` for each Template with nothing done and with everything done; the handoff maps each record to its sheet row.
+
+### P5-40 (dev-b): the two loaders
+
+- **Files:** `js/data.js` only. **Exact change:** `loadPlaces()` and `loadTemplates()` as section 5 says (same folder logic, same `loadFile`; a 404 resolves with empty lists; other failures reject with `DataLoadError`). `loadData()` unchanged.
+- **Done when:** tests pass; served locally, both resolve to empty lists today (no files), and a page that does not call them makes no new request (check the network panel and say so).
+
+### P5-41 (dev-b): Places on the Region page; "Sold by" on the Rosaries page
+
+- **Files:** `js/main.js` (Region branch only), `js/render.js` (new functions for the Places section and the "Sold by" line), `js/rosaries-page.js`, `css/components.css` (Places rows), `css/trackers.css` ("Sold by" line) if needed.
+- **Depends on:** G3, P5-33, P5-36 and P5-40 merged.
+- **Scope:** section 5, "Region page" and "Rosaries page" bullets. Places come from `loadPlaces()` after `loadData()`; "Needs X" from `missingForPlace`; a failed load shows one line and nothing else breaks.
+- **Done when**, served locally with `?data=sample` (say what you looked at): each sample Region shows its Places grouped by `kind` only when its entries are shown; a Place row has no toggle and is skipped by the entries' keyboard order; a shop shows its stock, prices and "Bought" after ticking that entry; "Needs X" disappears once X is ticked; the anchor link from the Rosaries page lands on the row; the Rosaries page names both vendors of the shared entry and hides a vendor in an unvisited Region; every count, Region card, "Next on the route" and Route number is the same as before; nothing scrolls sideways at 390px; tests and both validators pass. With `data/` (no `places.json` yet, or with P5-43's file) the Region page looks exactly as before or with its Places, nothing else.
+
+### P5-42 (dev-b): Templates and Synergies on the Build picker
+
+- **Files:** `js/builds-page.js`, `js/render.js` (new functions for the Templates and Synergies parts), `css/trackers.css`.
+- **Depends on:** G3, P5-34, P5-36 and P5-40 merged.
+- **Scope:** section 5, "Build picker" bullets. "Use as my Build" writes only the draft; saving stays the player's own action through `setBuild`.
+- **Done when**, with `?data=sample`: each sample Template shows the right standing (ready, needs, needs more slots) as ids are ticked and slots opened; "Use as my Build" fills the draft without saving (reload: the saved Build is unchanged), asks first when there are unsaved changes, announces left-out ids; a hidden name stays hidden; "Works together" and "Pairs well with" follow the draft; without `builds.json` (`data/`) the page is exactly as before; tests and validators pass.
+
+### P5-43 (dev-c): `data/places.json`, Act 1 Regions
+
+- **Files:** new `data/places.json`; `dataVersion` raised in every file. **Depends on:** sheet 5 part 1 and its id list approved; P5-32 merged.
+- **Done when:** validator clean; tests pass; a throwaway script prints, per Region, the number of Places by `kind`, and `routeIds(...).size` and every `regionProgress` before and after (unchanged); the handoff lists every MapGenie `source` as not opened.
+
+### P5-44 (dev-c): Places for Acts 2 and 3
+
+- Same as P5-43 for sheet 5 part 2.
+
+### P5-45a (dev-a) and P5-45b (qa-tests): the `shellShards` cleanup
+
+- **P5-45a files:** `js/progress.js` (drop `tookShellShards` from the import result; header comment and the comment near `importProgress` say `shellShards` is dropped, ADR 0007), `tools/sync-rehearsal.mjs` (the expected import result), `firestore.rules` (comment only: the key is refused because the field is dropped; **no behaviour change**, so nothing to publish; the published copy differs only in a comment).
+- **P5-45b files:** `tests/progress.test.js` (expected results without `tookShellShards`), `tests/firestore-rules.test.js` (the "TEMPORARY ... flip this" refusal test becomes a permanent one; its assertions stay).
+- **Merge:** P5-45a then P5-45b straight after (between them the `deepEqual` tests fail, as in P5-25 and P5-26).
+- **Done when:** `node --test "tests/*.test.js"`, the Emulator rules tests and the sync rehearsal pass (commands in `CLAUDE.md`).
+
+### P5-46 (orchestrator): which entries cost Shell Shards (research)
+
+- **File:** a short section added to sheet 2 or a note in `docs/research/`. Confirm (two sources) which things the player pays in Shell Shards (sheet 2: the Bone Bottom Donate wishes, one source), whether they are or should be entries, and the amounts. Then a contract proposal (section 8: `shardPrice` and `shellShardsToSpend`) for Athos. Nothing is built before he answers.
+
+### P5-48 (dev-c): the two Vesticrest entries
+
+- **Why:** 8 of sheet 4's Templates fit only with the Vesticrest slots (sheet 1 section 4: Eva gives a yellow slot, later a blue one, to every Crest). Without entries carrying `grantsSlots`, rule 15 rejects them, and the Build picker undercounts the slots of every player who has them.
+- **Files:** `data/items.json`, `dataVersion` in every file (Dev C). **Depends on:** Athos's go on the facts: the slot colours (yellow, then blue) are agreed by the sources; Eva's thresholds are disputed (sheet 1 point 9), so the two entries' `how` must not state a threshold Athos has not confirmed.
+- **Scope:** two Collectible entries with `counts: false` (one entry per thing: the player obtains them, and sheet 1 lists the Vesticrest among the tracked-only extras), `grantsSlots` `{ "yellow": 1 }` and `{ "blue": 1 }`, the second requiring the first only if the sources agree it always comes later, in Weavenest Atla, with sources. Their `type` needs a place on rule 12's tracked-only list first (a one-line QA 1 change, like P5-15), or rule 12 warns. Ids proposed by the orchestrator and approved by Athos before the merge (permanent).
+- **Done when:** validator clean; tests pass; `slotsFor` for each Crest with both entries done is one yellow and one blue higher than without (throwaway script, pasted); the Build picker shows the extra slots.
+
+### P5-47 (qa-manual): pass on the Region, Rosaries and Builds pages
+
+- **Depends on:** P5-41 and P5-42 merged. With `data/` and `?data=sample`: Places, "Sold by", Templates and Synergies against the approved mockups and section 5; keyboard, screen reader names, 390 and 320px; and that Home, Route, Trackers and Account did not change. Findings in `qa/reports/`.
+
+### Risks of the third round
+
+- **Templates on disputed layouts.** Every Crest in `data/` has a layout, but sheet 1 disputes some of them; a Template that relies on a disputed slot would be wrong if the layout is. Sheet 4 marks those Templates so Athos can hold them back; a later layout fix makes rule 15 flag any Template that stops fitting.
+- **Weak sources.** The research so far rests on search results; a Synergy needs a page that names both Tools, which search snippets often do not show. Expect few Synergies at first; none is better than an unsupported one.
+- **MapGenie links cannot be checked** by anyone but Athos. Each handoff lists them; the validator only checks the address form.
+- **Spoilers** through Template "needs" lists, Synergies and "Sold by". The contract hides names in unvisited Regions; QA 2 checks it.
+- **Two Dev B branches both add to `render.js`** (P5-41, P5-42). Each keeps its code in new functions; merged one at a time; the second rebases.
+- **`dataVersion` churn.** Each of P5-39, P5-43 and P5-44 raises it in all five files, so Dev C's branches merge one at a time and the later one raises the number again after rebasing.
+- **Permanent ids.** Place, Template and Synergy ids are permanent once pushed (pages link to them); each sheet's id list is approved by Athos before its data merges.
+- **A Place that repeats an entry** (a boss arena next to the boss Task) would show the same thing twice. Sheet 5 and P5-43 check against `items.json`; the contract forbids it.
+- **Nothing shows Shell Shards yet** after the drop, until P5-46 and a follow-up contract. Athos should know the Rosaries page has no Shell Shards line in the meantime.

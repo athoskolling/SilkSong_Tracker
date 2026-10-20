@@ -22,7 +22,7 @@ Starts only when the vertical slice works and the contracts have been proven in 
 | Role | Claude Code agent | Model | Responsibility |
 |---|---|---|---|
 | **Orchestrator** | `orchestrator` | Opus 5.5 (`high`) | Owns the environment. Creates the scaffold, defines the contracts, hands out tasks, integrates, resolves conflicts and does the final review. Does not write features. |
-| **Dev A: data and logic** | `dev-a` | Sonnet 5.5 (`high`) | `data/`, `requirements.js`, `progress.js`, `firebase.js`, Firestore rules; in Phase 5 also `builds.js` and the save file reader. |
+| **Dev A: data and logic** | `dev-a` | Sonnet 5.5 (`high`) | `data/`, `requirements.js`, `progress.js`, `firebase.js`, Firestore rules; in Phase 5 also `builds.js` (including the Template and Synergy functions) and the save file reader. |
 | **Dev C: data content** | `dev-c` | Sonnet 5.5 (`high`) | `data/*.json` batches from approved sheets (Acts 2 and 3), so Dev A can work on logic in parallel. Added at Athos's request, 2026-10-20. |
 | **Dev B: interface** | `dev-b` | Sonnet 5.5 (`high`) | HTML, CSS, `render.js`, `main.js`, screens and accessibility. |
 | **QA 1: automated tests** | `qa-tests` | Haiku 5.5 (`xhigh`) | Logic tests and the data validator. |
@@ -42,7 +42,7 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 | Path | Owner |
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
-| `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data). In Phase 5 Dev C adds the tracker content (`counts`, `price`, `toolColor`) from approved sheets only |
+| `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data). In Phase 5 Dev C adds the tracker content (`counts`, `price`, `toolColor`) from approved sheets only, and from the third round also `data/builds.json` (Templates and Synergies) and `data/places.json` (Places), from approved sheets only |
 | `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `js/builds.js` (Phase 5), `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `js/account-page.js`, `img/` | Dev B (Phase 2: `dev-a` may act as Dev B for named UI files, one task at a time, when it speeds things up; Athos, 2026-10-19) |
 | Phase 5 interface: `trackers.html`, `rosaries.html`, `builds.html`, `js/trackers-page.js`, `js/rosaries-page.js`, `js/builds-page.js`, any new stylesheet they need, and the Phase 5 mockup files in `docs/design/trackers/` (an exception to the orchestrator owning `docs/`) | Dev B (the orchestrator names the exact files in each task; mockups need Athos's review before code) |
@@ -59,9 +59,10 @@ The orchestrator writes this file **before** releasing parallel work. The contra
 
 Summary (the exact signatures and data shapes are in `docs/CONTRACTS.md`):
 
-- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`, and from Phase 5 `isCounted` and `rosariesToSpend`
-- `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`), and from Phase 5 `setCrestSlots`, `setBuild` and `setShellShards` (provisional)
-- `builds.js` (Phase 5, pure): `slotsFor`, `ownedByColour`, `checkBuild`
+- `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`, and from Phase 5 `isCounted`, `rosariesToSpend`, `routeIds` and (third round) `missingForPlace`
+- `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`), and from Phase 5 `setCrestSlots` and `setBuild` (`setShellShards` was dropped before it was built, ADR 0007)
+- `builds.js` (Phase 5, pure): `slotsFor`, `ownedByColour`, `checkBuild`, and (third round) `fitTemplate`, `synergiesIn`, `synergyPartners`
+- `data.js` (Dev B): `loadData`, and (third round) `loadPlaces` and `loadTemplates` for the two optional files
 - `firebase.js`: `signIn`, `completeEmailLinkSignIn`, `signOut`, `onAuthChange`; and, for `progress.js` only, `readProgressDoc`, `writeProgressDoc`, `deleteProgressDoc`, `watchProgressDoc`
 
 The interface uses only these functions. It does not touch Firestore or localStorage, and does not read requirement JSON on its own.
@@ -102,6 +103,7 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Plan, order and task briefs: `docs/PHASE-5-FULL-TRACKER-PLAN.md` (P5-1 to P5-4, then P5-5 to P5-24 after Athos's second answers). Contract changes: `docs/CONTRACTS.md` section 7; why: ADR 0005 and ADR 0006.
 - Every change is additive: Home, Region, Route and Account, Progress, sync and the Act 1 entries keep working unchanged, and the current data passes the validator untouched.
 - Dev A: `isCounted`, `regionProgress` and `rosariesToSpend` in `requirements.js`; the player-choice fields in `progress.js` and the matching `firestore.rules`; `builds.js`; the sync rehearsal for the new fields; last, the save file spike and preview. QA 1: validator rules 6, 11, 12 and 13 and the tests for every module above, including the Emulator rules tests. Dev B: the counts in `main.js` switch to `isCounted` (before any `counts: false` data), then the mockup addendum, then the Trackers, Rosaries and Builds pages, each adding its own header link. Dev C: the Drifter's Cloak and Hunter Crest change, then tracker content from approved sheets. QA 2: a pass after each page. Athos: publishes the new Firestore rules before the new `progress.js` is merged.
+- Third round (Athos, 2026-10-20; ADR 0007; tasks P5-30 to P5-46 in `docs/PHASE-5-FULL-TRACKER-PLAN.md`): Build Templates and Synergies (`data/builds.json`) and Places (`data/places.json`). Orchestrator: contract, research sheets (templates and synergies; Places per Act), sample files. Dev B: mockups, the two loaders in `data.js`, the Region page Places section, "Sold by" on the Rosaries page, Templates and Synergies in the Build picker. Dev A: `missingForPlace` and the three `builds.js` functions; the `shellShards` cleanup. QA 1: validator rules 15 and 16 and the tests. Dev C: the two files, in batches. QA 2: a pass on the three pages. The provisional `shellShards` is dropped (no rules change, nothing for Athos to publish).
 
 `docs/PHASE-PROMPTS.md` has a ready-to-paste kickoff prompt for each phase.
 
@@ -150,6 +152,14 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - The Build picker offers only what the player has marked done, and a saved Build and the opened slots survive a reload and sync between two devices.
 - Every new screen matches a mockup Athos approved.
 
+**Phase 5, third round adds (ADR 0007):**
+- The current `data/` (without `builds.json` and `places.json`) still passes the validator with no new message; with the two files, rules 15 and 16 pass with no error.
+- Every Template fits its Crest at its most, checked by the validator with the picker's own `checkBuild`; every Synergy has a source that names both entries (checked in the research sheet).
+- "Use as my Build" fills the draft and never saves by itself; nothing from a Template or a Place is ever stored in Progress.
+- Places appear on the Region page under the same Visited rule as entries, have no done state, and change no count, Region state or Route answer; the Rosaries page says where each priced entry is sold when a Place sells it.
+- No agent fetched MapGenie; every MapGenie `source` was supplied by Athos or seen in a search result, and is listed as not opened.
+- Progress has no `shellShards`, and the Firestore rules still refuse it.
+
 ## 9. Changes from the Portuguese original
 
 - Added the role-to-agent mapping, the Claude Code mechanics (section 7) and the pointer to `docs/PHASE-0-CHECKLIST.md` for Athos's Phase 0 tasks.
@@ -158,4 +168,5 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Stage 1 clarified: `dev-a` acts as both devs, with the orchestrator naming the owner of each task.
 - Phase 5 (2026-10-20): Phase 5 (full tracker) added to the phases and the definition of done; owners for its new files; Dev C writes the tracker content.
 - Phase 5, second round (2026-10-20): `js/builds.js` and the new pages named in the owner table; the `progress.js` setters in section 4; the definition of done now covers the player-choice fields in Progress (ADR 0006) instead of "Progress holds only ids".
+- Phase 5, third round (2026-10-20): Templates, Synergies and Places (ADR 0007): owners of the two new data files, the new functions in section 4, the third-round definition of done; `setShellShards` dropped.
 - Phase 1 (2026-10-19): `requirements.js` delegated to Dev A; `firestore.rules` and its Emulator tests moved into Phase 1, because sync between two devices (the slice's done criterion) cannot work without them; contract summary in section 4 brought up to date; `firebase/` added to the owner table.

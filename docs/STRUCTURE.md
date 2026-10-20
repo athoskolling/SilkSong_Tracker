@@ -75,7 +75,7 @@ In:
 - Mementos and Equipment, tracked and not counted (`counts: false`).
 - Shop entries with a Rosary `price`, and a Rosaries panel showing what is still to spend, worked out from what is not bought.
 - A Build picker: choose a Crest and fill its slots from the Tools and Silk Skills the player has marked done, record the slots opened on each Crest, and save one Build per Crest. The per-entry Build fields live on entries (Athos, 2026-10-20).
-- Build Templates per Crest and Synergies between Tools, each with a source, in `data/builds.json` (Athos, 2026-10-20, third round; ADR 0007). They need Crest slot layouts in `data/` first.
+- Build Templates per Crest and Synergies between Tools, each with a source, in `data/builds.json` (Athos, 2026-10-20, third round; ADR 0007). Each Template is checked against its Crest's layout in `data/`.
 - Places per Region (benches, Bellway stations, shops, NPCs, wish boards and others) in `data/places.json`, shown on the Region page, with "Sold by" on the Rosaries page (Athos, 2026-10-20, third round; ADR 0007).
 - Shell Shards worked out from entries, like the Rosaries, once research shows which entries cost them (Athos, 2026-10-20, third round). No typed number and no Shell Shards panel.
 - Reading the game's save file (last): a read-only "what does my save say" preview first, after a research spike; whether the repository may ship the game's key is Athos's question.
@@ -229,11 +229,14 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 3. **Route** (`route.html`): every step across all Regions in order, a "Show on the route" filter and a "Holding you up" rail. This is also where "what is missing" lives, so there is no separate pending page.
 4. **Account and backup** (`account.html`): sign in with Google, GitHub or an email link; download and add a backup file; start a new run; a short "How saving works" explanation.
 
-Phase 5 adds three pages, linked from every header (Athos, 2026-10-20, option A on phones): Trackers (one tab per category), Rosaries (still to spend, next to buy, and the Shell Shards number if confirmed) and Builds (the picker, opened slots, saved Builds). Mockups first (Dev B, `docs/design/trackers/`), reviewed by Athos. The four screens above do not change, except that their counts use `isCounted` (`docs/CONTRACTS.md` section 5), which gives the same numbers for the current data.
+Phase 5 adds three pages, linked from every header (Athos, 2026-10-20, option A on phones): Trackers (one tab per category), Rosaries (still to spend, next to buy) and Builds (the picker, opened slots, saved Builds). Mockups first (Dev B, `docs/design/trackers/`), reviewed by Athos. The four screens above do not change, except that their counts use `isCounted` (`docs/CONTRACTS.md` section 5), which gives the same numbers for the current data.
+
+The third round (ADR 0007) adds no page and no header link: the Region page gains a "Places in this region" section (shown under the same Visited rule as its entries; Places have no toggle), the Rosaries page says where each priced entry is sold, and the Build picker lists the chosen Crest's Templates and the Synergies in the Build. Mockups first.
 
 ## 8. Data: license and accuracy
 
-- The wiki and MapGenie are **references**. Content is written in our own words, with a link in `source`. Never copy text and never scrape MapGenie data.
+- The wiki and MapGenie are **references**. Content is written in our own words, with a link in `source`. Never copy text and never scrape MapGenie data. A MapGenie Silksong map link may be a `source` only to cite where something is; agents never open it, so it is unchecked until Athos looks (Athos, 2026-10-20; ADR 0007).
+- Template goals and Synergies are claims about the game too: a Synergy needs a source that names both Tools; a Template that is our own grouping is marked editorial and says so on the page.
 - **No draft script** (Athos, 2026-10-20, checklist item 4). The plan had a script that drafted entries from the wiki. It was dropped: the main wiki blocks automated reading, and Fextralife's terms (Valnet) forbid scraping and rewriting their content for publication. Entries are written by Athos from his own play, checked against the main wiki read by hand in a browser, with other guides used only to cross-check a fact. Agents never fetch hollowknight.wiki or Fextralife. Research: `docs/research/2026-10-20-sources-and-batch-1.md`.
 - Check a sample of entries against the wiki at every data revision.
 - Before publishing, review the terms and license of each source and include attribution on the page.
@@ -278,3 +281,4 @@ Phase 5 adds three pages, linked from every header (Athos, 2026-10-20, option A 
 - Repository created (public, `athoskolling/SilkSong_Tracker`), so it is no longer an open point. `requirements.js` delegated to Dev A (Athos, Phase 1).
 - Phase 5 (Athos, 2026-10-20): the full tracker scope (section 3), the `counts`, `price` and `toolColor` fields (section 5) and ADR 0005. Reading the save file moves from "out of V1" into Phase 5.
 - Phase 5, second round (Athos, 2026-10-20): one entry per thing; Build fields on entries; three new pages; player choices in Progress (ADR 0006), which replaces "Progress stores ids only".
+- Phase 5, third round (Athos, 2026-10-20; ADR 0007): Build Templates and Synergies (`data/builds.json`) and Places (`data/places.json`) are in scope, reversing "no templates" and "points of interest optional"; a MapGenie link may be a `source` as a citation only; the provisional Shell Shards number in Progress is dropped (Shell Shards come from entries).

@@ -38,6 +38,6 @@ None of the three new kinds of content is "a thing the player obtains or does", 
 ## Costs
 
 - Two more files to load, validate and keep in step, and a version line to raise in five files for every content change.
-- **Templates depend on Crest layouts.** A template can only be checked against a Crest that has `slots` and `slotsMax` in `data/`. Today no Crest has them (several layouts are disputed, sheet 1 section 5), so no real template can ship until Athos clears the Crest layouts he trusts.
+- **Templates depend on Crest layouts.** A template is checked against its Crest's `slots` and `slotsMax` in `data/`. All seven Crests have them today, but sheet 1 section 5 disputes some (Witch, Shaman, the Hunter Crest's white slot); a template that uses a disputed slot inherits the dispute, and if a layout is corrected, rule 15 flags every template that stops fitting.
 - **Spoilers.** A template's "needs" list, a synergy and a shop's stock can name entries in Regions the player has not Visited. The pages apply the entry rule (hidden until Visited, unless the player shows everything) to those names too.
 - A MapGenie `source` cannot be checked by anyone but Athos, in a browser.
