@@ -185,17 +185,25 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 - `locksOut` (list of ending ids that can no longer be reached after this one)
 - The four main endings, with requirements and `locksOut`, written by Athos and checked against the main wiki, ship with the late-game batch. In V1, `endings.json` is empty.
 
+### Template and Synergy (`builds.json`, Phase 5, optional)
+- Template: `id`, `crestId`, `name`, `goal` (our words), `build` (the Tools and Silk Skills per colour, the same shape as a saved Build), `editorial` (true = our grouping, false = a guide's Build), `source`. Must fit its Crest with every slot opened (validator rule 15, using the picker's own `checkBuild`).
+- Synergy: `id`, `a` and `b` (two entry ids), `effect` (our words), `source` (a page that names both).
+
+### Place (`places.json`, Phase 5, optional)
+- `id`, `name`, `kind` (bench, bellway, shop, npc, wishboard, arena, door or other), `regionId`, `area`, `how` (where it is, our words), `requires` (entry ids needed to reach it, the same meaning as on entries), `sells` (shops only: the entry ids it sells), `source`.
+- No `step`, never done, not counted, not on the Route. Hidden until its Region is Visited, like entries.
+
 ### Data metadata
-- `dataVersion` at the top of each file in `data/`: one number shared by all three files, raised in all of them on every content revision (patch or DLC).
+- `dataVersion` at the top of each file in `data/`: one number shared by every file (the three core files and, when they exist, `builds.json` and `places.json`), raised in all of them on every content revision (patch or DLC).
 
 ### User Progress
-- **Local:** one localStorage key holding `{ done, visited, updatedAt, dataVersion }`, plus the optional Phase 5 fields `crestSlots`, `builds` and `shellShards`.
+- **Local:** one localStorage key holding `{ done, visited, updatedAt, dataVersion }`, plus the optional Phase 5 fields `crestSlots` and `builds`.
 - **Cloud:** one document per user at `silksong_progress/{uid}`, same shape.
 - `done`: map `{ [entryId]: true }`.
 - `visited`: map `{ [regionId]: true }`, set by hand or automatically when something in the Region is completed.
 - Stores ids, never game text. A bought shop entry or a found Memento is just an id in `done`.
-- Phase 5 player choices (ADR 0006): `crestSlots` (Crest id to slots opened per colour), `builds` (Crest id to the entry ids in its slots, per colour) and the provisional `shellShards` (a number or null). A field missing from a copy means "written by an older page", not "empty", so an older page cannot erase saved Builds.
-- **Export/import:** the same object, in a `.json` file. Import **adds** what the file has to what is already there and never removes anything (union, the same rule as the first sign-in). For the Phase 5 fields: the larger number of opened slots, a Build only for a Crest with none saved, Shell Shards only when none is set.
+- Phase 5 player choices (ADR 0006): `crestSlots` (Crest id to slots opened per colour) and `builds` (Crest id to the entry ids in its slots, per colour). A field missing from a copy means "written by an older page", not "empty", so an older page cannot erase saved Builds. (A provisional `shellShards` number was dropped before it was built, ADR 0007.) Nothing from Templates or Places is stored.
+- **Export/import:** the same object, in a `.json` file. Import **adds** what the file has to what is already there and never removes anything (union, the same rule as the first sign-in). For the Phase 5 fields: the larger number of opened slots, and a Build only for a Crest with none saved.
 
 ## 6. Core logic: requirements
 
@@ -209,6 +217,8 @@ Points of attention: cycles in the data (validate), ids that do not exist (valid
 Regions use the same logic: a Region is *Available* when all of its `requires` are in `done`. An entry is only Available when its Region is Available too: its real requirements are its own `requires` plus its Region's. Otherwise it is *Locked*, and the interface shows only the name and what is missing (the Region's own pending list).
 
 Phase 5 adds a third question, answered from the data alone: **is this entry on the Route?** (`routeIds`, `docs/CONTRACTS.md` section 2). "Next on the route", "Holding you up", the Route page and a Region's Complete state look only at entries on the Route; counts, Trackers and Rosaries do not.
+
+A Place uses the same chain walk for "what does it need?" (`missingForPlace`: its own `requires` plus its Region's), so the Region page can say "Needs X" for a Place without walking `requires` itself. Places never affect the other answers.
 
 ## 7. V1 screens
 
