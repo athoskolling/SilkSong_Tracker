@@ -1,6 +1,25 @@
 /* base.css: tokens (docs/DESIGN.md section 3), reset, typography, page frame and focus.
    Every color in the site comes from a custom property defined here; other files use var(...). */
 
+/* Fonts are self-hosted (css/fonts/, SIL Open Font License, see css/fonts/README.md), so a visitor's browser
+   never contacts a third party for type. URLs are relative to this file. display=swap shows the system
+   fallback at once and swaps when the file arrives. Instrument Sans is one variable file: the weight range
+   covers the 400, 500 and 600 the design uses (the file also has a width axis, left at its default). */
+@font-face {
+  font-family: Gloock;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/Gloock-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/InstrumentSans-VF.woff2") format("woff2");
+}
+
 :root {
   /* Tokens from DESIGN.md section 3. Do not change a value here to pass a contrast check; report it. */
   --night: #130B13;
