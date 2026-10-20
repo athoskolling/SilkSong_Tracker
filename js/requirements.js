@@ -145,6 +145,9 @@ function routeIdsWithIndex(index, items, regions) {
   const pending = [];
 
   for (const item of items) {
+    // Check every entry, on the Route or not: the walk below only reads entries it reaches, so a
+    // typo inside an off-Route entry would otherwise pass quietly (QA 1, P5-26).
+    requirementsOfItem(index, item);
     if (isCounted(item) || item.kind === 'task' || item.missable === true) pending.push(item.id);
   }
   for (const region of regions) pending.push(...requirementsOfRegion(index, region.id));
@@ -218,6 +221,8 @@ export function rosariesToSpend(doneSet, items, regions) {
 // entries and the Regions need, all the way down the chain. That last part makes the Set closed
 // under requirements: nothing the Route needs is ever off it. Anything else (in practice a
 // counts: false Collectible that nothing on the Route needs) is off the Route.
+// An unknown id throws, as in every function of this module: every entry's Region and `requires`
+// and every Region's `requires` are checked, including entries that end up off the Route.
 // A cycle does not loop and is not reported here; missingFor and the validator report it.
 // Ending conditions are not read: they are Tasks or counted entries, already on the Route.
 export function routeIds(items, regions) {
