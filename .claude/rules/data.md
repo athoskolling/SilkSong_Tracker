@@ -17,4 +17,4 @@ paths:
 - **Collectible or Task.** Only counted Collectibles count (`kind` collectible and `counts` not false; see CONTRACTS section 1). A Task goes into batch 1 only if it unlocks a Collectible.
 - **`missable`** is optional (default `false`). If `true`, `missableNote` says when and why.
 - **Run the validator** (`node scripts/validate-data.js`) before you hand off any change to `data/`.
-- Content ships in batches. The current batch is Act 1, the 12 Regions in `docs/PHASE-3-ACT-1.md`. Do not add entries for a Region outside the batch being worked on.
+- Content ships in batches. Act 1 (the 12 Regions in `docs/PHASE-3-ACT-1.md`, plus the tracked extras from `docs/PHASE-5-SHEET-2-MEMENTOS-EQUIPMENT-SHOPS.md`) is in `data/`. The current batch is Act 2, the 15 Regions in `docs/PHASE-3-ACT-2.md`: turn exactly that sheet into JSON. Do not add entries for a Region outside the batch being worked on.
