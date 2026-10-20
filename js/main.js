@@ -22,6 +22,7 @@ import {
   missingForRegion,
   nextStep,
   holdingYouUp,
+  isCounted,
 } from './requirements.js';
 import {
   signIn,
@@ -281,7 +282,9 @@ async function runHomePage(app) {
     const withDone = regionsWithDoneEntries(guide, state.done);
     const nextItem = nextId ? guide.itemsById.get(nextId) : null;
 
-    const collectibles = items.filter((item) => item.kind === 'collectible');
+    // Same rule as regionProgress, so the headline and the Region cards always add up: an entry
+    // with `counts: false` (a Memento, a map) is tracked but never in the headline.
+    const collectibles = items.filter(isCounted);
     return {
       routeHref: pageHref('route.html', {}, sample),
       hasEntries: items.length > 0,
