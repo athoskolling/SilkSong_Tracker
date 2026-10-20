@@ -96,6 +96,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Contract additions** (orchestrator, explained to Athos): validator rule 12 warns on Collectible types outside the approved list; Emulator mode in `firebase.js` (localhost and `?emulator` only, `demo-` project) so sync can be rehearsed end to end. Sample Collectible types moved to the approved list (ids unchanged). T24 (dev-a: Emulator mode and a two-profile sync rehearsal) and T25 (qa-tests: rule 12) started.
 
+- **T25 merged** (`qa-tests/rule-12`): validator rule 12 warns on Collectible types outside the approved list and suggests the near miss ("Tool" -> "tool"). 27 new tests. QA 1 kept the rule that tests never read real `data/` (my brief asked for one; QA 1 was right) and checked real data from the command line. Orchestrator ran: 212 tests pass; validator passes on both folders with 0 warnings; a deliberate bad type in a scratch copy warned with rule 12 and exit 0. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
