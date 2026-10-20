@@ -8,10 +8,14 @@
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Read(./.env)",
-      "Read(./.env.*)"
+      "Read(./.env.*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)"
     ],
-    "ask": [
-      "Bash(git push *)"
+    "allow": [
+      "Bash(git push origin main)",
+      "Bash(git push)"
     ]
   }
 }

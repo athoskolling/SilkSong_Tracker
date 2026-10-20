@@ -34,6 +34,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos: the orchestrator pushes whenever there is something new**, no need to ask (recorded in `docs/AGENT-PLAN.md` section 6). Exception kept: unconfirmed data facts are not published.
 
+- **Push without a prompt** (Athos): `.claude/settings.json` now allows `git push origin main` and plain `git push`; force pushes are denied in any argument order, including `+branch` refspecs. Athos on the published slice: he loves how the site looks and feels.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
