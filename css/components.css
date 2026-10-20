@@ -436,6 +436,112 @@
 .switch-input:checked + .switch-track::after { left: 18px; background: var(--night); }
 .switch-input:focus-visible + .switch-track { outline: 2px solid var(--silk); outline-offset: 3px; }
 
+/* ------------------------------------------------------------ account page */
+
+/* A shorter hero for pages with no Region picture (Account). Same gradient, same slanted edge. */
+.hero--short { min-height: 330px; padding-bottom: 64px; }
+.hero--short .hero-title { font-size: clamp(40px, 6.4vw, 84px); }
+.hero--short .hero-intro { max-width: 56ch; }
+
+@media (max-width: 600px) {
+  .hero--short { min-height: 300px; padding-top: 124px; padding-bottom: 48px; }
+  .hero--short .hero-title { font-size: clamp(40px, 12vw, 56px); }
+}
+
+/* The start thread of a page whose first plate sits right under it: it stops short of the plate. */
+.start-thread--short { height: 128px; }
+@media (max-width: 600px) {
+  .start-thread--short { height: 112px; }
+}
+
+.account-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 688px;
+}
+
+.plate-section--rule {
+  padding-top: 24px;
+  border-top: 1px dashed var(--track);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1.5px solid transparent;
+  background: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button--primary { background: var(--ivory); color: var(--night); }
+.button--primary:hover:not(:disabled) { background: var(--bronze); }
+
+.button--secondary {
+  border-color: color-mix(in srgb, var(--ivory) 60%, transparent);
+  color: var(--ivory);
+}
+.button--secondary:hover:not(:disabled) { border-color: var(--silk); color: var(--silk); }
+
+.button:disabled { opacity: 0.5; cursor: default; }
+
+.field-label { display: block; font-size: 15px; font-weight: 500; }
+
+.field-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+
+.field-input {
+  flex: 1 1 240px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid color-mix(in srgb, var(--ivory) 40%, transparent);
+  background: var(--night);
+  color: var(--ivory);
+  font: inherit;
+}
+.field-input::placeholder { color: var(--ash); opacity: 1; }
+
+.account-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+.account-dot {
+  flex: none;
+  margin-top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bronze);
+}
+
+/* "Progress combined": the same stitched look as the Next on the route plate. */
+.callout {
+  padding: 18px 22px;
+  border: 1.5px dashed var(--next-border);
+  background: var(--next-fill);
+}
+.callout-title { font-size: 14px; font-weight: 500; color: var(--silk); }
+.callout-text { margin-top: 8px; font-size: 15px; line-height: 1.6; }
+
+/* Sign-in answers (errors and "link sent"). Lives outside the plate so a re-render never wipes it. */
+.form-message { min-height: 1.5em; font-size: 15px; line-height: 1.6; color: var(--ash); }
+.form-message.is-error { color: var(--silk); }
+
 /* ------------------------------------------------------------------- footer */
 
 .site-footer { padding-bottom: 56px; font-size: 13px; line-height: 1.6; color: var(--ash); }

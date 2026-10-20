@@ -359,3 +359,204 @@ function countBlock(kind, label, count) {
     )
   );
 }
+
+// ---------------------------------------------------------------- sync status
+
+// One sentence for a sync status from progress.js. Used by the footer line on every page and
+// by the Account plate. The time is written out ("at 14:32") instead of "just now", because a
+// line that never refreshes must not go stale.
+export function syncText(status) {
+  if (status.state === 'syncing') return 'Syncing your progress.';
+  if (status.state === 'synced') {
+    if (!status.at) return 'Synced with your account.';
+    const time = new Date(status.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return `Synced with your account at ${time}.`;
+  }
+  if (status.state === 'error') {
+    // progress.js already writes a full sentence, including that Progress is safe on this device.
+    return status.message || 'Could not sync with your account. Your progress is saved on this device.';
+  }
+  return 'Saved on this device.';
+}
+
+// ------------------------------------------------------------------- account
+
+// The Account page: a short hero and one column. The sign-in plate (rebuilt whenever its state
+// changes) and the message line (never rebuilt, so its aria-live announcements are not lost).
+// Returns { plate, message }.
+export function renderAccountShell(app) {
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h(
+      'div',
+      { class: 'frame' },
+      h('h1', { class: 'hero-title' }, 'Account and backup'),
+      h('p', { class: 'hero-intro' }, 'Your progress is saved on this device. Sign in to keep it in sync everywhere.')
+    )
+  );
+
+  const plate = h('section', { class: 'plate', 'aria-labelledby': 'account-heading' });
+  const message = h('p', { class: 'form-message', 'aria-live': 'polite' });
+  const content = h(
+    'div',
+    { class: 'frame' },
+    h(
+      'div',
+      { class: 'content' },
+      h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }),
+      h('div', { class: 'account-column' }, plate, message)
+    )
+  );
+
+  app.replaceChildren(hero, content);
+  return { plate, message };
+}
+
+// kind: 'error' or 'info'. Empty text clears the line.
+export function setAccountMessage(message, text, kind = 'info') {
+  message.textContent = text;
+  message.className = kind === 'error' ? 'form-message is-error' : 'form-message';
+}
+
+function countText(count, one, many) {
+  return `${count} ${count === 1 ? one : many}`;
+}
+
+// view = { phase, busy, email, user: { email, displayName }, syncText, combined }
+// phase: 'checking' | 'signed-out' | 'needs-email' | 'signed-in'
+export function renderAccountPlate(plate, view) {
+  const heading = (text) => h('h2', { class: 'plate-heading', id: 'account-heading' }, text);
+
+  if (view.phase === 'checking') {
+    plate.replaceChildren(heading('Account'), h('p', { class: 'plate-text' }, 'Checking whether you are signed in.'));
+  } else if (view.phase === 'needs-email') {
+    plate.replaceChildren(heading('Finish signing in'), ...needsEmailParts(view));
+  } else if (view.phase === 'signed-in') {
+    plate.replaceChildren(heading('Your account'), ...signedInParts(view));
+  } else {
+    plate.replaceChildren(heading('Sign in to sync'), ...signedOutParts(view));
+  }
+}
+
+function emailForm(view, { label, action, buttonText }) {
+  return h(
+    'form',
+    { 'data-action': action, novalidate: true },
+    h('label', { class: 'field-label', for: 'email-in' }, label),
+    h(
+      'div',
+      { class: 'field-row' },
+      h('input', {
+        class: 'field-input',
+        id: 'email-in',
+        name: 'email',
+        type: 'email',
+        autocomplete: 'email',
+        placeholder: 'you@example.com',
+        value: view.email,
+        'data-focus-key': 'email',
+      }),
+      h(
+        'button',
+        { type: 'submit', class: 'button button--secondary', disabled: view.busy, 'data-focus-key': action },
+        buttonText
+      )
+    )
+  );
+}
+
+function signedOutParts(view) {
+  return [
+    h(
+      'p',
+      { class: 'plate-text' },
+      'You can use the guide without an account. Signing in saves your progress online and combines it with what is already on this device.'
+    ),
+    h(
+      'div',
+      { class: 'button-row' },
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'button button--primary',
+          disabled: view.busy,
+          'data-action': 'sign-in-google',
+          'data-focus-key': 'sign-in-google',
+        },
+        'Continue with Google'
+      )
+      // "Continue with GitHub" is left out on purpose: GitHub sign-in is not enabled in the
+      // Firebase project yet (docs/PHASE-0-CHECKLIST.md, item 6). Add the button back, with
+      // data-action="sign-in-github", once it is turned on.
+    ),
+    h(
+      'div',
+      { class: 'plate-section--rule' },
+      emailForm(view, { label: 'Or get a sign-in link by email', action: 'send-link', buttonText: 'Email me the link' })
+    ),
+  ];
+}
+
+// The link was opened on a device that does not remember the address it was sent to.
+function needsEmailParts(view) {
+  return [
+    h(
+      'p',
+      { class: 'plate-text' },
+      'This sign-in link was opened on a device that does not remember the address it was sent to. Enter that address to finish signing in.'
+    ),
+    emailForm(view, { label: 'Your email address', action: 'finish-email', buttonText: 'Finish sign-in' }),
+  ];
+}
+
+function signedInParts(view) {
+  const who = view.user.email || view.user.displayName;
+  const combined = view.combined;
+  return [
+    h(
+      'div',
+      {},
+      h(
+        'p',
+        { class: 'account-line' },
+        h('span', { class: 'account-dot', 'aria-hidden': 'true' }),
+        h('span', {}, who ? 'Signed in as ' : 'Signed in', who ? h('strong', {}, who) : null)
+      ),
+      h('p', { class: 'plate-help', style: { marginTop: '6px' } }, view.syncText)
+    ),
+    combined
+      ? h(
+          'div',
+          { class: 'callout' },
+          h('p', { class: 'callout-title' }, 'Progress combined'),
+          h(
+            'p',
+            { class: 'callout-text' },
+            `${countText(combined.localDone, 'entry was', 'entries were')} done on this device and ${combined.cloudDone} in your account. ` +
+              `${combined.totalDone} ${combined.totalDone === 1 ? 'is' : 'are'} done now. ` +
+              'Anything done on either side stayed done, and nothing was removed.'
+          )
+        )
+      : null,
+    h(
+      'div',
+      { class: 'button-row' },
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'button button--secondary',
+          disabled: view.busy,
+          'data-action': 'sign-out',
+          'data-focus-key': 'sign-out',
+        },
+        'Sign out'
+      ),
+      h('p', { class: 'plate-help' }, 'Signing out keeps your progress on this device.')
+    ),
+  ];
+}
