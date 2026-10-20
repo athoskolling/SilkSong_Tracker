@@ -1,18 +1,6 @@
 {
-  "dataVersion": 6,
+  "dataVersion": 7,
   "items": [
-    {
-      "id": "hunter-crest",
-      "name": "Hunter Crest",
-      "kind": "collectible",
-      "counts": false,
-      "type": "crest",
-      "regionId": "moss-grotto",
-      "how": "The starting Crest; you have it from the beginning. Tick it to use it in the Build picker.",
-      "requires": [],
-      "step": 11,
-      "source": "https://www.keengamer.com/articles/guides/hollow-knight-silksong-all-crest-locations"
-    },
     {
       "id": "moss-mother",
       "name": "Moss Mother",
@@ -24,6 +12,18 @@
       "requires": [],
       "step": 10,
       "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "hunter-crest",
+      "name": "Hunter Crest",
+      "kind": "collectible",
+      "counts": false,
+      "type": "crest",
+      "regionId": "moss-grotto",
+      "how": "The starting Crest; you have it from the beginning. Tick it to use it in the Build picker.",
+      "requires": [],
+      "step": 11,
+      "source": "https://www.keengamer.com/articles/guides/hollow-knight-silksong-all-crest-locations"
     },
     {
       "id": "silk-spear",
@@ -38,6 +38,21 @@
       ],
       "step": 20,
       "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "choral-commandment-bone-bottom",
+      "name": "Choral Commandment",
+      "kind": "collectible",
+      "counts": false,
+      "type": "relic",
+      "regionId": "moss-grotto",
+      "area": "Bone Bottom",
+      "how": "A relic on a ledge on the east side of the shaft above Bone Bottom, behind a breakable wall. Reach it from the west edge of Mosshome.",
+      "requires": [
+        "moss-mother"
+      ],
+      "step": 22,
+      "source": "https://www.gamerguides.com/hollow-knight-silksong/checklists/relics-locations"
     },
     {
       "id": "simple-key",
@@ -105,6 +120,71 @@
       "requires": [],
       "step": 60,
       "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "quill",
+      "name": "Quill",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map-tool",
+      "regionId": "the-marrow",
+      "how": "Sold by Shakra the map seller for 50 Rosaries. It draws the rooms you visit onto the maps you bought.",
+      "price": 50,
+      "requires": [],
+      "step": 62,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549100"
+    },
+    {
+      "id": "map-mosslands",
+      "name": "Mosslands Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "the-marrow",
+      "how": "Sold by Shakra, whom you first meet in The Marrow, for 40 Rosaries. Some guides call it the Bone Bottom Map.",
+      "price": 40,
+      "requires": [],
+      "step": 64,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549100"
+    },
+    {
+      "id": "map-the-marrow",
+      "name": "The Marrow Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "the-marrow",
+      "how": "Sold by Shakra for 50 Rosaries.",
+      "price": 50,
+      "requires": [],
+      "step": 66,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549100"
+    },
+    {
+      "id": "bench-pins",
+      "name": "Bench Pins",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map-tool",
+      "regionId": "the-marrow",
+      "how": "A map pin that marks benches. Sold by Shakra for 60 Rosaries.",
+      "price": 60,
+      "requires": [],
+      "step": 67,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-all-merchant-locations-guide/"
+    },
+    {
+      "id": "shell-marker",
+      "name": "Shell Marker",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map-tool",
+      "regionId": "the-marrow",
+      "how": "A map marker you can place yourself. Sold by Shakra for 40 Rosaries.",
+      "price": 40,
+      "requires": [],
+      "step": 68,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-all-merchant-locations-guide/"
     },
     {
       "id": "bell-beast",
@@ -177,6 +257,21 @@
       "source": "https://game-checklists.com/silksong/moss-grotto.html"
     },
     {
+      "id": "memory-locket-flintbeetles",
+      "name": "Memory Locket, Volatile Flintbeetles",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "moss-grotto",
+      "area": "Bone Bottom",
+      "how": "The reward for the Volatile Flintbeetles wish, handed in at the Bone Bottom Wishwall. It opens one locked Crest slot.",
+      "requires": [
+        "moss-mother"
+      ],
+      "step": 115,
+      "source": "https://gamerant.com/silksong-memory-locket-locations-where-all-hollow-knight/"
+    },
+    {
       "id": "swift-step",
       "name": "Swift Step",
       "kind": "collectible",
@@ -186,6 +281,19 @@
       "requires": [],
       "step": 120,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "map-deep-docks",
+      "name": "Deep Docks Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "deep-docks",
+      "how": "Sold by Shakra for 50 Rosaries.",
+      "price": 50,
+      "requires": [],
+      "step": 125,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549100"
     },
     {
       "id": "crafting-kit-forge",
@@ -243,6 +351,18 @@
       "source": "https://game-checklists.com/silksong/deep-docks.html"
     },
     {
+      "id": "memory-locket-deep-docks",
+      "name": "Memory Locket, Deep Docks",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "deep-docks",
+      "how": "At the very bottom of the Deep Docks, left of the big chamber with the diving bell. Break a wall on a ledge and follow the hidden way down to a corpse.",
+      "requires": [],
+      "step": 165,
+      "source": "https://guides4gamers.com/hollow-knight-silksong/pois/memory-lockets/"
+    },
+    {
       "id": "lace",
       "name": "Lace",
       "kind": "task",
@@ -284,6 +404,19 @@
       "source": "https://game-checklists.com/silksong/far-fields.html"
     },
     {
+      "id": "map-far-fields",
+      "name": "Far Fields Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "far-fields",
+      "how": "Sold by Shakra, who waits in a cave in the southwest of Far Fields, for 50 Rosaries.",
+      "price": 50,
+      "requires": [],
+      "step": 195,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
+    },
+    {
       "id": "drifters-cloak",
       "name": "Drifter's Cloak",
       "kind": "collectible",
@@ -294,6 +427,21 @@
       "requires": [],
       "step": 200,
       "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "weaver-effigy-bone-bottom",
+      "name": "Weaver Effigy",
+      "kind": "collectible",
+      "counts": false,
+      "type": "relic",
+      "regionId": "moss-grotto",
+      "area": "Bone Bottom",
+      "how": "A relic in a small room high above Bone Bottom. From the platforms on the east side, above the lever, dash-jump and glide to it.",
+      "requires": [
+        "drifters-cloak"
+      ],
+      "step": 205,
+      "source": "https://www.gamerguides.com/hollow-knight-silksong/checklists/relics-locations"
     },
     {
       "id": "mask-shard-far-fields",
@@ -307,6 +455,20 @@
       ],
       "step": 210,
       "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "bone-scroll-far-fields",
+      "name": "Bone Scroll",
+      "kind": "collectible",
+      "counts": false,
+      "type": "relic",
+      "regionId": "far-fields",
+      "how": "A relic east of the Seamstress's home. Ride the tall wind current up, then hit the lava bulb to uncover a corpse that holds it.",
+      "requires": [
+        "drifters-cloak"
+      ],
+      "step": 215,
+      "source": "https://guides4gamers.com/hollow-knight-silksong/pois/relics/"
     },
     {
       "id": "flintslate",
@@ -369,6 +531,34 @@
       "source": "https://game-checklists.com/silksong/far-fields.html"
     },
     {
+      "id": "memory-locket-mort",
+      "name": "Memory Locket, Pilgrim's Rest",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "far-fields",
+      "area": "Pilgrim's Rest",
+      "how": "Sold by Mort in Pilgrim's Rest for 150 Rosaries. It opens one locked Crest slot.",
+      "price": 150,
+      "requires": [
+        "fourth-chorus"
+      ],
+      "step": 255,
+      "source": "https://screenrant.com/hollow-knight-silksong-vendor-locations-map/"
+    },
+    {
+      "id": "map-hunters-march",
+      "name": "Hunter's March Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "hunters-march",
+      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "requires": [],
+      "step": 258,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
+    },
+    {
       "id": "curveclaw",
       "name": "Curveclaw",
       "kind": "collectible",
@@ -396,6 +586,18 @@
       "source": "https://game-checklists.com/silksong/hunters-march.html"
     },
     {
+      "id": "memory-locket-chapel-of-the-beast",
+      "name": "Memory Locket, Hunter's March",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "hunters-march",
+      "how": "On a corpse just before the Chapel of the Beast. It opens one locked Crest slot.",
+      "requires": [],
+      "step": 275,
+      "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
+    },
+    {
       "id": "savage-beastfly",
       "name": "Savage Beastfly",
       "kind": "task",
@@ -406,6 +608,20 @@
       "requires": [],
       "step": 280,
       "source": "https://game-checklists.com/silksong/hunters-march.html"
+    },
+    {
+      "id": "memory-locket-hunters-march-hidden",
+      "name": "Memory Locket, Hunter's March hidden room",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "hunters-march",
+      "how": "In a hidden room past the chapel boss. Only one description of this spot exists so far.",
+      "requires": [
+        "savage-beastfly"
+      ],
+      "step": 285,
+      "source": "https://deltiasgaming.com/?p=338029"
     },
     {
       "id": "beast-crest",
@@ -434,6 +650,19 @@
       "source": "https://silksongwiki.com/database/abilities-and-moveset/thread-storm/"
     },
     {
+      "id": "map-greymoor",
+      "name": "Greymoor Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "greymoor",
+      "how": "Sold by Shakra for 70 Rosaries. One guide says 50.",
+      "price": 70,
+      "requires": [],
+      "step": 305,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
+    },
+    {
       "id": "reaper-crest",
       "name": "Reaper Crest",
       "kind": "collectible",
@@ -460,6 +689,31 @@
       "source": "https://game-checklists.com/silksong/greymoor.html"
     },
     {
+      "id": "memory-locket-halfway-home",
+      "name": "Memory Locket, Halfway Home",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "greymoor",
+      "area": "Halfway Home",
+      "how": "In a hidden room near Creige at Halfway Home. It opens one locked Crest slot.",
+      "requires": [],
+      "step": 325,
+      "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
+    },
+    {
+      "id": "bone-scroll-greymoor",
+      "name": "Bone Scroll",
+      "kind": "collectible",
+      "counts": false,
+      "type": "relic",
+      "regionId": "greymoor",
+      "how": "A relic east of Halfway Home. Swim along a hidden path, then drop down to a corpse.",
+      "requires": [],
+      "step": 327,
+      "source": "https://guides4gamers.com/hollow-knight-silksong/pois/relics/"
+    },
+    {
       "id": "flea-brew",
       "name": "Flea Brew",
       "kind": "collectible",
@@ -484,6 +738,20 @@
       "source": "https://game-checklists.com/silksong/greymoor.html"
     },
     {
+      "id": "memory-locket-moorwing",
+      "name": "Memory Locket, Moorwing",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "greymoor",
+      "how": "Past the fan to the right of the Moorwing arena. It opens one locked Crest slot.",
+      "requires": [
+        "moorwing"
+      ],
+      "step": 345,
+      "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
+    },
+    {
       "id": "mask-shard-shellwood",
       "name": "Mask Shard, Shellwood",
       "kind": "collectible",
@@ -493,6 +761,18 @@
       "requires": [],
       "step": 350,
       "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "map-shellwood",
+      "name": "Shellwood Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "shellwood",
+      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "requires": [],
+      "step": 355,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
     },
     {
       "id": "longpin",
@@ -545,6 +825,20 @@
       "source": "https://game-checklists.com/silksong/shellwood.html"
     },
     {
+      "id": "memory-locket-the-marrow",
+      "name": "Memory Locket, The Marrow",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "the-marrow",
+      "how": "Through a narrow opening in the northwest of The Marrow, which you climb to with Cling Grip. It opens one locked Crest slot.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 395,
+      "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
+    },
+    {
       "id": "widow",
       "name": "Widow",
       "kind": "task",
@@ -556,6 +850,36 @@
       ],
       "step": 400,
       "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "map-bellhart",
+      "name": "Bellhart Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "bellhart",
+      "how": "Sold by Shakra for 40 Rosaries. She only answers the bronze rings in Bellhart after the Widow is beaten.",
+      "price": 40,
+      "requires": [
+        "widow"
+      ],
+      "step": 405,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549100"
+    },
+    {
+      "id": "memory-locket-frey",
+      "name": "Memory Locket, Bellhart",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "bellhart",
+      "how": "Sold by Frey in Bellhart for 330 Rosaries once the Widow is beaten. It opens one locked Crest slot.",
+      "price": 330,
+      "requires": [
+        "widow"
+      ],
+      "step": 407,
+      "source": "https://screenrant.com/hollow-knight-silksong-vendor-locations-map/"
     },
     {
       "id": "needolin",
@@ -639,6 +963,74 @@
       "source": "https://game-checklists.com/silksong/bellhart.html"
     },
     {
+      "id": "bellhome-key",
+      "name": "Bellhome Key",
+      "kind": "collectible",
+      "counts": false,
+      "type": "key",
+      "regionId": "bellhart",
+      "how": "Finish the Bellhart donation wishes, then keep talking to Pavo until he has nothing more to say. He gives you the key to the empty bell-house.",
+      "requires": [
+        "widow"
+      ],
+      "step": 465,
+      "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-key-items-and-simple-keys-locations"
+    },
+    {
+      "id": "bellhome-desk",
+      "name": "Bellhome Desk",
+      "kind": "collectible",
+      "counts": false,
+      "type": "furnishing",
+      "regionId": "bellhart",
+      "how": "Furniture for your Bellhome, sold by Frey for 380 Rosaries. Guides disagree on the price (250 and 280 also appear).",
+      "price": 380,
+      "requires": [
+        "bellhome-key"
+      ],
+      "step": 466,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
+    },
+    {
+      "id": "bellhome-gleamlights",
+      "name": "Bellhome Gleamlights",
+      "kind": "collectible",
+      "counts": false,
+      "type": "furnishing",
+      "regionId": "bellhart",
+      "how": "Furniture for your Bellhome, sold by Frey for 320 Rosaries.",
+      "price": 320,
+      "requires": [],
+      "step": 467,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
+    },
+    {
+      "id": "bellhome-bell-lacquer",
+      "name": "Bellhome Bell Lacquer",
+      "kind": "collectible",
+      "counts": false,
+      "type": "furnishing",
+      "regionId": "bellhart",
+      "how": "Furniture for your Bellhome, sold by Frey for 520 Rosaries.",
+      "price": 520,
+      "requires": [],
+      "step": 468,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
+    },
+    {
+      "id": "bellhome-personal-spa",
+      "name": "Bellhome Personal Spa",
+      "kind": "collectible",
+      "counts": false,
+      "type": "furnishing",
+      "regionId": "bellhart",
+      "how": "Furniture for your Bellhome, sold by Frey for 1100 Rosaries. It only appears after two other furniture purchases; rest elsewhere and come back if it does not show.",
+      "price": 1100,
+      "requires": [],
+      "step": 469,
+      "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
+    },
+    {
       "id": "spool-fragment-greymoor",
       "name": "Spool Fragment, Greymoor",
       "kind": "collectible",
@@ -706,6 +1098,18 @@
       "source": "https://game-checklists.com/silksong/wormways.html"
     },
     {
+      "id": "map-wormways",
+      "name": "Wormways Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "wormways",
+      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "requires": [],
+      "step": 515,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
+    },
+    {
       "id": "dead-bugs-purse",
       "name": "Dead Bug's Purse",
       "kind": "collectible",
@@ -719,6 +1123,18 @@
       "source": "https://game-checklists.com/silksong/wormways.html"
     },
     {
+      "id": "memory-locket-wormways",
+      "name": "Memory Locket, Wormways",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "wormways",
+      "how": "In the lower left part of the Wormways. It opens one locked Crest slot.",
+      "requires": [],
+      "step": 525,
+      "source": "https://guides4gamers.com/hollow-knight-silksong/pois/memory-lockets/"
+    },
+    {
       "id": "barbed-bracelet",
       "name": "Barbed Bracelet",
       "kind": "collectible",
@@ -729,6 +1145,18 @@
       "requires": [],
       "step": 530,
       "source": "https://game-checklists.com/silksong/sinners-road.html"
+    },
+    {
+      "id": "map-sinners-road",
+      "name": "Sinner's Road Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "sinners-road",
+      "how": "Sold by Shakra. One guide gives 90 Rosaries; nobody else confirms it yet.",
+      "requires": [],
+      "step": 535,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
     },
     {
       "id": "tacks",
@@ -755,6 +1183,18 @@
       "source": "https://game-checklists.com/silksong/blasted-steps.html"
     },
     {
+      "id": "map-blasted-steps",
+      "name": "Blasted Steps Map",
+      "kind": "collectible",
+      "counts": false,
+      "type": "map",
+      "regionId": "blasted-steps",
+      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "requires": [],
+      "step": 555,
+      "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
+    },
+    {
       "id": "needle-strike",
       "name": "Needle Strike",
       "kind": "collectible",
@@ -767,6 +1207,18 @@
       ],
       "step": 560,
       "source": "https://game-checklists.com/silksong/blasted-steps.html"
+    },
+    {
+      "id": "memory-locket-blasted-steps",
+      "name": "Memory Locket, Blasted Steps",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memory-locket",
+      "regionId": "blasted-steps",
+      "how": "Pogo across the hanging bells, then drop into a dark passage. Only one guide describes this spot.",
+      "requires": [],
+      "step": 565,
+      "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
     },
     {
       "id": "silkspeed-anklets",
