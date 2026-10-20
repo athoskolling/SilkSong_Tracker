@@ -28,6 +28,17 @@
       "source": "https://game-checklists.com/silksong/moss-grotto.html"
     },
     {
+      "id": "simple-key",
+      "name": "Simple Key",
+      "kind": "task",
+      "type": "key",
+      "regionId": "moss-grotto",
+      "how": "A merchant sells it for 500 Rosaries. Guides disagree on which shop (Bone Bottom or the Bone Marrow area), so the shop is unconfirmed; Athos will check. It opens locked gates such as the one to Flintslate.",
+      "requires": [],
+      "step": 25,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
       "id": "spool-fragment-moss-grotto",
       "name": "Spool Fragment, Moss Grotto",
       "kind": "collectible",
@@ -269,7 +280,9 @@
       "type": "tool",
       "regionId": "deep-docks",
       "how": "Behind a locked gate in Deep Docks, on the way towards Far Fields. The gate needs a Simple Key from a merchant.",
-      "requires": [],
+      "requires": [
+        "simple-key"
+      ],
       "step": 220,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
     },
