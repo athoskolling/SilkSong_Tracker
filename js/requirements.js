@@ -136,6 +136,29 @@ function itemsInRouteOrder(items) {
   return [...items].sort((a, b) => a.step - b.step);
 }
 
+// The Route rule, with an index already built (so nextStep and holdingYouUp reuse theirs).
+// Start from the entries that are always on the Route (counted, a Task, or missable) and from what
+// every Region needs; then walk down the chain, adding what each of them needs in turn. The Set
+// of ids already added is also what stops a cycle: an id met twice is simply not walked twice.
+function routeIdsWithIndex(index, items, regions) {
+  const onRoute = new Set();
+  const pending = [];
+
+  for (const item of items) {
+    if (isCounted(item) || item.kind === 'task' || item.missable === true) pending.push(item.id);
+  }
+  for (const region of regions) pending.push(...requirementsOfRegion(index, region.id));
+
+  while (pending.length > 0) {
+    const id = pending.pop();
+    if (onRoute.has(id)) continue;
+    const item = getItem(index, id); // an unknown id throws here, as everywhere in this module
+    onRoute.add(id);
+    pending.push(...requirementsOfItem(index, item));
+  }
+  return onRoute;
+}
+
 // ------------------------------------------------------------------ public functions
 
 // Can the player do this entry now? True when every requirement (the entry's own and its
@@ -188,6 +211,19 @@ export function rosariesToSpend(doneSet, items, regions) {
   return { total, available, ids: shopEntries.map((item) => item.id) };
 }
 
+// Which entries are on the Route? The one place that rule lives, so the Route page, "Next on the
+// route", "Holding you up" and the Region cards cannot disagree. The data alone decides it (no
+// doneSet), so the Route never changes shape as the player ticks things.
+// On the Route: every counted Collectible, every Task, every missable entry, and whatever those
+// entries and the Regions need, all the way down the chain. That last part makes the Set closed
+// under requirements: nothing the Route needs is ever off it. Anything else (in practice a
+// counts: false Collectible that nothing on the Route needs) is off the Route.
+// A cycle does not loop and is not reported here; missingFor and the validator report it.
+// Ending conditions are not read: they are Tasks or counted entries, already on the Route.
+export function routeIds(items, regions) {
+  return routeIdsWithIndex(buildIndex(items, regions), items, regions);
+}
+
 // Can the player enter the Region? True when every id in the Region's `requires` is done.
 export function isRegionAvailable(regionId, doneSet, regions) {
   return regionIsAvailable(buildIndex(undefined, regions), regionId, doneSet);
@@ -199,12 +235,14 @@ export function missingForRegion(regionId, doneSet, regions, items) {
   return regionMissing(buildIndex(items, regions), regionId, doneSet);
 }
 
-// "Next on the route": the not-done, Available entry with the lowest `step`.
-// null when nothing Available is left.
+// "Next on the route": the not-done, Available entry on the Route with the lowest `step`.
+// An entry off the Route is never returned, even when it is Available and has the lowest `step`.
+// null when nothing Available is left on the Route.
 export function nextStep(doneSet, items, regions) {
   const index = buildIndex(items, regions);
+  const onRoute = routeIdsWithIndex(index, items, regions);
   const next = itemsInRouteOrder(items).find(
-    (item) => !doneSet.has(item.id) && itemIsAvailable(index, item.id, doneSet)
+    (item) => onRoute.has(item.id) && !doneSet.has(item.id) && itemIsAvailable(index, item.id, doneSet)
   );
   return next ? next.id : null;
 }
@@ -215,8 +253,11 @@ export function nextStep(doneSet, items, regions) {
 // only the missing ids that are Available now. Each of those is a blocker, and `blocks` lists the
 // entry and Region ids it holds up (entries in route order, then Regions in guide order).
 // The biggest blockers come first; ties go to the lower `step`.
+// Entries off the Route are skipped: they are never held up, and because the Route is closed under
+// requirements they are never blockers either.
 export function holdingYouUp(doneSet, items, regions) {
   const index = buildIndex(items, regions);
+  const onRoute = routeIdsWithIndex(index, items, regions);
   const blocksByBlocker = new Map(); // blocker id -> ids it holds up
 
   function addBlockers(heldUpId, missingIds) {
@@ -228,6 +269,7 @@ export function holdingYouUp(doneSet, items, regions) {
   }
 
   for (const item of itemsInRouteOrder(items)) {
+    if (!onRoute.has(item.id)) continue;
     if (doneSet.has(item.id) || itemIsAvailable(index, item.id, doneSet)) continue;
     addBlockers(item.id, itemMissing(index, item.id, doneSet));
   }
