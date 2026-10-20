@@ -347,3 +347,97 @@ test('clearProgress empties done and visited, keeps syncedUid, notifies', async 
   assert.ok(stored(seeded).updatedAt > 1);
   assert.equal(calls, 1);
 });
+
+// ------------------------------------------------------------- sample mode
+// configureProgress({ sample: true }) keeps invented sample ids in their own key
+// (docs/CONTRACTS.md section 3, QA finding F4).
+
+const SAMPLE_KEY = 'silksong-guide:progress:sample:v1';
+const storedSample = (s) => JSON.parse(s.data.get(SAMPLE_KEY));
+
+test('sample mode: writes go to the sample key and leave the real key untouched', async () => {
+  const real = { done: { real: true }, visited: {}, updatedAt: 5, dataVersion: 1 };
+  useStorage((storage = fakeStorage({ [KEY]: JSON.stringify(real) })));
+  configureProgress({ items: [{ id: 'fake-entry', regionId: 'fake-region' }], dataVersion: 9, sample: true });
+
+  await setDone('fake-entry', true);
+  await setVisited('other-region', true);
+
+  assert.deepEqual(Object.keys(storedSample(storage).done), ['fake-entry']);
+  assert.deepEqual(Object.keys(storedSample(storage).visited).sort(), ['fake-region', 'other-region']);
+  assert.deepEqual(stored(storage), real, 'the real Run is exactly what it was');
+});
+
+test('sample mode: reads come from the sample key, never the real one', async () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({ done: { real: true }, visited: { 'real-region': true }, updatedAt: 5, dataVersion: 1 }),
+      [SAMPLE_KEY]: JSON.stringify({ done: { fake: true }, visited: {}, updatedAt: 6, dataVersion: 1 }),
+    }))
+  );
+  configureProgress({ sample: true });
+  const loaded = await loadProgress();
+  assert.deepEqual([...loaded.done], ['fake']);
+  assert.deepEqual([...loaded.visited], []);
+});
+
+test('sample mode: without the flag the sample key is left alone', async () => {
+  const sample = { done: { fake: true }, visited: {}, updatedAt: 6, dataVersion: 1 };
+  useStorage((storage = fakeStorage({ [SAMPLE_KEY]: JSON.stringify(sample) })));
+  configureProgress({ items: [], dataVersion: 1 });
+  await setDone('real', true);
+  assert.deepEqual(Object.keys(stored(storage).done), ['real']);
+  assert.deepEqual(storedSample(storage), sample);
+});
+
+test('sample mode: subscribers get the sample Progress when the mode switches', () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({ done: { real: true }, visited: {}, updatedAt: 5, dataVersion: 1 }),
+      [SAMPLE_KEY]: JSON.stringify({ done: { fake: true }, visited: {}, updatedAt: 6, dataVersion: 1 }),
+    }))
+  );
+  const seen = [];
+  onProgressChange((p) => seen.push([...p.done]));
+  configureProgress({ sample: true });
+  assert.deepEqual(seen, [['fake']]);
+});
+
+test('sample mode: switching after the real key was read keeps real data out of the sample', async () => {
+  const real = { done: { real: true }, visited: {}, updatedAt: 5, dataVersion: 1 };
+  useStorage((storage = fakeStorage({ [KEY]: JSON.stringify(real) })));
+  assert.deepEqual([...(await loadProgress()).done], ['real']); // the real key was read first
+  configureProgress({ sample: true });
+  assert.deepEqual([...(await loadProgress()).done], []);
+  await setDone('fake', true);
+  assert.deepEqual(Object.keys(storedSample(storage).done), ['fake']);
+  assert.deepEqual(stored(storage), real);
+});
+
+test('sample mode: export, import and clear act on the sample Progress', async () => {
+  const real = { done: { real: true }, visited: {}, updatedAt: 5, dataVersion: 1 };
+  useStorage((storage = fakeStorage({ [KEY]: JSON.stringify(real) })));
+  configureProgress({ sample: true });
+  await setDone('fake', true);
+
+  const exported = JSON.parse(await exportProgress().text());
+  assert.deepEqual(Object.keys(exported.done), ['fake']);
+
+  const backup = JSON.stringify({ done: { 'fake-two': true }, visited: { 'fake-region': true } });
+  assert.deepEqual(await importProgress(fileOf(backup)), { addedDone: 1, addedVisited: 1 });
+  assert.deepEqual(Object.keys(storedSample(storage).done).sort(), ['fake', 'fake-two']);
+
+  await clearProgress();
+  assert.deepEqual(storedSample(storage).done, {});
+  assert.deepEqual(storedSample(storage).visited, {});
+  assert.deepEqual(stored(storage), real, 'the real Run survives export, import and clear in sample mode');
+});
+
+test('sample mode: sync status stays local', async () => {
+  const states = [];
+  onSyncStatus((s) => states.push(s.state));
+  configureProgress({ sample: true });
+  await setDone('fake', true);
+  assert.ok(states.length > 0);
+  assert.ok(states.every((state) => state === 'local'), `got ${states.join(', ')}`);
+});

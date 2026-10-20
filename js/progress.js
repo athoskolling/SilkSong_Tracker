@@ -16,7 +16,8 @@ import {
   watchProgressDoc,
 } from './firebase.js';
 
-const STORAGE_KEY = 'silksong-guide:progress:v1';
+const REAL_KEY = 'silksong-guide:progress:v1';
+const SAMPLE_KEY = 'silksong-guide:progress:sample:v1';
 
 // Ids are permanent slugs (docs/CONTRACTS.md section 1). Checking them on import
 // also keeps odd keys such as "__proto__" out of our objects.
@@ -27,6 +28,8 @@ const BAD_FILE_MESSAGE =
 
 // ---------------------------------------------------------------- module state
 
+let storageKey = REAL_KEY; // switches to SAMPLE_KEY in sample mode; every read and write goes through it
+let sampleMode = false; // true once configureProgress({ sample: true }) ran; never goes back in a session
 let storageOverride = null; // set by useStorage; null = use the browser's localStorage
 let memoryCopy = null; // Progress held in memory only while localStorage cannot be written
 let entryRegions = new Map(); // entry id -> region id, supplied by configureProgress
@@ -44,7 +47,14 @@ const statusListeners = new Set();
 // once, right after loading. We keep only id -> regionId, and the dataVersion we
 // stamp on saved Progress. Without this call setDone still works; it just cannot
 // mark the Region Visited (the interface can then call setVisited itself).
-export function configureProgress({ items = [], dataVersion = null } = {}) {
+//
+// `sample: true` (docs/CONTRACTS.md section 3, QA finding F4): the page shows data/sample, whose
+// ids are invented. Progress then lives under its own key and the cloud half is switched off,
+// so sample ids never mix with a real Run or reach an account. Sample mode is one-way within a
+// page session: a later call without the flag does not turn the cloud back on, because that
+// could sync sample ids. (A page load is a new session and starts clean.)
+export function configureProgress({ items = [], dataVersion = null, sample = false } = {}) {
+  if (sample === true && !sampleMode) enterSampleMode();
   entryRegions = new Map();
   for (const item of items) {
     if (item && item.id && item.regionId) entryRegions.set(item.id, item.regionId);
@@ -52,10 +62,30 @@ export function configureProgress({ items = [], dataVersion = null } = {}) {
   contentVersion = Number.isInteger(dataVersion) ? dataVersion : null;
 }
 
+// progress.js starts listening for sign-in the moment it is imported, and may already have
+// read the real key, so switching to sample mode has to undo that:
+//   1. stopCloud() ends the auth listener and any Firestore watch, bumps the session (so a
+//      read, merge or write already in flight is dropped) and forgets the signed-in uid.
+//   2. memoryCopy is cleared: it could hold real Progress that must not leak into the sample.
+//   3. The key switches, so every later read and write uses the sample key.
+//   4. startCloud refuses to run in sample mode, and handleAuthChange ignores events,
+//      so even a sign-in that races with this call cannot start a merge.
+//   5. Status goes back to 'local' and subscribers receive the sample Progress.
+function enterSampleMode() {
+  sampleMode = true;
+  stopCloud();
+  memoryCopy = null;
+  storageKey = SAMPLE_KEY;
+  setSyncStatus({ state: 'local', at: null, message: '' });
+  notifyProgress(readLocal());
+}
+
 // Lets tests (and nothing else) swap in an in-memory stand-in for localStorage,
 // because node:test has no browser localStorage. Also resets the in-session state.
 export function useStorage(storage) {
   storageOverride = storage;
+  storageKey = REAL_KEY;
+  sampleMode = false;
   memoryCopy = null;
   entryRegions = new Map();
   contentVersion = null;
@@ -112,7 +142,7 @@ function readLocal() {
   const storage = getStorage();
   if (!storage) return emptyProgress();
   try {
-    const text = storage.getItem(STORAGE_KEY);
+    const text = storage.getItem(storageKey);
     return text === null ? emptyProgress() : normalize(JSON.parse(text));
   } catch {
     // Corrupt JSON or unreadable storage: start empty and keep going. The next
@@ -125,7 +155,7 @@ function writeLocal(progress) {
   try {
     const storage = getStorage();
     if (!storage) throw new Error('no storage');
-    storage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    storage.setItem(storageKey, JSON.stringify(progress));
     memoryCopy = null;
   } catch {
     memoryCopy = progress; // quota or privacy mode: keep this session's work in memory
@@ -201,6 +231,7 @@ export function useCloud(fake) {
 }
 
 function startCloud(api) {
+  if (sampleMode) return; // sample ids must never reach an account
   cloud = api;
   stopAuth = api.onAuthChange(handleAuthChange);
 }
@@ -353,6 +384,7 @@ function forgetSyncedUid() {
 }
 
 async function handleAuthChange(user) {
+  if (sampleMode) return; // belt and braces: the listener is already stopped in sample mode
   newSession();
   stopWatching();
 
