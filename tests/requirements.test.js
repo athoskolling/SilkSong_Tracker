@@ -605,6 +605,37 @@ test('routeIds: throws on an unknown id in a Region requires, even when that Reg
   assert.throws(() => routeIds([item('a', 1)], [region('r1', 1, ['ghost'])]), /ghost/);
 });
 
+// An entry off the Route (a counts: false entry that nothing needs) is never reached by the walk, so only
+// the check on every entry can catch a typo in it. Without that check these typos pass quietly (QA 1, P5-26).
+test('routeIds: throws on an unknown id in the requires of an entry off the Route', () => {
+  const items = [item('a', 1), tracked('memento', 2, ['ghst'])];
+  assert.throws(() => routeIds(items, [region('r1', 1)]), /Unknown entry id "ghst"/);
+});
+
+test('routeIds: throws on an unknown regionId of an entry off the Route', () => {
+  const items = [item('a', 1), tracked('memento', 2, [], { regionId: 'nowhere' })];
+  assert.throws(() => routeIds(items, [region('r1', 1)]), /Unknown Region id "nowhere"/);
+});
+
+test('nextStep and holdingYouUp: throw on the same typos in an entry off the Route', () => {
+  const regions = [region('r1', 1)];
+  const badRequires = [item('a', 1), tracked('memento', 2, ['ghst'])];
+  const badRegion = [item('a', 1), tracked('memento', 2, [], { regionId: 'nowhere' })];
+  assert.throws(() => nextStep(done(), badRequires, regions), /Unknown entry id "ghst"/);
+  assert.throws(() => holdingYouUp(done(), badRequires, regions), /Unknown entry id "ghst"/);
+  assert.throws(() => nextStep(done(), badRegion, regions), /Unknown Region id "nowhere"/);
+  assert.throws(() => holdingYouUp(done(), badRegion, regions), /Unknown Region id "nowhere"/);
+});
+
+test('routeIds, nextStep and holdingYouUp: a valid entry off the Route returns normally', () => {
+  // memento is off the Route (nothing on it needs memento), but its requires and Region are real.
+  const items = [item('a', 1), tracked('memento', 2, ['a'])];
+  const regions = [region('r1', 1)];
+  assert.deepEqual(idsOf(routeIds(items, regions)), ['a']);
+  assert.equal(nextStep(done(), items, regions), 'a');
+  assert.deepEqual(holdingYouUp(done(), items, regions), []);
+});
+
 test('routeIds: a cycle between two counted entries returns both ids instead of looping', () => {
   const items = [item('a', 1, ['b']), item('b', 2, ['a'])];
   assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['a', 'b']);
