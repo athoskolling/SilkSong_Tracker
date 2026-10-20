@@ -69,6 +69,21 @@
   .site-nav { gap: 8px 22px; }
 }
 
+/* The last link reads "Account" on a narrow screen (Athos, option A); " and backup" stays in the
+   accessible name because it is hidden visually, not removed. The switch is at 640px, not 600px:
+   with the full label the links stop fitting one row a little above 600px (P5-10 measured it). */
+@media (max-width: 640px) {
+  .nav-short .nav-extra {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 /* --------------------------------------------------------------------- hero */
 
 .hero {
