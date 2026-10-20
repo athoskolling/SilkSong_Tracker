@@ -1,0 +1,61 @@
+{
+  "dataVersion": 3,
+  "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
+  "templates": [
+    {
+      "id": "sample-template-ready",
+      "crestId": "sample-crest-one",
+      "name": "Sample spike and burst",
+      "goal": "Sample goal. Fits the crest as it comes, with no slot opened.",
+      "build": {
+        "red": ["sample-red-tool"],
+        "blue": ["sample-blue-tool"],
+        "white": ["sample-white-skill"]
+      },
+      "editorial": true,
+      "source": "https://example.invalid/sample-template-ready"
+    },
+    {
+      "id": "sample-template-opened-slot",
+      "crestId": "sample-crest-one",
+      "name": "Sample guide pick",
+      "goal": "Sample goal. Needs one more yellow slot than the crest starts with.",
+      "build": {
+        "red": ["sample-red-tool-two"],
+        "yellow": ["sample-yellow-tool"],
+        "white": ["sample-white-skill"]
+      },
+      "editorial": false,
+      "source": "https://example.invalid/sample-template-opened-slot"
+    },
+    {
+      "id": "sample-template-granted",
+      "crestId": "sample-crest-four",
+      "name": "Sample double yellow",
+      "goal": "Sample goal. Fits only once the sample slot upgrade adds a yellow slot to every crest.",
+      "build": {
+        "blue": ["sample-blue-tool"],
+        "yellow": ["sample-yellow-tool", "sample-yellow-tool-two"],
+        "white": ["sample-white-skill", "sample-skill"]
+      },
+      "editorial": true,
+      "source": "https://example.invalid/sample-template-granted"
+    }
+  ],
+  "synergies": [
+    {
+      "id": "sample-synergy-active",
+      "a": "sample-red-tool",
+      "b": "sample-white-skill",
+      "effect": "Sample effect. The spike and the burst go off together.",
+      "source": "https://example.invalid/sample-synergy-active"
+    },
+    {
+      "id": "sample-synergy-pair",
+      "a": "sample-blue-tool",
+      "b": "sample-red-tool-two",
+      "effect": "Sample effect. A pair that no sample template holds whole.",
+      "source": "https://example.invalid/sample-synergy-pair"
+    }
+  ]
+}
