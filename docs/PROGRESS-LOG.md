@@ -64,9 +64,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T16 merged** (`dev-a/sample-key`): with `configureProgress({ sample: true })` Progress uses `silksong-guide:progress:sample:v1` and the cloud half is stopped (listeners, in-flight reads and late sign-ins included); one-way per page session. Error messages in `firebase.js` now say what to do next. Orchestrator ran: 185 tests pass, 0 todo; validator passes. Takes effect once T17 passes the flag from `main.js`.
 
+- **T17 merged** (`dev-b/qa-fixes`): focus ring drawn around the visible mark, so it is whole at 390 px (every Tab stop on all four pages measured by Dev B); `img/favicon.svg` from the logo mark on all pages; `main.js` passes `sample` to `configureProgress`; the sample Account page says sample mode never syncs. Orchestrator ran: 185 tests pass, validator passes, and an end-to-end browser check: marking on `?data=sample` writes only `silksong-guide:progress:sample:v1`, marking on real data only `silksong-guide:progress:v1`; no console errors. QA findings F1, F4, F5, F6 closed. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
 - Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.
 - Phase 2 (Dev B): on the Account page at 390 px the start thread runs over the intro's second line. Account page still lacks backup, new run, how saving works, guide data and its hero art. `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
-- No favicon: every page logs one harmless 404 for `/favicon.ico`. Small Dev B task when convenient.
