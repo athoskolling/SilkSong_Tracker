@@ -799,6 +799,17 @@ a.region-card:hover .card-name { color: var(--silk); }
   line-height: 1.1;
   overflow-wrap: anywhere;
 }
+.route-name a {
+  color: var(--ivory);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+/* A comfortable touch target on phones and touch screens; the mouse does not need the extra height. */
+@media (max-width: 600px), (pointer: coarse) {
+  .route-name a { display: inline-flex; align-items: center; min-height: 44px; }
+}
+.route-name a:hover { color: var(--silk); text-decoration-thickness: 2px; }
 .route-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--ash); }
 
 /* The thread runs on across groups: only the very last row of the Route ends it. */

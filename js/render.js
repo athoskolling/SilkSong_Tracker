@@ -760,8 +760,9 @@ function routeGroup(group, isLast) {
       h(
         'div',
         { class: 'route-head-body' },
-        h('h2', { class: 'route-name', id: headingId }, group.name),
-        h('span', { class: 'route-meta' }, h('span', { class: 'num' }, range), h('a', { href: group.href }, 'Open region'))
+        // The Region name is the link to its page (T31); the accessible name is the name itself.
+        h('h2', { class: 'route-name', id: headingId }, h('a', { href: group.href }, group.name)),
+        h('span', { class: 'route-meta' }, h('span', { class: 'num' }, range))
       )
     ),
     h('ol', { class: 'entries' }, ...group.rows.map(entryRow), hidden)
