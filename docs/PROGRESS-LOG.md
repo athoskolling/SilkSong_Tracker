@@ -30,7 +30,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Athos reported** the main page as plain white and Account and sync not working. Orchestrator checked: no `index.html` (Pages shows the README) and `account.html` does not exist (404); sign-in lived only on `tools/auth-check.html`. Firebase side fine from outside: database exists, `athoskolling.github.io` authorized, SDK 12.19.0 loads, the Region page has no console errors. Also found: `main.js` does not call `completeEmailLinkSignIn` on every load, as the contract says.
 - **T9 started** (`dev-a/slice-pages`, dev-a acting as Dev B): temporary `index.html` to the first Region, the sign-in part of `account.html`, Route link hidden until Phase 2. Sync symptoms asked from Athos.
 
+- **T9 merged** (`dev-a/slice-pages`): temporary `index.html` (opens the Region with the lowest `order`; fallback link for no JavaScript), `account.html` with the sign-in half (Google, email link, signed-in state, sync line, "Progress combined"; GitHub hidden), `completeEmailLinkSignIn` on every page, Route link hidden until Phase 2. Orchestrator checked after merging: 88 tests pass; `/`, `/account.html`, the Region page and "Region not found" load with no console errors and no link to a missing page. Not checked by an agent: real Google sign-in, the email link, sync against live Firestore.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
 - Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.
+- Phase 2 (Dev B): on the Account page at 390 px the start thread runs over the intro's second line. Account page still lacks backup, new run, how saving works, guide data and its hero art. `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
