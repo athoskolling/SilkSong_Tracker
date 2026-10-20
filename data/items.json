@@ -1,5 +1,5 @@
 {
-  "dataVersion": 5,
+  "dataVersion": 6,
   "items": [
     {
       "id": "hunter-crest",
@@ -47,6 +47,7 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Buy it from Pebb, the merchant in the middle of Bone Bottom, for 500 Rosaries; he sells only one. It opens locked gates, such as the one to Flintslate.",
+      "price": 500,
       "requires": [],
       "step": 25,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/simple-key"
@@ -70,6 +71,8 @@
       "regionId": "moss-grotto",
       "area": "Mosshome",
       "how": "The Moss Druid's wish, Berry Picking: gather Mossberries from the mossy lowlands and bring them back.",
+      "toolColor": "blue",
+      "effect": "Gives Silk when Hornet is hit.",
       "requires": [
         "moss-mother"
       ],
@@ -83,6 +86,8 @@
       "type": "tool",
       "regionId": "the-marrow",
       "how": "In a small room west of the tall central chamber.",
+      "toolColor": "yellow",
+      "effect": "More Shell Shards from foes.",
       "requires": [],
       "step": 50,
       "source": "https://game-checklists.com/silksong/the-marrow.html"
@@ -95,6 +100,8 @@
       "regionId": "the-marrow",
       "area": "Shakra",
       "how": "Sold by Shakra the map seller for 70 Rosaries.",
+      "price": 70,
+      "toolColor": "yellow",
       "requires": [],
       "step": 60,
       "source": "https://game-checklists.com/silksong/the-marrow.html"
@@ -134,6 +141,8 @@
       "type": "tool",
       "regionId": "the-marrow",
       "how": "In Grindle's prison cell, in the tall room at the far right near the way to Hunter's March. Free him to reach it.",
+      "toolColor": "red",
+      "effect": "A light pin you throw.",
       "requires": [],
       "step": 90,
       "source": "https://game-checklists.com/silksong/the-marrow.html"
@@ -159,6 +168,8 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Sold in the Bone Bottom shop for 120 Rosaries.",
+      "price": 120,
+      "toolColor": "yellow",
       "requires": [
         "moss-mother"
       ],
@@ -184,6 +195,7 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 180 Rosaries.",
+      "price": 180,
       "requires": [],
       "step": 130,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
@@ -196,6 +208,9 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 110 Rosaries and a Craftmetal.",
+      "price": 110,
+      "toolColor": "blue",
+      "effect": "Less damage from fire and lava.",
       "requires": [],
       "step": 140,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
@@ -208,6 +223,9 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 140 Rosaries and a Craftmetal.",
+      "price": 140,
+      "toolColor": "red",
+      "effect": "A trap that hangs in the air.",
       "requires": [],
       "step": 150,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
@@ -245,6 +263,7 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Sold in the Bone Bottom shop for 300 Rosaries.",
+      "price": 300,
       "requires": [
         "moss-mother"
       ],
@@ -258,6 +277,8 @@
       "type": "tool",
       "regionId": "far-fields",
       "how": "At the bottom of the central Far Fields room.",
+      "toolColor": "blue",
+      "effect": "A one-hit shield while Hornet binds.",
       "requires": [],
       "step": 190,
       "source": "https://game-checklists.com/silksong/far-fields.html"
@@ -294,6 +315,8 @@
       "type": "tool",
       "regionId": "deep-docks",
       "how": "Behind a locked gate in Deep Docks, on the way towards Far Fields. The gate needs a Simple Key from a merchant.",
+      "toolColor": "red",
+      "effect": "Sets the Needle alight for a few seconds, for more damage and a chance to burn.",
       "requires": [
         "simple-key"
       ],
@@ -321,6 +344,9 @@
       "regionId": "far-fields",
       "area": "Pilgrim's Rest",
       "how": "Sold at Pilgrim's Rest for 160 Rosaries.",
+      "price": 160,
+      "toolColor": "yellow",
+      "effect": "Less knockback, both taken and from Hornet's own hits.",
       "requires": [
         "fourth-chorus"
       ],
@@ -335,6 +361,7 @@
       "regionId": "far-fields",
       "area": "Pilgrim's Rest",
       "how": "Sold at Pilgrim's Rest for 220 Rosaries.",
+      "price": 220,
       "requires": [
         "fourth-chorus"
       ],
@@ -348,6 +375,8 @@
       "type": "tool",
       "regionId": "hunters-march",
       "how": "Sold by Mottled Skarr for 140 Rosaries.",
+      "price": 140,
+      "toolColor": "red",
       "requires": [],
       "step": 260,
       "source": "https://game-checklists.com/silksong/hunters-march.html"
@@ -359,6 +388,9 @@
       "type": "tool",
       "regionId": "hunters-march",
       "how": "Sold by Mottled Skarr for 260 Rosaries.",
+      "price": 260,
+      "toolColor": "blue",
+      "effect": "Survives one fatal hit, then breaks; a bench mends it.",
       "requires": [],
       "step": 270,
       "source": "https://game-checklists.com/silksong/hunters-march.html"
@@ -421,6 +453,8 @@
       "regionId": "greymoor",
       "area": "Craw House",
       "how": "In a hidden room above the Craw House; set the bouncing platforms moving to reach it.",
+      "toolColor": "red",
+      "effect": "Throws three pins at once in a spread.",
       "requires": [],
       "step": 320,
       "source": "https://game-checklists.com/silksong/greymoor.html"
@@ -432,6 +466,8 @@
       "type": "tool",
       "regionId": "greymoor",
       "how": "Fleamaster Mooshka's wish, The Lost Fleas: once five fleas have joined the Flea Caravan, it moves on and she gives you this.",
+      "toolColor": "red",
+      "effect": "Faster attacks and movement for about ten seconds.",
       "requires": [],
       "step": 330,
       "source": "https://game-checklists.com/silksong/greymoor.html"
@@ -465,6 +501,8 @@
       "type": "tool",
       "regionId": "shellwood",
       "how": "Behind the wasp nest in Shellwood.",
+      "toolColor": "red",
+      "effect": "A heavy pin that pierces shells.",
       "requires": [],
       "step": 360,
       "source": "https://game-checklists.com/silksong/shellwood.html"
@@ -476,6 +514,8 @@
       "type": "tool",
       "regionId": "shellwood",
       "how": "Greyroot's wish, Rite of the Pollip: gather Pollip Hearts from the purple flowers of Shellwood.",
+      "toolColor": "blue",
+      "effect": "Adds venom to red Tools.",
       "requires": [],
       "step": 370,
       "source": "https://game-checklists.com/silksong/shellwood.html"
@@ -575,7 +615,8 @@
       "kind": "collectible",
       "type": "spool-fragment",
       "regionId": "bellhart",
-      "how": "Comes with finishing the courier quest for Frey.",
+      "how": "Sold by Frey in Bellhart for 270 Rosaries once the courier quest is done.",
+      "price": 270,
       "requires": [
         "my-missing-courier"
       ],
@@ -589,6 +630,8 @@
       "type": "tool",
       "regionId": "bellhart",
       "how": "Sold in Bellhart for 880 Rosaries once the courier quest is done.",
+      "price": 880,
+      "toolColor": "blue",
       "requires": [
         "my-missing-courier"
       ],
@@ -616,6 +659,8 @@
       "regionId": "greymoor",
       "area": "Yarnaby's tower",
       "how": "In Yarnaby's tower; climb with Cling Grip. Costs a Craftmetal.",
+      "toolColor": "red",
+      "effect": "A bomb that bursts on contact.",
       "requires": [
         "cling-grip"
       ],
@@ -667,6 +712,8 @@
       "type": "tool",
       "regionId": "wormways",
       "how": "Near the northern entrance of the Wormways.",
+      "toolColor": "yellow",
+      "effect": "Keeps some Rosaries when Hornet dies.",
       "requires": [],
       "step": 520,
       "source": "https://game-checklists.com/silksong/wormways.html"
@@ -678,6 +725,7 @@
       "type": "tool",
       "regionId": "sinners-road",
       "how": "In a pit at the end of the first road.",
+      "toolColor": "yellow",
       "requires": [],
       "step": 530,
       "source": "https://game-checklists.com/silksong/sinners-road.html"
@@ -689,6 +737,8 @@
       "type": "tool",
       "regionId": "sinners-road",
       "how": "Crull and Benjin's wish, Roach Guts: hunt the Muckroaches of Sinner's Road and bring back their guts.",
+      "toolColor": "red",
+      "effect": "Scatters pins along the ground.",
       "requires": [],
       "step": 540,
       "source": "https://game-checklists.com/silksong/sinners-road.html"
@@ -726,6 +776,8 @@
       "regionId": "far-fields",
       "area": "Weavenest Cindril",
       "how": "In Weavenest Cindril, which needs the Needolin.",
+      "toolColor": "yellow",
+      "effect": "Spends Silk for speed.",
       "requires": [
         "needolin"
       ],
@@ -774,6 +826,8 @@
       "type": "tool",
       "regionId": "weavenest-atla",
       "how": "Past the two Moss Mothers, west of the bench.",
+      "toolColor": "blue",
+      "effect": "Silk refills faster.",
       "requires": [
         "moss-mother-duo"
       ],
