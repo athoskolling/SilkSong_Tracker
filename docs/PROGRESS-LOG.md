@@ -56,6 +56,12 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **T15 merged** (`dev-b/attribution`): "Source" link at the end of every entry's meta line (also on the next plate and the Locked list; opens in a new tab, labelled per entry) and the approved data-source line in every footer. Orchestrator ran: 173 tests pass, validator passes; all pages show the credit line with no console errors; Source links appear only on entries that are shown (none for hidden entries). Pushed.
 - Housekeeping: stopped four local web servers left by finished workers (T10, T11, T15, an earlier session). T15's worktree stays until its agent process ends (git keeps it locked).
 
+- **T13 merged** (`qa-manual/checklist`): `qa/checklist.md` (140 lines; 18 for Athos, 4 blocked by checklist item 4) and `qa/reports/2026-10-19-first-pass.md` (run on 2d47b79, Region and Account re-run on 0d32c33): 0 critical, 3 major, 7 minor. Triage by the orchestrator:
+  - Fixed already: F2 attribution (T15), start thread over the intro (T10).
+  - To owners: F1 focus ring cut off at 390 px and F5 favicon (Dev B, T17); F4 sample mode uses the real Progress key and F6 email error without a next step (Dev A, T16, with a contract addition: `configureProgress({ sample })`).
+  - Decided and recorded: F3 requirement names are shown on Locked pages (spoiler hiding covers a Region's own entries; STRUCTURE section 2); F7 phone order follows DESIGN text; F8 decorative contrast accepted; F9 plain gradient heroes; F10 "saved" as a verb is fine (GLOSSARY).
+  - Raised with Athos: Google Fonts and privacy; `silk-spear`'s source is the Region page.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

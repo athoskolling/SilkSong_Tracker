@@ -22,7 +22,7 @@ _Avoid_: Point of no return, missable (reserved for Collectibles)
 
 **Run**:
 One playthrough tracked by an account; each account has exactly one at a time.
-_Avoid_: Save, profile, playthrough
+_Avoid_: Save (as a noun), profile, playthrough. The verb is fine: "Your progress is saved on this device."
 
 **Region**:
 A named area of the game's world that groups Collectibles and Tasks for the guide.

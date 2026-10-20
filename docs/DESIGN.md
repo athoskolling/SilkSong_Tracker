@@ -45,6 +45,8 @@ Define these once in `css/base.css` as custom properties on `:root`.
 
 Contrast: Dev B checks every text and meaningful non-text pairing (WCAG AA: 4.5:1 for text, 3:1 for icons, thread lines and focus rings) and reports any pair that fails. Do not change a token to pass; report it to the orchestrator.
 
+Accepted below 3:1 (2026-10-20, QA finding F8), because each is decoration or its information is carried by something that passes: plate and card borders (ivory 30%, about 2.4:1), the next-step plate border (silk 60%, about 2.7:1), the empty Region card border, the progress bar track (the "N of M" label carries the value) and the switch track when off (the ivory knob's position and the label carry the state).
+
 ## 4. Typography
 
 - **Display: Gloock**, regular, for the logo, page titles and numerals in headings. Region title `clamp(52px, 8vw, 100px)`, line-height `.95`, letter-spacing `-0.02em`. Logo 24px.
@@ -57,6 +59,7 @@ Contrast: Dev B checks every text and meaningful non-text pairing (WCAG AA: 4.5:
 ## 5. Components
 
 - **Page frame:** content column max `1120px`, side padding `40px` (`16px` on a phone). Header: logo left, nav right (Regions, Route, Account and backup); the current page has a `2px` `--silk` underline.
+- **Hero art on pages without a Region image** (Home, Route, Account, a Locked Region): the plain `--lacquer` to `--night` gradient. The skyline art in the mockups is not built (decided 2026-10-20, QA finding F9).
 - **Hero (Region page):** `460px` tall, image `object-fit: cover` with `object-position` from the Region's `heroPosition` (default `50% 40%`), a top gradient under the header and a bottom and left scrim for the title. The bottom edge is slanted: `clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%)`. The title sits at the bottom left. The image credit is in the page footer.
 - **The thread:** a `2px` vertical line running down the left of the entry list. Solid `--silk` while the way is clear and entries are done; `--thread` for entries still to do; **dashed** `--thread` where the next entry is blocked. A short "start thread" draws down from the hero once on load (`scaleY` 0 to 1, 1.2s). It is the page's single entrance motion.
 - **Bead (Collectible):** a `16px` circle on the thread, with a `5px` `--night` ring so the thread appears to pass through it. Done: filled `--bronze`. Not done: hollow with an `--ivory` border. Blocked: dashed `--ash` border.
@@ -88,8 +91,9 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 - Entries in `step` order down the thread, with the states in section 5.
 - Right column (below the list on a phone): **Your thread here** (Collectibles "1 of 3", Tasks "0 of 4"), "I have visited this region" and "Show everything, spoilers included".
 - **Locked Region:** only the name and what is missing. Heading "Locked. You cannot enter yet. Finish what is below and this region opens." Then the missing requirements in route order, each with its Region and a Collected / Not done yet state, a "Go to <Region>" link, and the Region itself as the last step ("Opens when the steps above are done."). Below it: "Its entries stay hidden" with "They appear once you visit the region. Turn on show everything if you want to read ahead." and the same show-everything toggle.
+- **What spoiler hiding covers** (decided 2026-10-20, QA finding F3): a Region's *own* entries stay hidden until it is Visited. The names of the requirements a Locked Region or a Locked entry still needs are always shown, with their Region, because "what is missing" is the point of the guide (`docs/STRUCTURE.md` section 2: "show only the name and what is missing"). The next step on Home and the Route is always shown too.
 - **Region not Visited and Available:** entries are hidden behind the same notice until the player marks the Region Visited, completes something in it, or turns on show everything.
-- Phone layout (390 px): one column, 16px side padding, hero `380px` tall, the title smaller (`clamp` handles it), the totals after the entry list.
+- Phone layout (390 px): one column, 16px side padding, hero `380px` tall, the title smaller (`clamp` handles it), the totals after the entry list. (`07-region-phone.png` shows them before it; this text wins, so the entries come first on a small screen. Decided 2026-10-20, QA finding F7.)
 
 ### Route (`route.html`)
 - Title "Route", intro "Every step across all regions, in order. Anything waiting on something else shows what it needs."

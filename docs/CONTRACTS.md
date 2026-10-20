@@ -179,6 +179,9 @@ configureProgress({ items /* the items array */, dataVersion /* integer */ }) ->
 // mark the Region Visited) and the dataVersion it stamps on saved Progress. Before it is called,
 // setDone still works but cannot mark Visited. Why: progress.js never loads data itself, and the
 // "doing something there means Visited" rule should live in one place, not in the interface.
+// Optional `sample: true` (added 2026-10-20, QA finding F4): the page is showing data/sample. Progress then
+// lives under its own key, `silksong-guide:progress:sample:v1`, and never touches the cloud, so invented
+// sample ids can never mix with a real Run or be synced to an account. Sync status stays 'local'.
 
 loadProgress() -> Promise<{ done: Set<string>, visited: Set<string> }>
 // Local first: resolves at once from localStorage and never waits on the network. When signed in,
@@ -302,6 +305,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - 2026-10-19, Phase 1 (T3): `loadProgress` returns local Progress at once and delivers the cloud merge through `onProgressChange`, instead of waiting for the cloud (a slow network must never block the page; Athos let the orchestrator decide). `useCloud` test seam recorded. Known costs recorded in section 3: "Start a new run" deletes the cloud copy, but another device still holding the old run writes it back on its next change (ADR 0001, newer wins); `combined` is reported only when a cloud copy existed.
 - 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
 - 2026-10-19, Phase 2: `account.html` loads `js/account-page.js` as well as `main.js` (section 5), so Home, Route and the rest of Account can be built in parallel with one owner per file. No signature changed. The slice taught nothing else that changes a contract.
+- 2026-10-20, Phase 2 (T13 findings): `configureProgress` takes an optional `sample` flag (section 3). No other signature changed.
 - 2026-10-20, Phase 2 (T12): validator rule 11 (shape checks from section 1) added; `unlocks` is not derived in V1; an unknown id inside `requires` throws in every `requirements.js` function, not only in `missingFor` and `holdingYouUp` (before, `isAvailable`, `nextStep` and `isRegionAvailable` quietly answered false or null, which hides a data bug). Orchestrator's decision; Athos may overrule.
 
 ## 8. Open contract questions
