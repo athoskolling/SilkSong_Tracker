@@ -47,6 +47,7 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Buy it from Pebb, the merchant in the middle of Bone Bottom, for 500 Rosaries; he sells only one. It opens locked gates, such as the one to Flintslate.",
+      "price": 500,
       "requires": [],
       "step": 25,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/simple-key"
@@ -99,6 +100,7 @@
       "regionId": "the-marrow",
       "area": "Shakra",
       "how": "Sold by Shakra the map seller for 70 Rosaries.",
+      "price": 70,
       "toolColor": "yellow",
       "requires": [],
       "step": 60,
@@ -166,6 +168,7 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Sold in the Bone Bottom shop for 120 Rosaries.",
+      "price": 120,
       "toolColor": "yellow",
       "requires": [
         "moss-mother"
@@ -192,6 +195,7 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 180 Rosaries.",
+      "price": 180,
       "requires": [],
       "step": 130,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
@@ -204,6 +208,7 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 110 Rosaries and a Craftmetal.",
+      "price": 110,
       "toolColor": "blue",
       "effect": "Less damage from fire and lava.",
       "requires": [],
@@ -218,6 +223,7 @@
       "regionId": "deep-docks",
       "area": "Forge",
       "how": "Sold by the Forge Daughter for 140 Rosaries and a Craftmetal.",
+      "price": 140,
       "toolColor": "red",
       "effect": "A trap that hangs in the air.",
       "requires": [],
@@ -257,6 +263,7 @@
       "regionId": "moss-grotto",
       "area": "Bone Bottom",
       "how": "Sold in the Bone Bottom shop for 300 Rosaries.",
+      "price": 300,
       "requires": [
         "moss-mother"
       ],
@@ -337,6 +344,7 @@
       "regionId": "far-fields",
       "area": "Pilgrim's Rest",
       "how": "Sold at Pilgrim's Rest for 160 Rosaries.",
+      "price": 160,
       "toolColor": "yellow",
       "effect": "Less knockback, both taken and from Hornet's own hits.",
       "requires": [
@@ -353,6 +361,7 @@
       "regionId": "far-fields",
       "area": "Pilgrim's Rest",
       "how": "Sold at Pilgrim's Rest for 220 Rosaries.",
+      "price": 220,
       "requires": [
         "fourth-chorus"
       ],
@@ -366,6 +375,7 @@
       "type": "tool",
       "regionId": "hunters-march",
       "how": "Sold by Mottled Skarr for 140 Rosaries.",
+      "price": 140,
       "toolColor": "red",
       "requires": [],
       "step": 260,
@@ -378,6 +388,7 @@
       "type": "tool",
       "regionId": "hunters-march",
       "how": "Sold by Mottled Skarr for 260 Rosaries.",
+      "price": 260,
       "toolColor": "blue",
       "effect": "Survives one fatal hit, then breaks; a bench mends it.",
       "requires": [],
@@ -604,7 +615,8 @@
       "kind": "collectible",
       "type": "spool-fragment",
       "regionId": "bellhart",
-      "how": "Comes with finishing the courier quest for Frey.",
+      "how": "Sold by Frey in Bellhart for 270 Rosaries once the courier quest is done.",
+      "price": 270,
       "requires": [
         "my-missing-courier"
       ],
@@ -618,6 +630,7 @@
       "type": "tool",
       "regionId": "bellhart",
       "how": "Sold in Bellhart for 880 Rosaries once the courier quest is done.",
+      "price": 880,
       "toolColor": "blue",
       "requires": [
         "my-missing-courier"
