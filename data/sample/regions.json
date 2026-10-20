@@ -1,5 +1,5 @@
 {
-  "dataVersion": 1,
+  "dataVersion": 3,
   "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
   "regions": [
     {
@@ -44,6 +44,22 @@
       "summary": "A made-up Region that opens after a task in Sample Region E.",
       "requires": [
         "sample-lever"
+      ]
+    },
+    {
+      "id": "sample-region-f",
+      "name": "Sample Region F",
+      "order": 6,
+      "summary": "A made-up Region open from the start, with crests, tools, a shop and keepsakes for the Trackers, Rosaries and Build picker.",
+      "requires": []
+    },
+    {
+      "id": "sample-region-g",
+      "name": "Sample Region G",
+      "order": 7,
+      "summary": "A made-up Region that opens after the sample cloak, so its crest, tool and keepsake start Locked.",
+      "requires": [
+        "sample-cloak"
       ]
     }
   ]
