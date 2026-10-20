@@ -1,9 +1,11 @@
 // Tests for js/requirements.js, written against docs/CONTRACTS.md section 2.
 // Fixtures are small invented objects built inside each test (ids like a, b, r1), so a reader
 // can see the whole situation next to the assertion. The last tests load data/sample/ (invented
-// data, never the real data/), and pin the Region counts there.
-// The Phase 5 cases (counts, price, isCounted, rosariesToSpend; ADR 0005) sit before them:
-// counts: false and price change what is counted and summed, never what blocks.
+// data, never the real data/), and pin the Region counts and the Route there.
+// The Phase 5 cases sit before the sample pins: counts, price, isCounted and rosariesToSpend (ADR 0005),
+// then the Route rule (routeIds, contract section 2). counts: false and price change what is counted and
+// summed, never what blocks. An entry with counts: false is on the Route only when the Route or a Region
+// needs it, and an entry off the Route is never next and never held up.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -18,6 +20,7 @@ import {
   missingForRegion,
   nextStep,
   holdingYouUp,
+  routeIds,
 } from '../js/requirements.js';
 
 // Short builders: only the fields requirements.js reads.
@@ -31,6 +34,10 @@ const item = (id, step, requires = [], extra = {}) => ({
 });
 const region = (id, order, requires = []) => ({ id, order, requires });
 const done = (...ids) => new Set(ids);
+// A tracked-only Collectible: counts: false (Phase 5, ADR 0005).
+const tracked = (id, step, requires = [], extra = {}) => item(id, step, requires, { counts: false, ...extra });
+// The ids in a Set, sorted, so two answers can be compared without caring about insertion order.
+const idsOf = (set) => [...set].sort();
 
 // ------------------------------------------------------------------ isAvailable
 
@@ -446,11 +453,21 @@ test('missingForRegion: a Region that needs a counts: false entry lists it', () 
   assert.deepEqual(missingForRegion('r1', done(), regions, items), ['memento']);
 });
 
-test('nextStep: can return an entry with counts: false, then moves past it once it is done', () => {
-  const items = [item('memento', 1, [], { counts: false }), item('x', 2)];
+// Phase 5, the Route rule: a counts: false entry is on the Route only when something on the Route needs it.
+test('nextStep: returns a counts: false entry that a counted entry requires, then passes it once done', () => {
+  const items = [tracked('memento', 1), item('door', 2, ['memento'])];
   const regions = [region('r1', 1)];
   assert.equal(nextStep(done(), items, regions), 'memento');
-  assert.equal(nextStep(done('memento'), items, regions), 'x');
+  assert.equal(nextStep(done('memento'), items, regions), 'door');
+  assert.equal(nextStep(done('memento', 'door'), items, regions), null);
+});
+
+test('nextStep: never returns a counts: false entry that nothing needs, even when it is Available with the lowest step', () => {
+  const regions = [region('r1', 1)];
+  assert.equal(nextStep(done(), [tracked('map', 1), item('x', 2)], regions), 'x');
+  assert.equal(nextStep(done('x'), [tracked('map', 1), item('x', 2)], regions), null);
+  // Only the off-Route entry is left, so there is no next step at all.
+  assert.equal(nextStep(done(), [tracked('map', 1)], regions), null);
 });
 
 test('holdingYouUp: a counts: false entry can hold up an entry and a Region', () => {
@@ -487,6 +504,127 @@ test('counts and price change no answer about requirements', () => {
       assert.deepEqual(missingFor(id, set, tagged, regions), missingFor(id, set, plain, regions));
     }
   }
+});
+
+// ------------------------------------------------------------------ the Route rule (routeIds, contract section 2)
+//
+// routeIds says which entries are on the Route: counted Collectibles, Tasks, missable entries, and whatever
+// those and the Regions need, all the way down the chain. A counts: false Collectible that nothing on the
+// Route needs is off it. These cases use small invented objects; the sample pins are at the end of the file.
+
+test('routeIds: a counted Collectible is on the Route', () => {
+  const items = [item('a', 1), item('b', 2, [], { counts: true })];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['a', 'b']);
+});
+
+test('routeIds: a Task is on the Route, with or without counts: false', () => {
+  const items = [item('t1', 1, [], { kind: 'task' }), item('t2', 2, [], { kind: 'task', counts: false })];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['t1', 't2']);
+});
+
+test('routeIds: a missable counts: false entry that nothing needs is on the Route', () => {
+  const items = [tracked('pin', 1, [], { missable: true, missableNote: 'Gone once the boss falls.' })];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['pin']);
+});
+
+test('routeIds: a counts: false entry that a counted entry requires is on the Route', () => {
+  const items = [tracked('memento', 1), item('door', 2, ['memento'])];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['door', 'memento']);
+});
+
+test('routeIds: two counts: false links down a chain under a counted entry are both on the Route', () => {
+  const items = [item('door', 3, ['mid']), tracked('mid', 2, ['deep']), tracked('deep', 1)];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['deep', 'door', 'mid']);
+});
+
+test('routeIds: a counts: false entry in a Region requires is on the Route, also when that Region has no entries', () => {
+  const items = [item('a', 1), tracked('memento', 2)];
+  // r2 has no entries at all; it still needs the memento to open.
+  const regions = [region('r1', 1), region('r2', 2, ['memento'])];
+  assert.deepEqual(idsOf(routeIds(items, regions)), ['a', 'memento']);
+});
+
+test('routeIds: a counts: false entry required by the Region of a counted entry is on the Route', () => {
+  const items = [tracked('memento', 1), item('inside', 2, [], { regionId: 'r2' })];
+  const regions = [region('r1', 1), region('r2', 2, ['memento'])];
+  assert.deepEqual(idsOf(routeIds(items, regions)), ['inside', 'memento']);
+});
+
+test('routeIds: leaves out a counts: false entry that nothing needs', () => {
+  const items = [item('a', 1), tracked('map', 2)];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['a']);
+});
+
+test('routeIds: leaves out a counts: false key that only two counts: false furnishings need', () => {
+  // The key is off the Route like the furnishings it opens: none of the three is on it.
+  const items = [item('a', 1), tracked('key', 2), tracked('chair', 3, ['key']), tracked('desk', 4, ['key'])];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['a']);
+});
+
+test('routeIds: returns a Set', () => {
+  assert.ok(routeIds([item('a', 1)], [region('r1', 1)]) instanceof Set);
+});
+
+test('routeIds: does not change the arrays it is given', () => {
+  const items = [tracked('memento', 3), item('door', 1, ['memento']), item('a', 2)];
+  const regions = [region('r1', 1), region('r2', 2, ['door'])];
+  const itemsBefore = structuredClone(items);
+  const regionsBefore = structuredClone(regions);
+  routeIds(items, regions);
+  assert.deepEqual(items, itemsBefore);
+  assert.deepEqual(regions, regionsBefore);
+});
+
+test('routeIds: does not depend on the order of items or regions', () => {
+  const items = [
+    tracked('memento', 3),
+    item('door', 1, ['memento']),
+    item('a', 2),
+    item('t', 4, [], { kind: 'task' }),
+    tracked('map', 5),
+  ];
+  const regions = [region('r1', 1), region('r2', 2, ['door'])];
+  const forward = idsOf(routeIds(items, regions));
+  assert.deepEqual(idsOf(routeIds([...items].reverse(), [...regions].reverse())), forward);
+  assert.deepEqual(forward, ['a', 'door', 'memento', 't']);
+});
+
+test('routeIds: throws on an unknown regionId of a counted entry', () => {
+  assert.throws(() => routeIds([item('a', 1, [], { regionId: 'nowhere' })], [region('r1', 1)]), /nowhere/);
+});
+
+test('routeIds: throws on an unknown id in the requires of a counted entry, or of a counts: false entry it reaches', () => {
+  assert.throws(() => routeIds([item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+  assert.throws(
+    () => routeIds([item('door', 2, ['memento']), tracked('memento', 1, ['ghost'])], [region('r1', 1)]),
+    /ghost/
+  );
+});
+
+test('routeIds: throws on an unknown id in a Region requires, even when that Region has no entries', () => {
+  assert.throws(() => routeIds([item('a', 1)], [region('r1', 1, ['ghost'])]), /ghost/);
+});
+
+test('routeIds: a cycle between two counted entries returns both ids instead of looping', () => {
+  const items = [item('a', 1, ['b']), item('b', 2, ['a'])];
+  assert.deepEqual(idsOf(routeIds(items, [region('r1', 1)])), ['a', 'b']);
+});
+
+test('routeIds: a Region that requires an entry inside itself returns that entry instead of looping', () => {
+  assert.deepEqual(idsOf(routeIds([item('a', 1)], [region('r1', 1, ['a'])])), ['a']);
+});
+
+// holdingYouUp follows the Route: an entry off it is never held up, and it is never listed in any blocks.
+test('holdingYouUp: a counts: false entry off the Route is never held up, and does not hold anything up', () => {
+  // furnish waits on base, but nothing on the Route needs furnish: the player is not held up by it.
+  const items = [item('base', 1), tracked('furnish', 2, ['base'])];
+  assert.deepEqual(holdingYouUp(done(), items, [region('r1', 1)]), []);
+});
+
+test('holdingYouUp: when a requirement also holds up a counted entry, blocks lists only the counted one', () => {
+  // base is Available and holds up door (on the Route), and furnish (off it). Only door is listed.
+  const items = [item('base', 1), tracked('furnish', 2, ['base']), item('door', 3, ['base'])];
+  assert.deepEqual(holdingYouUp(done(), items, [region('r1', 1)]), [{ id: 'base', blocks: ['door'] }]);
 });
 
 // ------------------------------------------------------------------ rosariesToSpend
@@ -634,4 +772,92 @@ test('data/sample: regionProgress numbers for every Region are pinned', () => {
   const someFG = done('sample-crest-one', 'sample-red-tool', 'sample-cloak', 'sample-slot-upgrade', 'sample-memento', 'sample-crest-four');
   assert.deepEqual(regionProgress('sample-region-f', someFG, items), { done: 2, total: 8 });
   assert.deepEqual(regionProgress('sample-region-g', someFG, items), { done: 1, total: 2 });
+});
+
+// ------------------------------------------------------------------ the Route rule on data/sample
+
+// Pinned on purpose (Phase 5, the Route rule): 25 of the 30 sample entries are on the Route. These five are
+// the counts: false entries that nothing on the Route needs. A later sample edit must move them on purpose.
+const SAMPLE_OFF_ROUTE = ['sample-crest-three', 'sample-map', 'sample-memento', 'sample-memento-two', 'sample-red-tool-plus'];
+
+test('data/sample: routeIds has 25 ids, and exactly the five pinned entries are off it', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  const onRoute = routeIds(items, regions);
+  assert.equal(onRoute.size, 25);
+  const off = items.map((entry) => entry.id).filter((id) => !onRoute.has(id)).sort();
+  assert.deepEqual(off, SAMPLE_OFF_ROUTE);
+});
+
+test('data/sample: every Ending condition is on the Route', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  const endings = readSample('endings').endings;
+  const onRoute = routeIds(items, regions);
+  // Guard against a vacuous pass: the sample must actually have Endings with conditions to check.
+  assert.ok(endings.length > 0, 'the sample has Endings');
+  for (const ending of endings) {
+    assert.ok(ending.conditions.length > 0, `${ending.id} has conditions`);
+    for (const id of ending.conditions) {
+      assert.ok(onRoute.has(id), `${ending.id} needs ${id}, which is off the Route`);
+    }
+  }
+});
+
+test('data/sample: the Route is closed under requirements (nothing it needs is off it)', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  const onRoute = routeIds(items, regions);
+  const regionById = new Map(regions.map((r) => [r.id, r]));
+  const needed = [];
+  for (const entry of items) {
+    if (!onRoute.has(entry.id)) continue;
+    needed.push(...entry.requires, ...regionById.get(entry.regionId).requires);
+  }
+  for (const r of regions) needed.push(...r.requires);
+  assert.ok(needed.length > 0, 'the Route needs something');
+  for (const id of needed) {
+    assert.ok(onRoute.has(id), `${id} is needed by the Route but is off it`);
+  }
+});
+
+test('data/sample: nextStep after the first entry is sample-key', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  assert.equal(nextStep(done('sample-ability'), items, regions), 'sample-key');
+});
+
+test('data/sample: ticking nextStep from nothing until null reaches all 25 Route entries, and no others', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  const onRoute = routeIds(items, regions);
+  const doneSet = new Set();
+  const ticked = [];
+  // The bound stops a broken nextStep from looping forever: the sample has 30 entries.
+  for (let turn = 0; turn < items.length; turn++) {
+    const id = nextStep(doneSet, items, regions);
+    if (id === null) break;
+    ticked.push(id);
+    doneSet.add(id);
+  }
+  assert.equal(nextStep(doneSet, items, regions), null);
+  assert.equal(ticked.length, 25);
+  assert.deepEqual([...ticked].sort(), [...onRoute].sort());
+});
+
+test('data/sample: holdingYouUp with nothing done is exactly the pinned list', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  assert.deepEqual(holdingYouUp(new Set(), items, regions), [
+    {
+      id: 'sample-ability',
+      blocks: ['sample-key', 'sample-door', 'sample-shard', 'sample-boss', 'sample-charm', 'sample-flea', 'sample-region-b', 'sample-region-c'],
+    },
+    {
+      id: 'sample-cloak',
+      blocks: ['sample-crest-two', 'sample-yellow-tool', 'sample-slot-upgrade', 'sample-crest-four', 'sample-yellow-tool-two', 'sample-region-g'],
+    },
+    { id: 'sample-lever', blocks: ['sample-skill', 'sample-shard-two', 'sample-region-d'] },
+    { id: 'sample-crest', blocks: ['sample-quest', 'sample-tool-two'] },
+  ]);
 });
