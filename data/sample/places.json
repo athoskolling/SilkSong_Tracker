@@ -1,0 +1,129 @@
+{
+  "dataVersion": 3,
+  "_note": "SAMPLE DATA. Invented names for tests and layout work. Not Silksong facts. Never copy into data/.",
+  "places": [
+    {
+      "id": "bench-sample-landing",
+      "name": "Sample landing bench",
+      "kind": "bench",
+      "regionId": "sample-region-a",
+      "how": "Sample text. A bench reachable as soon as the Region is. Its source is a MapGenie Silksong link, never opened.",
+      "requires": [],
+      "source": "https://mapgenie.io/hollow-knight-silksong/"
+    },
+    {
+      "id": "bellway-sample-landing",
+      "name": "Sample landing station",
+      "kind": "bellway",
+      "regionId": "sample-region-a",
+      "how": "Sample text. A station that needs one entry first.",
+      "requires": ["sample-ability"],
+      "source": "https://example.invalid/bellway-sample-landing"
+    },
+    {
+      "id": "arena-sample-pit",
+      "name": "Sample pit",
+      "kind": "arena",
+      "regionId": "sample-region-a",
+      "area": "Sample sub-area",
+      "how": "Sample text. A fight room behind a two-step chain: the sample key, which needs the sample ability.",
+      "requires": ["sample-key"],
+      "source": "https://example.invalid/arena-sample-pit"
+    },
+    {
+      "id": "npc-sample-hermit",
+      "name": "Sample hermit",
+      "kind": "npc",
+      "regionId": "sample-region-e",
+      "area": "Sample upper ledge",
+      "how": "Sample text. Someone to talk to, in a Region open from the start.",
+      "requires": [],
+      "source": "https://example.invalid/npc-sample-hermit"
+    },
+    {
+      "id": "shop-sample-tinker",
+      "name": "Sample tinker",
+      "kind": "shop",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A vendor whose only stock has no price.",
+      "requires": [],
+      "sells": ["sample-tool-two"],
+      "source": "https://example.invalid/shop-sample-tinker"
+    },
+    {
+      "id": "wishboard-sample-board",
+      "name": "Sample wish board",
+      "kind": "wishboard",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A board where wishes are taken.",
+      "requires": [],
+      "source": "https://example.invalid/wishboard-sample-board"
+    },
+    {
+      "id": "bench-sample-market",
+      "name": "Sample market bench",
+      "kind": "bench",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. A second bench, so one kind can hold Places from two Regions.",
+      "requires": [],
+      "source": "https://example.invalid/bench-sample-market"
+    },
+    {
+      "id": "shop-sample-market",
+      "name": "Sample market stall",
+      "kind": "shop",
+      "regionId": "sample-region-f",
+      "area": "Sample market",
+      "how": "Sample text. The vendor for every priced sample entry in this Region.",
+      "requires": [],
+      "sells": [
+        "sample-blue-tool",
+        "sample-yellow-tool",
+        "sample-red-tool-plus",
+        "sample-slot-upgrade",
+        "sample-memento",
+        "sample-map"
+      ],
+      "source": "https://example.invalid/shop-sample-market"
+    },
+    {
+      "id": "other-sample-fountain",
+      "name": "Sample fountain",
+      "kind": "other",
+      "regionId": "sample-region-f",
+      "area": "Sample high hall",
+      "how": "Sample text. A fixed spot that fits no other kind, behind the sample cloak.",
+      "requires": ["sample-cloak"],
+      "source": "https://example.invalid/other-sample-fountain"
+    },
+    {
+      "id": "shop-sample-pedlar",
+      "name": "Sample pedlar",
+      "kind": "shop",
+      "regionId": "sample-region-g",
+      "how": "Sample text. A second vendor of the sample map, in a Region that starts Locked.",
+      "requires": [],
+      "sells": ["sample-yellow-tool-two", "sample-map"],
+      "source": "https://example.invalid/shop-sample-pedlar"
+    },
+    {
+      "id": "door-sample-gate",
+      "name": "Sample gate",
+      "kind": "door",
+      "regionId": "sample-region-g",
+      "how": "Sample text. A door in a Locked Region, with no requirement of its own.",
+      "requires": [],
+      "source": "https://example.invalid/door-sample-gate"
+    },
+    {
+      "id": "bench-sample-ruin",
+      "name": "Sample ruin bench",
+      "kind": "bench",
+      "regionId": "sample-region-c",
+      "how": "Sample text. A bench in a Region that has no entries yet.",
+      "requires": [],
+      "source": "https://example.invalid/bench-sample-ruin"
+    }
+  ]
+}
