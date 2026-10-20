@@ -6,7 +6,15 @@
 // half is the block marked CLOUD further down.
 //
 // Stored shape (same as the cloud document, plus the local-only syncedUid):
-//   { done: { id: true }, visited: { id: true }, updatedAt: ms, dataVersion: n, syncedUid?: string }
+//   { done: { id: true }, visited: { id: true }, updatedAt: ms, dataVersion: n, syncedUid?: string,
+//     crestSlots?: { crestId: { red?: n, blue?: n, yellow?: n, white?: n } },
+//     builds?: { crestId: { red?: [entryId], blue?: [...], yellow?: [...], white?: [...] } } }
+// crestSlots and builds are the player choices of ADR 0006. They are optional and "missing is not
+// empty": a copy without the field was written by a page that does not know it, so the field is
+// never added by an ordinary change and is taken from the other copy when two copies are merged.
+//
+// Adding another player choice (the provisional shellShards is the first candidate) is one entry
+// in CHOICE_FIELDS (clean, empty, union), one setter and, in importProgress, one branch.
 
 import {
   onAuthChange,
@@ -122,6 +130,137 @@ function onlyTrue(map) {
   return out;
 }
 
+// ------------------------------------------------- player choices (ADR 0006)
+
+const COLOURS = ['red', 'blue', 'yellow', 'white'];
+const MAX_OPENED = 99; // a guard against typing errors, not a game fact
+const MAX_BUILD_IDS = 12; // same: a guard
+
+const isPlain = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+const copyOf = (value) => JSON.parse(JSON.stringify(value));
+
+// A stable text for a value, so two objects with the same content compare equal whatever
+// the order their keys were written in. Arrays keep their order (a Build's order matters).
+function canon(value) {
+  return JSON.stringify(value, (key, v) =>
+    isPlain(v) ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, v[k]])) : v
+  );
+}
+
+// The cleaners return the well-formed part of `raw`, or undefined when nothing usable is left.
+// `onBad` is called once for every malformed part: normalize passes a function that does
+// nothing (drop silently), parseBackup passes one that throws (refuse the whole file).
+
+// { colour: [1..99] } -> the same with only good colours, in a fixed colour order
+function cleanColours(raw, cleanValue, onBad) {
+  if (!isPlain(raw)) {
+    onBad();
+    return undefined;
+  }
+  const found = {};
+  for (const [colour, value] of Object.entries(raw)) {
+    const clean = COLOURS.includes(colour) ? cleanValue(value, onBad) : undefined;
+    if (clean === undefined) onBad();
+    else found[colour] = clean;
+  }
+  const out = {};
+  for (const colour of COLOURS) if (colour in found) out[colour] = found[colour];
+  if (Object.keys(out).length === 0) {
+    onBad(); // "one or more colours" (a lenient caller has already dropped the parts)
+    return undefined;
+  }
+  return out;
+}
+
+function cleanOpenedCount(value) {
+  return Number.isInteger(value) && value >= 1 && value <= MAX_OPENED ? value : undefined;
+}
+
+// `seen` is shared by the colours of one Build, so an id counts as twice even across colours.
+function cleanIdList(value, onBad, seen) {
+  if (!Array.isArray(value) || value.length > MAX_BUILD_IDS) return undefined;
+  const out = [];
+  for (const id of value) {
+    if (typeof id === 'string' && SLUG.test(id) && !seen.has(id)) {
+      seen.add(id);
+      out.push(id);
+    } else {
+      onBad(); // a non-slug id, or an id twice in one Build
+    }
+  }
+  return out.length ? out : undefined;
+}
+
+// Crest id -> value, where each Crest's value is cleaned by `cleanOne`.
+function cleanByCrest(raw, cleanOne, onBad) {
+  if (!isPlain(raw)) {
+    onBad();
+    return undefined;
+  }
+  const out = {};
+  for (const [crestId, value] of Object.entries(raw)) {
+    const clean = SLUG.test(crestId) ? cleanOne(value, onBad) : undefined;
+    if (clean === undefined) onBad();
+    else out[crestId] = clean;
+  }
+  return out;
+}
+
+const cleanCrestSlots = (raw, onBad) =>
+  cleanByCrest(raw, (opened, bad) => cleanColours(opened, cleanOpenedCount, bad), onBad);
+const cleanBuilds = (raw, onBad) =>
+  cleanByCrest(
+    raw,
+    (build, bad) => {
+      const seen = new Set();
+      return cleanColours(build, (ids, b) => cleanIdList(ids, b, seen), bad);
+    },
+    onBad
+  );
+
+// Union on the first sign-in, for a field both copies have (docs/CONTRACTS.md section 3).
+// `localNewer` is decided on the original updatedAt values; a tie counts as local.
+function unionCrestSlots(mine, theirs) {
+  const out = copyOf(mine);
+  for (const [crestId, colours] of Object.entries(theirs)) {
+    out[crestId] = out[crestId] || {};
+    for (const [colour, count] of Object.entries(colours)) {
+      out[crestId][colour] = Math.max(out[crestId][colour] || 0, count);
+    }
+  }
+  return out;
+}
+
+// Every Crest saved on either side stays; the same Crest on both sides keeps the newer copy's
+// Build whole (two half-Builds glued together could hold more Tools than the Crest has slots).
+function unionBuilds(mine, theirs, localNewer) {
+  const out = copyOf(theirs);
+  for (const [crestId, build] of Object.entries(mine)) {
+    if (!Object.hasOwn(out, crestId) || localNewer) out[crestId] = copyOf(build);
+  }
+  return out;
+}
+
+// The one table every merge, copy and handout goes through, so a new player choice is one entry.
+const CHOICE_FIELDS = [
+  { key: 'crestSlots', empty: () => ({}), clean: cleanCrestSlots, union: unionCrestSlots },
+  { key: 'builds', empty: () => ({}), clean: cleanBuilds, union: unionBuilds },
+];
+
+// The choices as the interface receives them: deep copies, with the empty value for an absent field.
+function choicesOut(progress) {
+  const out = {};
+  for (const { key, empty } of CHOICE_FIELDS) {
+    out[key] = progress[key] !== undefined ? copyOf(progress[key]) : empty();
+  }
+  return out;
+}
+
+// True when any field holds something (an empty {} or null is "known but empty").
+function hasChoices(progress) {
+  return CHOICE_FIELDS.some(({ key, empty }) => progress[key] !== undefined && canon(progress[key]) !== canon(empty()));
+}
+
 // Accepts anything and returns a well-formed Progress object (never throws).
 function normalize(raw) {
   const base = emptyProgress();
@@ -131,6 +270,12 @@ function normalize(raw) {
   if (Number.isFinite(raw.updatedAt)) base.updatedAt = raw.updatedAt;
   if (Number.isInteger(raw.dataVersion)) base.dataVersion = raw.dataVersion;
   if (typeof raw.syncedUid === 'string' && raw.syncedUid) base.syncedUid = raw.syncedUid;
+  // An absent field stays absent; a present one keeps its well-formed parts only.
+  for (const { key, clean } of CHOICE_FIELDS) {
+    if (raw[key] === undefined) continue;
+    const kept = clean(raw[key], () => {});
+    if (kept !== undefined) base[key] = kept;
+  }
   return base;
 }
 
@@ -162,8 +307,14 @@ function writeLocal(progress) {
   }
 }
 
+// What the interface receives: the two id sets plus the player choices, with defaults
+// ({}) applied here and only here (stored Progress keeps an absent field absent).
 function toSets(progress) {
-  return { done: new Set(Object.keys(progress.done)), visited: new Set(Object.keys(progress.visited)) };
+  return {
+    done: new Set(Object.keys(progress.done)),
+    visited: new Set(Object.keys(progress.visited)),
+    ...choicesOut(progress),
+  };
 }
 
 // Every local change goes through here: stamp, save locally, tell the cloud hook,
@@ -177,10 +328,9 @@ function commit(progress, { syncToCloud = true } = {}) {
 }
 
 function notifyProgress(progress) {
-  const snapshot = toSets(progress);
   for (const callback of [...progressListeners]) {
     try {
-      callback({ done: new Set(snapshot.done), visited: new Set(snapshot.visited) });
+      callback(toSets(progress)); // a fresh copy each, so one subscriber cannot change what the next sees
     } catch (error) {
       console.error('Progress subscriber failed', error); // one bad subscriber must not block the rest
     }
@@ -263,16 +413,19 @@ function idCount(map) {
   return Object.keys(map).length;
 }
 
-function hasIds(progress) {
-  return idCount(progress.done) + idCount(progress.visited) > 0;
+function hasContent(progress) {
+  return idCount(progress.done) + idCount(progress.visited) > 0 || hasChoices(progress);
 }
 
-function sameIds(a, b) {
+// "Did anything the page shows change?": ids and the player choices. Compared as handed out, so
+// an absent field and an empty one are the same here (the page sees {} either way).
+function sameContent(a, b) {
   const same = (x, y) => idCount(x) === idCount(y) && Object.keys(x).every((id) => y[id] === true);
-  return same(a.done, b.done) && same(a.visited, b.visited);
+  return same(a.done, b.done) && same(a.visited, b.visited) && canon(choicesOut(a)) === canon(choicesOut(b));
 }
 
 // What goes to the cloud: the Progress object without the device-only syncedUid.
+// Absent fields stay absent (nothing here adds them).
 function forCloud(progress) {
   const { syncedUid, ...shareable } = progress;
   return shareable;
@@ -337,7 +490,7 @@ function reconcile(uid, cloudCopy) {
   const cloudIsNewer = Boolean(theirs) && !firstSignIn && theirs.updatedAt > local.updatedAt;
 
   let pushLocal;
-  if (!theirs) pushLocal = hasIds(merged); // nothing to create in the cloud for an empty run
+  if (!theirs) pushLocal = hasContent(merged); // nothing to create in the cloud for an empty run
   else if (firstSignIn) pushLocal = true; // the union is new to the cloud
   else pushLocal = theirs.updatedAt < local.updatedAt; // local is newer: the cloud copy is behind
 
@@ -350,7 +503,7 @@ function reconcile(uid, cloudCopy) {
       totalDone: idCount(merged.done),
     };
   }
-  if (!sameIds(local, merged)) notifyProgress(merged);
+  if (!sameContent(local, merged)) notifyProgress(merged);
   if (pushLocal) scheduleCloudWrite();
   else markSynced();
 }
@@ -473,6 +626,73 @@ export async function setVisited(regionId, value) {
   commit(progress);
 }
 
+// The player choices (ADR 0006). They follow the same rules as setDone: a call that changes
+// nothing does nothing, otherwise commit (stamp, local write, cloud write, notify). A bad argument
+// is an interface bug, so it throws a TypeError before anything is read or written. None of them
+// marks anything done or Visited, and ids are checked as slugs only, never against data/.
+
+function requireCrestId(crestId) {
+  if (typeof crestId !== 'string' || !SLUG.test(crestId)) {
+    throw new TypeError(`Crest id must be a slug, got ${JSON.stringify(crestId)}`);
+  }
+}
+
+// Stores `next` for one Crest in one field (undefined = remove the Crest). The field is created
+// only here, when something really changes, never by an ordinary setDone ("missing is not empty").
+function changeCrest(key, crestId, next) {
+  const progress = readLocal();
+  const map = progress[key];
+  const before = map !== undefined && Object.hasOwn(map, crestId) ? map[crestId] : undefined;
+  if (before === undefined && next === undefined) return;
+  if (before !== undefined && next !== undefined && canon(before) === canon(next)) return;
+
+  const updated = map || {};
+  if (next === undefined) delete updated[crestId];
+  else updated[crestId] = next;
+  progress[key] = updated;
+  commit(progress);
+}
+
+export async function setCrestSlots(crestId, opened) {
+  requireCrestId(crestId);
+  if (!isPlain(opened)) throw new TypeError('Opened slots must be an object like { blue: 1 }');
+  const kept = {};
+  for (const [colour, count] of Object.entries(opened)) {
+    if (!COLOURS.includes(colour)) throw new TypeError(`Unknown slot colour "${colour}"`);
+    if (!Number.isInteger(count) || count < 0 || count > MAX_OPENED) {
+      throw new TypeError(`Opened ${colour} slots must be an integer from 0 to ${MAX_OPENED}`);
+    }
+    if (count > 0) kept[colour] = count; // a zero is not stored
+  }
+  const ordered = {};
+  for (const colour of COLOURS) if (colour in kept) ordered[colour] = kept[colour];
+  changeCrest('crestSlots', crestId, Object.keys(ordered).length ? ordered : undefined);
+}
+
+export async function setBuild(crestId, build) {
+  requireCrestId(crestId);
+  if (build !== null && !isPlain(build)) throw new TypeError('A Build must be an object like { red: [id] }, or null');
+  const kept = {};
+  const seen = new Set();
+  for (const [colour, ids] of Object.entries(build || {})) {
+    if (!COLOURS.includes(colour)) throw new TypeError(`Unknown slot colour "${colour}"`);
+    if (!Array.isArray(ids) || ids.length > MAX_BUILD_IDS) {
+      throw new TypeError(`${colour} must be a list of at most ${MAX_BUILD_IDS} ids`);
+    }
+    for (const id of ids) {
+      if (typeof id !== 'string' || !SLUG.test(id)) throw new TypeError(`Not an entry id: ${JSON.stringify(id)}`);
+    }
+    for (const id of ids) {
+      if (seen.has(id)) throw new TypeError(`The id ${id} appears twice in one Build`);
+      seen.add(id);
+    }
+    if (ids.length > 0) kept[colour] = [...ids]; // an empty list is not stored
+  }
+  const ordered = {};
+  for (const colour of COLOURS) if (colour in kept) ordered[colour] = kept[colour];
+  changeCrest('builds', crestId, Object.keys(ordered).length ? ordered : undefined);
+}
+
 // ------------------------------------------------------------ public: events
 
 export function onProgressChange(callback) {
@@ -519,7 +739,17 @@ function parseBackup(text) {
     }
     return ids;
   };
-  return { done: read(data.done), visited: read(data.visited) };
+  const backup = { done: read(data.done), visited: read(data.visited) };
+
+  // A player choice that is present but malformed refuses the whole file; an absent one
+  // (every backup made before Phase 5) is fine and adds nothing.
+  const refuse = () => {
+    throw new Error(BAD_FILE_MESSAGE);
+  };
+  for (const { key, clean } of CHOICE_FIELDS) {
+    if (data[key] !== undefined) backup[key] = clean(data[key], refuse);
+  }
+  return backup;
 }
 
 export async function importProgress(file) {
@@ -547,8 +777,49 @@ export async function importProgress(file) {
       addedVisited += 1;
     }
   }
-  if (addedDone || addedVisited) commit(progress);
-  return { addedDone, addedVisited };
+  const addedSlots = importSlots(progress, backup.crestSlots);
+  const addedBuilds = importBuilds(progress, backup.builds);
+
+  if (addedDone || addedVisited || addedSlots || addedBuilds) commit(progress);
+  // tookShellShards is part of the contracted result but shellShards is not built yet (Athos has not
+  // confirmed it), so it is always false. When the field is added, importShellShards sets it.
+  return { addedDone, addedVisited, addedSlots, addedBuilds, tookShellShards: false };
+}
+
+// An import never replaces: opened slots take the larger number per Crest and colour. Returns the
+// sum of the increases. The field is created only when something really increases.
+function importSlots(progress, fromFile) {
+  if (!fromFile) return 0;
+  let added = 0;
+  for (const [crestId, colours] of Object.entries(fromFile)) {
+    for (const [colour, count] of Object.entries(colours)) {
+      const have = (progress.crestSlots && progress.crestSlots[crestId] && progress.crestSlots[crestId][colour]) || 0;
+      if (count <= have) continue;
+      progress.crestSlots = progress.crestSlots || {};
+      progress.crestSlots[crestId] = progress.crestSlots[crestId] || {};
+      progress.crestSlots[crestId][colour] = count;
+      added += count - have;
+    }
+    if (progress.crestSlots && progress.crestSlots[crestId]) {
+      const ordered = {};
+      for (const colour of COLOURS) if (colour in progress.crestSlots[crestId]) ordered[colour] = progress.crestSlots[crestId][colour];
+      progress.crestSlots[crestId] = ordered;
+    }
+  }
+  return added;
+}
+
+// A Build from the file is added only for a Crest that has none saved here. Returns how many Crests got one.
+function importBuilds(progress, fromFile) {
+  if (!fromFile) return 0;
+  let added = 0;
+  for (const [crestId, build] of Object.entries(fromFile)) {
+    if (progress.builds && Object.hasOwn(progress.builds, crestId)) continue;
+    progress.builds = progress.builds || {};
+    progress.builds[crestId] = build;
+    added += 1;
+  }
+  return added;
 }
 
 // ------------------------------------------------------------- public: merge
@@ -563,19 +834,34 @@ export function mergeLocalAndCloud(local, cloud, uid) {
 
   if (firstSignInHere) {
     // Union (ADR 0001): anything marked on either side stays marked.
-    return {
+    const merged = {
       done: { ...theirs.done, ...mine.done },
       visited: { ...theirs.visited, ...mine.visited },
       updatedAt: Date.now(),
       dataVersion: Math.max(mine.dataVersion, theirs.dataVersion),
       syncedUid: uid,
     };
+    // Each player choice has its own union. Decided on the original updatedAt values, a tie is local.
+    const localNewer = mine.updatedAt >= theirs.updatedAt;
+    for (const { key, union } of CHOICE_FIELDS) {
+      const a = mine[key];
+      const b = theirs[key];
+      const value = a !== undefined && b !== undefined ? union(a, b, localNewer) : a !== undefined ? a : b;
+      if (value !== undefined) merged[key] = copyOf(value); // on neither side: stays absent
+    }
+    return merged;
   }
 
   // Already merged on this device: the newer copy wins as a whole object.
   // On a tie, local wins (it is the one the player is looking at).
-  const winner = theirs.updatedAt > mine.updatedAt ? theirs : mine;
-  return { ...winner, syncedUid: uid };
+  const [winner, other] = theirs.updatedAt > mine.updatedAt ? [theirs, mine] : [mine, theirs];
+  const result = { ...winner, syncedUid: uid };
+  // "Missing is not empty": a field the winner does not have (it was written by an older page)
+  // comes from the other copy. A present field, even {} or null, is the winner's own and stays.
+  for (const { key } of CHOICE_FIELDS) {
+    if (result[key] === undefined && other[key] !== undefined) result[key] = copyOf(other[key]);
+  }
+  return result;
 }
 
 // -------------------------------------------------------------- public: reset
@@ -591,6 +877,9 @@ export function mergeLocalAndCloud(local, cloud, uid) {
 export async function clearProgress() {
   const { syncedUid } = readLocal();
   const fresh = emptyProgress();
+  // Written empty on purpose (not left absent): an absent field would let the old cloud copy's
+  // Builds come back through "missing is not empty".
+  for (const { key, empty } of CHOICE_FIELDS) fresh[key] = empty();
   if (syncedUid) fresh.syncedUid = syncedUid;
   commit(fresh, { syncToCloud: false });
   deleteCloudCopy();
