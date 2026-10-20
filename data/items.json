@@ -1000,7 +1000,9 @@
       "regionId": "bellhart",
       "how": "Furniture for your Bellhome, sold by Frey for 320 Rosaries.",
       "price": 320,
-      "requires": [],
+      "requires": [
+        "bellhome-key"
+      ],
       "step": 467,
       "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
     },
@@ -1013,7 +1015,9 @@
       "regionId": "bellhart",
       "how": "Furniture for your Bellhome, sold by Frey for 520 Rosaries.",
       "price": 520,
-      "requires": [],
+      "requires": [
+        "bellhome-key"
+      ],
       "step": 468,
       "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
     },
@@ -1026,7 +1030,9 @@
       "regionId": "bellhart",
       "how": "Furniture for your Bellhome, sold by Frey for 1100 Rosaries. It only appears after two other furniture purchases; rest elsewhere and come back if it does not show.",
       "price": 1100,
-      "requires": [],
+      "requires": [
+        "bellhome-key"
+      ],
       "step": 469,
       "source": "https://www.thegamer.com/hollow-knight-silksong-get-bellhome-decorate-guide/"
     },
