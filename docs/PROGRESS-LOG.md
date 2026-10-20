@@ -86,6 +86,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Research for batch 1** (orchestrator, findings only): `docs/research/2026-10-20-collectibles-and-endings.md`. The game's completion list is wider than the glossary (adds Silk Hearts, Crafting Kit and Tool Pouch upgrades, Sylphsong, Everbloom); sources count **four** main Endings (five or six with hidden ones), while the plan says five. Both questions are for Athos.
 - **T22 started** (`qa-manual/wiki-lines`): checklist lines N-13 to N-17 updated for item 4 (wiki comparisons by Athos, by hand).
 
+- **T22 merged** (`qa-manual/wiki-lines`): checklist wiki lines follow item 4 (Athos compares with the main wiki by hand; QA 2 only records picks and runs exact-phrase web searches for copied text). Orchestrator's answers to QA 2's questions: **Q9** `step` is checked against the Route order (N-4), not the wiki; **Q11** no `source` field on Regions in V1, the QA report names the page used for each Region; **Q12** a batch with fewer than 5 entries is checked in full. **Q10** (the slice's two `source` links point at Fextralife) is Athos's: recommended to replace them with main wiki pages when he writes Moss Grotto in batch 1.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
