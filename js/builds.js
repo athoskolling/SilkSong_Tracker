@@ -146,3 +146,72 @@ export function checkBuild(crestId, build, doneSet, items, crestSlots) {
   }
   return problems;
 }
+
+// ------------------------------------------------------------------ templates (data/builds.json, ADR 0007)
+
+// How one Template stands for this player now. Built on ownedIds and checkBuild, so the picker and
+// the validator (rule 15) apply the same rules and cannot disagree.
+//   missing  ids of the template the player does not own, in the template's order. An id not in
+//            items is listed too: the validator keeps that from shipping, but a page must not break.
+//   usable   the template without the missing ids, all four colour keys (a page value, never stored).
+//            Dropping an id moves the next one up a position, so room is checked on `usable`, not on
+//            the full template: that is the Build "Use as my Build" would really give the player.
+//   noRoom   ids of `usable` with no slot now (checkBuild's 'no-room'); [] when the Crest has no `slots`.
+// The template is ready as it is when missing and noRoom are both empty. Only template.crestId throws.
+export function fitTemplate(template, doneSet, items, crestSlots) {
+  const byId = indexItems(items);
+  getCrest(byId, template.crestId);
+  const owned = ownedIds(doneSet, byId);
+
+  const missing = [];
+  const usable = { red: [], blue: [], yellow: [], white: [] };
+  for (const colour of COLOURS) {
+    const ids = template.build?.[colour];
+    if (!Array.isArray(ids)) continue;
+    for (const id of ids) {
+      if (owned.has(id)) usable[colour].push(id);
+      else missing.push(id);
+    }
+  }
+
+  const noRoom = checkBuild(template.crestId, usable, doneSet, items, crestSlots)
+    .filter((problem) => problem.problem === 'no-room')
+    .map((problem) => problem.id);
+  return { missing, noRoom, usable };
+}
+
+// ------------------------------------------------------------------ synergies
+
+// Every id in a Build, whatever the colour. Ids only: a Build that is undefined, or a colour that is
+// not a list, adds nothing, because the Build comes from Progress and may be anything.
+function idsInBuild(build) {
+  const ids = new Set();
+  for (const colour of COLOURS) {
+    if (Array.isArray(build?.[colour])) build[colour].forEach((id) => ids.add(id));
+  }
+  return ids;
+}
+
+// The synergies with both sides in the Build, in the order of `synergies`.
+export function synergiesIn(build, synergies) {
+  const ids = idsInBuild(build);
+  return synergies.filter((synergy) => ids.has(synergy.a) && ids.has(synergy.b));
+}
+
+// The synergies with exactly one side in the Build: `inBuild` is that id, `other` the partner that is
+// not in it. Whether the player owns `other` is the page's question (ownedByColour).
+export function synergyPartners(build, synergies) {
+  const ids = idsInBuild(build);
+  const result = [];
+  for (const synergy of synergies) {
+    const hasA = ids.has(synergy.a);
+    const hasB = ids.has(synergy.b);
+    if (hasA === hasB) continue;
+    result.push(
+      hasA
+        ? { synergy, inBuild: synergy.a, other: synergy.b }
+        : { synergy, inBuild: synergy.b, other: synergy.a },
+    );
+  }
+  return result;
+}
