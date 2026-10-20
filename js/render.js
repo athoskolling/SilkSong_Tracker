@@ -43,6 +43,13 @@ export function joinNames(names) {
   return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
+// "A, B and C", or "A, B, C and 2 more" when the list is longer than `max`. Long lists would wrap to
+// many lines on a phone, so Home's Locked cards, entry requirement lines and the holding sentence share this.
+export function listWithMore(names, max) {
+  if (names.length <= max) return joinNames(names);
+  return `${names.slice(0, max).join(', ')} and ${names.length - max} more`;
+}
+
 // ------------------------------------------------------------------ messages
 
 // A plain page for errors and dead ends: one h1, what happened, what to do next.
@@ -398,36 +405,31 @@ function pluralEntries(n) {
   return `${n} ${n === 1 ? 'entry' : 'entries'}`;
 }
 
-// "Blocks <entry> and 1 more entry in <Region>", "Blocks the region <Region>" (DESIGN.md section 6).
-// item = { entries: [{ name, regionName }], regions: [name] }. The "rail" variant (Route page) is
-// shorter and gives a count, because the rail is narrow.
-//
-// A Region is named once. Entries that sit inside a Region that is itself blocked are counted into
-// that Region's part ("the region X and its 2 entries") and are not named again on their own.
-export function blocksText(item, variant = 'full') {
+// The one sentence for "holding you up", used on Home and in the Route rail so both read the same.
+// item = { entries: [{ name, regionName }], regions: [name] }. Copy follows DESIGN.md section 6:
+// "Blocks X and 1 more entry in <Region>", "Blocks the region <Region>".
+// Up to two sentences, so none carries two "and" clauses:
+//   regions  "Blocks the regions A, B, C and 8 more, with 54 entries in them."
+//   entries  "Blocks X and 4 more entries in <Region>." (after a regions sentence: "Also blocks ...")
+// Entries inside a blocked Region are counted into that Region's sentence and are not named again.
+export function blocksText(item) {
   const inBlockedRegion = (entry) => item.regions.includes(entry.regionName);
   const covered = item.entries.filter(inBlockedRegion);
   const others = item.entries.filter((entry) => !inBlockedRegion(entry));
 
-  let regionPart = '';
+  const sentences = [];
   if (item.regions.length) {
     const one = item.regions.length === 1;
-    regionPart = `the ${one ? 'region' : 'regions'} ${joinNames(item.regions)}`;
-    if (covered.length) regionPart += ` and ${one ? 'its' : 'their'} ${pluralEntries(covered.length)}`;
+    let text = `Blocks the ${one ? 'region' : 'regions'} ${listWithMore(item.regions, 3)}`;
+    if (covered.length) text += `, with ${pluralEntries(covered.length)} in ${one ? 'it' : 'them'}`;
+    sentences.push(`${text}.`);
   }
-
-  const entryPart = otherEntriesText(others, variant, covered.length > 0);
-  if (!entryPart) return `Blocks ${regionPart}.`;
-  if (!regionPart) return `Blocks ${entryPart}.`;
-  // A Region part that counted entries has its own "and", so it leads and the rest follows after a comma.
-  return covered.length ? `Blocks ${regionPart}, and ${entryPart}.` : `Blocks ${entryPart} and ${regionPart}.`;
+  if (others.length) sentences.push(`${sentences.length ? 'Also blocks' : 'Blocks'} ${otherEntriesText(others)}.`);
+  return sentences.join(' ');
 }
 
-// The blocked entries that are not inside a blocked Region. `also` is true when the sentence has
-// already counted other entries, so the rail's bare count says "other" and is not read as a repeat.
-function otherEntriesText(entries, variant, also) {
-  if (entries.length === 0) return '';
-  if (variant === 'rail') return also ? `${entries.length} other ${entries.length === 1 ? 'entry' : 'entries'}` : pluralEntries(entries.length);
+// "X in <Region>", or "X and N more entries" (plus " in <Region>" when they all sit in one Region).
+function otherEntriesText(entries) {
   const first = entries[0];
   const rest = entries.length - 1;
   if (rest === 0) return `${first.name} in ${first.regionName}`;
@@ -437,7 +439,7 @@ function otherEntriesText(entries, variant, also) {
 
 // The list used on Home and in the Route rail. items: [{ id, name, kind, entries, regions }]
 // The mark is hollow (not dashed): a blocker is something the player can do now.
-function holdingList(items, variant) {
+function holdingList(items) {
   return h(
     'ul',
     { class: 'holding-list' },
@@ -450,7 +452,7 @@ function holdingList(items, variant) {
           'div',
           {},
           h('span', { class: 'holding-name' }, item.name),
-          h('p', { class: 'holding-text' }, blocksText(item, variant))
+          h('p', { class: 'holding-text' }, blocksText(item))
         )
       )
     )
@@ -543,7 +545,7 @@ function holdingSection(view) {
     h('h2', { class: 'section-heading', id: 'holding-heading' }, 'What is holding you up'),
     h('p', { class: 'section-intro' }, 'The things you are missing that block the most entries or a whole region.'),
     view.holding.length
-      ? holdingList(view.holding, 'full')
+      ? holdingList(view.holding)
       : h('p', { class: 'section-intro holding-empty' }, 'Nothing is blocked right now.'),
     h('p', { class: 'holding-more' }, h('a', { href: view.routeHref }, 'See everything on the route'))
   );
@@ -688,7 +690,7 @@ function routeRail(view) {
       { class: 'rail-section', 'aria-labelledby': 'rail-holding-heading' },
       h('h2', { class: 'plate-subheading', id: 'rail-holding-heading' }, 'Holding you up'),
       view.holding.length
-        ? holdingList(view.holding, 'rail')
+        ? holdingList(view.holding)
         : h('p', { class: 'plate-help' }, 'Nothing is blocked right now.')
     )
   );
