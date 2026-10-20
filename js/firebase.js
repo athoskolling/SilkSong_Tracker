@@ -10,6 +10,7 @@
 //   the site keeps working with local Progress only (ADR 0001).
 
 import { firebaseConfig } from './firebase-config.js';
+import { emulatorModeFor } from './firebase-emulator.js';
 
 // One pinned version for all three SDK files. Change it here and nowhere else.
 // Raise it deliberately and re-test sign-in by hand on account.html (Google and an email link).
@@ -42,18 +43,38 @@ function getServices() {
   return servicesPromise;
 }
 
+// ---------------------------------------------------------------------------
+// Emulator mode (docs/CONTRACTS.md section 4): the decision lives in
+// firebase-emulator.js, so it can be tested and firebase.js keeps its exact
+// list of exports.
+// ---------------------------------------------------------------------------
+
+function currentEmulatorMode() {
+  if (typeof window === 'undefined') return null;
+  return emulatorModeFor(window.location.hostname, window.location.search);
+}
+
 async function loadServices() {
   const [appModule, authModule, firestoreModule] = await Promise.all([
     import(`${SDK_BASE}/firebase-app.js`),
     import(`${SDK_BASE}/firebase-auth.js`),
     import(`${SDK_BASE}/firebase-firestore.js`),
   ]);
-  const app = appModule.initializeApp(firebaseConfig);
-  return {
-    auth: authModule.getAuth(app),
-    db: firestoreModule.getFirestore(app),
-    sdk: { ...authModule, ...firestoreModule },
-  };
+  const emulator = currentEmulatorMode();
+  // The project id is replaced only in Emulator mode. authDomain stays: the Auth
+  // emulator never checks it, and the email link's return address is built from the page.
+  const app = appModule.initializeApp(emulator ? { ...firebaseConfig, projectId: emulator.projectId } : firebaseConfig);
+  const auth = authModule.getAuth(app);
+  const db = firestoreModule.getFirestore(app);
+  if (emulator) {
+    // Must happen before the first use of auth or db.
+    authModule.connectAuthEmulator(auth, `http://${emulator.host}:${emulator.authPort}`, {
+      disableWarnings: true,
+    });
+    firestoreModule.connectFirestoreEmulator(db, emulator.host, emulator.firestorePort);
+    console.warn(`Emulator mode: using the local Firebase Emulators (${emulator.projectId}), not the real project.`);
+  }
+  return { auth, db, sdk: { ...authModule, ...firestoreModule } };
 }
 
 // ---------------------------------------------------------------------------
@@ -132,12 +153,14 @@ function toUser(firebaseUser) {
   };
 }
 
-// The current page address without query and hash. Used as the email link's return
+// The current page address without query and hash (except the Emulator flag). Used as the email link's return
 // address, so it works on any host (localhost or the GitHub Pages subpath) and an
 // old link never ends up inside the new one.
 function currentPageUrl() {
   const url = new URL(window.location.href);
-  url.search = '';
+  // Emulator mode keeps its flag, so the link opens the page in the same mode.
+  const keepEmulator = currentEmulatorMode() !== null;
+  url.search = keepEmulator ? '?emulator' : '';
   url.hash = '';
   return url.toString();
 }
