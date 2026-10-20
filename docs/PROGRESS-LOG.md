@@ -26,6 +26,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T8 merged** (`dev-a/firestore-rules`): `firestore.rules`, `firebase.json` and `tests/firestore-rules.test.js`. A user can get, create, update and delete only `silksong_progress/{their uid}`; no listing; writes must have exactly `done`, `visited`, `updatedAt`, `dataVersion` (so `syncedUid` never reaches the cloud); everything else denied. Orchestrator ran both after merging: 88 tests pass without the Emulator (rules file skipped), 22 rules tests pass in the Emulator. Dev A also checked the tests fail against a weakened copy of the rules. Not deployed: Athos publishes.
 
+- **Pushed** to GitHub at Athos's request. **Athos published `firestore.rules`.**
+- **Athos reported** the main page as plain white and Account and sync not working. Orchestrator checked: no `index.html` (Pages shows the README) and `account.html` does not exist (404); sign-in lived only on `tools/auth-check.html`. Firebase side fine from outside: database exists, `athoskolling.github.io` authorized, SDK 12.19.0 loads, the Region page has no console errors. Also found: `main.js` does not call `completeEmailLinkSignIn` on every load, as the contract says.
+- **T9 started** (`dev-a/slice-pages`, dev-a acting as Dev B): temporary `index.html` to the first Region, the sign-in part of `account.html`, Route link hidden until Phase 2. Sync symptoms asked from Athos.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
