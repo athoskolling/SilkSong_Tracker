@@ -38,6 +38,7 @@ import {
   renderRouteShell,
   renderRouteBody,
   joinNames,
+  listWithMore,
   syncText,
   renderAccountShell,
   renderAccountPlate,
@@ -176,7 +177,8 @@ function needsLine(item, available, guide, done) {
   if (!available) {
     const missing = missingFor(item.id, done, guide.items, guide.regions);
     if (missing.length === 0) return null;
-    return { text: `Needs ${joinNames(missing.map(guide.nameOf))}`, missing: true };
+    // Capped like the Locked Region card on Home: the nearest three by step, then "and N more".
+    return { text: `Needs ${listWithMore(missing.map(guide.nameOf), 3)}`, missing: true };
   }
   if (item.requires.length > 0) {
     return { text: `Needs ${joinNames(item.requires.map(guide.nameOf))}, done`, missing: false };
@@ -362,13 +364,6 @@ function regionCard(region, guide, state, regionsWithDone, nextItem) {
     card.needs = missing.length ? `Needs ${listWithMore(missing, 3)}` : null;
   }
   return card;
-}
-
-// "A, B and C", or "A, B, C and 2 more" when the list is long.
-function listWithMore(names, max) {
-  if (names.length <= max) return joinNames(names);
-  const rest = names.length - max;
-  return `${names.slice(0, max).join(', ')} and ${rest} more`;
 }
 
 // ------------------------------------------------------------------- route page
