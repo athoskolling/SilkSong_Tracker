@@ -19,7 +19,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - Login and sync: the site's own Firebase project (Auth + Firestore), separate from Hollow-Thingy (ADR 0004).
 - No visual game map. Text and checklists only.
 - Minimal visual style, nothing that looks "made by AI". The visual design is settled; see `docs/DESIGN.md` and `docs/design/`.
-- Data source: the game's main wiki, with MapGenie as a fallback reference when information is missing.
+- Data source: the game's main wiki, with MapGenie as a fallback reference when information is missing. A link to MapGenie's Silksong map may be a `source`, but only to cite where something is, never as the origin of our text; agents never open or scrape it, so only Athos can check such a link (Athos, 2026-10-20; `docs/CONTRACTS.md` section 1, "Sources and MapGenie").
 - **Local first:** progress is saved in the browser (localStorage) by default and synced to Firestore after sign-in. The site works without an account.
 - **Backup:** export and import progress as JSON.
 - **Site language:** English only (names, text and interface). No translation layer.
@@ -27,7 +27,10 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Counts follow the game; Trackers are wider** (Athos, 2026-10-20, ADR 0005): the headline counts use only what the game counts toward 100 percent. Mementos and Equipment are Collectibles marked `counts: false`: tracked on their own Tracker with their own done and total, never in the headline number.
 - **Rosaries without a number in Progress** (Athos, 2026-10-20, ADR 0005): shop entries carry a `price`; the player marks them done when bought, and the Rosaries still to spend are worked out from the prices of what is not bought yet. Rosaries are never a number in Progress.
 - **One entry per thing** (Athos, 2026-10-20): something the player obtains is a Collectible even when the story needs it; if the game does not count it, it is `counts: false`, and what it opens lists it in `requires`. The Drifter's Cloak moves from Task to such a Collectible (same id); the Hunter Crest is a normal entry the player ticks, not counted.
-- **A few player choices in Progress** (Athos, 2026-10-20, ADR 0006): the opened slots per Crest (Memory Lockets spent), one saved Build per Crest and, if Athos confirms the reading, a Shell Shards number the player types. Optional fields, so older Progress still loads; the Firestore rules accept them as optional keys.
+- **A few player choices in Progress** (Athos, 2026-10-20, ADR 0006): the opened slots per Crest (Memory Lockets spent) and one saved Build per Crest. Optional fields, so older Progress still loads; the Firestore rules accept them as optional keys.
+- **Shell Shards like the Rosaries** (Athos, 2026-10-20, ADR 0007): no Shell Shards number in Progress; what the site shows about them is worked out from entries. Which entries and which field waits for research (`docs/CONTRACTS.md` section 8).
+- **Build templates and synergies** (Athos, 2026-10-20, reversing "no templates" of the same day; ADR 0007): suggested Builds per Crest and pairs of Tools that work together, each with a source, in their own file `data/builds.json`. A Template is either our grouping or a guide's; using one fills the picker and never saves by itself.
+- **Places** (Athos, 2026-10-20, "whenever needed"; ADR 0007): benches, Bellway stations, shops, NPCs and other fixed spots per Region, in `data/places.json`. Not entries: never done, never counted, not on the Route, nothing in Progress. Shown on the Region page; a shop's stock links the Rosaries page to where to buy.
 - **Endings:** four (the four main endings; Athos, 2026-10-20, replacing the earlier "five"). The model supports them in V1, but **their data ships with the late-game batch, not in V1** (Athos, 2026-10-20): an Ending's conditions must be existing entries, and those entries are late-game. When they ship, each has conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
 - **Our own counts:** per-category counters ("Tools: 12 of 51"), never claiming to reproduce the game's completion percentage.
 - **One Run per account** in V1. "New run" offers an export before clearing.
@@ -43,7 +46,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Sub-areas:** a text label (`area`) on each entry, with no pages or unlock logic of their own.
 - **Data authorship:** written by Athos from his own play and checked against the main wiki read by hand, in our own words (Athos, 2026-10-20; there is no draft script; see section 8).
 - **Hosting:** GitHub Pages from the start (see section 10).
-- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids), `0004` (own Firebase project), `0005` (counts follow the game, Trackers are wider, prices on entries) and `0006` (player choices in Progress), in `docs/adr/`.
+- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids), `0004` (own Firebase project), `0005` (counts follow the game, Trackers are wider, prices on entries), `0006` (player choices in Progress) and `0007` (Build templates, synergies and Places in their own data files; Shell Shards leave Progress), in `docs/adr/`.
 
 ## 3. V1 scope
 
@@ -71,16 +74,18 @@ In:
 - A Trackers page with one tab per category (counted and not counted), each with its own done and total.
 - Mementos and Equipment, tracked and not counted (`counts: false`).
 - Shop entries with a Rosary `price`, and a Rosaries panel showing what is still to spend, worked out from what is not bought.
-- A Build picker: choose a Crest and fill its slots from the Tools and Silk Skills the player has marked done, record the slots opened on each Crest, and save one Build per Crest. No fixed templates and no `data/builds.json`; the Build fields live on entries (Athos, 2026-10-20).
-- A visible Shell Shards number the player types (provisional: the orchestrator's reading of Athos's answer, to be confirmed). No Shell Shards panel.
+- A Build picker: choose a Crest and fill its slots from the Tools and Silk Skills the player has marked done, record the slots opened on each Crest, and save one Build per Crest. The per-entry Build fields live on entries (Athos, 2026-10-20).
+- Build Templates per Crest and Synergies between Tools, each with a source, in `data/builds.json` (Athos, 2026-10-20, third round; ADR 0007). They need Crest slot layouts in `data/` first.
+- Places per Region (benches, Bellway stations, shops, NPCs, wish boards and others) in `data/places.json`, shown on the Region page, with "Sold by" on the Rosaries page (Athos, 2026-10-20, third round; ADR 0007).
+- Shell Shards worked out from entries, like the Rosaries, once research shows which entries cost them (Athos, 2026-10-20, third round). No typed number and no Shell Shards panel.
 - Reading the game's save file (last): a read-only "what does my save say" preview first, after a research spike; whether the repository may ship the game's key is Athos's question.
 - Mockups for every new screen before code (Dev B, reviewed by Athos).
 
 Out:
 - The soundtrack (Athos's answer 5).
-- A typed Rosaries amount (ADR 0005).
-- Build templates, synergy lists and Steel Soul mode (Athos, 2026-10-20).
-- Boss notes and points of interest stay optional, after everything above.
+- A typed Rosaries amount (ADR 0005) and a typed Shell Shards number (ADR 0007).
+- Steel Soul mode (Athos, 2026-10-20). (Build templates and synergy lists were out here too until Athos asked for them later the same day.)
+- Boss notes stay optional, after everything above. A page listing every Place across all Regions is not planned (`docs/CONTRACTS.md` section 8).
 
 ## 4. Folder structure (proposal)
 
@@ -115,6 +120,8 @@ silksong-guide/
 │   ├── regions.json        # list of Regions
 │   ├── items.json          # Collectibles and Tasks (file name kept; "items" is only the file name)
 │   ├── endings.json        # the four Endings, conditions and locksOut
+│   ├── builds.json         # Phase 5, optional: Build Templates and Synergies (ADR 0007)
+│   ├── places.json         # Phase 5, optional: Places per Region (ADR 0007)
 │   └── sample/             # layout-only sample data; NOT guide facts (see data/sample/README.md)
 ├── img/regions/            # one hero image per Region (see docs/IMAGES.md)
 ├── tools/
