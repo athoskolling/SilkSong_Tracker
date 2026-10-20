@@ -1,5 +1,5 @@
 {
-  "dataVersion": 7,
+  "dataVersion": 8,
   "items": [
     {
       "id": "moss-mother",
@@ -1291,6 +1291,989 @@
       ],
       "step": 610,
       "source": "https://game-checklists.com/silksong/weavenest-atla.html"
+    },
+    {
+      "id": "simple-key-sinners-road",
+      "name": "Simple Key, Sinner's Road",
+      "kind": "task",
+      "type": "key",
+      "regionId": "sinners-road",
+      "how": "Beat the Roachkeeper at the top of the tall room at the east end of the upper Sinner's Road. Any Simple Key opens any locked door; the guide spends this one on the lower Wormways door.",
+      "requires": [],
+      "step": 620,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/simple-key"
+    },
+    {
+      "id": "plasmium-phial",
+      "name": "Plasmium Phial",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "wormways",
+      "how": "Open the lower Wormways door with a Simple Key and climb to Alchemist Zylotol's lab. His wish, Alchemist's Assistant, gives a Needle Phial: draw three Plasmium samples in the Wormways and bring them back.",
+      "toolColor": "red",
+      "requires": [
+        "simple-key-sinners-road"
+      ],
+      "step": 630,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/plasmium"
+    },
+    {
+      "id": "magnetite-dice",
+      "name": "Magnetite Dice",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "blasted-steps",
+      "how": "Lumble the Lucky, left and down from the Blasted Steps Bellway, plays dice for Rosaries. Win until he has no Rosaries left and he pays with his dice. If he dies first (around mid Act 2), take them from his body.",
+      "toolColor": "yellow",
+      "requires": [],
+      "step": 640,
+      "source": "https://www.shacknews.com/article/146158/unlock-magnetic-dice-silksong"
+    },
+    {
+      "id": "last-judge",
+      "name": "Last Judge",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "blasted-steps",
+      "how": "Ring the five Bellshrines (Marrow, Deep Docks, Greymoor, Bellhart, Shellwood), then play the Needolin at the great door in the northeast of the Blasted Steps. Beating her opens the Grand Gate and starts Act 2.",
+      "requires": [
+        "needolin"
+      ],
+      "step": 650,
+      "source": "https://rogueranker.com/hollow-knight-silksong-last-judge/"
+    },
+    {
+      "id": "spool-fragment-grand-gate",
+      "name": "Spool Fragment, Grand Gate",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "grand-gate",
+      "how": "At the top of a moving mechanism in the hall of scales; climb with Cling Grip.",
+      "requires": [],
+      "step": 660,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "delvers-drill",
+      "name": "Delver's Drill",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "underworks",
+      "how": "On a table in the southwest of the Underworks. It drills through fragile walls.",
+      "toolColor": "red",
+      "requires": [],
+      "step": 670,
+      "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-59-tool-locations"
+    },
+    {
+      "id": "spool-fragment-underworks-pit",
+      "name": "Spool Fragment, Underworks pit",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "underworks",
+      "how": "At the bottom of a pit in the Underworks, near the lift to Trobbio's stage; a four-wave fight opens the door to it.",
+      "requires": [],
+      "step": 680,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "white-key",
+      "name": "White Key",
+      "kind": "task",
+      "type": "key",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Lies against the fence on the right side of the Songclave. Ringing the Songclave bell first may make it vanish; then Jubilana sells it for 220 Rosaries after her Wandering Merchant wish. Opens the lift to Whiteward.",
+      "requires": [],
+      "step": 690,
+      "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-key-items-and-simple-keys-locations"
+    },
+    {
+      "id": "wandering-merchant",
+      "name": "The Wandering Merchant",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Ring the First Shrine bell (80 Rosaries) so the Songclave wish board appears. Take Jubilana's wish, find her in a dark room off the Choral Chambers, clear the enemies and talk to her. She then opens a shop in the Songclave.",
+      "requires": [],
+      "step": 700,
+      "source": "https://deltiasgaming.com/?p=341275"
+    },
+    {
+      "id": "mask-shard-songclave",
+      "name": "Mask Shard, Songclave",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Sold by Jubilana in the Songclave for 750 Rosaries.",
+      "price": 750,
+      "requires": [
+        "wandering-merchant"
+      ],
+      "step": 710,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "ascendants-grip",
+      "name": "Ascendant's Grip",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Sold by Jubilana in the Songclave for 350 Rosaries. One source says she sells it only in Act 2.",
+      "price": 350,
+      "toolColor": "yellow",
+      "requires": [
+        "wandering-merchant"
+      ],
+      "missable": true,
+      "missableNote": "Jubilana's shop opens only after the Wandering Merchant wish, which guides say can be done only in Act 2. Not confirmed whether it can be done later.",
+      "step": 720,
+      "source": "https://nerdschalk.com/silksong-ascendants-grip-location-route-rewards-requirements-more/"
+    },
+    {
+      "id": "spider-strings",
+      "name": "Spider Strings",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Sold by Jubilana in the Songclave for 320 Rosaries.",
+      "price": 320,
+      "toolColor": "yellow",
+      "requires": [
+        "wandering-merchant"
+      ],
+      "step": 730,
+      "source": "https://deltiasgaming.com/?p=342458"
+    },
+    {
+      "id": "spool-extender",
+      "name": "Spool Extender",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Sold by Jubilana in the Songclave for 720 Rosaries.",
+      "price": 720,
+      "toolColor": "blue",
+      "requires": [
+        "wandering-merchant"
+      ],
+      "step": 740,
+      "source": "https://nerdschalk.com/hollow-knight-silksong-jubilana-location-rewards-shop-list/"
+    },
+    {
+      "id": "simple-key-jubilana",
+      "name": "Simple Key, Jubilana",
+      "kind": "task",
+      "type": "key",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "Sold by Jubilana in the Songclave. Any Simple Key opens any locked door; the guide spends this one on the High Halls door.",
+      "price": 650,
+      "requires": [
+        "wandering-merchant"
+      ],
+      "step": 750,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/simple-key"
+    },
+    {
+      "id": "cogwork-dancers",
+      "name": "Cogwork Dancers",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "cogwork-core",
+      "how": "Two dancers fought together, reached left of the Songclave bench through a passage above two walls. Beating them opens the Cogwork Core and starts the Threefold Melody.",
+      "requires": [],
+      "step": 760,
+      "source": "https://intoindiegames.com/walkthroughs/tips-tricks/hollow-knight-silksong-boss-guide-cogwork-dancers/"
+    },
+    {
+      "id": "mask-shard-cogwork-core",
+      "name": "Mask Shard, Cogwork Core",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "cogwork-core",
+      "how": "Past the enemy fight in the arena southeast of the central bench; hit the switch on the left and go through.",
+      "requires": [
+        "cogwork-dancers"
+      ],
+      "step": 770,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "spool-fragment-cogwork-core",
+      "name": "Spool Fragment, Cogwork Core",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "cogwork-core",
+      "how": "In the lowest part of the Cogwork Core; time the moving gears to reach it.",
+      "requires": [
+        "cogwork-dancers"
+      ],
+      "step": 780,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/546611"
+    },
+    {
+      "id": "vaultkeepers-melody",
+      "name": "Vaultkeeper's Melody",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "whispering-vaults",
+      "how": "At the very bottom of the Whispering Vaults, where the Sacred Cylinder rests; play the Needolin there. One of the three melodies that open The Cradle.",
+      "requires": [],
+      "step": 790,
+      "source": "https://www.gamespot.com/gallery/hollow-knight-silksong-threefold-melody-pharlooms-crown/2900-7022/"
+    },
+    {
+      "id": "mask-shard-whispering-vaults",
+      "name": "Mask Shard, Whispering Vaults",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "whispering-vaults",
+      "how": "In a side room in the east: break the wall and push the crates into a path. Needs Cling Grip.",
+      "requires": [],
+      "step": 800,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "claw-mirror",
+      "name": "Claw Mirror",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "whispering-vaults",
+      "area": "The Stage",
+      "how": "Beat Trobbio on The Stage; flip the lever before the arena for a shortcut to the Grand Bellway bench.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 810,
+      "source": "https://rogueranker.com/?p=10606"
+    },
+    {
+      "id": "shining-needle",
+      "name": "Shining Needle",
+      "kind": "collectible",
+      "type": "needle-upgrade",
+      "regionId": "bellhart",
+      "how": "Pinmaster Plinney's wish asks for Pale Oil. One lies in a hidden room of the Choral Chambers, reached through a crate puzzle in the Whispering Vaults; bring it to him.",
+      "requires": [
+        "sharpened-needle",
+        "cogwork-dancers"
+      ],
+      "step": 820,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
+    },
+    {
+      "id": "spool-fragment-whiteward",
+      "name": "Spool Fragment, Whiteward",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "whiteward",
+      "how": "At the bottom of the main lift shaft: call the lift up and drop down the shaft.",
+      "requires": [],
+      "step": 830,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "spool-fragment-sherma",
+      "name": "Spool Fragment, Sherma",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "whiteward",
+      "how": "Sherma's wish, Balm for the Wounded, appears on the Songclave board once you have visited Whiteward: follow his trail through Whiteward, break the wall to him and survive the enemy waves.",
+      "requires": [],
+      "step": 840,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-wish-quest-list-all-tasks-and-rewards"
+    },
+    {
+      "id": "injector-band",
+      "name": "Injector Band",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "whiteward",
+      "how": "On the east side of Whiteward.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 850,
+      "source": "https://gameranx.com/features/id/551986/article/hollow-knight-silksong-how-to-access-the-whiteward-white-key-location/"
+    },
+    {
+      "id": "clawline",
+      "name": "Clawline",
+      "kind": "collectible",
+      "type": "ancestral-art",
+      "regionId": "underworks",
+      "area": "The Cauldron",
+      "how": "Go through Whiteward and drop into the Underworks; light the fan, ride the updraft and bind the Weaver spire in The Cauldron. A grappling hook.",
+      "requires": [
+        "white-key"
+      ],
+      "step": 860,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/clawline"
+    },
+    {
+      "id": "spool-fragment-underworks-cauldron",
+      "name": "Spool Fragment, The Cauldron",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "underworks",
+      "area": "The Cauldron",
+      "how": "West of The Cauldron; climb with Cling Grip.",
+      "requires": [
+        "white-key"
+      ],
+      "step": 870,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "cogwork-wheel",
+      "name": "Cogwork Wheel",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "underworks",
+      "how": "Sold by the Twelfth Architect, right of the northeast bench, for 360 Rosaries and a Craftmetal.",
+      "price": 360,
+      "toolColor": "red",
+      "requires": [
+        "clawline"
+      ],
+      "step": 880,
+      "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-59-tool-locations"
+    },
+    {
+      "id": "scuttlebrace",
+      "name": "Scuttlebrace",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "underworks",
+      "how": "Sold by the Twelfth Architect for 140 Rosaries and a Craftmetal.",
+      "price": 140,
+      "toolColor": "yellow",
+      "requires": [
+        "clawline"
+      ],
+      "step": 890,
+      "source": "https://deltiasgaming.com/?p=349646"
+    },
+    {
+      "id": "sawtooth-circlet",
+      "name": "Sawtooth Circlet",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "underworks",
+      "how": "Sold by the Twelfth Architect for 230 Rosaries and a Craftmetal.",
+      "price": 230,
+      "toolColor": "blue",
+      "requires": [
+        "clawline"
+      ],
+      "step": 900,
+      "source": "https://www.destructoid.com/how-to-get-sawtooth-circlet-in-hollow-knight-silksong/"
+    },
+    {
+      "id": "crafting-kit-architect",
+      "name": "Crafting Kit, Twelfth Architect",
+      "kind": "collectible",
+      "type": "crafting-kit-upgrade",
+      "regionId": "underworks",
+      "how": "Sold by the Twelfth Architect for 450 Rosaries.",
+      "price": 450,
+      "requires": [
+        "clawline"
+      ],
+      "step": 910,
+      "source": "https://www.shacknews.com/article/146145/upgrade-tool-pouch-crafting-kit-silksong"
+    },
+    {
+      "id": "silk-heart-unravelled",
+      "name": "Silk Heart, The Unravelled",
+      "kind": "collectible",
+      "type": "silk-heart",
+      "regionId": "whiteward",
+      "how": "Pull the hanging ring high in east Whiteward with the Clawline to drop the Surgeon's Key. Use it on the lock in the operating theatre, drop into the pit, survive two waves and beat The Unravelled; climb the chamber for the Silk Heart.",
+      "requires": [
+        "clawline"
+      ],
+      "step": 920,
+      "source": "https://deltiasgaming.com/?p=346816"
+    },
+    {
+      "id": "conductors-melody",
+      "name": "Conductor's Melody",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "high-halls",
+      "area": "The Forum",
+      "how": "Win the enemy gauntlet in the Forum, then Conductor Ballador teaches the melody. One of the three melodies that open The Cradle.",
+      "requires": [],
+      "step": 930,
+      "source": "https://www.gamespot.com/gallery/hollow-knight-silksong-threefold-melody-pharlooms-crown/2900-7022/"
+    },
+    {
+      "id": "cogfly",
+      "name": "Cogfly",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "high-halls",
+      "how": "Down a hidden spike path in the High Halls, cleared with the Clawline; build it at the workbench there with a Craftmetal.",
+      "toolColor": "red",
+      "requires": [],
+      "step": 940,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
+    },
+    {
+      "id": "rosary-cannon",
+      "name": "Rosary Cannon",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "high-halls",
+      "how": "Open the Simple Key door west of the High Halls bench, cross the platforms, break the wall into the treasury and hit the ceiling to drop the cannon.",
+      "toolColor": "red",
+      "requires": [
+        "simple-key-jubilana"
+      ],
+      "step": 950,
+      "source": "https://nerdschalk.com/your-guide-to-rosary-cannon-in-silksong-location-map-how-to-unlock-and-use-tips-and-more/"
+    },
+    {
+      "id": "spool-fragment-deep-docks-southeast",
+      "name": "Spool Fragment, Deep Docks southeast",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "deep-docks",
+      "how": "Behind the southeast gate that the Clawline opens, past lava and spikes.",
+      "requires": [
+        "clawline"
+      ],
+      "step": 960,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "sharpdart",
+      "name": "Sharpdart",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "wormways",
+      "how": "In Weavenest Karn, in the west of the Wormways past the lower door: open the stone door with the Needolin, cross with the Clawline and bind the Weaver statue.",
+      "requires": [
+        "clawline",
+        "simple-key-sinners-road"
+      ],
+      "step": 970,
+      "source": "https://deltiasgaming.com/?p=344210"
+    },
+    {
+      "id": "cross-stitch",
+      "name": "Cross Stitch",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "bilewater",
+      "area": "Exhaust Organ",
+      "how": "Cross the Mist west of Bilewater (play the Needolin to follow the white moths) to the Exhaust Organ, and beat the Phantom.",
+      "requires": [
+        "needolin"
+      ],
+      "step": 980,
+      "source": "https://www.sportskeeda.com/esports/how-get-act-2-hollow-knight-silksong-both-paths-explained"
+    },
+    {
+      "id": "silkshot",
+      "name": "Silkshot",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "bilewater",
+      "area": "Weavenest Murglin",
+      "how": "Take the Ruined Tool from Weavenest Murglin, behind a Needolin door in the southeast of Bilewater. Repair it once, with a Craftmetal: Forge Daughter, Twelfth Architect or the table near Mount Fay's top. Each gives a different Silkshot; the others are then gone.",
+      "toolColor": "red",
+      "requires": [
+        "needolin"
+      ],
+      "step": 990,
+      "source": "https://www.gamerguides.com/hollow-knight-silksong/guide/items/exploration/ruined-tool"
+    },
+    {
+      "id": "quick-sling",
+      "name": "Quick Sling",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "bilewater",
+      "how": "In a secret room above the Mothleaf Lagnia area, behind breakable ceilings.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 1000,
+      "source": "https://backyarddrunkard.com/games/silksong-quick-sling/"
+    },
+    {
+      "id": "faydown-cloak",
+      "name": "Faydown Cloak",
+      "kind": "collectible",
+      "type": "ability",
+      "regionId": "mount-fay",
+      "how": "Climb Mount Fay with the Clawline before the cold wins, and call at the peak. Gives a double jump and resistance to the cold.",
+      "counts": false,
+      "requires": [],
+      "step": 1010,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-how-to-get-double-jump-faydown-cloak-location"
+    },
+    {
+      "id": "mask-shard-mount-fay",
+      "name": "Mask Shard, Mount Fay",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "mount-fay",
+      "how": "Floating near the western bench; reach it with the double jump.",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1020,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "memory-crystal",
+      "name": "Memory Crystal",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "mount-fay",
+      "how": "Behind a wall of ice in a room near the western bench.",
+      "requires": [],
+      "step": 1030,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "mask-shard-skull-cavern",
+      "name": "Mask Shard, Skull Cavern",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "far-fields",
+      "how": "In the Skull Cavern at the bottom right of Far Fields: survive the enemy waves while the lava rises, then ride the wind to the top niche.",
+      "requires": [
+        "clawline",
+        "faydown-cloak"
+      ],
+      "step": 1040,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "mask-shard-blasted-steps",
+      "name": "Mask Shard, Blasted Steps",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "blasted-steps",
+      "how": "A secret jump near the west edge of the Blasted Steps; needs the double jump.",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1050,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "spool-fragment-grindle",
+      "name": "Spool Fragment, Grindle",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "blasted-steps",
+      "how": "Sold by Grindle in his hideout high in the Blasted Steps, reached with the double jump, for 680 Rosaries.",
+      "price": 680,
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1060,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "snitch-pick",
+      "name": "Snitch Pick",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "blasted-steps",
+      "how": "Sold by Grindle for 740 Rosaries.",
+      "price": 740,
+      "toolColor": "blue",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1070,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
+    },
+    {
+      "id": "thiefs-mark",
+      "name": "Thief's Mark",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "blasted-steps",
+      "how": "Sold by Grindle for 350 Rosaries.",
+      "price": 350,
+      "toolColor": "yellow",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1080,
+      "source": "https://www.neoseeker.com/hollow-knight-silksong/Yellow_Tools"
+    },
+    {
+      "id": "crafting-kit-grindle",
+      "name": "Crafting Kit, Grindle",
+      "kind": "collectible",
+      "type": "crafting-kit-upgrade",
+      "regionId": "blasted-steps",
+      "how": "Sold by Grindle for 700 Rosaries.",
+      "price": 700,
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1090,
+      "source": "https://www.shacknews.com/article/146145/upgrade-tool-pouch-crafting-kit-silksong"
+    },
+    {
+      "id": "snare-setter",
+      "name": "Snare Setter",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "weavenest-atla",
+      "how": "In a secret room of Weavenest Atla: double jump into a hidden gap in the ceiling, climb, and take it from the table at the top of the big room.",
+      "toolColor": "red",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1100,
+      "source": "https://deltiasgaming.com/?p=352779"
+    },
+    {
+      "id": "architects-melody",
+      "name": "Architect's Melody",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "cogwork-core",
+      "how": "At the top of the Cogwork Core: turn the four great pillars to the right symbols. One of the three melodies that open The Cradle.",
+      "requires": [
+        "cogwork-dancers",
+        "clawline",
+        "faydown-cloak"
+      ],
+      "step": 1110,
+      "source": "https://www.gamespot.com/gallery/hollow-knight-silksong-threefold-melody-pharlooms-crown/2900-7022/"
+    },
+    {
+      "id": "spool-fragment-high-halls",
+      "name": "Spool Fragment, High Halls",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "high-halls",
+      "how": "High above the Forum: climb the first tower's platforming with the Clawline rings and the double jump.",
+      "requires": [
+        "faydown-cloak"
+      ],
+      "step": 1120,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "spool-fragment-memorium",
+      "name": "Spool Fragment, Memorium",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "memorium",
+      "how": "A thorny climb in the widest shaft on the west side of the Memorium.",
+      "requires": [],
+      "step": 1130,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "voltvessels",
+      "name": "Voltvessels",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "memorium",
+      "how": "Through the vents to the room at the top of the Memorium; clear it and open the locked container.",
+      "toolColor": "red",
+      "requires": [],
+      "step": 1140,
+      "source": "https://deltiasgaming.com/?p=346335"
+    },
+    {
+      "id": "spool-fragment-jubilana",
+      "name": "Spool Fragment, Jubilana",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "After Balm for the Wounded, Jubilana's second wish, The Lost Merchant: defend her in the Memorium. Back in the Songclave she sells this for 500 Rosaries.",
+      "price": 500,
+      "requires": [
+        "spool-fragment-sherma",
+        "faydown-cloak"
+      ],
+      "step": 1150,
+      "source": "https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-2"
+    },
+    {
+      "id": "key-of-apostate",
+      "name": "Key of Apostate",
+      "kind": "task",
+      "type": "key",
+      "regionId": "putrified-ducts",
+      "how": "Break the cage at the far end of a tunnel in the south of the Ducts. Reach it from the Memorium's hidden roof opening, or from Bilehaven after Groal the Great. Opens the last locks in The Slab.",
+      "requires": [],
+      "step": 1160,
+      "source": "https://allthings.how/silksong-apostate-key-how-to-find-and-use-it/"
+    },
+    {
+      "id": "wreath-of-purity",
+      "name": "Wreath of Purity",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "putrified-ducts",
+      "how": "On a large floating platform at the end of a hidden room near the Huntress's bench, past a breakable wall.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 1170,
+      "source": "https://deltiasgaming.com/?p=346369"
+    },
+    {
+      "id": "rune-rage",
+      "name": "Rune Rage",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "the-slab",
+      "how": "Find the First Sinner's spire through a hidden ceiling path right of the bench near the Bellway, open her locks and beat her.",
+      "requires": [
+        "key-of-apostate"
+      ],
+      "step": 1180,
+      "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-6-silk-skills-and-how-to-unlock-them"
+    },
+    {
+      "id": "mask-shard-the-slab",
+      "name": "Mask Shard, The Slab",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "the-slab",
+      "how": "A platforming room in the northeast, behind an Apostate door; the Clawline moves the saws.",
+      "requires": [
+        "key-of-apostate",
+        "clawline"
+      ],
+      "step": 1190,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "spool-fragment-the-slab",
+      "name": "Spool Fragment, The Slab",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "the-slab",
+      "how": "At the lookout towards Mount Fay; needs the Key of Apostate and Cling Grip.",
+      "requires": [
+        "key-of-apostate"
+      ],
+      "step": 1200,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "mask-shard-wisp-thicket",
+      "name": "Mask Shard, Wisp Thicket",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "wisp-thicket",
+      "how": "A platforming challenge near the east edge of Wisp Thicket.",
+      "requires": [],
+      "step": 1210,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "wispfire-lantern",
+      "name": "Wispfire Lantern",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "wisp-thicket",
+      "how": "Beat the Father of the Flame at the west end of Wisp Thicket; hit the braziers, not his body.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 1220,
+      "source": "https://deltiasgaming.com/?p=345658"
+    },
+    {
+      "id": "mask-shard-bilewater",
+      "name": "Mask Shard, Bilewater",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "bilewater",
+      "how": "At the end of a long poison-water passage where fish leap out at you.",
+      "requires": [
+        "clawline",
+        "faydown-cloak"
+      ],
+      "step": 1230,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "conchcutter",
+      "name": "Conchcutter",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sands-of-karak",
+      "area": "Coral Tower",
+      "how": "Beat the Raging Conchfly at the shrine up the Coral Tower; the tool is in the tower.",
+      "toolColor": "red",
+      "requires": [],
+      "step": 1240,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
+    },
+    {
+      "id": "volt-filament",
+      "name": "Volt Filament",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sands-of-karak",
+      "area": "Voltnest",
+      "how": "Climb to the bridge at the top of the Sands, take the hidden path in the top right into the Voltnest, and beat the Voltvyrm.",
+      "toolColor": "blue",
+      "requires": [],
+      "step": 1250,
+      "source": "https://deltiasgaming.com/?p=341943"
+    },
+    {
+      "id": "hivesteel-needle",
+      "name": "Hivesteel Needle",
+      "kind": "collectible",
+      "type": "needle-upgrade",
+      "regionId": "bellhart",
+      "how": "Loyal Mergwin in the Choral Chambers trades a Pale Oil for five dishes (Great Taste of Pharloom; one needs My Missing Brother, one the Lugoli fight on Sinner's Road, one the Sands of Karak). Bring it and 450 Rosaries to Plinney.",
+      "price": 450,
+      "requires": [
+        "shining-needle",
+        "faydown-cloak",
+        "my-missing-courier"
+      ],
+      "step": 1260,
+      "source": "https://primagames.com/tips/hollow-knight-silksong-how-to-complete-the-great-taste-of-pharloom"
+    },
+    {
+      "id": "longclaw",
+      "name": "Longclaw",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "putrified-ducts",
+      "how": "The Huntress's wish, Broodfeast: bring organs from foes killed with Flintslate, Longpin and a shredding Tool such as the Cogwork Wheel or Conchcutter. In Act 3 the same wish comes from Runt.",
+      "toolColor": "blue",
+      "requires": [
+        "flintslate",
+        "longpin",
+        "cogwork-wheel"
+      ],
+      "step": 1270,
+      "source": "https://allthings.how/silksongs-huntress-how-to-start-and-finish-the-broodfeast-quest/"
+    },
+    {
+      "id": "witch-crest",
+      "name": "Witch Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "bellhart",
+      "how": "Find the Twisted Bud in Bilewater through the hidden east end of the Whispering Vaults; give it to Greyroot (Rite of Rebirth), which curses you. Yarnaby in Bellhart lifts it for Steel Spines bought on Sinner's Road.",
+      "requires": [
+        "pollip-pouch",
+        "clawline",
+        "cogwork-dancers"
+      ],
+      "missable": true,
+      "missableNote": "Finishing the Witch Crest quest (the Twisted Bud and the curse lifted) locks out the Twisted Child ending, according to one group of sources. The Crest itself is not lost.",
+      "step": 1280,
+      "source": "https://deltiasgaming.com/?p=339934"
+    },
+    {
+      "id": "spool-fragment-fleas",
+      "name": "Spool Fragment, Flea Caravan",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "blasted-steps",
+      "how": "Mooshka's reward once enough lost fleas are rescued for the caravan to move to the Blasted Steps.",
+      "requires": [
+        "last-judge"
+      ],
+      "step": 1290,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "tool-pouch-fleatopia",
+      "name": "Tool Pouch upgrade, Fleatopia",
+      "kind": "collectible",
+      "type": "tool-pouch-upgrade",
+      "regionId": "putrified-ducts",
+      "area": "Fleatopia",
+      "how": "Mooshka's reward when enough fleas are rescued for the caravan to settle in Fleatopia.",
+      "requires": [],
+      "step": 1300,
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549961"
+    },
+    {
+      "id": "reserve-bind",
+      "name": "Reserve Bind",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "high-halls",
+      "how": "The Second Sentinel's wish, Final Audience: rebuild the Cogheart, meet the Sentinel twice, learn the Conductor's Melody and finish two Songclave wishes (Building Up Songclave among them), then win the duel in the High Halls.",
+      "toolColor": "blue",
+      "requires": [
+        "conductors-melody"
+      ],
+      "step": 1310,
+      "source": "https://deltiasgaming.com/?p=349653"
+    },
+    {
+      "id": "architect-crest",
+      "name": "Architect Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "underworks",
+      "how": "Own 25 Tools, then buy the Architect's Key from the Twelfth Architect for 110 Rosaries. Open the chapel above him and bind the crest. The door shuts for good once you leave.",
+      "price": 110,
+      "requires": [
+        "clawline"
+      ],
+      "step": 1320,
+      "source": "https://deltiasgaming.com/?p=339597"
+    },
+    {
+      "id": "lace-cradle",
+      "name": "Lace, The Cradle",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-cradle",
+      "how": "Play the Threefold Melody in the Cogwork Dancers' room and ride the lift up; Lace waits in the arena at the top. Beating her opens the rest of The Cradle.",
+      "requires": [],
+      "step": 1330,
+      "source": "https://www.gamespot.com/gallery/hollow-knight-silksong-threefold-melody-pharlooms-crown/2900-7022/"
+    },
+    {
+      "id": "silk-heart-lace",
+      "name": "Silk Heart, Lace",
+      "kind": "collectible",
+      "type": "silk-heart",
+      "regionId": "the-cradle",
+      "how": "Given for winning the rematch with Lace.",
+      "requires": [
+        "lace-cradle"
+      ],
+      "step": 1340,
+      "source": "https://allthings.how/silk-hearts-in-silksong-how-they-work-and-every-known-location/"
+    },
+    {
+      "id": "throwing-ring",
+      "name": "Throwing Ring",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "bilewater",
+      "how": "Buy every one of Shakra's maps (the last ones are in Mount Fay, the Sands of Karak and The Cradle); her wish, Trail's End, then appears in Bellhart. Follow her trail of rings to Bilewater.",
+      "toolColor": "red",
+      "requires": [
+        "faydown-cloak",
+        "lace-cradle"
+      ],
+      "step": 1350,
+      "source": "https://deltiasgaming.com/?p=345659"
     }
   ]
 }

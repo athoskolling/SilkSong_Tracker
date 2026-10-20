@@ -1,5 +1,5 @@
 {
-  "dataVersion": 7,
+  "dataVersion": 8,
   "regions": [
     {
       "id": "moss-grotto",
@@ -105,6 +105,144 @@
       "summary": "A Weaver nest behind a door in Moss Grotto that opens to the Needolin.",
       "requires": [
         "needolin"
+      ]
+    },
+    {
+      "id": "grand-gate",
+      "name": "Grand Gate",
+      "order": 13,
+      "summary": "The great gate at the top of the Blasted Steps and the hall of scales behind it, the way into the Citadel.",
+      "requires": [
+        "last-judge"
+      ]
+    },
+    {
+      "id": "underworks",
+      "name": "Underworks",
+      "order": 14,
+      "summary": "The Citadel's furnace works below the Grand Gate, with The Cauldron at its east end.",
+      "requires": [
+        "last-judge"
+      ]
+    },
+    {
+      "id": "choral-chambers",
+      "name": "Choral Chambers",
+      "order": 15,
+      "summary": "The Citadel's main halls, with the Songclave, the First Shrine and the Grand Bellway.",
+      "requires": [
+        "last-judge"
+      ]
+    },
+    {
+      "id": "cogwork-core",
+      "name": "Cogwork Core",
+      "order": 16,
+      "summary": "A clockwork tower above the Choral Chambers, guarded by the Cogwork Dancers.",
+      "requires": [
+        "last-judge"
+      ]
+    },
+    {
+      "id": "whispering-vaults",
+      "name": "Whispering Vaults",
+      "order": 17,
+      "summary": "Archives on the east side of the Citadel, entered from the Cogwork Core, with Trobbio's stage.",
+      "requires": [
+        "cogwork-dancers"
+      ]
+    },
+    {
+      "id": "whiteward",
+      "name": "Whiteward",
+      "order": 18,
+      "summary": "The Citadel's hospital, reached by a lift in the southwest of the Choral Chambers.",
+      "requires": [
+        "white-key"
+      ]
+    },
+    {
+      "id": "high-halls",
+      "name": "High Halls",
+      "order": 19,
+      "summary": "Upper halls above the top left of the Choral Chambers, home of the Conductor and the Forum.",
+      "requires": [
+        "clawline"
+      ]
+    },
+    {
+      "id": "the-slab",
+      "name": "The Slab",
+      "order": 20,
+      "summary": "A prison across a long bridge from the southwest of the Choral Chambers.",
+      "requires": [
+        "last-judge"
+      ]
+    },
+    {
+      "id": "mount-fay",
+      "name": "Mount Fay",
+      "order": 21,
+      "summary": "A freezing mountain past The Slab. The Faydown Cloak waits at the top.",
+      "requires": [
+        "clawline"
+      ]
+    },
+    {
+      "id": "memorium",
+      "name": "Memorium",
+      "order": 22,
+      "summary": "A hall reached from the top right of the Choral Chambers with a double jump.",
+      "requires": [
+        "faydown-cloak"
+      ]
+    },
+    {
+      "id": "putrified-ducts",
+      "name": "Putrified Ducts",
+      "order": 23,
+      "summary": "Foul ducts behind the Memorium, with Fleatopia and the Huntress.",
+      "requires": [
+        "faydown-cloak"
+      ]
+    },
+    {
+      "id": "wisp-thicket",
+      "name": "Wisp Thicket",
+      "order": 24,
+      "summary": "A burning thicket above Greymoor, where the Father of the Flame waits.",
+      "requires": [
+        "faydown-cloak"
+      ]
+    },
+    {
+      "id": "bilewater",
+      "name": "Bilewater",
+      "order": 25,
+      "summary": "Toxic marshes past Sinner's Road, with the Exhaust Organ at the west end.",
+      "requires": [
+        "cling-grip"
+      ]
+    },
+    {
+      "id": "sands-of-karak",
+      "name": "Sands of Karak",
+      "order": 26,
+      "summary": "Long sandy ledges, the Coral Tower and the Voltnest, reached with the Clawline and a double jump.",
+      "requires": [
+        "faydown-cloak",
+        "clawline"
+      ]
+    },
+    {
+      "id": "the-cradle",
+      "name": "The Cradle",
+      "order": 27,
+      "summary": "Above the Citadel, reached by a lift once the Threefold Melody is played. Lace waits at the top.",
+      "requires": [
+        "vaultkeepers-melody",
+        "architects-melody",
+        "conductors-melody"
       ]
     }
   ]
