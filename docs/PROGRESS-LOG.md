@@ -108,6 +108,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Phase 3, batch 1 started with Moss Grotto** (Athos). First step is his: confirm or strike each line of `docs/research/2026-10-20-moss-grotto-candidates.md` and answer its three questions (Weavenest Atla, Bonegrave, late items), then write the confirmed entries in `docs/PHASE-3-BATCH-1.md`. No agent spawned yet; Dev A starts when Athos says Moss Grotto is ready. Asked again: are `firestore.rules` published?
 
+- **Athos widened the batch: "do everything of the first act if possible, do whatever you want, we can fix later."** Read as: the orchestrator researches Act 1 facts itself (guides, one page at a time; never hollowknight.wiki or Fextralife), writes them in our words, and Dev A turns them into data. Guardrail kept: Act 1 data is merged locally but **not pushed** until Athos approves the id list (ids are permanent once published, ADR 0003).
+- **Act 1 research** (orchestrator): `docs/PHASE-3-ACT-1.md`: 12 Regions, 61 entries (49 Collectibles, 12 Tasks) in Route order, and a deferred list (anything needing Clawline, Faydown Cloak, Silk Soar, the Citadel or Act 3). Decisions recorded there: Drifter's Cloak is a Task (it does not count); Needle Strike counts, type `ability`; wishes fold into their reward; conservative Region gates. Contract: rule 12 gains `ability`, `source` may point at the guide page read (section 7). GLOSSARY: Needle Strike named. `.claude/rules/data.md` points at the sheet.
+- **T26 started** (`dev-a/act-1-data`): Act 1 into `data/*.json`. **T27 started** (`qa-tests/ability-type`): rule 12 accepts `ability`.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
