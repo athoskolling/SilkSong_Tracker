@@ -1,6 +1,9 @@
 // Tests for js/requirements.js, written against docs/CONTRACTS.md section 2.
 // Fixtures are small invented objects built inside each test (ids like a, b, r1), so a reader
-// can see the whole situation next to the assertion. One extra test loads data/sample/.
+// can see the whole situation next to the assertion. The last tests load data/sample/ (invented
+// data, never the real data/), and pin the Region counts there.
+// The Phase 5 cases (counts, price, isCounted, rosariesToSpend; ADR 0005) sit before them:
+// counts: false and price change what is counted and summed, never what blocks.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -9,6 +12,8 @@ import {
   isAvailable,
   missingFor,
   regionProgress,
+  isCounted,
+  rosariesToSpend,
   isRegionAvailable,
   missingForRegion,
   nextStep,
@@ -141,6 +146,12 @@ test('missingFor: an unknown entry id throws, and so does an unknown id inside r
   assert.throws(() => missingFor('a', done(), [item('a', 1, ['ghost'])], regions), /ghost/);
 });
 
+// Contract section 2: a typo throws whatever the player marked, so the same unknown id in doneSet
+// does not hide it.
+test('missingFor: an unknown id inside requires throws even when that id is in doneSet', () => {
+  assert.throws(() => missingFor('a', done('ghost'), [item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+});
+
 test('missingFor: does not change what it was given', () => {
   const items = [item('a', 1), item('b', 2, ['a'])];
   const set = done();
@@ -219,6 +230,15 @@ test('missingForRegion: a cycle throws, and so does an unknown Region', () => {
   const regions = [region('r1', 1, ['b'])];
   assert.throws(() => missingForRegion('r1', done(), regions, items), /Cycle/);
   assert.throws(() => missingForRegion('nope', done(), regions, items), /nope/);
+});
+
+// isRegionAvailable has no items, so only missingForRegion and holdingYouUp can catch a misspelt
+// entry id inside a Region's requires (contract section 2, T14 note).
+test('missingForRegion and holdingYouUp: an unknown entry id inside a Region requires throws', () => {
+  const items = [item('a', 1)];
+  const regions = [region('r1', 1, ['ghost'])];
+  assert.throws(() => missingForRegion('r1', done(), regions, items), /ghost/);
+  assert.throws(() => holdingYouUp(done(), items, regions), /ghost/);
 });
 
 test('missingForRegion: a diamond lists the shared requirement once, in step order', () => {
@@ -351,12 +371,216 @@ test('nextStep and holdingYouUp do not change what they were given', () => {
   assert.deepEqual(items, itemsBefore);
 });
 
+// ------------------------------------------------------------------ Phase 5: counts and prices (ADR 0005)
+//
+// `counts: false` marks a Collectible the game does not count (a Memento, a piece of Equipment). It
+// changes the counts and nothing else: the entry still blocks, still sits in chains and can still be
+// the next step or a blocker. `price` (Rosaries, for a shop entry) is read only by rosariesToSpend.
+
+// ------------------------------------------------------------------ isCounted
+
+test('isCounted: true for a Collectible with no counts field, and for counts: true', () => {
+  assert.equal(isCounted(item('a', 1)), true);
+  assert.equal(isCounted(item('a', 1, [], { counts: true })), true);
+});
+
+test('isCounted: false for a Collectible with counts: false', () => {
+  assert.equal(isCounted(item('memento', 1, [], { counts: false })), false);
+});
+
+test('isCounted: false for every Task, even one with counts: true', () => {
+  assert.equal(isCounted(item('t', 1, [], { kind: 'task' })), false);
+  assert.equal(isCounted(item('t', 1, [], { kind: 'task', counts: true })), false);
+  assert.equal(isCounted(item('t', 1, [], { kind: 'task', counts: false })), false);
+});
+
+test('isCounted: looks only at the entry it is given, so unknown ids inside it cannot throw', () => {
+  assert.equal(isCounted(item('a', 1, ['ghost'], { regionId: 'nowhere' })), true);
+});
+
+// ------------------------------------------------------------------ regionProgress with counts
+
+test('regionProgress: leaves out counts: false, keeps counts: true and no counts field', () => {
+  const items = [
+    item('plain', 1),
+    item('marked', 2, [], { counts: true }),
+    item('memento', 3, [], { counts: false }),
+  ];
+  assert.deepEqual(regionProgress('r1', done(), items), { done: 0, total: 2 });
+  // A done Memento is still left out of the numbers.
+  assert.deepEqual(regionProgress('r1', done('memento'), items), { done: 0, total: 2 });
+  assert.deepEqual(regionProgress('r1', done('plain', 'marked', 'memento'), items), { done: 2, total: 2 });
+});
+
+test('regionProgress: a Region with only counts: false entries is 0 of 0', () => {
+  const items = [item('memento', 1, [], { counts: false }), item('map', 2, [], { counts: false })];
+  assert.deepEqual(regionProgress('r1', done('memento', 'map'), items), { done: 0, total: 0 });
+});
+
+test('regionProgress: a Task with counts: true still does not count', () => {
+  const items = [item('t', 1, [], { kind: 'task', counts: true }), item('a', 2)];
+  assert.deepEqual(regionProgress('r1', done('t'), items), { done: 0, total: 1 });
+});
+
+// ------------------------------------------------------------------ counts: false in the requirement functions
+
+test('missingFor: an entry with counts: false still blocks, so it is listed', () => {
+  const items = [item('memento', 1, [], { counts: false }), item('door', 2, ['memento'])];
+  const regions = [region('r1', 1)];
+  assert.deepEqual(missingFor('door', done(), items, regions), ['memento']);
+  assert.deepEqual(missingFor('door', done('memento'), items, regions), []);
+});
+
+test('missingFor: walks through a counts: false entry to what is behind it', () => {
+  const items = [
+    item('key', 1),
+    item('memento', 2, ['key'], { counts: false }),
+    item('door', 3, ['memento']),
+  ];
+  assert.deepEqual(missingFor('door', done(), items, [region('r1', 1)]), ['key', 'memento']);
+});
+
+test('missingForRegion: a Region that needs a counts: false entry lists it', () => {
+  const items = [item('memento', 1, [], { counts: false, regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['memento'])];
+  assert.deepEqual(missingForRegion('r1', done(), regions, items), ['memento']);
+});
+
+test('nextStep: can return an entry with counts: false, then moves past it once it is done', () => {
+  const items = [item('memento', 1, [], { counts: false }), item('x', 2)];
+  const regions = [region('r1', 1)];
+  assert.equal(nextStep(done(), items, regions), 'memento');
+  assert.equal(nextStep(done('memento'), items, regions), 'x');
+});
+
+test('holdingYouUp: a counts: false entry can hold up an entry and a Region', () => {
+  const items = [item('memento', 1, [], { counts: false }), item('door', 2, ['memento'])];
+  const regions = [region('r1', 1), region('r2', 2, ['memento'])];
+  assert.deepEqual(holdingYouUp(done(), items, regions), [{ id: 'memento', blocks: ['door', 'r2'] }]);
+});
+
+// The same entries with and without the Phase 5 fields must give the same answers: the fields
+// change counts and prices, never the chains.
+test('counts and price change no answer about requirements', () => {
+  const plain = [
+    item('a', 1),
+    item('b', 2, ['a']),
+    item('c', 3, ['b'], { regionId: 'r2' }),
+    item('d', 4, ['a']),
+  ];
+  const regions = [region('r1', 1), region('r2', 2, ['d'])];
+  const tagged = plain.map((entry) => {
+    if (entry.id === 'a') return { ...entry, counts: false, price: 80 };
+    if (entry.id === 'b') return { ...entry, counts: false };
+    if (entry.id === 'c') return { ...entry, price: 120 };
+    return entry;
+  });
+  // Makes sure the fixture is not trivial: c waits on b, b waits on a, and r2 waits on d.
+  assert.deepEqual(missingFor('c', done(), tagged, regions), ['a', 'b', 'd']);
+
+  for (const set of [done(), done('a'), done('a', 'b'), done('d')]) {
+    assert.equal(nextStep(set, tagged, regions), nextStep(set, plain, regions));
+    assert.deepEqual(holdingYouUp(set, tagged, regions), holdingYouUp(set, plain, regions));
+    assert.deepEqual(missingForRegion('r2', set, regions, tagged), missingForRegion('r2', set, regions, plain));
+    for (const id of ['a', 'b', 'c', 'd']) {
+      assert.equal(isAvailable(id, set, tagged, regions), isAvailable(id, set, plain, regions));
+      assert.deepEqual(missingFor(id, set, tagged, regions), missingFor(id, set, plain, regions));
+    }
+  }
+});
+
+// ------------------------------------------------------------------ rosariesToSpend
+
+test('rosariesToSpend: sums the priced entries not done, counted or not, and skips unpriced ones', () => {
+  const items = [
+    item('shop-a', 1, [], { price: 80 }),
+    item('shop-b', 2, [], { price: 120 }), // bought below
+    item('plain', 3), // no price: ignored
+    item('shop-c', 4, [], { price: 40, counts: false }),
+  ];
+  assert.deepEqual(rosariesToSpend(done('shop-b'), items, [region('r1', 1)]), {
+    total: 120,
+    available: 120,
+    ids: ['shop-a', 'shop-c'],
+  });
+});
+
+test('rosariesToSpend: a Task with a price is summed too (every entry with a price, as the contract says)', () => {
+  const items = [item('task-shop', 1, [], { kind: 'task', price: 15 })];
+  assert.deepEqual(rosariesToSpend(done(), items, [region('r1', 1)]), {
+    total: 15,
+    available: 15,
+    ids: ['task-shop'],
+  });
+});
+
+test('rosariesToSpend: available leaves out entries that are not Available; a Locked Region counts in total only', () => {
+  const items = [
+    item('key', 1, [], { regionId: 'r0' }),
+    item('open-shop', 2, [], { regionId: 'r0', price: 50 }),
+    item('locked-shop', 3, [], { regionId: 'r1', price: 200 }),
+    item('needs-key-shop', 4, ['key'], { regionId: 'r0', price: 30 }),
+  ];
+  const regions = [region('r0', 1), region('r1', 2, ['key'])];
+  assert.deepEqual(rosariesToSpend(done(), items, regions), {
+    total: 280,
+    available: 50,
+    ids: ['open-shop', 'locked-shop', 'needs-key-shop'],
+  });
+  // Once the key is done, the Locked Region and the entry that needed the key both open.
+  assert.deepEqual(rosariesToSpend(done('key'), items, regions), {
+    total: 280,
+    available: 280,
+    ids: ['open-shop', 'locked-shop', 'needs-key-shop'],
+  });
+});
+
+test('rosariesToSpend: ids come out in step order, not in the order of the items', () => {
+  const items = [
+    item('late', 9, [], { price: 10 }),
+    item('early', 1, [], { price: 20 }),
+    item('middle', 5, [], { price: 30 }),
+  ];
+  assert.deepEqual(rosariesToSpend(done(), items, [region('r1', 1)]), {
+    total: 60,
+    available: 60,
+    ids: ['early', 'middle', 'late'],
+  });
+});
+
+test('rosariesToSpend: a priced entry that is done is left out, even when its requirement is not done', () => {
+  // The player marked the shop out of order. It is bought, so nothing is left to spend on it.
+  const items = [item('key', 1), item('shop', 2, ['key'], { price: 60 })];
+  assert.deepEqual(rosariesToSpend(done('shop'), items, [region('r1', 1)]), { total: 0, available: 0, ids: [] });
+});
+
+test('rosariesToSpend: zeros and an empty list when nothing is priced or nothing is left to buy', () => {
+  const regions = [region('r1', 1)];
+  const empty = { total: 0, available: 0, ids: [] };
+  assert.deepEqual(rosariesToSpend(done(), [item('a', 1), item('b', 2)], regions), empty);
+  assert.deepEqual(rosariesToSpend(done(), [], regions), empty);
+  assert.deepEqual(rosariesToSpend(done('shop'), [item('shop', 1, [], { price: 80 })], regions), empty);
+});
+
+test('rosariesToSpend: an unknown id in requires throws, done or not, and so does one in the Region requires', () => {
+  const regions = [region('r1', 1)];
+  const shopNeedsGhost = [item('shop', 1, ['ghost'], { price: 80 })];
+  assert.throws(() => rosariesToSpend(done(), shopNeedsGhost, regions), /ghost/);
+  assert.throws(() => rosariesToSpend(done('ghost'), shopNeedsGhost, regions), /ghost/);
+  const shopInGhostRegion = [item('shop', 1, [], { price: 80 })];
+  assert.throws(() => rosariesToSpend(done(), shopInGhostRegion, [region('r1', 1, ['ghost'])]), /ghost/);
+});
+
 // ------------------------------------------------------------------ the sample data
 
+// Reads one file of data/sample (invented data). Never the real data/.
+function readSample(name) {
+  return JSON.parse(readFileSync(new URL(`../data/sample/${name}.json`, import.meta.url), 'utf8'));
+}
+
 test('data/sample: the real file shapes work with every function', () => {
-  const read = (name) => JSON.parse(readFileSync(new URL(`../data/sample/${name}.json`, import.meta.url), 'utf8'));
-  const items = read('items').items;
-  const regions = read('regions').regions;
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
 
   assert.equal(nextStep(done(), items, regions), 'sample-ability');
   assert.deepEqual(missingFor('sample-shard', done(), items, regions), [
@@ -371,4 +595,35 @@ test('data/sample: the real file shapes work with every function', () => {
   assert.deepEqual(missingForRegion('sample-region-c', done(), regions, items), ['sample-ability', 'sample-boss']);
   assert.deepEqual(regionProgress('sample-region-a', done('sample-ability', 'sample-door'), items), { done: 1, total: 3 });
   assert.equal(holdingYouUp(done(), items, regions)[0].id, 'sample-ability');
+});
+
+// Pinned on purpose: if data/sample changes, these numbers must change with it, on purpose, so a
+// later edit cannot move them silently. The Tasks in each Region are left out (they never count).
+test('data/sample: regionProgress numbers for every Region are pinned', () => {
+  const items = readSample('items').items;
+  const regions = readSample('regions').regions;
+  const totals = {
+    'sample-region-a': 3, // ability, key, shard (the door is a Task)
+    'sample-region-b': 1, // needle upgrade (the boss is a Task)
+    'sample-region-c': 0, // no entries yet
+    'sample-region-e': 3, // crest, silk heart, second tool (the lever and the delivery are Tasks)
+    'sample-region-d': 2, // silk skill, second shard
+  };
+  assert.deepEqual(regions.map((r) => r.id).sort(), Object.keys(totals).sort());
+
+  for (const [id, total] of Object.entries(totals)) {
+    assert.deepEqual(regionProgress(id, done(), items), { done: 0, total }, `${id}, nothing done`);
+  }
+
+  const everything = done(...items.map((entry) => entry.id));
+  for (const [id, total] of Object.entries(totals)) {
+    assert.deepEqual(regionProgress(id, everything, items), { done: total, total }, `${id}, all done`);
+  }
+
+  const some = done('sample-ability', 'sample-door', 'sample-charm', 'sample-crest');
+  assert.deepEqual(regionProgress('sample-region-a', some, items), { done: 1, total: 3 });
+  assert.deepEqual(regionProgress('sample-region-b', some, items), { done: 1, total: 1 });
+  assert.deepEqual(regionProgress('sample-region-c', some, items), { done: 0, total: 0 });
+  assert.deepEqual(regionProgress('sample-region-e', some, items), { done: 1, total: 3 });
+  assert.deepEqual(regionProgress('sample-region-d', some, items), { done: 0, total: 2 });
 });
