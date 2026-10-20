@@ -17,10 +17,13 @@
 //   7  every entry has a name, how and a web link as source
 //   8  a Region's heroImage has a credit, a relative .jpg or .png path, and the file exists
 //   9  locksOut names existing Ending ids, and an Ending never locks itself out
-//  10  warning: how over 300 characters (pasted wiki text)
+//  10  warning: how over 300 characters, effect over 200 characters (pasted wiki text)
 //  11  the field shapes of section 1, including counts, price and toolColor. Printed as
 //      "rule shape", the label this check has always had
 //  12  warning: a Collectible's type is on the approved list, checked against counts
+//  13  the Build fields (Phase 5, second round): errors for the shape and links of slots, slotsMax,
+//      grantsSlots, upgradeOf (including loops through it) and effect; warnings for an upgrade that
+//      counts, a toolColor on a non-Tool, and an upgrade whose colour differs from its base's
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
 // the tests run.
@@ -44,6 +47,7 @@ const ITEM_KINDS = ['collectible', 'task'];
 const SPOILER_LEVELS = [0, 1, 2];
 const HERO_EXTENSIONS = ['.jpg', '.png'];
 const LONG_HOW = 300;
+const LONG_EFFECT = 200;
 
 // Rule 12: the Collectible types that count toward 100 percent (docs/CONTRACTS.md section 6). Task
 // types are not on this list and stay free. `ability` (added 2026-10-20) is for a counted ability
@@ -71,6 +75,9 @@ const TRACKED_TYPES = ['memento', 'relic', 'map'];
 
 // The colours of Tools (contract section 1, toolColor). The colour decides which Crest slots a Tool fits.
 const TOOL_COLORS = ['red', 'blue', 'yellow'];
+
+// The four colours of a Crest's slots and of grantsSlots (rule 13). White slots take Silk Skills.
+const SLOT_COLORS = ['red', 'blue', 'yellow', 'white'];
 
 const KIND_NAME = { region: 'Region', entry: 'entry', ending: 'Ending' };
 const KIND_ID = { region: 'a Region id', entry: 'an entry id', ending: 'an Ending id' };
@@ -356,12 +363,17 @@ function checkEntries(ctx, collection) {
     if (item.unlocks !== undefined) checkIdList(ctx, 3, ref, item, 'unlocks', 'entry');
     checkMissable(ctx, ref, item);
     checkTrackingFields(ctx, ref, item);
+    checkBuildFields(ctx, ref, item);
     checkUniqueInteger(ctx, 5, ref, item.step, 'step', 'all entries', steps);
     if (item.spoiler !== undefined && !SPOILER_LEVELS.includes(item.spoiler)) {
       ctx.report.error('shape', ref, `"spoiler" must be 0, 1 or 2 when it is given, found ${describe(item.spoiler)}.`);
     }
     if (typeof item.how === 'string' && item.how.length > LONG_HOW) {
       ctx.report.warning(10, ref, `"how" is ${item.how.length} characters (over ${LONG_HOW}). Long text is often pasted wiki text: write it in our own words.`);
+    }
+    // effect is the short "what it does" line (rule 13 checks that it is text); the same length warning as how.
+    if (typeof item.effect === 'string' && item.effect.length > LONG_EFFECT) {
+      ctx.report.warning(10, ref, `"effect" is ${item.effect.length} characters (over ${LONG_EFFECT}). Keep it short, in our own words: "how" says where to get it, "effect" says what it does.`);
     }
     if (item.kind === 'collectible') checkCollectibleType(ctx, ref, item.type, item.counts !== false);
   });
@@ -459,6 +471,177 @@ function checkTrackingFields(ctx, ref, item) {
   }
 }
 
+// ------------------------------------------------------------------ rule 13: Build fields
+
+// The Build fields (contract section 1, Phase 5 second round). Each is checked only when it is given,
+// so existing entries, which have none of them, pass unchanged. Errors are about shape and links;
+// warnings say what a valid value would do to the headline count or to the Build picker.
+function checkBuildFields(ctx, ref, item) {
+  checkCrestSlots(ctx, ref, item);
+  checkGrantsSlots(ctx, ref, item);
+  optionalText(ctx, 13, ref, item, 'effect');
+  const base = checkUpgradeOf(ctx, ref, item);
+  warnBuildFields(ctx, ref, item, base);
+}
+
+// slots and slotsMax are a Crest's own slots, so they are only for a Crest. slotsMax is the same Crest
+// once every Memory Locket that fits it is spent, so it comes with slots and is never below them.
+function checkCrestSlots(ctx, ref, item) {
+  const slots = readSlotCounts(ctx, ref, item, 'slots');
+  if (item.slotsMax === undefined) return;
+  const slotsMax = readSlotCounts(ctx, ref, item, 'slotsMax');
+  if (item.slots === undefined) {
+    ctx.report.error(13, ref, '"slotsMax" is given without "slots". It only makes sense next to the slots the Crest starts with.');
+  }
+  if (slots !== null && slotsMax !== null) checkSlotsMaxNotBelowSlots(ctx, ref, slots, slotsMax);
+}
+
+// Reports a slots or slotsMax field that is on an entry that is not a Crest, or whose shape is wrong.
+// Returns the object when it is right, so the caller can compare two right objects; otherwise null.
+function readSlotCounts(ctx, ref, item, field) {
+  const value = item[field];
+  if (value === undefined) return null;
+  if (item.type !== 'crest') {
+    ctx.report.error(13, ref, `"${field}" is only for a Crest (type "crest"), found type ${describe(item.type)}.`);
+  }
+  const problem = slotCountProblem(field, value, { allColors: true });
+  if (problem !== null) {
+    ctx.report.error(13, ref, problem);
+    return null;
+  }
+  return value;
+}
+
+// slotsMax is what the Crest can reach, so no colour may be lower than the matching slots value.
+function checkSlotsMaxNotBelowSlots(ctx, ref, slots, slotsMax) {
+  for (const colour of SLOT_COLORS) {
+    if (slotsMax[colour] < slots[colour]) {
+      ctx.report.error(13, ref, `"slotsMax.${colour}" is ${slotsMax[colour]}, less than "slots.${colour}" (${slots[colour]}). slotsMax cannot be below slots.`);
+    }
+  }
+}
+
+// grantsSlots are slots that every Crest gains once this entry is done. They are never on a Crest,
+// because a Crest's own slots are its slots field.
+function checkGrantsSlots(ctx, ref, item) {
+  if (item.grantsSlots === undefined) return;
+  const problem = slotCountProblem('grantsSlots', item.grantsSlots, { allColors: false });
+  if (problem !== null) ctx.report.error(13, ref, problem);
+  if (item.type === 'crest') {
+    ctx.report.error(13, ref, '"grantsSlots" is on a Crest. It gives slots to every Crest once this entry is done, so it belongs on the entry that grants them.');
+  }
+}
+
+// What is wrong with a slot-count object, or null when it is right. slots and slotsMax (allColors) need
+// all four colours, 0 or more each. grantsSlots needs one or more colours, 1 or more each.
+function slotCountProblem(field, value, { allColors }) {
+  const minimum = allColors ? 0 : 1;
+  const form = allColors
+    ? 'an object with the keys red, blue, yellow and white, each a whole number 0 or more'
+    : 'an object with one or more of the keys red, blue, yellow and white, each a whole number 1 or more';
+  if (!isObject(value)) return `"${field}" must be ${form}, found ${describe(value)}.`;
+  const keys = Object.keys(value);
+  const unknown = keys.find((key) => !SLOT_COLORS.includes(key));
+  if (unknown !== undefined) return `"${field}" has the key "${unknown}", which is not a colour. The colours are red, blue, yellow and white.`;
+  if (allColors) {
+    const missing = SLOT_COLORS.find((colour) => !keys.includes(colour));
+    if (missing !== undefined) return `"${field}" has no "${missing}" key. It needs all four colours (use 0 for none).`;
+  } else if (keys.length === 0) {
+    return `"${field}" must be ${form}, found {}.`;
+  }
+  const bad = keys.find((key) => !(Number.isInteger(value[key]) && value[key] >= minimum));
+  if (bad !== undefined) return `"${field}.${bad}" must be a whole number, ${minimum} or more, found ${describe(value[bad])}.`;
+  return null;
+}
+
+// upgradeOf is the entry this one upgrades (an upgraded Tool, an evolved Crest). It must name another
+// entry in items.json. Returns that entry's record when the link is usable, so the colour warning can
+// read it; otherwise null. A loop through upgradeOf is checkUpgradeLoops.
+function checkUpgradeOf(ctx, ref, item) {
+  if (item.upgradeOf === undefined) return null;
+  const id = item.upgradeOf;
+  if (typeof id !== 'string') {
+    ctx.report.error(13, ref, '"upgradeOf" must be the id of another entry in items.json.');
+    return null;
+  }
+  if (id === item.id) {
+    ctx.report.error(13, ref, '"upgradeOf" is this entry\'s own id. An upgrade must name the entry it upgrades.');
+    return null;
+  }
+  const owner = ctx.owners.get(id);
+  if (!owner) {
+    ctx.report.error(13, ref, `"upgradeOf" lists "${id}", which does not exist in items.json.`);
+    return null;
+  }
+  if (owner.kind !== 'entry') {
+    ctx.report.error(13, ref, `"upgradeOf" lists "${id}", which is ${KIND_ID[owner.kind]}. "upgradeOf" needs an entry id from items.json.`);
+    return null;
+  }
+  return owner.record;
+}
+
+// Warnings (rule 13). They do not fail the check, because each can be right on purpose.
+function warnBuildFields(ctx, ref, item, base) {
+  if (item.upgradeOf !== undefined && isCountedEntry(item)) {
+    ctx.report.warning(13, ref, '"upgradeOf" is set on a counted Collectible. The game counts a Tool once whatever its version, so an upgrade should say "counts": false, or the headline number counts the same thing twice.');
+  }
+  if (item.toolColor !== undefined && item.type !== 'tool') {
+    ctx.report.warning(13, ref, `"toolColor" is set on an entry of type ${describe(item.type)}. Only a Tool has a colour, and the colour decides which Crest slots it fits.`);
+  }
+  // Both colours must be valid before they are compared: a bad value is rule 11's report, not this one.
+  if (base !== null && TOOL_COLORS.includes(item.toolColor) && TOOL_COLORS.includes(base.toolColor) && item.toolColor !== base.toolColor) {
+    ctx.report.warning(13, ref, `"toolColor" "${item.toolColor}" differs from the colour of its base "${base.id}", which is "${base.toolColor}". Check both: the colour decides which Crest slots the Tool fits.`);
+  }
+}
+
+// Same test as isCounted in js/requirements.js (contract section 1, ADR 0005). The validator keeps its
+// own copy so it never loads the browser code.
+function isCountedEntry(item) {
+  return item.kind === 'collectible' && item.counts !== false;
+}
+
+// Rule 13: an upgrade must not lead back into itself. Each entry has at most one upgradeOf, so the
+// links form chains, and a link back into a chain still being followed is a loop. A self link and a
+// link to something that is not an entry are reported by checkUpgradeOf, so they are not walked here.
+function checkUpgradeLoops(ctx, collection) {
+  const next = upgradeLinks(ctx, collection);
+  const state = new Map(); // id -> 'inside' while its chain is being walked, 'done' once it is
+  for (const start of next.keys()) {
+    const chain = [];
+    let id = start;
+    while (next.has(id) && !state.has(id)) {
+      state.set(id, 'inside');
+      chain.push(id);
+      id = next.get(id);
+    }
+    if (state.get(id) === 'inside') reportUpgradeLoop(ctx, collection.file, chain, id);
+    for (const visited of chain) state.set(visited, 'done');
+  }
+}
+
+// id -> the id it upgrades, for each entry whose upgradeOf is a usable link (another entry in items.json).
+function upgradeLinks(ctx, collection) {
+  const links = new Map();
+  forEachRecord(collection, (item) => {
+    if (!isObject(item) || typeof item.id !== 'string') return;
+    if (ctx.owners.get(item.id).record !== item) return;
+    const target = item.upgradeOf;
+    if (typeof target === 'string' && target !== item.id && ctx.owners.get(target)?.kind === 'entry') {
+      links.set(item.id, target);
+    }
+  });
+  return links;
+}
+
+function reportUpgradeLoop(ctx, file, chain, id) {
+  const loop = [...chain.slice(chain.indexOf(id)), id];
+  ctx.report.error(
+    13,
+    { file, id, position: null },
+    `"upgradeOf" loops back on itself: ${loop.join(' -> ')}. An upgrade cannot be its own base, directly or through other upgrades.`
+  );
+}
+
 // ------------------------------------------------------------------ Endings
 
 function checkEndings(ctx, collection) {
@@ -543,6 +726,7 @@ export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   checkEntries(ctx, byKey.items);
   checkEndings(ctx, byKey.endings);
   reportLoops(ctx, requirementGraph(ctx, byKey.items), byKey.items.file);
+  checkUpgradeLoops(ctx, byKey.items);
   return { errors: report.errors, warnings: report.warnings };
 }
 
