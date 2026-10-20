@@ -1,5 +1,5 @@
 {
-  "dataVersion": 8,
+  "dataVersion": 9,
   "regions": [
     {
       "id": "moss-grotto",
@@ -243,6 +243,15 @@
         "vaultkeepers-melody",
         "architects-melody",
         "conductors-melody"
+      ]
+    },
+    {
+      "id": "the-abyss",
+      "name": "The Abyss",
+      "order": 28,
+      "summary": "The void-soaked depth below Pharloom, reached in Act 3 by the old diving bell at the bottom of the Deep Docks. Weavenest Absolom lies inside.",
+      "requires": [
+        "diving-bell-key"
       ]
     }
   ]
