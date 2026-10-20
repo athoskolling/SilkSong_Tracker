@@ -24,7 +24,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Backup:** export and import progress as JSON.
 - **Site language:** English only (names, text and interface). No translation layer.
 - **Two kinds of entry:** Collectible (counts toward progress) and Task (tracked, but does not count). The "X of Y" counters use Collectibles only. See `GLOSSARY.md`.
-- **Endings:** four (the four main endings; Athos, 2026-10-20, replacing the earlier "five"). The model supports them in V1, but **their data ships with the late-game batch, not in V1** (Athos, 2026-10-20): an Ending's conditions must be existing entries, and those entries are late-game. When they ship, each has with conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
+- **Endings:** four (the four main endings; Athos, 2026-10-20, replacing the earlier "five"). The model supports them in V1, but **their data ships with the late-game batch, not in V1** (Athos, 2026-10-20): an Ending's conditions must be existing entries, and those entries are late-game. When they ship, each has conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
 - **Our own counts:** per-category counters ("Tools: 12 of 51"), never claiming to reproduce the game's completion percentage.
 - **One Run per account** in V1. "New run" offers an export before clearing.
 - **First sign-in:** union of local and cloud Progress; after that, the latest write wins.
@@ -198,7 +198,7 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 
 ## 11. Open points
 
-- Confirm on the wiki the first three Regions of batch 1 and the exact scope of each.
+- Act 1 content was researched by the orchestrator at Athos's request (`docs/PHASE-3-ACT-1.md`); Athos checks a sample against the main wiki and fixes what is wrong.
 - Strategy for updating the data when the game gets patches or DLC.
 - How to handle the global Route when one `step` depends on a player choice (Endings with `locksOut`). The Route screen has a "Choice point" marker for this; the data rule is still open.
 - Whether to keep game screenshots as hero images on the public site (see section 8 and `docs/IMAGES.md`).

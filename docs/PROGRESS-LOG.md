@@ -114,6 +114,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 ## Open
 
-- Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
-- Phase 2 questions from T4: fonts from Google versus self-hosted; where to show an entry's `source` link; footer credit wording; four decorative borders below 3:1 contrast.
-- Phase 2 (Dev B): on the Account page at 390 px the start thread runs over the intro's second line. Account page still lacks backup, new run, how saving works, guide data and its hero art. `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
+- Athos: are `firestore.rules` published to the Firebase project? (T8 merged; when last recorded the published rules still denied everything.) Then the two-device check on the real site, which closes Phase 1.
+- Athos: approve the Act 1 id list before the data is pushed (T26); check a sample of entries against the main wiki and swap `source` links as he goes.
+- Athos: the wiki's license name (checklist item 4) and hero images (item 9).
+- `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
+- Act 1 deferred entries (`docs/PHASE-3-ACT-1.md`, last section) wait for the batch that adds Clawline, Faydown Cloak, Silk Soar and the Citadel.

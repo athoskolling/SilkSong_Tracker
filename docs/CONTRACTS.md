@@ -300,8 +300,8 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text.
-12. A warning (not an error) when an entry with `kind: "collectible"` has a `type` outside the approved list, which follows what the game counts toward 100 percent (`GLOSSARY.md`, Athos, 2026-10-20): `mask-shard`, `spool-fragment`, `silk-heart`, `needle-upgrade`, `ancestral-art`, `silk-skill`, `ability`, `crest`, `tool`, `crafting-kit-upgrade`, `tool-pouch-upgrade`, `sylphsong`, `everbloom`. Why: one misspelt type would split the "Collectibles by type" counts without any error. Task types stay free. `ability` (added 2026-10-20, Act 1) is for a counted ability that is neither an Ancestral Art nor a Silk Skill, such as Needle Strike.
 11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids.
+12. A warning (not an error) when an entry with `kind: "collectible"` has a `type` outside the approved list, which follows what the game counts toward 100 percent (`GLOSSARY.md`, Athos, 2026-10-20): `mask-shard`, `spool-fragment`, `silk-heart`, `needle-upgrade`, `ancestral-art`, `silk-skill`, `ability`, `crest`, `tool`, `crafting-kit-upgrade`, `tool-pouch-upgrade`, `sylphsong`, `everbloom`. Why: one misspelt type would split the "Collectibles by type" counts without any error. Task types stay free. `ability` (added 2026-10-20, Act 1) is for a counted ability that is neither an Ancestral Art nor a Silk Skill, such as Needle Strike.
 
 ## 7. Changes after approval
 
