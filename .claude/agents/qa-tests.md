@@ -25,7 +25,7 @@ Read `CLAUDE.md` (already loaded), `GLOSSARY.md`, `docs/CONTRACTS.md` (every sig
 3. Tests for the pure part of `js/progress.js` (`mergeLocalAndCloud`, the import union rule) once Dev A has delivered them.
 4. Validator tests: copy `data/sample` to a temp folder, break it on purpose (cycle, missing id, duplicate step, missing credit, `missable` with no note) and assert each rule fires.
 
-Run everything with `node --test tests/`. No test framework, no network, no real data files in tests.
+Run everything with `node --test "tests/*.test.js"`. No test framework, no network, no real data files in tests.
 
 ## Finishing
 

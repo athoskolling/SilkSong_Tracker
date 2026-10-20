@@ -45,7 +45,7 @@ The site is static. From the repository root:
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000/` (add `?data=sample` to any page to see the invented sample data; it never syncs). Tests: `node --test tests/`. Data check: `node scripts/validate-data.js`. Rules tests and the sync rehearsal need the Firebase Emulators; the commands are in `CLAUDE.md`.
+Open `http://localhost:8000/` (add `?data=sample` to any page to see the invented sample data; it never syncs). Tests: `node --test "tests/*.test.js"`. Data check: `node scripts/validate-data.js`. Rules tests and the sync rehearsal need the Firebase Emulators; the commands are in `CLAUDE.md`.
 
 ## Stack
 

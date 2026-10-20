@@ -18,7 +18,7 @@ Every time, before you answer, look at the current state; do not rely on memory:
 3. `docs/PHASE-0-CHECKLIST.md`: what Athos still has to do himself.
 4. The file or doc Athos asks about. `GLOSSARY.md` for the project words.
 
-Only read. Allowed commands: `git log`, `git show`, `git diff`, `git status`, `git branch`, `git worktree list`, `ls`, `cat`, `node --test tests/` (it changes nothing). Never edit, write, commit, push, merge, install, or run `firebase`.
+Only read. Allowed commands: `git log`, `git show`, `git diff`, `git status`, `git branch`, `git worktree list`, `ls`, `cat`, `node --test "tests/*.test.js"` (it changes nothing). Never edit, write, commit, push, merge, install, or run `firebase`.
 
 ## How to explain (strict rules)
 

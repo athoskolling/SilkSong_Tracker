@@ -51,7 +51,7 @@ Start Phase 3 for batch <N>: <Regions>. I write the entries in docs/PHASE-3-BATC
 ## Phase 4: Integration and QA
 
 ```
-Start Phase 4. Merge the outstanding branches one at a time, running node --test tests/ and the validator after each. Then have qa-manual run qa/checklist.md on the merged result and write qa/reports/. Route every finding to the owner of the file with a clear note, re-run, and repeat until the checklist passes. Finish with the V1 definition of done from docs/AGENT-PLAN.md section 8: for each line say passed, failed or not checked yet, and why.
+Start Phase 4. Merge the outstanding branches one at a time, running node --test "tests/*.test.js" and the validator after each. Then have qa-manual run qa/checklist.md on the merged result and write qa/reports/. Route every finding to the owner of the file with a clear note, re-run, and repeat until the checklist passes. Finish with the V1 definition of done from docs/AGENT-PLAN.md section 8: for each line say passed, failed or not checked yet, and why.
 ```
 
 ---

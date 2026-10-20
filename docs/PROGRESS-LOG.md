@@ -113,10 +113,16 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **T26 started** (`dev-a/act-1-data`): Act 1 into `data/*.json`. **T27 started** (`qa-tests/ability-type`): rule 12 accepts `ability`.
 - **T27 merged** (`qa-tests/ability-type`): rule 12 accepts `ability`; 3 new tests (219 pass); validator passes on both folders with 0 warnings. QA 1 noted the plural "abilities" gets no near-miss suggestion (still warns); left for later.
 
+- **New session (orchestrator).** **T26 is lost:** no `dev-a/act-1-data` branch or worktree exists, so its work never reached the repository; it has to be handed out again. **This session has no `Agent` tool**, so the orchestrator cannot spawn `dev-a` or the QA agents; nothing was delegated. The T26 brief is now written in `docs/PHASE-3-ACT-1.md` (last section) so the next session can hand it out at once.
+- **Test command changed** to `node --test "tests/*.test.js"` (CLAUDE.md, README, PHASE-PROMPTS, `.claude/agents/qa-tests.md`, `tutor.md`, `.claude/rules/tests.md`). Why: on Node 22 (this machine) `node --test tests/` fails with "Cannot find module", because Node 21 and later read the arguments as file patterns and no longer expand a folder; the pattern form works on Node 21 and later (Node 20 is past end of life). 219 tests pass with it. Still saying the old form: a comment in `tests/firestore-rules.test.js` (QA 1) and line N-9 of `qa/checklist.md` (QA 2); for their next tasks.
+- **Act 1 sheet checked** (orchestrator, on a throwaway copy outside the repository): the validator passes with 0 warnings and a player following "Next on the route" reaches all 61 entries in order, each Available when reached. Web searches agree with four lines (Sharpened Needle, Drifter's Cloak, Bell Beast's Silk Heart, Flea Brew); the Silk Heart's `how` was corrected (it sits after a short challenge); the flea quest's Spool Fragment and Tool Pouch upgrade were added to the deferred list. Details in `docs/PHASE-3-ACT-1.md`.
+
 ## Open
 
 - Athos: are `firestore.rules` published to the Firebase project? (T8 merged; when last recorded the published rules still denied everything.) Then the two-device check on the real site, which closes Phase 1.
+- T26 (Act 1 into `data/`) must be handed to `dev-a` again by a session that has the `Agent` tool; brief in `docs/PHASE-3-ACT-1.md`.
 - Athos: approve the Act 1 id list before the data is pushed (T26); check a sample of entries against the main wiki and swap `source` links as he goes.
+- QA 1 and QA 2: old test command in `tests/firestore-rules.test.js` (comment) and `qa/checklist.md` N-9.
 - Athos: the wiki's license name (checklist item 4) and hero images (item 9).
 - `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
 - Act 1 deferred entries (`docs/PHASE-3-ACT-1.md`, last section) wait for the batch that adds Clawline, Faydown Cloak, Silk Soar and the Citadel.
