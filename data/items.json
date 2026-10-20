@@ -1,6 +1,18 @@
 {
-  "dataVersion": 4,
+  "dataVersion": 5,
   "items": [
+    {
+      "id": "hunter-crest",
+      "name": "Hunter Crest",
+      "kind": "collectible",
+      "counts": false,
+      "type": "crest",
+      "regionId": "moss-grotto",
+      "how": "The starting Crest; you have it from the beginning. Tick it to use it in the Build picker.",
+      "requires": [],
+      "step": 5,
+      "source": "https://www.keengamer.com/articles/guides/hollow-knight-silksong-all-crest-locations"
+    },
     {
       "id": "moss-mother",
       "name": "Moss Mother",
@@ -253,7 +265,8 @@
     {
       "id": "drifters-cloak",
       "name": "Drifter's Cloak",
-      "kind": "task",
+      "kind": "collectible",
+      "counts": false,
       "type": "ability",
       "regionId": "far-fields",
       "how": "The Seamstress's wish, Flexile Spines: collect Spine Cores from Hokers and bring them to her. The cloak lets you glide on air currents.",
