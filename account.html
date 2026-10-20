@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="css/account.css">
   <!-- main.js builds the page shell and the sign-in plate; account-page.js adds Backup file,
        Start a new run, How saving works and Guide data to it (docs/CONTRACTS.md section 5). -->
+  <!-- Safety net if a module script fails to load (js/boot-guard.js). -->
+  <script defer src="js/boot-guard.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/account-page.js"></script>
 </head>

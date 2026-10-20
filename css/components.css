@@ -841,6 +841,12 @@ a.region-card:hover .card-name { color: var(--silk); }
 
 /* ------------------------------------------------------------------- footer */
 
+/* While <main> has nothing in it (the page script is still loading, or failed: js/boot-guard.js), the footer
+   would rise to the top and sit over the logo, because the header is absolutely positioned. Give an empty
+   <main> some height so the footer stays at the bottom. "Empty" ignores <noscript>. A page with content is
+   not matched, so nothing else moves; a browser without :has() just keeps the old behaviour. */
+main:not(:has(> :not(noscript))) { min-height: 70vh; }
+
 .site-footer { padding-bottom: 56px; font-size: 13px; line-height: 1.6; color: var(--ash); }
 .site-footer p { max-width: 60ch; }
 .site-footer p + p { margin-top: 8px; }
