@@ -26,8 +26,9 @@ service cloud.firestore {
     // - There is no size cap on the maps and nested values are not checked, as done
     //   and visited are not: the 1 MiB document limit already bounds them, and any
     //   number would be a guess at the game's entry count.
-    // - shellShards is NOT accepted yet: Athos has not confirmed that reading
-    //   (ADR 0006, provisional). Until then a document carrying it is refused.
+    // - shellShards is refused on purpose: that field was dropped from Progress
+    //   (ADR 0007; Shell Shards are worked out from entries, like the Rosaries),
+    //   so a document carrying it is refused like any other unknown key.
     function isProgressShape(data) {
       return data.keys().hasOnly(['done', 'visited', 'updatedAt', 'dataVersion', 'crestSlots', 'builds'])
         && data.keys().hasAll(['done', 'visited', 'updatedAt', 'dataVersion'])

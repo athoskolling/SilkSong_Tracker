@@ -13,8 +13,11 @@
 // empty": a copy without the field was written by a page that does not know it, so the field is
 // never added by an ordinary change and is taken from the other copy when two copies are merged.
 //
-// Adding another player choice (the provisional shellShards is the first candidate) is one entry
-// in CHOICE_FIELDS (clean, empty, union), one setter and, in importProgress, one branch.
+// The provisional shellShards field was dropped (ADR 0007): Shell Shards will be worked out from
+// entries, like the Rosaries, so Progress never holds that number.
+//
+// Adding another player choice is one entry in CHOICE_FIELDS (clean, empty, union), one setter and,
+// in importProgress, one branch.
 
 import {
   onAuthChange,
@@ -790,9 +793,8 @@ export async function importProgress(file) {
   const addedBuilds = importBuilds(progress, backup.builds);
 
   if (addedDone || addedVisited || addedSlots || addedBuilds) commit(progress);
-  // tookShellShards is part of the contracted result but shellShards is not built yet (Athos has not
-  // confirmed it), so it is always false. When the field is added, importShellShards sets it.
-  return { addedDone, addedVisited, addedSlots, addedBuilds, tookShellShards: false };
+  // No shellShards: that field is dropped (ADR 0007), so the result has no tookShellShards either.
+  return { addedDone, addedVisited, addedSlots, addedBuilds };
 }
 
 // An import never replaces: opened slots take the larger number per Crest and colour. Returns the
