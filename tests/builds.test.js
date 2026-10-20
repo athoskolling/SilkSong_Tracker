@@ -7,11 +7,12 @@
 // (transitive upgrade chains, toolColor only on Tools, Silk Skills fit white only, the order of
 // problems for one id, lenient inputs). Each says so in a comment, so Athos can see which
 // behaviour is a choice and which is the contract.
+// The third-round cases (fitTemplate, synergiesIn, synergyPartners; ADR 0007) are at the end of the file.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 
-import { slotsFor, ownedByColour, checkBuild } from '../js/builds.js';
+import { slotsFor, ownedByColour, checkBuild, fitTemplate, synergiesIn, synergyPartners } from '../js/builds.js';
 
 const BUILDS_URL = new URL('../js/builds.js', import.meta.url).href;
 
@@ -458,4 +459,270 @@ test('checkBuild: an upgradeOf cycle returns, and the Build is still checked', (
     items,
   });
   assert.deepEqual(result, [{ id: 'red-1', problem: 'not-owned' }]);
+});
+
+// ------------------------------------------------------------------ Phase 5, third round: templates (fitTemplate, ADR 0007)
+//
+// A Template is a Build an editor or a guide recommends for one Crest (data/builds.json). fitTemplate says how
+// it stands for this player now: which of its ids are missing, which of the rest have no room, and the template
+// with the missing ids dropped (usable), which is what "Use as my Build" copies into the draft.
+// The fixtures are ITEMS (crest-a: 2 red, 1 blue and 1 white slots, room for 3, 2 and 2) plus the few extra
+// entries a test needs. Every template is invented.
+
+const template = (build, crestId = 'crest-a', extra = {}) => ({
+  id: 'tpl-test',
+  crestId,
+  name: 'Test template',
+  goal: 'Invented goal.',
+  build,
+  editorial: true,
+  source: 'https://example.invalid/template',
+  ...extra,
+});
+const noLists = () => ({ red: [], blue: [], yellow: [], white: [] });
+
+test('fitTemplate: everything owned and with room gives nothing missing, and usable equals the template', () => {
+  const build = { red: ['red-1', 'red-2'], blue: ['blue-1'], white: ['skill-1'] };
+  const result = fitTemplate(template(build), done('red-1', 'red-2', 'blue-1', 'skill-1'), ITEMS, undefined);
+  assert.deepEqual(result, {
+    missing: [],
+    noRoom: [],
+    usable: { red: ['red-1', 'red-2'], blue: ['blue-1'], yellow: [], white: ['skill-1'] },
+  });
+});
+
+test('fitTemplate: an id the player does not own is in missing and not in usable', () => {
+  const result = fitTemplate(template({ red: ['red-1', 'red-2'] }), done('red-1'), ITEMS);
+  assert.deepEqual(result, { missing: ['red-2'], noRoom: [], usable: { ...noLists(), red: ['red-1'] } });
+});
+
+test('fitTemplate: owning only an upgrade of a template id counts as owning that id', () => {
+  const items = [...ITEMS, tool('red-1-plus', 7, 'red', { upgradeOf: 'red-1' })];
+  assert.deepEqual(fitTemplate(template({ red: ['red-1'] }), done('red-1-plus'), items), {
+    missing: [],
+    noRoom: [],
+    usable: { ...noLists(), red: ['red-1'] },
+  });
+});
+
+test('fitTemplate: an id that is not in items is in missing, even when it is in doneSet, and does not throw', () => {
+  // Ids in doneSet that are not in items are never owned (ownedByColour), so the retired id is missing.
+  const result = fitTemplate(template({ red: ['gone', 'red-1'] }), done('red-1', 'gone'), ITEMS);
+  assert.deepEqual(result, { missing: ['gone'], noRoom: [], usable: { ...noLists(), red: ['red-1'] } });
+});
+
+test('fitTemplate: missing follows red, blue, yellow, white, then the position inside each colour', () => {
+  // The template lists white first; the answer still follows the colour order, and inside a colour the template order.
+  const items = [...ITEMS, tool('yellow-1', 8, 'yellow')];
+  const build = { white: ['skill-1', 'gone'], yellow: ['yellow-1'], blue: ['blue-1'], red: ['red-2', 'red-1'] };
+  assert.deepEqual(fitTemplate(template(build), none, items).missing, [
+    'red-2',
+    'red-1',
+    'blue-1',
+    'yellow-1',
+    'skill-1',
+    'gone',
+  ]);
+});
+
+test('fitTemplate: dropping a missing id moves the next one up a position before room is checked', () => {
+  // crest-tiny has one red slot. red-1 is second in the template, but once the missing id is dropped it is first.
+  // Checking room on the whole template would wrongly report red-1 as no-room.
+  const items = [...ITEMS, crest('crest-tiny', 9, { slots: slots(1, 0, 0, 0) })];
+  const result = fitTemplate(template({ red: ['gone', 'red-1'] }, 'crest-tiny'), done('red-1'), items);
+  assert.deepEqual(result, { missing: ['gone'], noRoom: [], usable: { ...noLists(), red: ['red-1'] } });
+});
+
+test('fitTemplate: more ids than slots puts the extra one in noRoom, and it stays in usable', () => {
+  const result = fitTemplate(template({ red: ['red-1', 'red-2', 'red-3'] }), done('red-1', 'red-2', 'red-3'), ITEMS);
+  assert.deepEqual(result, {
+    missing: [],
+    noRoom: ['red-3'],
+    usable: { ...noLists(), red: ['red-1', 'red-2', 'red-3'] },
+  });
+});
+
+test('fitTemplate: slots opened with Memory Lockets or granted by a done entry make room; a grant not done does not', () => {
+  const build = { red: ['red-1', 'red-2', 'red-3'] };
+  const doneSet = done('red-1', 'red-2', 'red-3');
+  assert.deepEqual(fitTemplate(template(build), doneSet, ITEMS).noRoom, ['red-3']);
+  assert.deepEqual(fitTemplate(template(build), doneSet, ITEMS, { 'crest-a': { red: 1 } }).noRoom, []);
+  const granted = [...ITEMS, grant('vesti-step', 10, { red: 1 })];
+  assert.deepEqual(fitTemplate(template(build), done('red-1', 'red-2', 'red-3', 'vesti-step'), granted).noRoom, []);
+  assert.deepEqual(fitTemplate(template(build), doneSet, granted).noRoom, ['red-3']);
+});
+
+test('fitTemplate: a Crest without slots never reports noRoom, but still reports what is missing', () => {
+  const items = [...ITEMS, crest('crest-bare', 9)];
+  const result = fitTemplate(
+    template({ red: ['red-1', 'red-2', 'red-3', 'gone'] }, 'crest-bare'),
+    done('red-1', 'red-2', 'red-3'),
+    items,
+  );
+  assert.deepEqual(result, {
+    missing: ['gone'],
+    noRoom: [],
+    usable: { ...noLists(), red: ['red-1', 'red-2', 'red-3'] },
+  });
+});
+
+test('fitTemplate: an unknown crestId throws, and so does an id that is not a Crest', () => {
+  assert.throws(() => fitTemplate(template({ red: ['red-1'] }, 'nope'), none, ITEMS), /nope/);
+  assert.throws(() => fitTemplate(template({ red: ['red-1'] }, 'red-1'), none, ITEMS), /red-1/);
+});
+
+test('fitTemplate: does not change the template, the doneSet or the crestSlots it was given', () => {
+  const t = template({ red: ['red-1', 'gone', 'red-2'] });
+  const set = done('red-1');
+  const opened = { 'crest-a': { red: 1 } };
+  const before = structuredClone([t, [...set], opened]);
+  fitTemplate(t, set, ITEMS, opened);
+  assert.deepEqual([t, [...set], opened], before);
+});
+
+// Decision recorded by Dev A: fitTemplate uses ownedIds, the same ownership as ownedByColour, not the placement
+// lists. So a Tool with no toolColor that the player has marked done is owned and is not "missing". The
+// consequence is flagged in the handoff: such a template reads ready, although checkBuild calls that Tool
+// wrong-colour, and fitTemplate does not report wrong-colour.
+test('fitTemplate: a done Tool without toolColor is owned, so it is not missing', () => {
+  const items = [...ITEMS, entry('plain-tool', 9, { type: 'tool' })];
+  assert.deepEqual(fitTemplate(template({ red: ['plain-tool'] }), done('plain-tool'), items), {
+    missing: [],
+    noRoom: [],
+    usable: { ...noLists(), red: ['plain-tool'] },
+  });
+  assert.deepEqual(fitTemplate(template({ red: ['plain-tool'] }), none, items).missing, ['plain-tool']);
+});
+
+test('fitTemplate: noRoom is checkBuild on usable, filtered to no-room', () => {
+  const t = template({ red: ['gone', 'red-1', 'red-2', 'red-3'], blue: ['blue-1'] });
+  const cases = [
+    [done('red-1', 'red-2', 'red-3', 'blue-1'), undefined, ['red-3']],
+    [done('red-1', 'red-2', 'red-3', 'blue-1'), { 'crest-a': { red: 1 } }, []],
+    [done('red-1', 'red-2', 'blue-1'), undefined, []],
+  ];
+  for (const [doneSet, opened, expectedNoRoom] of cases) {
+    const result = fitTemplate(t, doneSet, ITEMS, opened);
+    const viaCheckBuild = checkBuild('crest-a', result.usable, doneSet, ITEMS, opened)
+      .filter((problem) => problem.problem === 'no-room')
+      .map((problem) => problem.id);
+    assert.deepEqual(result.noRoom, expectedNoRoom);
+    assert.deepEqual(result.noRoom, viaCheckBuild);
+  }
+});
+
+// ------------------------------------------------------------------ Phase 5, third round: synergies (ADR 0007)
+//
+// A synergy is a pair of entries whose effects combine (data/builds.json). Both functions read only the ids in
+// a Build, whatever their colour. An undefined Build is an empty one. A colour that is not a list adds nothing,
+// because the Build comes from Progress and may be anything.
+
+const synergy = (id, a, b) => ({ id, a, b, effect: 'Invented effect.', source: 'https://example.invalid/synergy' });
+
+test('synergiesIn: finds a pair whose two Tools are in two different colours, whichever side the synergy names first', () => {
+  const build = { red: ['red-1'], blue: ['blue-1'] };
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  const flipped = synergy('s1-flipped', 'blue-1', 'red-1');
+  assert.deepEqual(synergiesIn(build, [s1]), [s1]);
+  assert.deepEqual(synergiesIn(build, [flipped]), [flipped]);
+});
+
+test('synergiesIn: a pair with only one side in the Build, or with neither, is not found', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  assert.deepEqual(synergiesIn({ red: ['red-1'] }, [s1]), []);
+  assert.deepEqual(synergiesIn({ blue: ['blue-1'] }, [s1]), []);
+  assert.deepEqual(synergiesIn({ red: ['red-2'], blue: ['blue-2'] }, [s1]), []);
+});
+
+test('synergiesIn: keeps the order of synergies, not the order of the Build or the ids', () => {
+  // The synergies array lists "zeta" first. The Build lists red-2 first (alpha's Tool), and "alpha" sorts
+  // before "zeta". The answer must still be the array order: zeta, then alpha.
+  const zeta = synergy('zeta', 'red-1', 'blue-1');
+  const alpha = synergy('alpha', 'red-2', 'blue-1');
+  assert.deepEqual(synergiesIn({ red: ['red-2', 'red-1'], blue: ['blue-1'] }, [zeta, alpha]), [zeta, alpha]);
+});
+
+test('synergiesIn: an undefined, empty or null Build gives []', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  assert.deepEqual(synergiesIn(undefined, [s1]), []);
+  assert.deepEqual(synergiesIn({}, [s1]), []);
+  assert.deepEqual(synergiesIn(null, [s1]), []);
+});
+
+test('synergiesIn: a colour that is not a list adds nothing', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  assert.deepEqual(synergiesIn({ red: 'red-1', blue: null, yellow: 3, white: {} }, [s1]), []);
+  // A string in one colour is not one id in the Build, even when the other side is a real list.
+  assert.deepEqual(synergiesIn({ red: 'red-1', blue: ['blue-1'] }, [s1]), []);
+});
+
+test('synergiesIn: a synergy whose two sides are one id is found when that id is in the Build', () => {
+  // The contract reads "a and b are both in the Build" literally. It also says a pair names two different
+  // entries, so no data has one; this pins what the function does with one anyway.
+  const self = synergy('self', 'red-1', 'red-1');
+  assert.deepEqual(synergiesIn({ red: ['red-1'] }, [self]), [self]);
+  assert.deepEqual(synergiesIn({ red: ['red-2'] }, [self]), []);
+});
+
+test('synergiesIn: ids that are not in the data never throw', () => {
+  const ghost = synergy('ghost', 'ghost-a', 'ghost-b');
+  assert.deepEqual(synergiesIn({ red: ['red-1'] }, [ghost]), []);
+  assert.deepEqual(synergiesIn({ red: ['ghost-a', 'ghost-b'] }, [ghost]), [ghost]);
+});
+
+test('synergyPartners: a pair with one side in the Build gives that side as inBuild and the other as other', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-2'); // red-1 is in the Build, named first
+  const s2 = synergy('s2', 'yellow-1', 'blue-1'); // blue-1 is in the Build, named second
+  assert.deepEqual(synergyPartners({ red: ['red-1'], blue: ['blue-1'] }, [s1, s2]), [
+    { synergy: s1, inBuild: 'red-1', other: 'blue-2' },
+    { synergy: s2, inBuild: 'blue-1', other: 'yellow-1' },
+  ]);
+});
+
+test('synergyPartners: leaves out a pair with both sides in the Build, and a pair with neither', () => {
+  const build = { red: ['red-1'], blue: ['blue-1'] };
+  const full = synergy('full', 'red-1', 'blue-1');
+  const neither = synergy('neither', 'red-2', 'blue-2');
+  const partial = synergy('partial', 'red-1', 'blue-2');
+  assert.deepEqual(synergyPartners(build, [full, neither]), []);
+  assert.deepEqual(
+    synergyPartners(build, [full, neither, partial]).map((result) => result.synergy.id),
+    ['partial'],
+  );
+});
+
+test('synergyPartners: keeps the order of synergies and returns the synergy object it was given', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-2');
+  const s2 = synergy('s2', 'red-1', 'yellow-2');
+  const result = synergyPartners({ red: ['red-1'] }, [s2, s1]);
+  assert.deepEqual(result.map((r) => r.synergy.id), ['s2', 's1']);
+  assert.equal(result[0].synergy, s2);
+});
+
+test('synergyPartners: an undefined, empty or null Build gives []', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  assert.deepEqual(synergyPartners(undefined, [s1]), []);
+  assert.deepEqual(synergyPartners({}, [s1]), []);
+  assert.deepEqual(synergyPartners(null, [s1]), []);
+});
+
+test('synergyPartners: a colour that is not a list adds nothing, and a string is not read as one id', () => {
+  const s1 = synergy('s1', 'red-1', 'blue-1');
+  assert.deepEqual(synergyPartners({ red: 'red-1', blue: null }, [s1]), []);
+  const s2 = synergy('s2', 'red-1', 'blue-2');
+  assert.deepEqual(synergyPartners({ red: 'red-1' }, [s2]), []);
+});
+
+test('synergyPartners: a synergy whose two sides are one id is never a partner, even when that id is in the Build', () => {
+  // Exactly one side can never be in the Build when both sides are the same id, so the pair is left out.
+  const self = synergy('self', 'red-1', 'red-1');
+  assert.deepEqual(synergyPartners({ red: ['red-1'] }, [self]), []);
+  assert.deepEqual(synergyPartners({ red: ['red-2'] }, [self]), []);
+});
+
+test('synergyPartners: ids that are not in the data never throw', () => {
+  const ghost = synergy('ghost', 'ghost-a', 'blue-2');
+  assert.deepEqual(synergyPartners({ red: ['ghost-a'] }, [ghost]), [
+    { synergy: ghost, inBuild: 'ghost-a', other: 'blue-2' },
+  ]);
 });

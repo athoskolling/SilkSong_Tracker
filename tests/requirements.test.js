@@ -6,6 +6,7 @@
 // then the Route rule (routeIds, contract section 2). counts: false and price change what is counted and
 // summed, never what blocks. An entry with counts: false is on the Route only when the Route or a Region
 // needs it, and an entry off the Route is never next and never held up.
+// The third-round Place cases (missingForPlace, ADR 0007) come after the Route cases, before the sample pins.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -18,6 +19,7 @@ import {
   rosariesToSpend,
   isRegionAvailable,
   missingForRegion,
+  missingForPlace,
   nextStep,
   holdingYouUp,
   routeIds,
@@ -738,6 +740,142 @@ test('rosariesToSpend: an unknown id in requires throws, done or not, and so doe
   assert.throws(() => rosariesToSpend(done('ghost'), shopNeedsGhost, regions), /ghost/);
   const shopInGhostRegion = [item('shop', 1, [], { price: 80 })];
   assert.throws(() => rosariesToSpend(done(), shopInGhostRegion, [region('r1', 1, ['ghost'])]), /ghost/);
+});
+
+// ------------------------------------------------------------------ Phase 5, third round: missingForPlace (ADR 0007)
+//
+// A Place (places.json) is not an entry: it is never done and has no step. missingForPlace takes the Place
+// object (not an id) and walks its own `requires` plus its Region's `requires`, the same way missingFor walks
+// an entry. The Place fixtures are invented objects with the fields the function reads.
+
+const place = (id, requires = [], regionId = 'r1') => ({
+  id,
+  kind: 'bench',
+  regionId,
+  how: 'Invented.',
+  requires,
+  source: 'https://example.invalid/place',
+});
+
+test('missingForPlace: empty requires in an Available Region gives []', () => {
+  const items = [item('a', 1)];
+  assert.deepEqual(missingForPlace(place('bench-open'), done(), items, [region('r1', 1)]), []);
+});
+
+test('missingForPlace: empty requires in a Locked Region lists the Region missing ids, in step order', () => {
+  const items = [item('key', 1, [], { regionId: 'r0' }), item('gate', 2, ['key'], { regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['gate'])];
+  const bench = place('bench-locked');
+  assert.deepEqual(missingForPlace(bench, done(), items, regions), ['key', 'gate']);
+  assert.deepEqual(missingForPlace(bench, done('key'), items, regions), ['gate']);
+  assert.deepEqual(missingForPlace(bench, done('key', 'gate'), items, regions), []);
+});
+
+test("missingForPlace: the Place's own requires count on top of the Region requires", () => {
+  const items = [item('key', 1, [], { regionId: 'r0' }), item('lever', 2)];
+  const regions = [region('r0', 1), region('r1', 2, ['key'])];
+  const bench = place('bench-lever', ['lever']);
+  assert.deepEqual(missingForPlace(bench, done(), items, regions), ['key', 'lever']);
+  assert.deepEqual(missingForPlace(bench, done('key'), items, regions), ['lever']);
+  assert.deepEqual(missingForPlace(bench, done('lever'), items, regions), ['key']);
+});
+
+test('missingForPlace: walks a chain the way missingFor walks an entry with the same requires', () => {
+  // The Place needs c; c needs b; b needs a. Compare with an entry that requires c, for several done sets.
+  const items = [item('a', 1), item('b', 2, ['a']), item('c', 3, ['b']), item('d', 4)];
+  const regions = [region('r1', 1)];
+  const bench = place('bench-c', ['c']);
+  const withDoor = [...items, item('door', 9, ['c'])];
+  assert.deepEqual(missingForPlace(bench, done(), items, regions), ['a', 'b', 'c']);
+  for (const set of [done(), done('a'), done('b'), done('a', 'c'), done('d')]) {
+    assert.deepEqual(missingForPlace(bench, set, items, regions), missingFor('door', set, withDoor, regions));
+  }
+});
+
+test('missingForPlace: a requirement already done is not listed and not walked', () => {
+  // b is done, so a (which b needs) no longer matters, even though a is not done.
+  const items = [item('a', 1), item('b', 2, ['a'])];
+  const regions = [region('r1', 1)];
+  const bench = place('bench-b', ['b']);
+  assert.deepEqual(missingForPlace(bench, done('b'), items, regions), []);
+  assert.deepEqual(missingForPlace(bench, done('a'), items, regions), ['b']);
+});
+
+test('missingForPlace: a Region requirement already done is not walked either', () => {
+  const items = [item('gate', 1, [], { regionId: 'r0' }), item('key', 2, ['gate'], { regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['key'])];
+  assert.deepEqual(missingForPlace(place('bench'), done('key'), items, regions), []);
+  assert.deepEqual(missingForPlace(place('bench'), done(), items, regions), ['gate', 'key']);
+});
+
+test('missingForPlace: a diamond lists the shared requirement once', () => {
+  const items = [item('base', 1), item('left', 2, ['base']), item('right', 3, ['base'])];
+  const bench = place('bench', ['left', 'right']);
+  assert.deepEqual(missingForPlace(bench, done(), items, [region('r1', 1)]), ['base', 'left', 'right']);
+});
+
+test('missingForPlace: ordered by step, not by the order requires is written', () => {
+  const items = [item('x', 30), item('y', 10), item('z', 20)];
+  const bench = place('bench', ['x', 'z', 'y']);
+  assert.deepEqual(missingForPlace(bench, done(), items, [region('r1', 1)]), ['y', 'z', 'x']);
+});
+
+test('missingForPlace: an id that the Place and its Region both require is listed once', () => {
+  const items = [item('key', 1, [], { regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['key'])];
+  assert.deepEqual(missingForPlace(place('bench', ['key']), done(), items, regions), ['key']);
+});
+
+test('missingForPlace: an unknown regionId throws, naming it', () => {
+  assert.throws(
+    () => missingForPlace(place('bench', [], 'nowhere'), done(), [item('a', 1)], [region('r1', 1)]),
+    /nowhere/
+  );
+});
+
+test('missingForPlace: an unknown entry id in the Place requires throws, even when that id is done', () => {
+  const items = [item('a', 1)];
+  const regions = [region('r1', 1)];
+  assert.throws(() => missingForPlace(place('bench', ['ghost']), done(), items, regions), /ghost/);
+  assert.throws(() => missingForPlace(place('bench', ['ghost']), done('ghost'), items, regions), /ghost/);
+});
+
+test('missingForPlace: an unknown entry id in the Region requires throws, even when that id is done', () => {
+  const items = [item('a', 1)];
+  const regions = [region('r1', 1, ['ghost'])];
+  assert.throws(() => missingForPlace(place('bench'), done(), items, regions), /ghost/);
+  assert.throws(() => missingForPlace(place('bench'), done('ghost'), items, regions), /ghost/);
+});
+
+test('missingForPlace: a Region id in the Place or Region requires throws (requires holds entry ids only)', () => {
+  const items = [item('a', 1)];
+  const regions = [region('r0', 1), region('r1', 2)];
+  assert.throws(() => missingForPlace(place('bench', ['r0']), done(), items, regions), /r0/);
+  const regionNeedsRegion = [region('r0', 1), region('r1', 2, ['r0'])];
+  assert.throws(() => missingForPlace(place('bench'), done(), items, regionNeedsRegion), /r0/);
+});
+
+test('missingForPlace: a cycle among the entries it reaches throws instead of looping', () => {
+  const items = [item('a', 1, ['b']), item('b', 2, ['a'])];
+  assert.throws(() => missingForPlace(place('bench', ['a']), done(), items, [region('r1', 1)]), /Cycle in requires/);
+});
+
+test('missingForPlace: a Region that requires an entry inside it throws, from a Place in that Region', () => {
+  const items = [item('inside', 1)];
+  assert.throws(() => missingForPlace(place('bench'), done(), items, [region('r1', 1, ['inside'])]), /Cycle/);
+});
+
+test('missingForPlace: does not change the Place, the items, the Regions or the doneSet', () => {
+  // The Region's requirement (a) is not on the Place. A version that copied it into the Place's requires
+  // would change the Place object, and this test would show it.
+  const items = [item('a', 1, [], { regionId: 'r0' }), item('b', 2, [], { regionId: 'r0' })];
+  const regions = [region('r0', 1), region('r1', 2, ['a'])];
+  const bench = place('bench', ['b']);
+  const set = done('x');
+  const before = structuredClone([bench, items, regions]);
+  assert.deepEqual(missingForPlace(bench, set, items, regions), ['a', 'b']);
+  assert.deepEqual([bench, items, regions], before);
+  assert.deepEqual([...set], ['x']);
 });
 
 // ------------------------------------------------------------------ the sample data
