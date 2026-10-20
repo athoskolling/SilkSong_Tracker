@@ -201,7 +201,12 @@ async function runTrackersPage(app) {
       else if (done === total) tabState = 'complete';
       return { id: tab.id, label: tab.label, done, total, state: tabState, selected: tab.id === state.selected };
     });
-    return { tabs, panel: panelView(TABS.find((tab) => tab.id === state.selected)), showAll: state.showAll };
+    return {
+      tabs,
+      panel: panelView(TABS.find((tab) => tab.id === state.selected)),
+      showAll: state.showAll,
+      rosariesHref: pageHref('rosaries.html', {}, sample),
+    };
   }
 
   // The elements are replaced on every render, so put keyboard focus back on the same control.

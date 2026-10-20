@@ -120,3 +120,47 @@
   line-height: 1.2;
 }
 .entry-meta .region-link:hover { color: var(--silk); }
+
+/* ----------------------------------------------------------------------- Rosaries */
+
+/* The total: a big Gloock number, bronze when it reaches zero (done is bronze everywhere). */
+.tk-need {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(52px, 7vw, 68px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tk-need-label { margin-top: 8px; font-size: 15px; line-height: 1.5; color: var(--ash); }
+.tk-need-zero { color: var(--bronze); }
+
+/* "Bought" next to the type of a finished entry: the word is the signal, bronze only adds to it. */
+.entry-meta .flag-done { color: var(--bronze); font-weight: 500; }
+
+.tk-price {
+  flex: none;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.entry.is-done .tk-price { font-weight: 400; color: var(--ash); }
+/* On a phone the price always sits on its own line under the name, so rows with long and short names
+   look the same instead of wrapping at random. */
+@media (max-width: 600px) {
+  .tk-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+}
+
+.tk-next .next-name { font-size: clamp(26px, 3.4vw, 34px); }
+.tk-price-line { margin-top: 10px; font-size: 16px; color: var(--ivory); font-variant-numeric: tabular-nums; }
+
+/* Nothing left to buy: the same plate in bronze, the colour of done. */
+.tk-done-plate { padding: 26px 30px 28px; border: 1.5px dashed var(--bronze); background: var(--lacquer); }
+@media (max-width: 600px) {
+  .tk-done-plate { padding: 22px 20px 24px; }
+}
+.tk-done-plate .next-label { color: var(--bronze); }
+
+.tk-group + .tk-group { margin-top: 12px; }

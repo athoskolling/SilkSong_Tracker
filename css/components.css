@@ -65,8 +65,18 @@
 
 .site-nav a[aria-current="page"] { border-bottom-color: var(--silk); }
 
+/* On a phone the links sit in a grid of three columns, so five links read 3 + 2 and six read 3 + 3 (Athos
+   asked for exactly that), instead of wrapping wherever the width runs out. The columns size to their
+   widest link and the links stay as wide as their text, so the current page's underline hugs the word.
+   The header is then two rows of links tall; the hero and message padding below leave room for it. */
 @media (max-width: 600px) {
-  .site-nav { gap: 8px 22px; }
+  .site-nav {
+    flex-basis: 100%; /* always under the logo, so the header is the same height at every phone width */
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    justify-items: start;
+    gap: 8px 28px;
+  }
 }
 
 /* The last link reads "Account" on a narrow screen (Athos, option A); " and backup" stays in the
@@ -98,7 +108,8 @@
 }
 
 @media (max-width: 600px) {
-  .hero { min-height: 380px; padding-top: 124px; padding-bottom: 88px; }
+  /* 168px clears the phone header: logo row plus two rows of links (measured, P5-17). */
+  .hero { min-height: 380px; padding-top: 168px; padding-bottom: 88px; }
 }
 
 .hero-img {
@@ -417,6 +428,9 @@
 
 /* Pages with no hero (errors) start below the absolutely positioned header. */
 .main-plain { padding-top: 140px; padding-bottom: 96px; }
+@media (max-width: 600px) {
+  .main-plain { padding-top: 184px; }
+}
 .message .plate-text a { color: var(--ivory); }
 
 /* --------------------------------------------- needle-and-thread progress bar */
@@ -515,7 +529,7 @@
 .hero--home .hero-intro { max-width: 50ch; }
 
 @media (max-width: 600px) {
-  .hero--short { min-height: 300px; padding-top: 124px; padding-bottom: 88px; }
+  .hero--short { min-height: 300px; padding-top: 168px; padding-bottom: 88px; }
   .hero--short .hero-title { font-size: clamp(40px, 12vw, 56px); }
   .hero--home { min-height: 400px; }
   .hero--home .hero-title { font-size: clamp(36px, 11vw, 48px); }
