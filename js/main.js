@@ -23,6 +23,7 @@ import {
   nextStep,
   holdingYouUp,
   isCounted,
+  routeIds,
 } from './requirements.js';
 import {
   signIn,
@@ -129,13 +130,18 @@ async function loadGuide(app) {
 
   const itemsById = new Map(items.map((item) => [item.id, item]));
   const regionsById = new Map(regions.map((region) => [region.id, region]));
-  const routeOrder = items.slice().sort((a, b) => a.step - b.step);
+  // The one place that decides what is on the Route (docs/CONTRACTS.md section 5, "the Route rule").
+  // It depends on the data only, so it is worked out once. Nothing else in the page tests `kind`,
+  // `counts` or `missable` for this.
+  const onRoute = routeIds(items, regions);
+  const routeOrder = items.filter((item) => onRoute.has(item.id)).sort((a, b) => a.step - b.step);
   return {
     regions,
     items,
     sample,
     itemsById,
     regionsById,
+    onRoute,
     routeOrder,
     // Ids are unique across entries and Regions (contract section 1), so one lookup serves both.
     nameOf(id) {
@@ -168,6 +174,7 @@ function makeEntryView(item, guide, done, nextId) {
     done: done.has(item.id),
     available,
     isNext: nextId === item.id,
+    onRoute: guide.onRoute.has(item.id),
     needs: needsLine(item, available, guide, done),
   };
 }
@@ -288,7 +295,8 @@ async function runHomePage(app) {
     return {
       routeHref: pageHref('route.html', {}, sample),
       hasEntries: items.length > 0,
-      allDone: items.length > 0 && items.every((item) => state.done.has(item.id)),
+      // The Route's own idea of "nothing left": extras off the Route do not keep it from being true.
+      allDone: guide.routeOrder.length > 0 && guide.routeOrder.every((item) => state.done.has(item.id)),
       next: nextItem && {
         name: nextItem.name,
         type: nextItem.type,
@@ -334,7 +342,7 @@ function collectiblesByType(collectibles, done) {
 // A Region card is in exactly one of five states (DESIGN.md section 5):
 //   empty     no entries yet ("Not in the guide yet")
 //   locked    its requirements are not met
-//   complete  every entry in it is done (Collectibles and Tasks)
+//   complete  every entry in it that is on the Route is done (all of them when none is on the Route)
 //   visited   marked Visited, or something in it is done
 //   available open, but not visited yet
 function regionCard(region, guide, state, regionsWithDone, nextItem) {
@@ -344,7 +352,7 @@ function regionCard(region, guide, state, regionsWithDone, nextItem) {
   let cardState;
   if (regionItems.length === 0) cardState = 'empty';
   else if (!open) cardState = 'locked';
-  else if (regionItems.every((item) => state.done.has(item.id))) cardState = 'complete';
+  else if (isRegionComplete(regionItems, guide, state.done)) cardState = 'complete';
   else if (state.visited.has(region.id) || regionsWithDone.has(region.id)) cardState = 'visited';
   else cardState = 'available';
 
@@ -367,6 +375,15 @@ function regionCard(region, guide, state, regionsWithDone, nextItem) {
     card.needs = missing.length ? `Needs ${listWithMore(missing, 3)}` : null;
   }
   return card;
+}
+
+// Complete follows the Route rule: extras off the Route (a Memento, the Hunter Crest) never keep a
+// Region from being Complete. A Region with no entry on the Route at all is Complete when all its
+// entries are done, so it is not Complete from the start.
+function isRegionComplete(regionItems, guide, done) {
+  const onRouteItems = regionItems.filter((item) => guide.onRoute.has(item.id));
+  const counted = onRouteItems.length > 0 ? onRouteItems : regionItems;
+  return counted.every((item) => done.has(item.id));
 }
 
 // ------------------------------------------------------------------- route page

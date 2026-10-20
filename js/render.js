@@ -230,7 +230,10 @@ function entryRow(entry) {
       'div',
       { class: 'entry-head' },
       h('span', { class: 'entry-name' }, entry.name),
-      h('span', { class: 'entry-step num' }, `Step ${entry.step}`)
+      // A row off the Route says so in words (not colour only) where other rows show their Step.
+      entry.onRoute === false
+        ? h('span', { class: 'entry-step' }, 'Not on the route')
+        : h('span', { class: 'entry-step num' }, `Step ${entry.step}`)
     ),
     meta,
     h('p', { class: 'entry-how' }, entry.how),
@@ -335,7 +338,7 @@ function sidePlate(view) {
     h(
       'p',
       { class: 'plate-help' },
-      'A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
+      'A bead is a collectible. Most count toward your totals; a few are only tracked and do not. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
     )
   );
 }
@@ -525,8 +528,8 @@ function nextPlate(view) {
     heading = 'Nothing in the guide yet';
     text = 'The guide has no entries yet.';
   } else if (view.allDone) {
-    heading = 'Everything in the guide is done';
-    text = 'Every entry that is in the guide so far is marked done.';
+    heading = 'Everything on the route is done';
+    text = 'Every step on the route so far is marked done. Extras that are not on the route stay on their Region pages.';
   }
   return h(
     'section',
@@ -702,7 +705,7 @@ function routeLegend() {
   return h(
     'p',
     { class: 'plate-help route-legend' },
-    'A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
+    'A bead is a collectible. Most count toward your totals; a few are only tracked and do not. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
   );
 }
 
