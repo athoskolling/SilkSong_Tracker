@@ -159,6 +159,23 @@ function markClasses(entry) {
   return parts.join(' ');
 }
 
+// The "Source" link that ends an entry's meta line. Many links share a page, so the name says
+// which entry it is for. It opens in a new tab, hence rel="noopener noreferrer".
+function sourceLink(entry) {
+  if (!entry.source) return null;
+  return h(
+    'a',
+    {
+      class: 'source-link',
+      href: entry.source,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      'aria-label': `Source for ${entry.name}`,
+    },
+    'Source'
+  );
+}
+
 function entryRow(entry) {
   const needsId = `needs-${entry.id}`;
   const rowClasses = ['entry'];
@@ -190,7 +207,8 @@ function entryRow(entry) {
     h('span', {}, typeLabel(entry.type)),
     entry.area ? h('span', {}, entry.area) : null,
     entry.missable ? h('span', { class: 'flag-missable' }, 'Can be missed') : null,
-    entry.isNext && !entry.done ? h('span', { class: 'flag-next' }, 'Next on the route') : null
+    entry.isNext && !entry.done ? h('span', { class: 'flag-next' }, 'Next on the route') : null,
+    sourceLink(entry)
   );
 
   const body = h(
@@ -240,7 +258,7 @@ function lockedChain(view) {
         'div',
         { class: 'entry-body' },
         h('span', { class: 'entry-name' }, entry.name),
-        h('div', { class: 'entry-meta' }, h('span', {}, `${typeLabel(entry.type)} in ${entry.regionName}`)),
+        h('div', { class: 'entry-meta' }, h('span', {}, `${typeLabel(entry.type)} in ${entry.regionName}`), sourceLink(entry)),
         h('p', { class: entry.done ? 'entry-state' : 'entry-state is-missing' }, stateText),
         entry.done ? null : h('p', { class: 'entry-link' }, h('a', { href: entry.regionHref }, `Go to ${entry.regionName}`))
       )
@@ -472,7 +490,8 @@ function nextPlate(view) {
         { class: 'entry-meta next-meta' },
         h('span', {}, typeLabel(view.next.type)),
         h('span', {}, view.next.regionName),
-        h('span', { class: 'num' }, `Step ${view.next.step}`)
+        h('span', { class: 'num' }, `Step ${view.next.step}`),
+        sourceLink(view.next)
       ),
       h('p', { class: 'next-how' }, view.next.how),
       h('p', { class: 'next-actions' }, ...actions)
