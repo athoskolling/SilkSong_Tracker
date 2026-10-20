@@ -34,6 +34,23 @@ const SPOILER_LEVELS = [0, 1, 2];
 const HERO_EXTENSIONS = ['.jpg', '.png'];
 const LONG_HOW = 300;
 
+// Rule 12: the Collectible types that count toward 100 percent (docs/CONTRACTS.md section 6). Task
+// types are not on this list and stay free.
+const COLLECTIBLE_TYPES = [
+  'mask-shard',
+  'spool-fragment',
+  'silk-heart',
+  'needle-upgrade',
+  'ancestral-art',
+  'silk-skill',
+  'crest',
+  'tool',
+  'crafting-kit-upgrade',
+  'tool-pouch-upgrade',
+  'sylphsong',
+  'everbloom',
+];
+
 const KIND_NAME = { region: 'Region', entry: 'entry', ending: 'Ending' };
 const KIND_ID = { region: 'a Region id', entry: 'an entry id', ending: 'an Ending id' };
 const WANTED = { region: 'a Region id', entry: 'entry ids', ending: 'Ending ids' };
@@ -324,7 +341,26 @@ function checkEntries(ctx, collection) {
     if (typeof item.how === 'string' && item.how.length > LONG_HOW) {
       ctx.report.warning(10, ref, `"how" is ${item.how.length} characters (over ${LONG_HOW}). Long text is often pasted wiki text: write it in our own words.`);
     }
+    if (item.kind === 'collectible') checkCollectibleType(ctx, ref, item.type);
   });
+}
+
+// Rule 12 (warning): a Collectible type that is not on the approved list would split the
+// "Collectibles by type" counts without any error, so it is only a warning. A missing type is the
+// shape error's job, so this only looks at text.
+function checkCollectibleType(ctx, ref, type) {
+  if (!isText(type) || COLLECTIBLE_TYPES.includes(type)) return;
+  const suggestion = COLLECTIBLE_TYPES.find((approved) => typeKey(approved) === typeKey(type));
+  const hint = suggestion !== undefined
+    ? `Did you mean "${suggestion}"?`
+    : `The approved types are: ${COLLECTIBLE_TYPES.join(', ')}.`;
+  ctx.report.warning(12, ref, `"type" "${type}" is not on the approved list for Collectibles. ${hint}`);
+}
+
+// The comparison used only for suggestions: lowercase, "_" as "-", and a trailing "s" dropped,
+// so "Mask_Shards" and "mask-shard" find each other. It never decides whether a type is accepted.
+function typeKey(type) {
+  return type.toLowerCase().replace(/_/g, '-').replace(/s$/, '');
 }
 
 function checkSource(ctx, rule, ref, value) {
