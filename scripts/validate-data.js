@@ -35,7 +35,8 @@ const HERO_EXTENSIONS = ['.jpg', '.png'];
 const LONG_HOW = 300;
 
 // Rule 12: the Collectible types that count toward 100 percent (docs/CONTRACTS.md section 6). Task
-// types are not on this list and stay free.
+// types are not on this list and stay free. `ability` (added 2026-10-20) is for a counted ability
+// that is neither an Ancestral Art nor a Silk Skill, such as Needle Strike.
 const COLLECTIBLE_TYPES = [
   'mask-shard',
   'spool-fragment',
@@ -43,6 +44,7 @@ const COLLECTIBLE_TYPES = [
   'needle-upgrade',
   'ancestral-art',
   'silk-skill',
+  'ability',
   'crest',
   'tool',
   'crafting-kit-upgrade',
