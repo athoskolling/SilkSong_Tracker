@@ -74,6 +74,7 @@ silksong-guide/
 ├── js/
 │   ├── main.js             # entry point; picks behaviour by <body data-page="...">
 │   ├── firebase.js         # init + auth + Firestore
+│   ├── firebase-emulator.js # decides Emulator mode (localhost and ?emulator only; testing)
 │   ├── firebase-config.js  # the Firebase web config (not a secret; see ADR 0004)
 │   ├── progress.js         # local (localStorage), Firestore, export/import, merge
 │   ├── requirements.js     # resolves requirements: "what is missing for X"
@@ -87,8 +88,9 @@ silksong-guide/
 │   └── sample/             # layout-only sample data; NOT guide facts (see data/sample/README.md)
 ├── img/regions/            # one hero image per Region (see docs/IMAGES.md)
 ├── tools/
+│   └── sync-rehearsal.mjs  # two-device sync rehearsed against the Firebase Emulators
 ├── scripts/
-│   └── validate-data.js    # data validator (run in CI and before each commit that touches data/)
+│   └── validate-data.js    # data validator (run after every merge and before each commit that touches data/)
 ├── tests/                  # node:test files
 ├── qa/                     # checklist.md and reports/
 ├── firestore.rules         # plus firebase.json for the Emulator

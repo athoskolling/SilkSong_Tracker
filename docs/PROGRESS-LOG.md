@@ -100,6 +100,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T24 merged** (`dev-a/emulator-sync`): Emulator mode (localhost or 127.0.0.1 plus `?emulator`, `demo-` project; guard in `js/firebase-emulator.js`, 4 tests) and `tools/sync-rehearsal.mjs`, which signs three browser profiles in by email link against the local Emulators and checks marking, live updates, unmarking, first-sign-in union with the "Progress combined" plate, sign-out, the sync line and sample mode. No bug found. Orchestrator re-ran everything: 216 tests, 22 rules tests, rehearsal 26 of 26, all requests local or the pinned SDK. Not proven by it: the real Google popup, real email delivery, the published domain and the deployed rules. Athos's two-device check stays the final word. Pushed.
 
+- **Docs refreshed** (orchestrator): README status (site built, content next) and file table; STRUCTURE folder map (`firebase-emulator.js`, `tools/sync-rehearsal.mjs`; no CI, the validator runs after every merge). Nothing else can move without Athos: the two-device check, Moss Grotto for batch 1, the wiki's license name.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
