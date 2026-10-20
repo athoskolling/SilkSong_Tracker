@@ -268,7 +268,7 @@
       "kind": "collectible",
       "type": "tool",
       "regionId": "deep-docks",
-      "how": "In the southeast Deep Docks, reached from the south of Far Fields.",
+      "how": "Behind a locked gate in Deep Docks, on the way towards Far Fields. The gate needs a Simple Key from a merchant.",
       "requires": [],
       "step": 220,
       "source": "https://game-checklists.com/silksong/deep-docks.html"
