@@ -15,6 +15,9 @@ import {
   clearProgress,
 } from '../js/progress.js';
 import { onAuthChange, watchProgressDoc } from '../js/firebase.js';
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const KEY = 'silksong-guide:progress:v1';
 
@@ -191,6 +194,16 @@ test('same uid: an older cloud copy is ignored and local is pushed up', async ()
   assert.equal(changes.length, 0, 'local did not change');
 });
 
+test('same uid: a later sign-in on this device reports no combined note', async () => {
+  useStorage((storage = seed({ done: { a: true }, visited: {}, updatedAt: 100, dataVersion: 1, syncedUid: 'u1' })));
+  const cloud = makeCloud(doc(['b'], 200));
+  listen();
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  assert.ok(statuses.length > 0);
+  assert.equal(statuses.some((s) => 'combined' in s), false, 'combined is for the first sign-in only');
+});
+
 test('same uid: an equal cloud copy changes and writes nothing', async () => {
   useStorage((storage = seed({ done: { a: true }, visited: {}, updatedAt: 300, dataVersion: 1, syncedUid: 'u1' })));
   const cloud = makeCloud(doc(['a'], 300));
@@ -223,6 +236,34 @@ test('a local change while signed in is saved locally, then written to the cloud
   assert.deepEqual(Object.keys(cloud.doc.done), ['a']);
   assert.equal('syncedUid' in cloud.doc, false);
   assert.deepEqual(statuses.map((s) => s.state), ['synced', 'syncing', 'synced']);
+});
+
+test('syncedUid never reaches the cloud, not even on later writes', async () => {
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setDone('a', true);
+  await flush();
+  await setDone('b', true);
+  await flush();
+  assert.ok(cloud.writes().length >= 2, 'at least two writes were checked');
+  for (const [, , payload] of cloud.writes()) {
+    assert.equal('syncedUid' in payload, false);
+  }
+});
+
+test('the watch echo of this device\'s own write changes nothing and writes nothing', async () => {
+  const cloud = makeCloud(null);
+  useCloud(cloud.api);
+  await cloud.signIn('u1');
+  await setDone('a', true);
+  await flush();
+  listen();
+  const writesBefore = cloud.writes().length;
+  cloud.watchCallback(structuredClone(cloud.doc)); // the same document, sent back to us
+  await flush();
+  assert.equal(changes.length, 0, 'subscribers are not told about our own write');
+  assert.equal(cloud.writes().length, writesBefore);
 });
 
 test('quick changes are sent as one write that carries all of them', async () => {
@@ -537,5 +578,51 @@ test('firebase.js watchProgressDoc: onError is optional', async () => {
     stop();
   } finally {
     console.warn = warn;
+  }
+});
+
+// ------------------------------------------------- contract section 4: what may import what
+
+const JS_DIR = fileURLToPath(new URL('../js/', import.meta.url));
+const SITE_DIR = fileURLToPath(new URL('../', import.meta.url));
+const PROGRESS_ONLY = ['readProgressDoc', 'writeProgressDoc', 'deleteProgressDoc', 'watchProgressDoc'];
+
+test('firebase.js exports only the contract functions (no Firestore or Auth handles)', async () => {
+  const exported = Object.keys(await import('../js/firebase.js')).sort();
+  assert.deepEqual(exported, [
+    'completeEmailLinkSignIn',
+    'deleteProgressDoc',
+    'onAuthChange',
+    'readProgressDoc',
+    'signIn',
+    'signOut',
+    'watchProgressDoc',
+    'writeProgressDoc',
+  ]);
+});
+
+test('only progress.js imports the four Progress document functions from firebase.js', () => {
+  for (const file of readdirSync(JS_DIR).filter((name) => name.endsWith('.js'))) {
+    if (file === 'progress.js' || file === 'firebase.js') continue;
+    const source = readFileSync(path.join(JS_DIR, file), 'utf8');
+    const imports = [...source.matchAll(/import\s*\{([^}]*)\}\s*from\s*'\.\/firebase\.js'/g)].flatMap((m) =>
+      m[1].split(',').map((name) => name.trim())
+    );
+    for (const name of PROGRESS_ONLY) {
+      assert.equal(imports.includes(name), false, `${file} must not import ${name}`);
+    }
+  }
+});
+
+test('only firebase.js loads the Firebase SDK, and no page loads a script from elsewhere', () => {
+  for (const file of readdirSync(JS_DIR).filter((name) => name.endsWith('.js'))) {
+    if (file === 'firebase.js') continue;
+    const source = readFileSync(path.join(JS_DIR, file), 'utf8');
+    assert.equal(source.includes('firebasejs'), false, `${file} must not load the SDK`);
+  }
+  for (const file of readdirSync(SITE_DIR).filter((name) => name.endsWith('.html'))) {
+    const html = readFileSync(path.join(SITE_DIR, file), 'utf8');
+    const remoteScripts = [...html.matchAll(/<script[^>]*\ssrc="(https?:[^"]*)"/g)].map((m) => m[1]);
+    assert.deepEqual(remoteScripts, [], `${file} loads a script from another address`);
   }
 });
