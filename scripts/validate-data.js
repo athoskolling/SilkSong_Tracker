@@ -7,9 +7,20 @@
 // Errors exit with code 1. Warnings are printed and do not fail the check.
 // Every problem names the file, the id (or the position, when the entry has no id) and the rule.
 //
-// Rule numbers are the ones in docs/CONTRACTS.md section 6. The label "shape" marks a check that
-// comes from the field tables in section 1 but is not one of the ten rules; those are listed as
-// extras in the QA handoff so the orchestrator can approve or drop them.
+// Rule numbers are the ones in docs/CONTRACTS.md section 6:
+//   1  each file parses and has an integer dataVersion; the three versions are equal
+//   2  ids are lowercase slugs, unique across the three files
+//   3  regionId and every id in requires, unlocks and conditions exist, and are of the right kind
+//   4  no loop in requires (an entry also needs its Region's requires)
+//   5  step is a unique integer across all entries
+//   6  kind is collectible or task; missable needs a missableNote; a Task never has counts: true
+//   7  every entry has a name, how and a web link as source
+//   8  a Region's heroImage has a credit, a relative .jpg or .png path, and the file exists
+//   9  locksOut names existing Ending ids, and an Ending never locks itself out
+//  10  warning: how over 300 characters (pasted wiki text)
+//  11  the field shapes of section 1, including counts, price and toolColor. Printed as
+//      "rule shape", the label this check has always had
+//  12  warning: a Collectible's type is on the approved list, checked against counts
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
 // the tests run.
@@ -52,6 +63,14 @@ const COLLECTIBLE_TYPES = [
   'sylphsong',
   'everbloom',
 ];
+
+// Tracked-only types (Phase 5, ADR 0005): Collectibles the game does not count toward 100 percent.
+// An entry of one of these types is counted only if it says "counts": false. The list grows when
+// the Mementos and Equipment sheet is approved (docs/CONTRACTS.md section 6, rule 12).
+const TRACKED_TYPES = ['memento', 'relic', 'map'];
+
+// The colours of Tools (contract section 1, toolColor). The colour decides which Crest slots a Tool fits.
+const TOOL_COLORS = ['red', 'blue', 'yellow'];
 
 const KIND_NAME = { region: 'Region', entry: 'entry', ending: 'Ending' };
 const KIND_ID = { region: 'a Region id', entry: 'an entry id', ending: 'an Ending id' };
@@ -336,6 +355,7 @@ function checkEntries(ctx, collection) {
     checkIdList(ctx, 3, ref, item, 'requires', 'entry');
     if (item.unlocks !== undefined) checkIdList(ctx, 3, ref, item, 'unlocks', 'entry');
     checkMissable(ctx, ref, item);
+    checkTrackingFields(ctx, ref, item);
     checkUniqueInteger(ctx, 5, ref, item.step, 'step', 'all entries', steps);
     if (item.spoiler !== undefined && !SPOILER_LEVELS.includes(item.spoiler)) {
       ctx.report.error('shape', ref, `"spoiler" must be 0, 1 or 2 when it is given, found ${describe(item.spoiler)}.`);
@@ -343,19 +363,47 @@ function checkEntries(ctx, collection) {
     if (typeof item.how === 'string' && item.how.length > LONG_HOW) {
       ctx.report.warning(10, ref, `"how" is ${item.how.length} characters (over ${LONG_HOW}). Long text is often pasted wiki text: write it in our own words.`);
     }
-    if (item.kind === 'collectible') checkCollectibleType(ctx, ref, item.type);
+    if (item.kind === 'collectible') checkCollectibleType(ctx, ref, item.type, item.counts !== false);
   });
 }
 
 // Rule 12 (warning): a Collectible type that is not on the approved list would split the
 // "Collectibles by type" counts without any error, so it is only a warning. A missing type is the
 // shape error's job, so this only looks at text.
-function checkCollectibleType(ctx, ref, type) {
-  if (!isText(type) || COLLECTIBLE_TYPES.includes(type)) return;
-  const suggestion = COLLECTIBLE_TYPES.find((approved) => typeKey(approved) === typeKey(type));
-  const hint = suggestion !== undefined
-    ? `Did you mean "${suggestion}"?`
-    : `The approved types are: ${COLLECTIBLE_TYPES.join(', ')}.`;
+//
+// Which list applies depends on `counts` (Phase 5). A counted Collectible must use a counted type:
+// a tracked-only type there would raise the headline number. A Collectible with counts: false may
+// use a type from either list.
+function checkCollectibleType(ctx, ref, type, counted) {
+  if (!isText(type)) return;
+  if (counted) checkCountedType(ctx, ref, type);
+  else checkTrackedType(ctx, ref, type);
+}
+
+function checkCountedType(ctx, ref, type) {
+  if (COLLECTIBLE_TYPES.includes(type)) return;
+  if (TRACKED_TYPES.includes(type)) {
+    ctx.report.warning(
+      12,
+      ref,
+      `"type" "${type}" is a tracked-only type: the game does not count it toward 100 percent. Add "counts": false to this entry, or the headline number would include it.`
+    );
+    return;
+  }
+  reportUnapprovedType(ctx, ref, type, COLLECTIBLE_TYPES, `The approved types are: ${COLLECTIBLE_TYPES.join(', ')}.`);
+}
+
+function checkTrackedType(ctx, ref, type) {
+  if (COLLECTIBLE_TYPES.includes(type) || TRACKED_TYPES.includes(type)) return;
+  const both = [...COLLECTIBLE_TYPES, ...TRACKED_TYPES];
+  const approvedText = `The approved types are: ${COLLECTIBLE_TYPES.join(', ')} (counted), and ${TRACKED_TYPES.join(', ')} (tracked only, for "counts": false).`;
+  reportUnapprovedType(ctx, ref, type, both, approvedText);
+}
+
+// Suggests the closest of `candidates` when there is one, otherwise lists what is approved.
+function reportUnapprovedType(ctx, ref, type, candidates, approvedText) {
+  const suggestion = candidates.find((approved) => typeKey(approved) === typeKey(type));
+  const hint = suggestion !== undefined ? `Did you mean "${suggestion}"?` : approvedText;
   ctx.report.warning(12, ref, `"type" "${type}" is not on the approved list for Collectibles. ${hint}`);
 }
 
@@ -388,6 +436,26 @@ function checkMissable(ctx, ref, item) {
   }
   if (item.missableNote !== undefined && typeof item.missableNote !== 'string') {
     ctx.report.error('shape', ref, '"missableNote" must be text.');
+  }
+}
+
+// Phase 5 fields (contract section 1). Each is checked only when it is given, so existing entries,
+// which have none of them, pass unchanged. `counts: true` on a Task is rule 6, not a shape error:
+// it contradicts the kind, the same way missable does.
+function checkTrackingFields(ctx, ref, item) {
+  if (item.counts !== undefined && typeof item.counts !== 'boolean') {
+    ctx.report.error('shape', ref, `"counts" must be true or false when it is given, found ${describe(item.counts)}.`);
+  }
+  if (item.kind === 'task' && item.counts === true) {
+    ctx.report.error(6, ref, '"counts" is true on a Task. A Task never counts, so "counts" cannot be true. If the game counts it, it is a Collectible.');
+  }
+  // A price is a whole number of Rosaries, 1 or more. Text, a fraction or 0 would quietly make the
+  // Rosaries total wrong, because the total adds the prices up, so the validator stops them here.
+  if (item.price !== undefined && !(Number.isInteger(item.price) && item.price >= 1)) {
+    ctx.report.error('shape', ref, `"price" must be a whole number of Rosaries, 1 or more, when it is given, found ${describe(item.price)}.`);
+  }
+  if (item.toolColor !== undefined && !TOOL_COLORS.includes(item.toolColor)) {
+    ctx.report.error('shape', ref, `"toolColor" must be "red", "blue" or "yellow" when it is given, found ${describe(item.toolColor)}.`);
   }
 }
 

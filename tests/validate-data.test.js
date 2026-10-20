@@ -642,6 +642,193 @@ test('rule 12: a type that is not a near miss lists the approved types instead o
   }
 });
 
+// ------------------------------------------------------------------ Phase 5: counts, price, toolColor
+// Contract section 1 (the fields), section 6 rules 6, 11 and 12 (the checks), ADR 0005. Each test
+// changes one thing in a copy of the sample and asserts that the expected rule fires. The sample's
+// own entries have none of the new fields, so the copy is otherwise clean.
+
+// A copy of the sample in which one entry has the given fields. `kind` is checked first, so a test
+// that relies on sample-key being a Collectible fails at once if the sample changes.
+function withEntry(id, kind, fields) {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    assert.equal(entry(json, id).kind, kind, `${id} is the ${kind} this test relies on`);
+    Object.assign(entry(json, id), fields);
+  });
+  return dir;
+}
+
+// Warnings only: no errors, and every warning comes from `rule`.
+function assertOnlyWarningRule(result, rule, { file, id } = {}) {
+  const detail = result.warnings.map(formatProblem).join('\n');
+  assert.deepEqual(result.errors.map(formatProblem), [], 'no errors');
+  assert.ok(result.warnings.length > 0, 'expected at least one warning');
+  assert.deepEqual([...new Set(result.warnings.map((w) => w.rule))], [rule], `warnings were:\n${detail}`);
+  if (file !== undefined) {
+    const named = result.warnings.some((w) => w.file === file && (id === undefined || w.id === id));
+    assert.ok(named, `no warning names file ${file}${id === undefined ? '' : ` and id ${id}`}:\n${detail}`);
+  }
+}
+
+function assertClean(result) {
+  assert.deepEqual(result.errors.map(formatProblem), [], 'no errors');
+  assert.deepEqual(result.warnings.map(formatProblem), [], 'no warnings');
+}
+
+// The tracked-only list from docs/CONTRACTS.md section 6, rule 12. Written out here on purpose, like
+// APPROVED_TYPES: when the Mementos and Equipment sheet grows the list, these tests show the change.
+const TRACKED_TYPES = ['memento', 'relic', 'map'];
+
+// ---- counts (shape, and rule 6 for a Task)
+
+for (const value of ['yes', 'false', 0, null]) {
+  test(`shape: counts ${JSON.stringify(value)} is not true or false`, () => {
+    const dir = withEntry('sample-key', 'collectible', { counts: value });
+    const result = validate(dir);
+    assertOnlyRule(result, 'shape', { file: 'items.json', id: 'sample-key' });
+    assert.match(result.errors[0].message, /"counts" must be true or false when it is given/);
+  });
+}
+
+test('shape: counts "yes" on a Task is a shape error only, not a rule 6 error', () => {
+  const dir = withEntry('sample-door', 'task', { counts: 'yes' });
+  assertOnlyRule(validate(dir), 'shape', { file: 'items.json', id: 'sample-door' });
+});
+
+test('rule 6: a Task with counts true is an error, because a Task never counts', () => {
+  const dir = withEntry('sample-door', 'task', { counts: true });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-door' });
+  assert.match(result.errors[0].message, /A Task never counts/);
+});
+
+test('rule 6: a Task with counts false is accepted', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { counts: false })));
+});
+
+test('counts true on a Collectible is accepted', () => {
+  assertClean(validate(withEntry('sample-key', 'collectible', { counts: true })));
+});
+
+test('counts false on a Collectible with a counted type (tool) gives no warning', () => {
+  assertClean(validate(withEntry('sample-key', 'collectible', { counts: false })));
+});
+
+// ---- price (shape)
+
+for (const price of [0, -5, 12.5, '80', null, true]) {
+  test(`shape: price ${JSON.stringify(price)} is not a whole number of Rosaries, 1 or more`, () => {
+    const dir = withEntry('sample-key', 'collectible', { price });
+    const result = validate(dir);
+    assertOnlyRule(result, 'shape', { file: 'items.json', id: 'sample-key' });
+    assert.match(result.errors[0].message, /"price" must be a whole number of Rosaries, 1 or more/);
+  });
+}
+
+for (const price of [1, 80]) {
+  test(`price ${price} is accepted`, () => {
+    assertClean(validate(withEntry('sample-key', 'collectible', { price })));
+  });
+}
+
+// ---- toolColor (shape)
+
+for (const toolColor of ['green', 'Red', 'RED', '']) {
+  test(`shape: toolColor ${JSON.stringify(toolColor)} is not red, blue or yellow`, () => {
+    const dir = withEntry('sample-key', 'collectible', { toolColor });
+    const result = validate(dir);
+    assertOnlyRule(result, 'shape', { file: 'items.json', id: 'sample-key' });
+    assert.match(result.errors[0].message, /"toolColor" must be "red", "blue" or "yellow"/);
+  });
+}
+
+for (const toolColor of ['red', 'blue', 'yellow']) {
+  test(`toolColor "${toolColor}" is accepted`, () => {
+    assertClean(validate(withEntry('sample-key', 'collectible', { toolColor })));
+  });
+}
+
+// ---- rule 12 with counts: a counted Collectible must use a counted type
+
+for (const counts of [undefined, true]) {
+  for (const type of TRACKED_TYPES) {
+    test(`rule 12: the tracked-only type "${type}" on a counted Collectible (counts ${counts === undefined ? 'missing' : 'true'}) warns and says to add counts`, () => {
+      const dir = withEntry('sample-key', 'collectible', { type, counts });
+      const result = validate(dir);
+      assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+      assert.match(result.warnings[0].message, /"counts": false/);
+      assert.match(result.warnings[0].message, /does not count it toward 100 percent/);
+    });
+  }
+}
+
+for (const type of TRACKED_TYPES) {
+  test(`rule 12: the tracked-only type "${type}" with counts false is accepted`, () => {
+    assertClean(validate(withEntry('sample-key', 'collectible', { type, counts: false })));
+  });
+}
+
+test('rule 12: counts false with the near miss "mementos" suggests "memento"', () => {
+  const dir = withEntry('sample-key', 'collectible', { type: 'mementos', counts: false });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+  assert.equal(
+    result.warnings[0].message,
+    '"type" "mementos" is not on the approved list for Collectibles. Did you mean "memento"?'
+  );
+});
+
+test('rule 12: counts false with the near miss "Relics" suggests "relic"', () => {
+  const dir = withEntry('sample-key', 'collectible', { type: 'Relics', counts: false });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /Did you mean "relic"\?$/);
+});
+
+test('rule 12: counts false with a type on neither list names both lists and suggests nothing', () => {
+  const dir = withEntry('sample-key', 'collectible', { type: 'gizmo', counts: false });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+  assert.equal(
+    result.warnings[0].message,
+    `"type" "gizmo" is not on the approved list for Collectibles. The approved types are: ${APPROVED_TYPES.join(', ')} (counted), and ${TRACKED_TYPES.join(', ')} (tracked only, for "counts": false).`
+  );
+});
+
+// An unknown type on a counted Collectible keeps the message it had before Phase 5, word for word.
+for (const counts of [undefined, true]) {
+  test(`rule 12: an unknown type on a counted Collectible (counts ${counts === undefined ? 'missing' : 'true'}) gives the message from before Phase 5`, () => {
+    const result = validate(withEntry('sample-key', 'collectible', { type: 'gizmo', counts }));
+    assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+    assert.equal(
+      result.warnings[0].message,
+      `"type" "gizmo" is not on the approved list for Collectibles. The approved types are: ${APPROVED_TYPES.join(', ')}.`
+    );
+  });
+}
+
+test('rule 12: a near miss on a counted Collectible still suggests the counted type', () => {
+  const result = validate(withEntry('sample-key', 'collectible', { type: 'mask-shards' }));
+  assertOnlyWarningRule(result, 12, { file: 'items.json', id: 'sample-key' });
+  assert.equal(
+    result.warnings[0].message,
+    '"type" "mask-shards" is not on the approved list for Collectibles. Did you mean "mask-shard"?'
+  );
+});
+
+test('rule 12: a Task with a tracked-only type does not warn (Task types stay free)', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { type: 'memento' })));
+});
+
+// ---- the command on the sample
+
+test('the command prints 0 warning(s) on the sample, as before Phase 5', () => {
+  const run = spawnSync(process.execPath, [SCRIPT, SAMPLE], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(run.stderr, '');
+  assert.match(run.stdout, /passed for .*data\/sample: 0 warning\(s\)\./);
+});
+
 // ------------------------------------------------------------------ extras: section 1 field checks
 
 test('shape: spoiler outside 0, 1, 2', () => {
