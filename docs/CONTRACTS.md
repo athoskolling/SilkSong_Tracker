@@ -132,6 +132,10 @@ isAvailable(itemId, doneSet, items, regions) -> boolean
 // is in doneSet. No requirements = true.
 // Unknown itemId, or an unknown id inside any `requires` it reads: throw an Error (validate data on load;
 // do not hide data bugs). This holds for every function in this module, not only missingFor.
+// An unknown id throws even when it is in doneSet (a typo is a data bug whatever the player marked);
+// ids in doneSet itself are never checked (Progress may keep retired ids). isRegionAvailable has no
+// `items`, so it catches an unknown Region and a Region id inside `requires`, but not a misspelt entry
+// id there; missingForRegion, holdingYouUp and validator rule 3 catch that (decided in T14, no new argument).
 
 missingFor(itemId, doneSet, items, regions) -> string[]
 // Entry ids still not done that stand between the player and the entry, walking the chain as

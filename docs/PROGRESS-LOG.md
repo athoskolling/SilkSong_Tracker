@@ -51,6 +51,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Athos agreed** with T10's three choices (Complete = every entry done; next step shown on Route; new copy) and with the "Source" link and footer credit line. Recorded in `docs/DESIGN.md`.
 - **Decided (orchestrator):** unknown ids inside `requires` throw in every `requirements.js` function (contract sections 2 and 7).
 
+- **T14 merged** (`dev-a/unknown-ids`): unknown ids inside `requires` throw in `isAvailable`, `nextStep`, `missingFor`, `missingForRegion`, `holdingYouUp`; also when the id is in doneSet. `isRegionAvailable` checks what it can without `items` (orchestrator kept the signature; contract section 2 says so). Orchestrator ran: 173 tests, 0 fail, 0 todo; validator passes on both folders. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
