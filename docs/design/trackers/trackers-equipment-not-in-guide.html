@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trackers | Silksong guide (mockup)</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="trackers.css">
+</head>
+<body data-page="trackers">
+  <a class="skip-link" href="#app">Skip to the content</a>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other states: <a href="trackers-crests-partial.html">Partly done</a> &middot; <a href="trackers-mementos-empty.html">Nothing marked</a> &middot; <a href="trackers-keys-complete.html">Complete</a> &middot; <a href="trackers-equipment-not-in-guide.html" aria-current="page">Not in the guide yet</a> &middot; <a href="rosaries-partial.html">Rosaries</a> &middot; <a href="builds-full.html">Builds</a> &middot; <a href="navigation.html">Navigation</a></div>
+  <div class="page">
+    <header class="site-header">
+      <div class="frame">
+        <a class="logo" href="index.html">
+          <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true"><path class="line" d="M3 9 H29"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+          Silksong guide
+        </a>
+        <nav class="site-nav nav-short" aria-label="Main">
+          <a href="index.html">Regions</a>
+          <a href="route.html">Route</a>
+          <a href="trackers-crests-partial.html" aria-current="page">Trackers</a>
+          <a href="account.html">Account<span class="nav-extra"> and backup</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="hero hero--short">
+        <div class="hero-shade"></div>
+        <div class="hero-shade hero-shade--title"></div>
+        <div class="frame">
+          
+          <h1 class="hero-title">Trackers</h1>
+          <p class="hero-intro">Mark what you have, one type at a time. Each tab keeps its own count; the 100 percent count stays on Home.</p>
+        </div>
+      </section>
+      <div class="frame">
+        <div class="content">
+          <div class="start-thread start-thread--short" aria-hidden="true"></div>
+                <div class="tk-tabs" role="tablist" aria-label="Trackers">
+        <button type="button" role="tab" class="tk-tab" id="tab-crests" aria-selected="false" aria-controls="panel-crests" tabindex="-1"><span>Crests</span><span class="tk-tab-count"><span class="num">2 of 7</span></span></button>
+        <button type="button" role="tab" class="tk-tab" id="tab-tools" aria-selected="false" aria-controls="panel-tools" tabindex="-1"><span>Tools and Skills</span><span class="tk-tab-count"><span class="num">4 of 9</span></span></button>
+        <button type="button" role="tab" class="tk-tab" id="tab-abilities" aria-selected="false" aria-controls="panel-abilities" tabindex="-1"><span>Abilities</span><span class="tk-tab-count"><span class="num">3 of 5</span></span></button>
+        <button type="button" role="tab" class="tk-tab" id="tab-equipment" aria-selected="true" aria-controls="panel-equipment" tabindex="0"><span>Equipment</span><span class="tk-tab-count">Not in the guide yet</span></button>
+        <button type="button" role="tab" class="tk-tab" id="tab-mementos" aria-selected="false" aria-controls="panel-mementos" tabindex="-1"><span>Mementos</span><span class="tk-tab-count"><span class="num">0 of 4</span></span></button>
+        <button type="button" role="tab" class="tk-tab is-complete" id="tab-keys" aria-selected="false" aria-controls="panel-keys" tabindex="-1"><span>Keys and key items</span><span class="tk-tab-count"><span class="state-dot state-dot--complete" aria-hidden="true"></span><span class="num">3 of 3</span><span class="visually-hidden"> complete</span></span></button>
+        </div>
+        <div class="layout">
+          <div class="main-column">
+          <section class="tk-panel" role="tabpanel" id="panel-equipment" aria-labelledby="tab-equipment" tabindex="-1">
+            <div class="plate">
+              <h2 class="plate-heading">Not in the guide yet</h2>
+              <p class="plate-text">Its entries ship in a later batch. Nothing here changes your totals until they do.</p>
+            </div>
+          </section>
+          </div>
+          <aside class="plate plate--rail" aria-label="Plan and options">
+            <div class="rail-section">
+              <h2 class="plate-heading">Plan with what you have</h2>
+              <ul class="holding-list" style="margin-top:4px">
+                <li class="holding-item"><div><a class="holding-name" href="rosaries-partial.html">Rosaries</a><p class="holding-text">Add up what the shop entries you have not bought still cost.</p></div></li>
+                <li class="holding-item"><div><a class="holding-name" href="builds-full.html">Build picker</a><p class="holding-text">See the Crests you own, their slots and the Tools you own for each.</p></div></li>
+              </ul>
+            </div>
+            <div class="toggles"><label class="switch"><input type="checkbox" class="switch-input"><span class="switch-track" aria-hidden="true"></span><span class="switch-text">Show everything, spoilers included</span></label></div>
+            <p class="plate-help">A bead is something you can obtain. A knot is a task: it adds nothing by itself but opens something else. Not counted means an entry is tracked here but does not add to the 100 percent count on Home.</p>
+          </aside>
+        </div>
+        </div>
+      </div>
+    </main>
+    <footer class="frame site-footer">
+      <p>Guide text written in our own words from the Hollow Knight: Silksong wiki and other references. Each entry links its source. Not affiliated with Team Cherry.</p>
+      <p>Layout sample. Names, prices, counts and states are invented to show what a screen can look like; they are not guide data.</p>
+    </footer>
+  </div>
+  <div class="visually-hidden" aria-live="polite" role="status"></div>
+</body>
+</html>
