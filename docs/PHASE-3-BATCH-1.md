@@ -11,7 +11,7 @@ This page gives the shape only. It contains no game facts.
 
 ## Starting list
 
-For Moss Grotto, the orchestrator prepared a candidate list from three guides (names, kinds, places only): `docs/research/2026-10-20-moss-grotto-candidates.md`. Confirm or strike each line, answer the three questions at its top, then write each confirmed entry below in your words.
+The orchestrator prepared candidate lists from guides (names, kinds, places only): Moss Grotto in `docs/research/2026-10-20-moss-grotto-candidates.md`, The Marrow and Deep Docks in `docs/research/2026-10-20-marrow-deep-docks-candidates.md`. Confirm or strike each line, answer the three questions at its top, then write each confirmed entry below in your words.
 
 ## How to write it
 

@@ -104,6 +104,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos approved a starting list per Region** (amends item 4: guides give names, kinds and places; Athos confirms or strikes each). Orchestrator prepared Moss Grotto's: `docs/research/2026-10-20-moss-grotto-candidates.md`. 12 Collectible candidates and 5 Tasks from three guides (game-checklists.com, Game8, TheGamer; no wiki or Fextralife opened). Open for Athos: Weavenest Atla and Bonegrave (Sub-areas or Regions), late and Act 3 items, the disputed Spool Fragment, the Wanderer Crest's requirement, the starting Crest.
 
+- **Starting lists for The Marrow and Deep Docks** (orchestrator): `docs/research/2026-10-20-marrow-deep-docks-candidates.md`. The Marrow: 5 Collectible and 2 Task candidates; Deep Docks: 8 and 2 (sources: game-checklists.com and Into Indie Games). Questions for Athos: Swift Step's type (if movement abilities are not Ancestral Arts, the approved types need `ability`), the Region of Grindle's cell, Shakra's shop items, items reached from later areas. Batch 1's starting lists are complete.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
