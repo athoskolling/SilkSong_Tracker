@@ -52,7 +52,8 @@ export function listWithMore(names, max) {
 
 // ------------------------------------------------------------------ messages
 
-// A plain page for errors and dead ends: one h1, what happened, what to do next.
+// A plain page for errors and dead ends: one h1, what happened, what to do next. role="alert" so a screen
+// reader announces it when it appears (the boot guard does the same).
 // message = { heading, paragraphs: [string], links: [{ text, href }] }
 export function renderMessage(app, message) {
   const links = (message.links || []).map((link) => h('a', { href: link.href }, link.text));
@@ -62,7 +63,7 @@ export function renderMessage(app, message) {
       { class: 'frame main-plain' },
       h(
         'div',
-        { class: 'plate message' },
+        { class: 'plate message', role: 'alert' },
         h('h1', { class: 'plate-heading' }, message.heading),
         ...(message.paragraphs || []).map((text) => h('p', { class: 'plate-text' }, text)),
         links.length ? h('p', { class: 'plate-text' }, ...links.flatMap((a, i) => (i ? [' ', a] : [a]))) : null
@@ -1507,7 +1508,7 @@ function buildsRail(view) {
       'div',
       { class: 'rail-section' },
       h('p', { class: 'tk-rail-text' }, 'Tools and Silk Skills you own: ', h('strong', {}, String(view.ownedCount)), '. Each slot lists only what you have marked as done.'),
-      h('p', { class: 'tk-rail-text' }, 'White slots take Silk Skills. Red, blue and yellow slots take Tools of that colour.'),
+      h('p', { class: 'tk-rail-text' }, 'Each slot lists the Tools and Silk Skills you own that the guide says fit it.'),
       h('p', { class: 'tk-rail-text' }, h('a', { href: view.trackersHref }, 'Open the Crests tracker'))
     )
   );
@@ -1576,7 +1577,7 @@ function buildsMain(crest) {
 // ---- opened slots
 
 function openedSlots(opened) {
-  const intro = h('p', { class: 'plate-text' }, 'A Memory Locket opens an extra slot on a Crest. Say how many you opened on this one. Each colour has a limit.');
+  const intro = h('p', { class: 'plate-text' }, 'Set how many extra slots you have opened on this Crest in the game, so the picker matches. Each colour has the limit the guide lists.');
   if (!opened.limitKnown) {
     return h(
       'div',

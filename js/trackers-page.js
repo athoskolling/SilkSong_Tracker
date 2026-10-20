@@ -13,13 +13,16 @@ import { renderMessage, renderTrackersShell, renderTrackersBody, listWithMore } 
 
 // Which `type` goes on which tab. THIS IS A PROPOSAL, awaiting Athos (docs/CONTRACTS.md section 8,
 // "Which Tracker each type goes on"). It is the only place the grouping is written, so changing it is
-// one edit here. A type that is in no list is not shown on this page (for example mask-shard,
-// spool-fragment, silk-heart, needle-upgrade, crafting-kit-upgrade, tool-pouch-upgrade, boss, quest).
+// one edit here. Every entry is meant to land on a tab (T34, QA finding F2). A type that is on no tab is
+// reported with console.warn when the page loads, so a new type in data/ is noticed instead of vanishing.
 //
 // A tab holds one or more groups. A group with a `heading` is drawn under that sub-heading (T33), so a
 // tab that mixes types stays readable; a group with none is drawn without one. The tab's done and total
 // count every entry of every group. A group with no entries in the data draws nothing, so the sample
 // data (which has no relics or lockets) shows no empty sub-heading.
+//
+// A group matches by `types`. The one exception is `otherTasks`: it takes every Task whose type no group
+// lists, so a new Task type still has a Tracker without an edit here.
 const TABS = [
   {
     id: 'crests',
@@ -31,6 +34,19 @@ const TABS = [
   },
   { id: 'tools', label: 'Tools and Skills', groups: [{ types: ['tool', 'silk-skill'] }] },
   { id: 'abilities', label: 'Abilities', groups: [{ types: ['ancestral-art', 'ability', 'sylphsong', 'everbloom'] }] },
+  // The counted stat and upgrade types. Sub-headings, because six kinds in one list would be a wall.
+  {
+    id: 'upgrades',
+    label: 'Upgrades',
+    groups: [
+      { heading: 'Mask Shards', types: ['mask-shard'] },
+      { heading: 'Spool Fragments', types: ['spool-fragment'] },
+      { heading: 'Silk Hearts', types: ['silk-heart'] },
+      { heading: 'Needle upgrades', types: ['needle-upgrade'] },
+      { heading: 'Crafting Kit upgrades', types: ['crafting-kit-upgrade'] },
+      { heading: 'Tool Pouch upgrades', types: ['tool-pouch-upgrade'] },
+    ],
+  },
   {
     id: 'equipment',
     label: 'Equipment',
@@ -40,18 +56,35 @@ const TABS = [
       { heading: 'Furnishings', types: ['furnishing'] },
     ],
   },
-  // Relics first, Mementos below. The real data has no `memento` entries yet, so that group draws nothing
-  // until they ship (the sample data has one, so the group stays tested).
+  // The glossary keeps Relic (sold to a vendor) and Memento apart, so each has its own heading.
   {
     id: 'mementos',
-    label: 'Mementos',
+    label: 'Mementos and relics',
     groups: [
       { heading: 'Relics', types: ['relic'] },
       { heading: 'Mementos', types: ['memento'] },
     ],
   },
-  { id: 'keys', label: 'Keys and key items', groups: [{ types: ['key'] }] },
+  { id: 'keys', label: 'Keys', groups: [{ types: ['key'] }] },
+  // Tasks. A Task is never counted, so the panel note says nothing here counts toward 100 percent.
+  {
+    id: 'tasks',
+    label: 'Bosses and quests',
+    groups: [
+      { heading: 'Bosses', types: ['boss'] },
+      { heading: 'Quests', types: ['quest'] },
+      { heading: 'Other tasks', otherTasks: true },
+    ],
+  },
 ];
+
+// Every type some group names; `otherTasks` takes the Tasks outside this set.
+const NAMED_TYPES = new Set(TABS.flatMap((tab) => tab.groups.flatMap((group) => group.types || [])));
+
+function groupHolds(group, item) {
+  if (group.otherTasks) return item.kind === 'task' && !NAMED_TYPES.has(item.type);
+  return group.types.includes(item.type);
+}
 
 run();
 
@@ -94,13 +127,18 @@ async function runTrackersPage(app) {
       tab.groups
         .map((group) => ({
           heading: group.heading || '',
-          entries: items.filter((item) => group.types.includes(item.type)).sort((a, b) => a.step - b.step),
+          entries: items.filter((item) => groupHolds(group, item)).sort((a, b) => a.step - b.step),
         }))
         .filter((group) => group.entries.length > 0),
     ])
   );
   // All entries of a tab: what its done and total count. A type is in one group only, so none counts twice.
   const entriesByTab = new Map(TABS.map((tab) => [tab.id, groupsByTab.get(tab.id).flatMap((group) => group.entries)]));
+
+  // An entry whose type is on no tab could be ticked on its Region page only. Say so in the console.
+  const onATab = new Set([...entriesByTab.values()].flat().map((item) => item.id));
+  const lost = items.filter((item) => !onATab.has(item.id));
+  if (lost.length) console.warn(`Trackers: ${lost.length} entries are on no tab. Types: ${[...new Set(lost.map((item) => item.type))].join(', ')}`);
 
   // showAll is session-only on purpose, like on the Region page: Progress stores no interface settings.
   const state = { done: new Set(), visited: new Set(), showAll: false, selected: tabFromAddress() };

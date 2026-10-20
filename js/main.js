@@ -96,7 +96,7 @@ async function finishEmailLink() {
       return true;
     }
   } catch (error) {
-    console.error(error);
+    console.warn(error); // handled: the message below is the answer, not a bug report
     announce(error.message); // already written for people
   }
   return false;
@@ -569,7 +569,7 @@ async function startAccountPage() {
     try {
       await action();
     } catch (error) {
-      console.error(error);
+      console.warn(error); // handled: the message below is the answer, not a bug report
       say(error.message, 'error');
     } finally {
       state.busy = false;
@@ -658,7 +658,7 @@ async function startAccountPage() {
     const result = await completeEmailLinkSignIn();
     if (result === 'needs-email') state.needsEmail = true;
   } catch (error) {
-    console.error(error);
+    console.warn(error); // handled: the message below is the answer, not a bug report
     say(error.message, 'error');
   } finally {
     state.linkPending = false;
