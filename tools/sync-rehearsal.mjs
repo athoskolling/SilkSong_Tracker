@@ -867,7 +867,7 @@ async function exportImport(base) {
   const F = await newSignedOutDevice('F-backup', base);
   F.expectSync = false;
   const result = await importFile(F, text);
-  check('13b. Import into an empty device: the result counts what was added', same(result, { addedDone: 1, addedVisited: 1, addedSlots: 3, addedBuilds: 2, tookShellShards: false }), JSON.stringify(result));
+  check('13b. Import into an empty device: the result counts what was added', same(result, { addedDone: 1, addedVisited: 1, addedSlots: 3, addedBuilds: 2 }), JSON.stringify(result));
   check('13c. ... and the device has the same Builds and opened slots', (await storedShows(F, 'builds', wantBuilds)) && (await storedShows(F, 'crestSlots', wantSlots)), JSON.stringify((await storedChoices(F)).raw));
   const again = await importFile(F, text);
   check('13d. Importing the same file again adds nothing', again.addedDone === 0 && again.addedSlots === 0 && again.addedBuilds === 0, JSON.stringify(again));
