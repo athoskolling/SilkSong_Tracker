@@ -85,7 +85,17 @@
 
 .tk-summary { max-width: 440px; margin-top: 22px; }
 .tk-note { max-width: 60ch; margin-top: 16px; font-size: 14px; line-height: 1.6; color: var(--ash); }
-.tk-list { margin-top: 40px; }
+.tk-group { margin-top: 40px; }
+.tk-group + .tk-group { margin-top: 56px; }
+/* A sub-heading inside a tab: the display face of the other list headings, one step below the panel title. */
+.tk-group-title {
+  margin-bottom: 28px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
 .tk-list .entry { padding-bottom: 32px; }
 .tk-list .entry:last-child { padding-bottom: 0; }
 

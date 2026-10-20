@@ -1102,7 +1102,18 @@ function trackerPanel(panel) {
       countBlock(kind, 'Done', { done: panel.done, total: panel.total }, { needle: !complete, complete })
     ),
     h('p', { class: 'tk-note' }, panel.note),
-    h('ol', { class: 'entries tk-list' }, ...panel.rows.map(trackerRow), panel.hiddenCount ? trackerHiddenRow(panel) : null)
+    ...panel.groups.map(trackerGroup)
+  );
+}
+
+// One group of a tab: an optional sub-heading, then its entries on the thread. Each group is its own list,
+// so a screen reader hears the list under the right heading.
+function trackerGroup(group) {
+  return h(
+    'div',
+    { class: 'tk-group' },
+    group.heading ? h('h3', { class: 'tk-group-title' }, group.heading) : null,
+    h('ol', { class: 'entries tk-list' }, ...group.rows.map(trackerRow), group.hiddenCount ? trackerHiddenRow(group) : null)
   );
 }
 
@@ -1152,8 +1163,8 @@ function trackerRow(entry) {
 }
 
 // Entries in Regions the player has not visited: a count, no names (the spoiler rule of the Region page).
-function trackerHiddenRow(panel) {
-  const text = `${pluralEntries(panel.hiddenCount)} hidden until you visit ${panel.hiddenRegions === 1 ? 'its region' : 'their regions'}.`;
+function trackerHiddenRow(group) {
+  const text = `${pluralEntries(group.hiddenCount)} hidden until you visit ${group.hiddenRegions === 1 ? 'its region' : 'their regions'}.`;
   return h(
     'li',
     { class: 'entry entry--hidden' },

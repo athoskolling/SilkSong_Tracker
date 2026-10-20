@@ -15,14 +15,42 @@ import { renderMessage, renderTrackersShell, renderTrackersBody, listWithMore } 
 // "Which Tracker each type goes on"). It is the only place the grouping is written, so changing it is
 // one edit here. A type that is in no list is not shown on this page (for example mask-shard,
 // spool-fragment, silk-heart, needle-upgrade, crafting-kit-upgrade, tool-pouch-upgrade, boss, quest).
-// `relic` waits for the Mementos and Equipment sheet; Equipment will gain the types that sheet names.
+//
+// A tab holds one or more groups. A group with a `heading` is drawn under that sub-heading (T33), so a
+// tab that mixes types stays readable; a group with none is drawn without one. The tab's done and total
+// count every entry of every group. A group with no entries in the data draws nothing, so the sample
+// data (which has no relics or lockets) shows no empty sub-heading.
 const TABS = [
-  { id: 'crests', label: 'Crests', types: ['crest'] },
-  { id: 'tools', label: 'Tools and Skills', types: ['tool', 'silk-skill'] },
-  { id: 'abilities', label: 'Abilities', types: ['ancestral-art', 'ability', 'sylphsong', 'everbloom'] },
-  { id: 'equipment', label: 'Equipment', types: ['map'] },
-  { id: 'mementos', label: 'Mementos', types: ['memento'] },
-  { id: 'keys', label: 'Keys and key items', types: ['key'] },
+  {
+    id: 'crests',
+    label: 'Crests',
+    groups: [
+      { heading: 'Crests', types: ['crest'] },
+      { heading: 'Memory Lockets', types: ['memory-locket'] },
+    ],
+  },
+  { id: 'tools', label: 'Tools and Skills', groups: [{ types: ['tool', 'silk-skill'] }] },
+  { id: 'abilities', label: 'Abilities', groups: [{ types: ['ancestral-art', 'ability', 'sylphsong', 'everbloom'] }] },
+  {
+    id: 'equipment',
+    label: 'Equipment',
+    groups: [
+      { heading: 'Maps', types: ['map'] },
+      { heading: 'Map tools', types: ['map-tool'] },
+      { heading: 'Furnishings', types: ['furnishing'] },
+    ],
+  },
+  // Relics first, Mementos below. The real data has no `memento` entries yet, so that group draws nothing
+  // until they ship (the sample data has one, so the group stays tested).
+  {
+    id: 'mementos',
+    label: 'Mementos',
+    groups: [
+      { heading: 'Relics', types: ['relic'] },
+      { heading: 'Mementos', types: ['memento'] },
+    ],
+  },
+  { id: 'keys', label: 'Keys and key items', groups: [{ types: ['key'] }] },
 ];
 
 run();
@@ -58,10 +86,21 @@ async function runTrackersPage(app) {
   const itemsById = new Map(items.map((item) => [item.id, item]));
   const regionsById = new Map(regions.map((region) => [region.id, region]));
 
-  // Entries of each tab, in route order. Built once: the data does not change while the page is open.
-  const entriesByTab = new Map(
-    TABS.map((tab) => [tab.id, items.filter((item) => tab.types.includes(item.type)).sort((a, b) => a.step - b.step)])
+  // Entries of each group of each tab, in route order. Built once: the data does not change while the page
+  // is open. Groups with no entries are dropped here, so nothing downstream draws an empty sub-heading.
+  const groupsByTab = new Map(
+    TABS.map((tab) => [
+      tab.id,
+      tab.groups
+        .map((group) => ({
+          heading: group.heading || '',
+          entries: items.filter((item) => group.types.includes(item.type)).sort((a, b) => a.step - b.step),
+        }))
+        .filter((group) => group.entries.length > 0),
+    ])
   );
+  // All entries of a tab: what its done and total count. A type is in one group only, so none counts twice.
+  const entriesByTab = new Map(TABS.map((tab) => [tab.id, groupsByTab.get(tab.id).flatMap((group) => group.entries)]));
 
   // showAll is session-only on purpose, like on the Region page: Progress stores no interface settings.
   const state = { done: new Set(), visited: new Set(), showAll: false, selected: tabFromAddress() };
@@ -118,14 +157,24 @@ async function runTrackersPage(app) {
     if (list.length === 0) return { id: tab.id, label: tab.label, empty: true };
 
     const revealed = revealedRegions();
-    const shown = list.filter((item) => revealed(item.regionId));
-    const hidden = list.filter((item) => !revealed(item.regionId));
     const { done, total } = tabCounts(tab);
     const counted = list.filter(isCounted).length;
 
     let note = 'Entries marked Not counted do not add to the 100 percent count on Home.';
     if (counted === 0) note = 'None of these count toward 100 percent.';
     else if (counted === list.length) note = 'Every entry here adds to the 100 percent count on Home.';
+
+    // Each group has its own rows and hidden count (the spoiler rule is per entry, as before).
+    const groups = groupsByTab.get(tab.id).map((group) => {
+      const shown = group.entries.filter((item) => revealed(item.regionId));
+      const hidden = group.entries.filter((item) => !revealed(item.regionId));
+      return {
+        heading: group.heading,
+        rows: shown.map(entryView),
+        hiddenCount: hidden.length,
+        hiddenRegions: new Set(hidden.map((item) => item.regionId)).size,
+      };
+    });
 
     let panelState = '';
     if (done === total) panelState = 'complete';
@@ -140,9 +189,7 @@ async function runTrackersPage(app) {
       state: panelState,
       hasCounted: counted > 0,
       note,
-      rows: shown.map(entryView),
-      hiddenCount: hidden.length,
-      hiddenRegions: new Set(hidden.map((item) => item.regionId)).size,
+      groups,
     };
   }
 
