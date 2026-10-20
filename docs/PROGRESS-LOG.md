@@ -71,6 +71,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
   - Next tasks, not started yet (usage limit): **T19 (Dev B)**: G2-2 strengthen the title scrim so the hero title passes 3:1 and the intro 4.5:1 over any picture; G2-3 name each Region once in "Blocks …" text (`blocksText`); G2-4 legend after the list on a phone. **T20 (Dev A)**: delete `tools/auth-check.html` (the Account page replaces it; Pages publishes `tools/`) and update the comment in `js/firebase.js` that points at it.
   - Then: orchestrator's Phase 2 review against the V1 definition of done.
 
+- **T20 merged** (`dev-a/remove-auth-check`): `tools/auth-check.html` deleted (the Account page replaces it and Pages published it); the `SDK_VERSION` comment in `js/firebase.js` now points at `account.html`. Dev A's handoff came back empty ("Handoff placeholder"), so the orchestrator checked the branch itself: the diff, no reference left outside `docs/` and `qa/`, `tools/.gitkeep` present, 185 tests pass, validator passes. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
