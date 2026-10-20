@@ -73,6 +73,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T20 merged** (`dev-a/remove-auth-check`): `tools/auth-check.html` deleted (the Account page replaces it and Pages published it); the `SDK_VERSION` comment in `js/firebase.js` now points at `account.html`. Dev A's handoff came back empty ("Handoff placeholder"), so the orchestrator checked the branch itself: the diff, no reference left outside `docs/` and `qa/`, `tools/.gitkeep` present, 185 tests pass, validator passes. Pushed.
 
+- **T19 merged** (`dev-b/second-pass-fixes`): a dark band behind hero text on Regions with a picture (two new derived tokens in `base.css`, no existing value changed), so the title stays at least 4.9:1 and the intro 5.2:1 even over a white picture; "Blocks …" names each Region once ("Blocks the region X and its 2 entries."); the Route legend is the last line of the list on every width. Orchestrator ran: 185 tests pass, validator passes on both folders, all pages clean, hero screenshots at 1280 and 390 px looked at (picture still reads). QA second-pass findings G2-2, G2-3, G2-4 closed. Pushed.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
