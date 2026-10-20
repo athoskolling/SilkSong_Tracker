@@ -30,7 +30,7 @@ In **stage 1** the task may also hand you the UI files (`index.html`, `region.ht
 - **Never run `firebase deploy` and never publish rules.** Write `firestore.rules` and test it in the Firebase Emulator; Athos deploys. The Firebase project is the site's own (ADR 0004), not shared with Hollow-Thingy, so `firestore.rules` is written from scratch: allow only `silksong_progress/{uid}` for its own user and deny everything else.
 - Data: follow `.claude/rules/data.md`. Never copy anything from `docs/design/` or `data/sample/` into `data/`. You write structure and drafts; text goes to Athos for rewriting and verification when it comes from the wiki.
 - Use the glossary words in code comments and names where it helps: collectible, task, region, route, step.
-- Do not scrape MapGenie. Do not run `tools/draft-from-wiki.js` against the wiki until `docs/PHASE-0-CHECKLIST.md` says the wiki license and terms review is done.
+- Do not scrape MapGenie. There is no wiki draft script (Athos, 2026-10-20). Never fetch hollowknight.wiki or Fextralife. You turn what Athos writes into `data/*.json`; you never supply a game fact yourself.
 
 ## Finishing
 

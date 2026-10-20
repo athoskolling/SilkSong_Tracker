@@ -84,7 +84,7 @@ The interface uses only these functions. It does not touch Firestore or localSto
 
 **Phase 3: Real data, in batches (Dev A, with Athos)**
 - First batch: Moss Grotto, The Marrow and Deep Docks (confirm on the wiki). Each later batch repeats this phase.
-- `tools/draft-from-wiki.js` (Dev A) makes drafts from the wiki, after the license and terms of use have been reviewed. Athos rewrites in his own words and verifies; nothing enters `data/` without human review.
+- No draft script (Athos, 2026-10-20). Athos writes each entry from his own play and checks it against the main wiki by hand; the orchestrator may cross-check facts with web searches and flags disagreements; nothing enters `data/` that Athos has not written or confirmed.
 - Dev A reviews, completes and standardizes. Each entry has `source`, text in our own words and `dataVersion`.
 - QA 1 runs the validator. QA 2 checks a sample against the wiki.
 

@@ -81,6 +81,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Research for checklist items 4 and 8** (orchestrator, at Athos's request; findings only, boxes not ticked): `docs/research/2026-10-20-sources-and-batch-1.md`. hollowknight.wiki blocks automated reading (403), so Athos reads its license in a browser; Fextralife's terms forbid scraping and rewriting for publication, so it is not a drafting source (links are fine). Batch 1 order confirmed by the guides; open: Bone Bottom as a Region or a Sub-area.
 
+- **Athos decided checklist item 4: option 1, no draft script.** Entries are written by Athos from his own play, checked against the main wiki by hand; agents never fetch hollowknight.wiki or Fextralife. **Item 8: batch 1 is Moss Grotto, The Marrow, Deep Docks; Bone Bottom is a Sub-area of Moss Grotto.** Both items ticked; the wiki's license name is still to be filled in by Athos. Recorded in STRUCTURE, AGENT-PLAN, PHASE-PROMPTS (Phase 3 rewritten), CLAUDE.md rule 9, `.claude/rules/data.md`, `dev-a.md`. New: `docs/PHASE-3-BATCH-1.md`, the form Athos writes batch 1 in. QA checklist lines N-13 to N-17 still say "blocked: item 4"; QA 2 updates them in its next task (wiki comparisons are Athos's, by hand).
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

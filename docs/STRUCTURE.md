@@ -37,7 +37,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **All Regions in the model, content in batches:** the model and interface support the whole game from the start; content ships in batches, only after it is verified.
 - **Tasks in V1:** only the ones that unlock a Collectible.
 - **Sub-areas:** a text label (`area`) on each entry, with no pages or unlock logic of their own.
-- **Data authorship:** script-assisted drafts from the wiki, always rewritten and verified by a person (see section 8).
+- **Data authorship:** written by Athos from his own play and checked against the main wiki read by hand, in our own words (Athos, 2026-10-20; there is no draft script; see section 8).
 - **Hosting:** GitHub Pages from the start (see section 10).
 - **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids) and `0004` (own Firebase project), in `docs/adr/`.
 
@@ -86,7 +86,6 @@ silksong-guide/
 │   └── sample/             # layout-only sample data; NOT guide facts (see data/sample/README.md)
 ├── img/regions/            # one hero image per Region (see docs/IMAGES.md)
 ├── tools/
-│   └── draft-from-wiki.js  # makes drafts from the wiki (human review mandatory)
 ├── scripts/
 │   └── validate-data.js    # data validator (run in CI and before each commit that touches data/)
 ├── tests/                  # node:test files
@@ -176,7 +175,7 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 ## 8. Data: license and accuracy
 
 - The wiki and MapGenie are **references**. Content is written in our own words, with a link in `source`. Never copy text and never scrape MapGenie data.
-- **Draft script (`tools/draft-from-wiki.js`):** reads only the main wiki, only after reviewing its terms of use and content license, and respecting request limits. The output is a draft: a person rewrites each text in their own words and checks the fact before it enters `data/`. The script never copies images or audio from the wiki (the wiki itself marks them as fair use, not free content).
+- **No draft script** (Athos, 2026-10-20, checklist item 4). The plan had a script that drafted entries from the wiki. It was dropped: the main wiki blocks automated reading, and Fextralife's terms (Valnet) forbid scraping and rewriting their content for publication. Entries are written by Athos from his own play, checked against the main wiki read by hand in a browser, with other guides used only to cross-check a fact. Agents never fetch hollowknight.wiki or Fextralife. Research: `docs/research/2026-10-20-sources-and-batch-1.md`.
 - Check a sample of entries against the wiki at every data revision.
 - Before publishing, review the terms and license of each source and include attribution on the page.
 - **Region hero images** are the one exception to "no game images", and it is Athos's decision: his own screenshots, shown with a credit to Team Cherry. They are small, replaceable single files; see `docs/IMAGES.md`. A hand-drawn fallback exists in `docs/design/art/`.
@@ -197,7 +196,6 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 ## 11. Open points
 
 - Confirm on the wiki the first three Regions of batch 1 and the exact scope of each.
-- Review the wiki's license and terms of use before using the draft script.
 - Strategy for updating the data when the game gets patches or DLC.
 - How to handle the global Route when one `step` depends on a player choice (Endings with `locksOut`). The Route screen has a "Choice point" marker for this; the data rule is still open.
 - Whether to keep game screenshots as hero images on the public site (see section 8 and `docs/IMAGES.md`).

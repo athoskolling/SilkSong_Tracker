@@ -12,7 +12,7 @@ paths:
 - **Our own words.** `how`, `summary` and every other text are written in our own words. Never paste wiki text. Keep `how` short (under about 300 characters).
 - **Every entry has a `source`** (a link to the wiki or MapGenie page). It is a reference, not a copy.
 - **Never scrape MapGenie.** Read single pages by hand if you must; do not collect its data.
-- **The wiki draft script** (`tools/draft-from-wiki.js`) only reads the main wiki, only after Athos has reviewed its license and terms (see `docs/PHASE-0-CHECKLIST.md`), with request limits and a delay. Its output goes to `tools/drafts/` (git-ignored), never straight into `data/`. A person rewrites and verifies every entry before it enters `data/`. The script never downloads images or audio.
+- **No draft script** (Athos, 2026-10-20). Entries come from Athos, written from his own play and checked against the main wiki by hand. Agents never fetch hollowknight.wiki (it blocks bots) or Fextralife (its terms forbid automated access and rewriting for publication). A `source` link to either is fine: a link is not a copy.
 - **No facts from memory.** Do not fill in game facts, step numbers or requirements from what you think you remember. Anything in `docs/design/` and `data/sample/` is invented layout content, not data.
 - **Collectible or Task.** Only Collectibles count. A Task goes into batch 1 only if it unlocks a Collectible.
 - **`missable`** is optional (default `false`). If `true`, `missableNote` says when and why.

@@ -14,8 +14,8 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
   - URL: https://athoskolling.github.io/SilkSong_Tracker/ (on, returns 200, checked by the orchestrator 2026-10-19)
 - [x] **3. Firebase authorized domain.** In the Firebase console (project `silksong-tracker-90229`), Authentication, Settings, Authorized domains, add `<user>.github.io`. Without it, sign-in fails on the published site.
   - Done 2026-10-19 (Athos).
-- [ ] **4. Wiki license and terms.** Read the main wiki's terms of use and content license. Decide whether the draft script may read it and with what limits. Until this is checked, nobody reads the wiki in bulk, runs `tools/draft-from-wiki.js` or starts wiki checks.
-  - Wiki: ________  Decision: allowed / not allowed / allowed with limits: ________
+- [x] **4. Wiki license and terms.** Read the main wiki's terms of use and content license. Decide whether the draft script may read it and with what limits. Until this is checked, nobody reads the wiki in bulk, runs `tools/draft-from-wiki.js` or starts wiki checks.
+  - Wiki: hollowknight.wiki (license name: ________, Athos to fill in from its footer).  Decision (Athos, 2026-10-20): **no draft script.** Entries are written by Athos from his own play and checked against the main wiki read by hand in a browser, one page at a time, in our own words, with a `source` link. Other guides only cross-check facts and are never the text we rewrite. Agents never fetch hollowknight.wiki (it blocks bots) or Fextralife (its terms forbid automated access); web search results are fine.
   - Research prepared by the orchestrator (2026-10-20), not a decision: `docs/research/2026-10-20-sources-and-batch-1.md`. hollowknight.wiki blocks automated reading (HTTP 403), so its license must be read in a browser; Fextralife's terms (Valnet) forbid scraping and "rewriting for publication".
 - [x] **5. Current Firestore rules.** Copy the rules the project has now (Firebase console, Firestore, Rules) into `firebase/` and say which repository owns the deployed rules.
   - Done 2026-10-19: `firebase/SilkSong_Tracker.rules` (the default deny-all rules). The project is Silksong Guide's own, separate from Hollow-Thingy (ADR 0004), so this repository owns its ruleset and `firestore.rules` is written from scratch.
@@ -23,8 +23,8 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
   - Config received 2026-10-19 (project `silksong-tracker-90229`); Dev A puts it in `js/firebase-config.js`. Enabled (Athos, 2026-10-19): Google and email link. GitHub is not enabled; the Account screen hides its button until it is.
 - [x] **7. Contracts.** Read `docs/CONTRACTS.md` with the orchestrator and approve it. Confirm or change the assumption that importing a backup adds to existing Progress (union) and never removes anything.
   - Approved 2026-10-19. Import is a union. Firebase SDK from gstatic allowed (pinned, only in `js/firebase.js`).
-- [ ] **8. First batch.** Confirm on the wiki that Moss Grotto, The Marrow and Deep Docks are the first three Regions, and the scope of each.
-  - Research prepared (2026-10-20), not a decision: same file. Open question: is Bone Bottom a Region or a Sub-area of Moss Grotto?
+- [x] **8. First batch.** Confirm on the wiki that Moss Grotto, The Marrow and Deep Docks are the first three Regions, and the scope of each.
+  - Confirmed by Athos (2026-10-20): batch 1 is **Moss Grotto, The Marrow and Deep Docks**; **Bone Bottom is a Sub-area of Moss Grotto**. Research: `docs/research/2026-10-20-sources-and-batch-1.md`.
 - [ ] **9. Hero images.** Decide whether game screenshots stay as Region heroes on the public site (see "Rights and risk" in `docs/IMAGES.md`), and send the images you want (`img/incoming/`).
 
 ## Orchestrator's tasks
@@ -35,4 +35,4 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
 - [x] Set the branch convention: one branch per agent task (`dev-a/<topic>`, `dev-b/<topic>`, `qa-tests/<topic>`, `qa-manual/<topic>`). Recorded in `docs/AGENT-PLAN.md` section 6.
 - [x] Output: contracts approved by Athos (item 7 above).
 
-Item 5 was checked before items 1 to 3. Phase 0 is done when the orchestrator's tasks and Athos's items 1, 2, 3, 5, 6 and 7 are checked. Items 4 and 8 gate Phase 3 and the wiki parts of QA; item 9 gates only the images.
+Item 5 was checked before items 1 to 3. Phase 0 is done when the orchestrator's tasks and Athos's items 1, 2, 3, 5, 6 and 7 are checked. Items 4 and 8 gate Phase 3 and the wiki parts of QA (both checked 2026-10-20); item 9 gates only the images.

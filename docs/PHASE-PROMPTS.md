@@ -42,11 +42,10 @@ Merge one branch at a time, run tests and the validator after each merge, and re
 
 ## Phase 3: Real data, in batches
 
-Repeat for each batch. Batch 1 is Moss Grotto, The Marrow and Deep Docks.
+Repeat for each batch. Batch 1 is Moss Grotto (Bone Bottom is a Sub-area of it), The Marrow and Deep Docks. There is no draft script (checklist item 4, Athos, 2026-10-20).
 
 ```
-Start Phase 3 for batch <N>: <Regions>. Check docs/PHASE-0-CHECKLIST.md first: if item 4 (wiki license and terms) is not checked, stop and tell me; we do not read the wiki in bulk until it is.
-Plan: dev-a writes or updates tools/draft-from-wiki.js (reads only the main wiki, with limits, output to tools/drafts/, no images or audio), runs it for the batch, and gives me the drafts. I rewrite every text in my own words and verify each fact; nothing enters data/ without that. dev-a then standardizes my rewritten entries into data/*.json with source and dataVersion, and runs the validator. qa-tests runs the validator and the tests. qa-manual checks a sample of at least 10 percent (never fewer than 5 entries) against the wiki and writes qa/reports/. Report the findings to me, routed to the file owner. Do not fill in any fact yourself.
+Start Phase 3 for batch <N>: <Regions>. I write the entries in docs/PHASE-3-BATCH-<N>.md from my own play, checked against the main wiki by hand. You cross-check facts with web searches (never fetching hollowknight.wiki or Fextralife) and tell me every disagreement; you do not fill in any fact yourself. When I say a Region is ready: dev-a turns it into data/*.json (ids, steps, requires, source, one dataVersion raise for the batch) and runs the validator; qa-tests runs the validator and the tests; qa-manual checks the screens with the new data. I check at least 10 percent of entries (never fewer than 5) against the main wiki myself. Report findings routed to the file owner.
 ```
 
 ## Phase 4: Integration and QA
