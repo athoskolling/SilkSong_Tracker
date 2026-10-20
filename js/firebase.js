@@ -12,7 +12,7 @@
 import { firebaseConfig } from './firebase-config.js';
 
 // One pinned version for all three SDK files. Change it here and nowhere else.
-// Raise it deliberately and re-test sign-in by hand (tools/auth-check.html).
+// Raise it deliberately and re-test sign-in by hand on account.html (Google and an email link).
 const SDK_VERSION = '12.19.0';
 const SDK_BASE = `https://www.gstatic.com/firebasejs/${SDK_VERSION}`;
 
