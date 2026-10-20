@@ -58,13 +58,12 @@ test('isAvailable: an unknown entry id throws', () => {
   assert.throws(() => isAvailable('nope', done(), [item('a', 1)], [region('r1', 1)]), /nope/);
 });
 
-// Contract question, not a confirmed bug: section 2 says unknown ids throw, but isAvailable only
-// throws for the itemId argument. An unknown id inside `requires` makes it return false here,
-// while missingFor and holdingYouUp throw. The orchestrator decides which behaviour is wanted.
-test('isAvailable: an unknown id inside requires throws (open question, see todo reason)', {
-  todo: 'open question: isAvailable returns false for an unknown requires id; missingFor and holdingYouUp throw',
-}, () => {
+// Contract section 2 (2026-10-20): an unknown id inside any `requires` the function reads throws,
+// whether the id is done or not (a typo is a data bug whatever the player has marked).
+test('isAvailable: an unknown id inside requires throws', () => {
   assert.throws(() => isAvailable('a', done(), [item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+  assert.throws(() => isAvailable('a', done('ghost'), [item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+  assert.throws(() => isAvailable('a', done(), [item('a', 1)], [region('r1', 1, ['ghost'])]), /ghost/);
 });
 
 // ------------------------------------------------------------------ missingFor
@@ -190,6 +189,13 @@ test('isRegionAvailable: no requirements is Available; otherwise needs them all'
   assert.equal(isRegionAvailable('shut', done('k1', 'k2'), regions), true);
 });
 
+// isRegionAvailable gets no items, so it cannot tell a typo from a real entry id. It can still
+// catch a Region id used in `requires` (requires holds entry ids only).
+test('isRegionAvailable: a Region id inside requires throws', () => {
+  const regions = [region('r1', 1), region('r2', 2, ['r1'])];
+  assert.throws(() => isRegionAvailable('r2', done(), regions), /r1/);
+});
+
 test('isRegionAvailable: an unknown Region throws', () => {
   assert.throws(() => isRegionAvailable('nope', done(), [region('r1', 1)]), /nope/);
 });
@@ -261,6 +267,11 @@ test('nextStep: skips done entries and entries that are not Available', () => {
 test('nextStep: does not depend on the order of the items array', () => {
   const items = [item('c', 3), item('a', 1), item('b', 2)];
   assert.equal(nextStep(done(), items, [region('r1', 1)]), 'a');
+});
+
+test('nextStep: an unknown id inside requires throws', () => {
+  assert.throws(() => nextStep(done(), [item('a', 1, ['ghost'])], [region('r1', 1)]), /ghost/);
+  assert.throws(() => nextStep(done(), [item('a', 1)], [region('r1', 1, ['ghost'])]), /ghost/);
 });
 
 test('nextStep: null when everything is done or nothing is Available', () => {

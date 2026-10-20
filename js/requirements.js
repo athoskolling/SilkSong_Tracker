@@ -14,9 +14,11 @@
 
 // Looking an id up in an array every time is slow and repetitive, so we index the arrays once
 // per public call. `items` and `regions` are not changed.
+// `items` may be left out (isRegionAvailable has no items argument); then `itemsById` is null and
+// ids inside a Region's `requires` can only be checked against the Region ids.
 function buildIndex(items, regions) {
   return {
-    itemsById: new Map(items.map((item) => [item.id, item])),
+    itemsById: items ? new Map(items.map((item) => [item.id, item])) : null,
     regionsById: new Map(regions.map((region) => [region.id, region])),
   };
 }
@@ -38,13 +40,28 @@ function getRegion(index, id) {
 // An entry can only be reached inside its Region, so its real requirements are its own
 // `requires` plus its Region's `requires`. Keeping that rule here means the data never has to
 // copy a Region's requirements onto every entry.
+//
+// Every id in the list is checked here, done or not: a typo in `requires` is a data bug whatever the
+// player has marked, and the list is being read either way. (The ids inside doneSet are not checked;
+// Progress may keep ids that no longer exist, and that is fine.)
 function requirementsOfItem(index, item) {
   const region = getRegion(index, item.regionId);
-  return [...(item.requires ?? []), ...(region.requires ?? [])];
+  const ids = [...(item.requires ?? []), ...(region.requires ?? [])];
+  ids.forEach((id) => getItem(index, id));
+  return ids;
 }
 
+// Without items we cannot tell a typo from a real entry id, but an id that is a Region id is wrong
+// for sure: ids are globally unique and `requires` holds entry ids only.
 function requirementsOfRegion(index, regionId) {
-  return getRegion(index, regionId).requires ?? [];
+  const ids = getRegion(index, regionId).requires ?? [];
+  for (const id of ids) {
+    if (index.itemsById) getItem(index, id);
+    else if (index.regionsById.has(id)) {
+      throw new Error(`Unknown entry id "${id}": it is a Region id, and requires holds entry ids only.`);
+    }
+  }
+  return ids;
 }
 
 // The chain walk. Starting from a list of requirement ids, collect every entry id that is not
@@ -66,6 +83,7 @@ function walkMissing(index, doneSet, startRequires, startId) {
 
   function visit(ids) {
     for (const id of ids) {
+      getItem(index, id); // a typo throws even when the id is done
       if (doneSet.has(id)) continue;
       if (path.includes(id)) {
         throw new Error(`Cycle in requires: ${[...path.slice(path.indexOf(id)), id].join(' -> ')}.`);
@@ -142,7 +160,7 @@ export function regionProgress(regionId, doneSet, items) {
 
 // Can the player enter the Region? True when every id in the Region's `requires` is done.
 export function isRegionAvailable(regionId, doneSet, regions) {
-  return regionIsAvailable(buildIndex([], regions), regionId, doneSet);
+  return regionIsAvailable(buildIndex(undefined, regions), regionId, doneSet);
 }
 
 // Like missingFor, but for a Region: what is still missing for it to open, following the chain
