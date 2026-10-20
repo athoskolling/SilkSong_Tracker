@@ -66,6 +66,11 @@ export function renderMessage(app, message) {
 
 // ------------------------------------------------------------------- the shell
 
+// "hero--picture" switches on the text band in css/components.css, which a hero without a picture does not need.
+function heroClasses(locked, hasPicture) {
+  return ['hero', locked ? 'hero--locked' : '', hasPicture ? 'hero--picture' : ''].filter(Boolean).join(' ');
+}
+
 // The parts that do not change when the player marks something: hero, title, start thread.
 // Built once per Region (and again only if the Region flips between Locked and Available).
 // Returns the element that renderBody fills.
@@ -88,7 +93,7 @@ export function renderShell(app, view) {
 
   const hero = h(
     'section',
-    { class: locked ? 'hero hero--locked' : 'hero' },
+    { class: heroClasses(locked, Boolean(image)) },
     image,
     h('div', { class: 'hero-shade' }),
     h('div', { class: 'hero-shade hero-shade--title' }),
@@ -396,25 +401,38 @@ function pluralEntries(n) {
 // "Blocks <entry> and 1 more entry in <Region>", "Blocks the region <Region>" (DESIGN.md section 6).
 // item = { entries: [{ name, regionName }], regions: [name] }. The "rail" variant (Route page) is
 // shorter and gives a count, because the rail is narrow.
+//
+// A Region is named once. Entries that sit inside a Region that is itself blocked are counted into
+// that Region's part ("the region X and its 2 entries") and are not named again on their own.
 export function blocksText(item, variant = 'full') {
-  const regionPart = item.regions.length
-    ? `the ${item.regions.length === 1 ? 'region' : 'regions'} ${joinNames(item.regions)}`
-    : '';
-  if (item.entries.length === 0) return `Blocks ${regionPart}.`;
+  const inBlockedRegion = (entry) => item.regions.includes(entry.regionName);
+  const covered = item.entries.filter(inBlockedRegion);
+  const others = item.entries.filter((entry) => !inBlockedRegion(entry));
 
-  let entryPart;
-  const first = item.entries[0];
-  const rest = item.entries.length - 1;
-  if (variant === 'rail') {
-    entryPart = pluralEntries(item.entries.length);
-  } else if (rest === 0) {
-    entryPart = `${first.name} in ${first.regionName}`;
-  } else if (item.entries.every((entry) => entry.regionName === first.regionName)) {
-    entryPart = `${first.name} and ${rest} more ${rest === 1 ? 'entry' : 'entries'} in ${first.regionName}`;
-  } else {
-    entryPart = `${first.name} and ${rest} more ${rest === 1 ? 'entry' : 'entries'}`;
+  let regionPart = '';
+  if (item.regions.length) {
+    const one = item.regions.length === 1;
+    regionPart = `the ${one ? 'region' : 'regions'} ${joinNames(item.regions)}`;
+    if (covered.length) regionPart += ` and ${one ? 'its' : 'their'} ${pluralEntries(covered.length)}`;
   }
-  return regionPart ? `Blocks ${entryPart} and ${regionPart}.` : `Blocks ${entryPart}.`;
+
+  const entryPart = otherEntriesText(others, variant, covered.length > 0);
+  if (!entryPart) return `Blocks ${regionPart}.`;
+  if (!regionPart) return `Blocks ${entryPart}.`;
+  // A Region part that counted entries has its own "and", so it leads and the rest follows after a comma.
+  return covered.length ? `Blocks ${regionPart}, and ${entryPart}.` : `Blocks ${entryPart} and ${regionPart}.`;
+}
+
+// The blocked entries that are not inside a blocked Region. `also` is true when the sentence has
+// already counted other entries, so the rail's bare count says "other" and is not read as a repeat.
+function otherEntriesText(entries, variant, also) {
+  if (entries.length === 0) return '';
+  if (variant === 'rail') return also ? `${entries.length} other ${entries.length === 1 ? 'entry' : 'entries'}` : pluralEntries(entries.length);
+  const first = entries[0];
+  const rest = entries.length - 1;
+  if (rest === 0) return `${first.name} in ${first.regionName}`;
+  const more = `${first.name} and ${rest} more ${rest === 1 ? 'entry' : 'entries'}`;
+  return entries.every((entry) => entry.regionName === first.regionName) ? `${more} in ${first.regionName}` : more;
 }
 
 // The list used on Home and in the Route rail. items: [{ id, name, kind, entries, regions }]
@@ -672,12 +690,17 @@ function routeRail(view) {
       view.holding.length
         ? holdingList(view.holding, 'rail')
         : h('p', { class: 'plate-help' }, 'Nothing is blocked right now.')
-    ),
-    h(
-      'p',
-      { class: 'plate-help' },
-      'A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
     )
+  );
+}
+
+// The legend sits after the list (DESIGN.md section 6), on a phone too. It used to be the rail's last
+// line, but the rail comes first on a phone, which put the legend above the list.
+function routeLegend() {
+  return h(
+    'p',
+    { class: 'plate-help route-legend' },
+    'A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
   );
 }
 
@@ -691,7 +714,8 @@ function routeList(view) {
   return h(
     'div',
     { class: 'main-column route-list' },
-    ...view.groups.map((group, i) => routeGroup(group, i === view.groups.length - 1))
+    ...view.groups.map((group, i) => routeGroup(group, i === view.groups.length - 1)),
+    routeLegend()
   );
 }
 
