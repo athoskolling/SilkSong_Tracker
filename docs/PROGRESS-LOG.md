@@ -79,6 +79,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **T21 merged** (`dev-b/self-host-fonts`): Gloock and Instrument Sans (variable) served from `css/fonts/` (127 KB of woff2, unmodified conversions of the `google/fonts` files at recorded commits, OFL texts beside them); Google Fonts links removed from every page. Orchestrator ran: 185 tests pass, validator passes; in a real browser every page contacts only the site and `www.gstatic.com` (the Firebase SDK), both fonts render, no 4xx. Recorded in `docs/DESIGN.md` section 4. Pushed.
 
+- **Research for checklist items 4 and 8** (orchestrator, at Athos's request; findings only, boxes not ticked): `docs/research/2026-10-20-sources-and-batch-1.md`. hollowknight.wiki blocks automated reading (403), so Athos reads its license in a browser; Fextralife's terms forbid scraping and rewriting for publication, so it is not a drafting source (links are fine). Batch 1 order confirmed by the guides; open: Bone Bottom as a Region or a Sub-area.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
