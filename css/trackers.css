@@ -1,0 +1,112 @@
+/* trackers.css: the few pieces the Trackers page needs (docs/design/trackers/trackers.css is the mockup's
+   version). Everything else comes from base.css and components.css (tokens, header, hero, plates, thread,
+   beads and knots, bars, switches). Colors are tokens only. Loaded by the Trackers page, so Home, Region,
+   Route and Account are untouched. The Rosaries and Builds pages add their own pieces to this file. */
+
+/* ----------------------------------------------------------------- Trackers tabs */
+
+/* Desktop: a row of text tabs on a dashed thread. The selected tab is stitched with a solid silk line
+   (a thicker line and a heavier weight, so it is not color alone). The count sits under the name so six
+   tabs fit the column. */
+.tk-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  margin: 0 0 44px;
+  padding: 0;
+  border-bottom: 2px dashed var(--track);
+}
+
+.tk-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+  min-height: 56px;
+  margin-bottom: -2px;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ash);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+}
+.tk-tab:hover { color: var(--ivory); }
+.tk-tab[aria-selected="true"] { color: var(--ivory); font-weight: 600; border-bottom-color: var(--silk); }
+
+.tk-tab-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ash);
+}
+.tk-tab.is-complete .tk-tab-count { color: var(--bronze); }
+.tk-tab.is-complete .state-dot { width: 8px; height: 8px; }
+
+/* Phone: two columns of buttons. Selected is solid silk with a faint fill, the others dashed, so the
+   difference is a line style as well as a color. Each cell is at least 56px tall. */
+@media (max-width: 600px) {
+  .tk-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 36px;
+    border-bottom: 0;
+  }
+  .tk-tab {
+    margin: 0;
+    padding: 8px 12px;
+    border: 1.5px dashed var(--thread);
+  }
+  .tk-tab[aria-selected="true"] { border: 1.5px solid var(--silk); background: var(--next-fill); }
+}
+
+/* ------------------------------------------------------------------- tab panel */
+
+/* The panel takes focus only from a script (it is tabindex -1), so it needs no ring of its own. */
+.tk-panel:focus { outline: none; }
+
+.tk-panel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.tk-panel-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.tk-state { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ash); }
+
+.tk-summary { max-width: 440px; margin-top: 22px; }
+.tk-note { max-width: 60ch; margin-top: 16px; font-size: 14px; line-height: 1.6; color: var(--ash); }
+.tk-list { margin-top: 40px; }
+.tk-list .entry { padding-bottom: 32px; }
+.tk-list .entry:last-child { padding-bottom: 0; }
+
+/* "Not counted": a quiet outlined tag. Text is ash on night (well above 4.5 to 1); the dashed outline is
+   decoration, the words carry the meaning. */
+.entry-meta .flag-uncounted {
+  padding: 0 8px;
+  border: 1px dashed var(--thread);
+  color: var(--ash);
+  line-height: 1.5;
+}
+
+/* The Region name in an entry's meta line is a link. Same quiet color as the text around it; the
+   underline says it is a link. The padding with an equal negative margin grows the hit area, as for the
+   Source link, without moving the line. */
+.entry-meta .region-link {
+  position: relative;
+  display: inline-block;
+  padding: 15px 6px;
+  margin: -15px -6px;
+  color: var(--ash);
+  line-height: 1.2;
+}
+.entry-meta .region-link:hover { color: var(--silk); }

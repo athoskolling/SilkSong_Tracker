@@ -973,3 +973,193 @@ function signedInParts(view) {
     ),
   ];
 }
+
+// ------------------------------------------------------------------ trackers
+
+// The Trackers page: a short hero, a row of tabs, one panel for the selected tab and a side plate.
+// Built once. Returns the three elements renderTrackersBody fills.
+export function renderTrackersShell(app) {
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h(
+      'div',
+      { class: 'frame' },
+      h('h1', { class: 'hero-title' }, 'Trackers'),
+      h(
+        'p',
+        { class: 'hero-intro' },
+        'Mark what you have, one type at a time. Each tab keeps its own count; the 100 percent count stays on Home.'
+      )
+    )
+  );
+
+  const tabs = h('div', { class: 'tk-tabs', role: 'tablist', 'aria-label': 'Trackers' });
+  const main = h('div', { class: 'main-column' });
+  const rail = h('aside', { class: 'plate plate--rail', 'aria-label': 'Options' });
+  app.replaceChildren(
+    hero,
+    h(
+      'div',
+      { class: 'frame' },
+      h(
+        'div',
+        { class: 'content' },
+        h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }),
+        tabs,
+        h('div', { class: 'layout' }, main, rail)
+      )
+    )
+  );
+  return { tabs, main, rail };
+}
+
+// view: see runTrackersPage in trackers-page.js.
+export function renderTrackersBody(parts, view) {
+  parts.tabs.replaceChildren(...view.tabs.map(trackerTab));
+  parts.main.replaceChildren(trackerPanel(view.panel));
+  parts.rail.replaceChildren(
+    h('div', { class: 'toggles' }, switchControl('show-all', 'Show everything, spoilers included', view.showAll)),
+    h(
+      'p',
+      { class: 'plate-help' },
+      'A bead is something you can obtain. A knot is a task: it adds nothing by itself but opens something else. Not counted means an entry is tracked here but does not add to the 100 percent count on Home.'
+    )
+  );
+}
+
+// One tab. Only the selected tab is in the tab order; the arrow keys move between tabs (trackers-page.js).
+function trackerTab(tab) {
+  let count;
+  if (tab.state === 'empty') {
+    count = 'Not in the guide yet';
+  } else {
+    count = [
+      tab.state === 'complete' ? h('span', { class: 'state-dot state-dot--complete', 'aria-hidden': 'true' }) : null,
+      h('span', { class: 'num' }, `${tab.done} of ${tab.total}`),
+      tab.state === 'complete' ? h('span', { class: 'visually-hidden' }, ' complete') : null,
+    ];
+  }
+  return h(
+    'button',
+    {
+      type: 'button',
+      role: 'tab',
+      class: tab.state === 'complete' ? 'tk-tab is-complete' : 'tk-tab',
+      id: `tab-${tab.id}`,
+      'aria-selected': String(tab.selected),
+      'aria-controls': 'tracker-panel',
+      tabindex: tab.selected ? '0' : '-1',
+      'data-action': 'select-tab',
+      'data-tab': tab.id,
+      'data-focus-key': `tab:${tab.id}`,
+    },
+    h('span', {}, tab.label),
+    h('span', { class: 'tk-tab-count' }, count)
+  );
+}
+
+function trackerPanel(panel) {
+  const attrs = { class: 'tk-panel', role: 'tabpanel', id: 'tracker-panel', 'aria-labelledby': `tab-${panel.id}`, tabindex: '-1' };
+
+  if (panel.empty) {
+    return h(
+      'section',
+      attrs,
+      h(
+        'div',
+        { class: 'plate' },
+        h('h2', { class: 'plate-heading' }, 'Not in the guide yet'),
+        h('p', { class: 'plate-text' }, 'Its entries ship in a later batch. Nothing here changes your totals until they do.')
+      )
+    );
+  }
+
+  const complete = panel.state === 'complete';
+  let stateLine = null;
+  if (complete) {
+    stateLine = h('span', { class: 'tk-state' }, h('span', { class: 'state-dot state-dot--complete', 'aria-hidden': 'true' }), 'Complete');
+  } else if (panel.state === 'nothing') {
+    stateLine = h('span', { class: 'tk-state' }, 'Nothing marked yet');
+  }
+
+  // A finished tab is bronze whatever it holds. Otherwise the bar is silk when something here counts toward
+  // 100 percent, and quiet (ash) when nothing does.
+  const kind = complete || panel.hasCounted ? 'collectibles' : 'tasks';
+
+  return h(
+    'section',
+    attrs,
+    h('div', { class: 'tk-panel-head' }, h('h2', { class: 'tk-panel-title' }, panel.label), stateLine),
+    h(
+      'div',
+      { class: 'tk-summary' },
+      countBlock(kind, 'Done', { done: panel.done, total: panel.total }, { needle: !complete, complete })
+    ),
+    h('p', { class: 'tk-note' }, panel.note),
+    h('ol', { class: 'entries tk-list' }, ...panel.rows.map(trackerRow), panel.hiddenCount ? trackerHiddenRow(panel) : null)
+  );
+}
+
+// One entry on the thread. The Region name links to its page (T31, as on the Route), so there is no
+// separate "Open region" link.
+function trackerRow(entry) {
+  const needsId = `needs-${entry.id}`;
+  const threadClasses = ['entry-thread'];
+  if (entry.done) threadClasses.push('is-clear');
+  if (!entry.available) threadClasses.push('is-blocked');
+
+  const toggle = h(
+    'button',
+    {
+      type: 'button',
+      class: 'entry-mark',
+      'aria-pressed': String(entry.done),
+      'aria-label': entry.name,
+      'aria-describedby': entry.needs ? needsId : null,
+      'data-action': 'toggle-done',
+      'data-id': entry.id,
+      'data-focus-key': `done:${entry.id}`,
+    },
+    h('span', { class: markClasses(entry) })
+  );
+
+  return h(
+    'li',
+    { class: entry.done ? 'entry is-done' : 'entry' },
+    h('div', { class: 'entry-rail' }, h('span', { class: threadClasses.join(' '), 'aria-hidden': 'true' }), toggle),
+    h(
+      'div',
+      { class: 'entry-body' },
+      h('div', { class: 'entry-head' }, h('span', { class: 'entry-name' }, entry.name)),
+      h(
+        'div',
+        { class: 'entry-meta' },
+        h('span', {}, typeLabel(entry.type)),
+        h('a', { class: 'region-link', href: entry.regionHref }, entry.regionName),
+        entry.area ? h('span', {}, entry.area) : null,
+        entry.uncounted ? h('span', { class: 'flag-uncounted' }, 'Not counted') : null,
+        sourceLink(entry)
+      ),
+      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+    )
+  );
+}
+
+// Entries in Regions the player has not visited: a count, no names (the spoiler rule of the Region page).
+function trackerHiddenRow(panel) {
+  const text = `${pluralEntries(panel.hiddenCount)} hidden until you visit ${panel.hiddenRegions === 1 ? 'its region' : 'their regions'}.`;
+  return h(
+    'li',
+    { class: 'entry entry--hidden' },
+    h(
+      'div',
+      { class: 'entry-rail' },
+      h('span', { class: 'entry-thread', 'aria-hidden': 'true' }),
+      h('span', { class: 'mark mark--bead mark--static mark--region', 'aria-hidden': 'true' })
+    ),
+    h('div', { class: 'entry-body' }, h('p', { class: 'entry-note' }, text))
+  );
+}
