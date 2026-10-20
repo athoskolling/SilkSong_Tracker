@@ -1,5 +1,5 @@
 {
-  "dataVersion": 2,
+  "dataVersion": 3,
   "items": [
     {
       "id": "moss-mother",
@@ -33,10 +33,11 @@
       "kind": "task",
       "type": "key",
       "regionId": "moss-grotto",
-      "how": "A merchant sells it for 500 Rosaries. Guides disagree on which shop (Bone Bottom or the Bone Marrow area), so the shop is unconfirmed; Athos will check. It opens locked gates such as the one to Flintslate.",
+      "area": "Bone Bottom",
+      "how": "Buy it from Pebb, the merchant in the middle of Bone Bottom, for 500 Rosaries; he sells only one. It opens locked gates, such as the one to Flintslate.",
       "requires": [],
       "step": 25,
-      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/simple-key"
     },
     {
       "id": "spool-fragment-moss-grotto",
