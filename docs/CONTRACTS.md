@@ -182,6 +182,8 @@ configureProgress({ items /* the items array */, dataVersion /* integer */ }) ->
 // Optional `sample: true` (added 2026-10-20, QA finding F4): the page is showing data/sample. Progress then
 // lives under its own key, `silksong-guide:progress:sample:v1`, and never touches the cloud, so invented
 // sample ids can never mix with a real Run or be synced to an account. Sync status stays 'local'.
+// One-way for the page session: a later call without the flag does not switch back or restart the
+// cloud (each page calls configureProgress once per load; T16, confirmed by the orchestrator).
 
 loadProgress() -> Promise<{ done: Set<string>, visited: Set<string> }>
 // Local first: resolves at once from localStorage and never waits on the network. When signed in,

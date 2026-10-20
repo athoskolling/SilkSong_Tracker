@@ -62,6 +62,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
   - Decided and recorded: F3 requirement names are shown on Locked pages (spoiler hiding covers a Region's own entries; STRUCTURE section 2); F7 phone order follows DESIGN text; F8 decorative contrast accepted; F9 plain gradient heroes; F10 "saved" as a verb is fine (GLOSSARY).
   - Raised with Athos: Google Fonts and privacy; `silk-spear`'s source is the Region page.
 
+- **T16 merged** (`dev-a/sample-key`): with `configureProgress({ sample: true })` Progress uses `silksong-guide:progress:sample:v1` and the cloud half is stopped (listeners, in-flight reads and late sign-ins included); one-way per page session. Error messages in `firebase.js` now say what to do next. Orchestrator ran: 185 tests pass, 0 todo; validator passes. Takes effect once T17 passes the flag from `main.js`.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
