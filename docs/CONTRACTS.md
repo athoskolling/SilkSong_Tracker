@@ -274,6 +274,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - Read data through a small `data.js`-style loader owned by Dev B that fetches `data/*.json` with relative URLs.
 - Read Progress and requirements only through the functions above.
 - Each page sets `<body data-page="home|region|route|account">`; `main.js` picks behaviour from it.
+- Exception (Phase 2): `account.html` also loads `js/account-page.js`, which builds the Backup file, Start a new run, How saving works and Guide data sections. `main.js` keeps the sign-in plate. Why: it lets the Account page and the Home and Route pages be built at the same time without two people editing `main.js` and `render.js`. It may be folded into `main.js` later.
 - Every state in the design has a visible equivalent in the interface: Available, Locked, Visited, Complete, Not in the guide yet, next on the route, missable, needs something, done.
 
 ## 6. Cross-checks the validator must enforce (`scripts/validate-data.js`)
@@ -294,6 +295,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - 2026-10-19, Phase 1: `configureProgress` added to `progress.js` (entry -> Region map and `dataVersion`); `watchProgressDoc` gets an optional `onError`; behaviours found while building T1 recorded (no-op changes, immediate `onSyncStatus` call, how `clearProgress` writes locally, the `useStorage` test seam). Approved by Athos.
 - 2026-10-19, Phase 1 (T3): `loadProgress` returns local Progress at once and delivers the cloud merge through `onProgressChange`, instead of waiting for the cloud (a slow network must never block the page; Athos let the orchestrator decide). `useCloud` test seam recorded. Known costs recorded in section 3: "Start a new run" deletes the cloud copy, but another device still holding the old run writes it back on its next change (ADR 0001, newer wins); `combined` is reported only when a cloud copy existed.
 - 2026-10-19, Phase 1: the Firebase project is the site's own (ADR 0004). No signature changed.
+- 2026-10-19, Phase 2: `account.html` loads `js/account-page.js` as well as `main.js` (section 5), so Home, Route and the rest of Account can be built in parallel with one owner per file. No signature changed. The slice taught nothing else that changes a contract.
 
 ## 8. Open contract questions
 

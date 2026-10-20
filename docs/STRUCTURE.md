@@ -76,6 +76,7 @@ silksong-guide/
 │   ├── progress.js         # local (localStorage), Firestore, export/import, merge
 │   ├── requirements.js     # resolves requirements: "what is missing for X"
 │   ├── data.js             # loads data/*.json with relative URLs
+│   ├── account-page.js     # Account page: backup, new run, how saving works, guide data (Phase 2)
 │   └── render.js           # builds the interface from the data
 ├── data/
 │   ├── regions.json        # list of Regions

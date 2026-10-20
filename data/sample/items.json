@@ -23,7 +23,9 @@
       "regionId": "sample-region-a",
       "area": "Sample sub-area",
       "how": "Sample text. A collectible that needs the sample ability first.",
-      "requires": ["sample-ability"],
+      "requires": [
+        "sample-ability"
+      ],
       "missable": false,
       "step": 2,
       "spoiler": 1,
@@ -37,7 +39,9 @@
       "regionId": "sample-region-a",
       "area": "Sample sub-area",
       "how": "Sample text. A task: tracked, but it adds nothing to the counts. It needs the sample key.",
-      "requires": ["sample-key"],
+      "requires": [
+        "sample-key"
+      ],
       "missable": false,
       "step": 3,
       "spoiler": 1,
@@ -50,7 +54,9 @@
       "type": "mask-shard",
       "regionId": "sample-region-a",
       "how": "Sample text. A collectible behind the sample door, two steps down a chain.",
-      "requires": ["sample-door"],
+      "requires": [
+        "sample-door"
+      ],
       "missable": false,
       "step": 4,
       "spoiler": 1,
@@ -76,12 +82,115 @@
       "type": "upgrade",
       "regionId": "sample-region-b",
       "how": "Sample text. A collectible that can be missed, to show the missable warning.",
-      "requires": ["sample-shard"],
+      "requires": [
+        "sample-shard"
+      ],
       "missable": true,
       "missableNote": "Sample note. It is only here to show where the reason for a missable entry goes.",
       "step": 6,
       "spoiler": 1,
       "source": "https://example.invalid/sample-charm"
+    },
+    {
+      "id": "sample-lever",
+      "name": "Pull the sample lever",
+      "kind": "task",
+      "type": "door",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A task with no requirements that opens Sample Region D.",
+      "requires": [],
+      "missable": false,
+      "step": 7,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-lever"
+    },
+    {
+      "id": "sample-crest",
+      "name": "Sample crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "sample-region-e",
+      "area": "Sample upper ledge",
+      "how": "Sample text. A collectible available from the start in a second open Region.",
+      "requires": [],
+      "missable": false,
+      "step": 8,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-crest"
+    },
+    {
+      "id": "sample-flea",
+      "name": "Sample flea",
+      "kind": "collectible",
+      "type": "flea",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A collectible that needs an entry from another Region (the sample key).",
+      "requires": [
+        "sample-key"
+      ],
+      "missable": false,
+      "step": 9,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-flea"
+    },
+    {
+      "id": "sample-quest",
+      "name": "Sample delivery",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A task that needs the sample crest and opens the next collectible.",
+      "requires": [
+        "sample-crest"
+      ],
+      "missable": false,
+      "step": 10,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-quest"
+    },
+    {
+      "id": "sample-tool-two",
+      "name": "Second sample tool",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sample-region-e",
+      "how": "Sample text. A collectible that only a task opens.",
+      "requires": [
+        "sample-quest"
+      ],
+      "missable": false,
+      "step": 11,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-tool-two"
+    },
+    {
+      "id": "sample-skill",
+      "name": "Sample silk skill",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "sample-region-d",
+      "how": "Sample text. A collectible with no requirements of its own, inside a Locked Region.",
+      "requires": [],
+      "missable": false,
+      "step": 12,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-skill"
+    },
+    {
+      "id": "sample-shard-two",
+      "name": "Second sample shard",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "sample-region-d",
+      "how": "Sample text. A missable collectible further down a chain.",
+      "requires": [
+        "sample-skill"
+      ],
+      "missable": true,
+      "missableNote": "Sample note. A second missable entry, so lists with more than one warning can be checked.",
+      "step": 13,
+      "spoiler": 1,
+      "source": "https://example.invalid/sample-shard-two"
     }
   ]
 }

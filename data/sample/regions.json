@@ -7,21 +7,44 @@
       "name": "Sample Region A",
       "order": 1,
       "summary": "A made-up Region that is open from the start.",
-      "requires": []
+      "requires": [],
+      "heroImage": "img/regions/deep-docks.png",
+      "heroPosition": "50% 40%",
+      "heroCredit": "Screenshot from Hollow Knight: Silksong, © Team Cherry."
     },
     {
       "id": "sample-region-b",
       "name": "Sample Region B",
       "order": 2,
       "summary": "A made-up Region that opens after one entry in Sample Region A.",
-      "requires": ["sample-ability"]
+      "requires": [
+        "sample-ability"
+      ]
     },
     {
       "id": "sample-region-c",
       "name": "Sample Region C",
       "order": 3,
       "summary": "A made-up Region with no entries yet, to show the Not in the guide yet state.",
-      "requires": ["sample-boss"]
+      "requires": [
+        "sample-boss"
+      ]
+    },
+    {
+      "id": "sample-region-e",
+      "name": "Sample Region E",
+      "order": 4,
+      "summary": "A made-up Region open from the start, with a requirement that reaches into Sample Region A.",
+      "requires": []
+    },
+    {
+      "id": "sample-region-d",
+      "name": "Sample Region D",
+      "order": 5,
+      "summary": "A made-up Region that opens after a task in Sample Region E.",
+      "requires": [
+        "sample-lever"
+      ]
     }
   ]
 }

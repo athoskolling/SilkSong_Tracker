@@ -36,6 +36,10 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Push without a prompt** (Athos): `.claude/settings.json` now allows `git push origin main` and plain `git push`; force pushes are denied in any argument order, including `+branch` refspecs. Athos on the published slice: he loves how the site looks and feels.
 
+- **Athos: keep going, as fast as possible, review and test everything; dev-b may help where needed.** Read as the go for stage 2 (Phase 2), running alongside his two-device sync check, which still decides Phase 1.
+- **Sample data widened** (orchestrator): two more invented Regions and seven entries, for the five Region card states, "Holding you up" and "Collectibles by type". Existing sample entries unchanged; 88 tests pass.
+- **Structure:** `account.html` also loads `js/account-page.js` (contract section 5 and 7), so Account and Home/Route are built in parallel with one owner per file.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
