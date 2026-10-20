@@ -1,5 +1,5 @@
 {
-  "dataVersion": 8,
+  "dataVersion": 9,
   "items": [
     {
       "id": "moss-mother",
@@ -2274,6 +2274,351 @@
       ],
       "step": 1350,
       "source": "https://deltiasgaming.com/?p=345659"
+    },
+    {
+      "id": "silk-and-soul",
+      "name": "Silk and Soul",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "choral-chambers",
+      "area": "Songclave",
+      "how": "The Caretaker's wish. Bring him three souls (Maiden's in Bone Bottom, Hermit's behind a fake wall below the Bellhart Bellway, Seeker's in an empty bellhome by the top Bilewater bench) and the Snare Setter; he builds the Soul Snare.",
+      "requires": [
+        "snare-setter"
+      ],
+      "step": 2000,
+      "source": "https://deltiasgaming.com/?p=340771"
+    },
+    {
+      "id": "grand-mother-silk-snared",
+      "name": "Grand Mother Silk, Soul Snare",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-cradle",
+      "how": "With the Soul Snare ready, fight Grand Mother Silk and play the Needolin at the end instead of Binding her. This is the Snared Silk Ending; reloading the save starts Act 3.",
+      "requires": [
+        "silk-and-soul"
+      ],
+      "step": 2010,
+      "source": "https://deltiasgaming.com/?p=339099"
+    },
+    {
+      "id": "curvesickle",
+      "name": "Curvesickle",
+      "kind": "collectible",
+      "counts": false,
+      "type": "tool",
+      "regionId": "far-fields",
+      "area": "Practice room above the Bellway",
+      "how": "An upgrade of the Curveclaw, found in Act 3. In the practice room above the Far Fields Bellway, hit every target with one Curveclaw throw (the Pollip Pouch does not work). A Skarr scout takes it; rest at a bench and the Curvesickle is left behind.",
+      "requires": [
+        "curveclaw",
+        "grand-mother-silk-snared"
+      ],
+      "step": 2015,
+      "source": "https://nerdschalk.com/what-is-curveclaw-in-silksong-and-how-to-upgrade-it-to-curvesickle/"
+    },
+    {
+      "id": "diving-bell-key",
+      "name": "Diving Bell Key",
+      "kind": "task",
+      "type": "key",
+      "regionId": "deep-docks",
+      "how": "In Act 3 the Caretaker's family at the Ruined Chapel sends you to the Deep Docks. Ballow moves above the old diving bell at the very bottom and hands you its key.",
+      "requires": [
+        "grand-mother-silk-snared"
+      ],
+      "step": 2020,
+      "source": "https://nerdschalk.com/your-guide-to-unlocking-old-diving-bell-in-silksong/"
+    },
+    {
+      "id": "silk-soar",
+      "name": "Silk Soar",
+      "kind": "collectible",
+      "type": "ancestral-art",
+      "regionId": "the-abyss",
+      "area": "Weavenest Absolom",
+      "how": "On the first trip down, go east past a Needolin door into Weavenest Absolom and touch the structure on the lower platform. A charged leap straight up; you need it to leave the Abyss.",
+      "requires": [],
+      "step": 2030,
+      "source": "https://www.sportskeeda.com/esports/how-get-silk-soar-hollow-knight-silksong-super-jump"
+    },
+    {
+      "id": "claw-mirrors",
+      "name": "Claw Mirrors",
+      "kind": "collectible",
+      "counts": false,
+      "type": "tool",
+      "regionId": "whispering-vaults",
+      "area": "The Stage",
+      "how": "An upgrade of the Claw Mirror. In Act 3 the Songclave wish Pain, Anguish and Misery sends you to beat Tormented Trobbio on the Stage; the Dark Mirror then joins your Claw Mirror. Needs the Claw Mirror and Silk Soar.",
+      "requires": [
+        "claw-mirror",
+        "silk-soar"
+      ],
+      "step": 2035,
+      "source": "https://rogueranker.com/?p=10606"
+    },
+    {
+      "id": "elegy-of-the-deep",
+      "name": "Elegy of the Deep",
+      "kind": "task",
+      "type": "ability",
+      "regionId": "moss-grotto",
+      "area": "Ruined Chapel",
+      "how": "Spell Seeker: back from the Abyss, talk to the Snail Shamans in the Ruined Chapel beside Bone Bottom. They teach a Needolin song that opens old memories, and send you after the Old Hearts.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2040,
+      "source": "https://gamerblurb.com/articles/hollow-knight-silksong-elegy-of-the-deep-location-unlock-guide"
+    },
+    {
+      "id": "grey-memento",
+      "name": "Grey Memento",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memento",
+      "regionId": "sands-of-karak",
+      "area": "Watcher at the Edge",
+      "how": "Use Silk Soar to reach a dormant statue, the Watcher at the Edge, at the far west edge of the Sands of Karak. Play the Needolin to wake it and beat it. One guide puts the statue in the Blasted Steps instead.",
+      "requires": [
+        "silk-soar",
+        "needolin"
+      ],
+      "step": 2045,
+      "source": "https://nerdschalk.com/hollow-knight-silksong-watcher-at-the-edge-boss-location-route-and-rewards/"
+    },
+    {
+      "id": "shaman-crest",
+      "name": "Shaman Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "moss-grotto",
+      "area": "Ruined Chapel",
+      "how": "In the Snail Shamans' chapel, go to the dead end on the east side, Silk Soar up through the gap above and Bind the big snail shell.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2050,
+      "source": "https://deltiasgaming.com/?p=341876"
+    },
+    {
+      "id": "crust-king-khann",
+      "name": "Crust King Khann",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sands-of-karak",
+      "area": "Coral Tower memory",
+      "how": "At the far end of the Sands of Karak, past a tall shaft, play the Elegy by the old king's body to enter the Coral Tower memory. Beat him at the top for the Encrusted Heart.",
+      "requires": [
+        "elegy-of-the-deep"
+      ],
+      "step": 2060,
+      "source": "https://deltiasgaming.com/?p=346848"
+    },
+    {
+      "id": "nyleth",
+      "name": "Nyleth",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "grand-gate",
+      "area": "Shellwood Shrine",
+      "how": "Silk Soar through the top of the Grand Gate lift shaft and find the hidden way down to the Shellwood Shrine. Beat its guardian, Seth, then play the Elegy at Nyleth's monument and win her memory fight for the Pollen Heart.",
+      "requires": [
+        "elegy-of-the-deep",
+        "silk-soar"
+      ],
+      "step": 2070,
+      "source": "https://nerdschalk.com/step-by-step-guide-to-get-to-nyleth-in-silksong/"
+    },
+    {
+      "id": "skarrsinger-karmelita",
+      "name": "Skarrsinger Karmelita",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "far-fields",
+      "area": "hidden northeast",
+      "how": "Enter Hunter's March from The Marrow (the Deep Docks side is blocked in Act 3), clear the new gauntlet and Silk Soar in the statue room into a hidden part of Far Fields. Play the Elegy by the queen and win for the Hunter's Heart.",
+      "requires": [
+        "elegy-of-the-deep",
+        "silk-soar"
+      ],
+      "step": 2080,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-achievements"
+    },
+    {
+      "id": "conjoined-heart",
+      "name": "Conjoined Heart",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memento",
+      "regionId": "greymoor",
+      "area": "Lost Verdania",
+      "how": "The Clover Dancers' heart. Play the Elegy of the Deep at the right wall of Craw Lake, clear the 12 orbs in a row in Lost Verdania and beat the Dancers. It can stand in for one Old Heart; the heart you keep becomes a Memento.",
+      "requires": [
+        "elegy-of-the-deep"
+      ],
+      "step": 2086,
+      "source": "https://backyarddrunkard.com/game-guides/silksong-conjoined-heart/"
+    },
+    {
+      "id": "everbloom",
+      "name": "Everbloom",
+      "kind": "collectible",
+      "type": "everbloom",
+      "regionId": "moss-grotto",
+      "area": "Ruined Chapel, Red Memory",
+      "how": "Bring the three Old Hearts to the Snail Shamans. Their ritual sends you into the Red Memory; clear it to claim the Everbloom, which lets you go deeper into the Abyss. The Clover Dancers' heart can stand in for one Old Heart.",
+      "requires": [
+        "crust-king-khann",
+        "nyleth",
+        "skarrsinger-karmelita"
+      ],
+      "step": 2090,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-achievements"
+    },
+    {
+      "id": "heros-memento",
+      "name": "Hero's Memento",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memento",
+      "regionId": "blasted-steps",
+      "area": "Lost Garmond",
+      "how": "The Hero's Call wish on the Bellhart Wishwall: find and beat Lost Garmond in the Blasted Steps, then talk to him. Guides disagree on when the wish appears; the guide waits for the Everbloom.",
+      "requires": [
+        "everbloom"
+      ],
+      "step": 2095,
+      "source": "https://deltiasgaming.com/?p=350382"
+    },
+    {
+      "id": "mask-shard-sprintmaster",
+      "name": "Mask Shard, Sprintmaster Swift",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "far-fields",
+      "how": "Fastest in Pharloom, an Act 3 wish from Sprintmaster Swift or the Bellhart Wishwall: beat him in three races of three laps each. The last race gives the Mask Shard.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2100,
+      "source": "https://nerdschalk.com/silksong-sprintmaster-swift-guide-location-map-and-more/"
+    },
+    {
+      "id": "mask-shard-hidden-hunter",
+      "name": "Mask Shard, The Hidden Hunter",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "bellhart",
+      "how": "The Hidden Hunter, an Act 3 wish: follow bone piles across Far Fields until a trap drags you to Gurr the Outcast's lair. Beat him and bring the Grass Doll to the Bellhart Wishwall.",
+      "requires": [
+        "skarrsinger-karmelita"
+      ],
+      "step": 2110,
+      "source": "https://www.fdaytalk.com/?p=59325"
+    },
+    {
+      "id": "mask-shard-dark-hearts",
+      "name": "Mask Shard, Dark Hearts",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "bellhart",
+      "how": "Dark Hearts, an Act 3 wish on the Bellhart Wishwall: destroy Void Masses around Pharloom, then come back to Bellhart.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2120,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "mask-shard-brightvein",
+      "name": "Mask Shard, Brightvein",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "mount-fay",
+      "area": "Brightvein",
+      "how": "From the southeast bench of Mount Fay go south and west; Silk Soar off a rock floating in icy water, west of the big chasm, into Brightvein. Climb to the top, bouncing off the Mnemonords.",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2130,
+      "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "pin-badge",
+      "name": "Pin Badge",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "mount-fay",
+      "area": "peak",
+      "how": "Fatal Resolve, an Act 3 wish (a note in the Pinstress's hut, or the Bellhart Wishwall once you have Silk Soar): find the Pinstress asleep at the peak of Mount Fay, wake her and win the duel.",
+      "requires": [
+        "needle-strike",
+        "silk-soar"
+      ],
+      "step": 2140,
+      "source": "https://nerdschalk.com/silksong-fatal-resolve-wish-guide-everything-you-need-to-know/"
+    },
+    {
+      "id": "pale-steel-needle",
+      "name": "Pale Steel Needle",
+      "kind": "collectible",
+      "type": "needle-upgrade",
+      "regionId": "bellhart",
+      "how": "Needs the last Pale Oil: beat the fleas' best scores in all three Festival of the Flea games (Mooshka's Act 3 wish, Putrified Ducts). Free Plinney from a gauntlet in a Shellwood graveyard; back in Bellhart he forges it for Rosaries.",
+      "requires": [
+        "silk-soar",
+        "hivesteel-needle"
+      ],
+      "step": 2150,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
+    },
+    {
+      "id": "sylphsong",
+      "name": "Sylphsong",
+      "kind": "collectible",
+      "type": "sylphsong",
+      "regionId": "weavenest-atla",
+      "how": "Once your Crests other than Hunter have 32 slots open between them (Memory Lockets), Eva asks to be Bound. Do it to learn Sylphsong: Silk refills while you rest at a bench.",
+      "requires": [
+        "shaman-crest",
+        "beast-crest",
+        "reaper-crest",
+        "wanderer-crest",
+        "witch-crest",
+        "architect-crest"
+      ],
+      "step": 2160,
+      "source": "https://rogueranker.com/?p=10689"
+    },
+    {
+      "id": "passing-of-the-age",
+      "name": "Passing of the Age",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "putrified-ducts",
+      "area": "Pale Lake",
+      "how": "A riddle tablet in a hidden cave at the top right of Pale Lake starts it. Find Mister Mushroom in seven places, in order: Moss Grotto, Bone Bottom, Far Fields, Greymoor, The Slab, Mount Fay, The Cradle. **Only if Athos keeps it** (Endings plan, question E2).",
+      "requires": [
+        "silk-soar"
+      ],
+      "step": 2170,
+      "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-passing-of-the-age-quest-all-mister-mushroom-locations"
+    },
+    {
+      "id": "lost-lace",
+      "name": "Lost Lace",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-abyss",
+      "how": "With the Everbloom, Ballow mends the diving bell for one last dive. Cut Pharloom free of the Void, then beat Lost Lace in the Abyss: the Sister of the Void Ending.",
+      "requires": [
+        "everbloom"
+      ],
+      "step": 2180,
+      "source": "https://deltiasgaming.com/?p=339099"
     }
   ]
 }
