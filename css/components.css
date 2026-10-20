@@ -77,13 +77,13 @@
   align-items: flex-end;
   min-height: 460px;
   /* The top padding keeps the title clear of the header when the nav wraps on a phone. */
-  padding: 112px 0 72px;
+  padding: 112px 0 84px;
   background: linear-gradient(180deg, var(--lacquer), var(--night));
   clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
 }
 
 @media (max-width: 600px) {
-  .hero { min-height: 380px; padding-top: 124px; padding-bottom: 60px; }
+  .hero { min-height: 380px; padding-top: 124px; padding-bottom: 88px; }
 }
 
 .hero-img {
@@ -438,14 +438,24 @@
 
 /* ------------------------------------------------------------ account page */
 
-/* A shorter hero for pages with no Region picture (Account). Same gradient, same slanted edge. */
-.hero--short { min-height: 330px; padding-bottom: 64px; }
+/* A shorter hero for pages with no Region picture (Account, Route, Home). Same gradient, same slanted edge.
+   The bottom padding is deliberate: the start thread begins 76px above the hero's bottom edge, so the
+   last line of the intro must end above that, or the thread runs over it (seen at 390px, where the
+   intro wraps to a second line). */
+.hero--short { min-height: 330px; padding-bottom: 88px; }
 .hero--short .hero-title { font-size: clamp(40px, 6.4vw, 84px); }
 .hero--short .hero-intro { max-width: 56ch; }
 
+/* Home: a taller hero for the two-line title. */
+.hero--home { min-height: 430px; }
+.hero--home .hero-title { font-size: clamp(40px, 6vw, 76px); line-height: 1; }
+.hero--home .hero-intro { max-width: 50ch; }
+
 @media (max-width: 600px) {
-  .hero--short { min-height: 300px; padding-top: 124px; padding-bottom: 48px; }
+  .hero--short { min-height: 300px; padding-top: 124px; padding-bottom: 88px; }
   .hero--short .hero-title { font-size: clamp(40px, 12vw, 56px); }
+  .hero--home { min-height: 400px; }
+  .hero--home .hero-title { font-size: clamp(36px, 11vw, 48px); }
 }
 
 /* The start thread of a page whose first plate sits right under it: it stops short of the plate. */
@@ -541,6 +551,216 @@
 /* Sign-in answers (errors and "link sent"). Lives outside the plate so a re-render never wipes it. */
 .form-message { min-height: 1.5em; font-size: 15px; line-height: 1.6; color: var(--ash); }
 .form-message.is-error { color: var(--silk); }
+
+/* --------------------------------------------------------------- shared bits */
+
+.plate-subheading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+}
+.section-heading--big { font-size: clamp(30px, 4vw, 40px); }
+
+.section-intro { margin-top: 10px; max-width: 56ch; font-size: 15px; line-height: 1.6; color: var(--ash); }
+.section-intro--wide { margin-top: 12px; max-width: 62ch; font-size: 16px; }
+
+.bar--complete .bar-fill { border-top-color: var(--bronze); }
+
+/* "Holding you up": used on Home and in the Route rail. The mark is hollow, not dashed: a blocker
+   is something the player can do now. */
+.holding-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.holding-item { display: flex; gap: 16px; align-items: flex-start; }
+.holding-mark { flex: none; margin-top: 7px; background: transparent; box-shadow: none; }
+/* A knot is 12px and a bead 16px; the margins keep the names on one line. */
+.holding-mark.mark--knot { margin: 9px 2px 0; }
+.holding-name { font-size: 17px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.holding-text { margin-top: 4px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.holding-empty { margin-top: 20px; }
+.holding-more { margin-top: 18px; font-size: 15px; }
+
+/* ---------------------------------------------------------------------- home */
+
+.layout--home { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 40px 72px; }
+
+@media (max-width: 900px) {
+  .layout--home { grid-template-columns: minmax(0, 1fr); }
+}
+
+.home-main { display: flex; flex-direction: column; gap: 48px; min-width: 0; }
+
+/* The same stitched plate as the "next on the route" entry on the thread. */
+.next-plate {
+  padding: 26px 30px 28px;
+  border: 1.5px dashed var(--next-border);
+  background: var(--next-fill);
+}
+@media (max-width: 600px) {
+  .next-plate { padding: 22px 20px 24px; }
+}
+
+.next-label { font-size: 14px; font-weight: 500; color: var(--silk); }
+.next-name {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.next-meta { margin-top: 10px; }
+.next-how { margin-top: 14px; max-width: 60ch; font-size: 16px; line-height: 1.6; color: var(--ash); }
+.next-actions { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 18px; font-size: 15px; }
+
+.type-heading { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+.type-list { margin: 0; font-size: 14px; line-height: 1.5; }
+.type-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px dashed var(--track); }
+.type-row dt { color: var(--ash); overflow-wrap: anywhere; }
+.type-row dd { margin: 0; flex: none; }
+
+.regions { margin-top: 80px; }
+@media (max-width: 600px) {
+  .regions { margin-top: 64px; }
+}
+
+.region-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
+  gap: 32px 28px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.region-grid > li { display: flex; min-width: 0; }
+
+.region-card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--ivory);
+  text-decoration: none;
+  border: 1.5px dashed var(--plate-border);
+  background: var(--lacquer);
+}
+a.region-card:hover { color: var(--ivory); border-color: var(--silk); }
+a.region-card:hover .card-name { color: var(--silk); }
+.region-card--next { border-color: var(--next-border); }
+.region-card--empty { border-color: var(--plate-border-faint); background: transparent; }
+
+.card-thumb {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%);
+}
+.card-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+  display: block;
+}
+
+.card-body { display: flex; flex-direction: column; gap: 10px; padding: 18px 22px 24px; }
+
+.card-state { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ash); }
+
+.state-dot { flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.state-dot--complete, .state-dot--visited { background: var(--bronze); }
+.state-dot--available { border: 2px solid var(--ivory); }
+.state-dot--locked { border: 2px dashed var(--ash); }
+
+.card-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.region-card--locked .card-name, .region-card--empty .card-name { color: var(--ash); }
+
+.card-needs { font-size: 15px; line-height: 1.5; color: var(--silk); }
+.card-note { font-size: 14px; line-height: 1.5; color: var(--ash); }
+.card-next { font-size: 14px; font-weight: 500; color: var(--silk); }
+
+.count-block--card .count-row { font-size: 14px; }
+.count-block--card .count-row > span:first-child { color: var(--ash); }
+.count-block--card .bar { margin-top: 6px; }
+
+/* --------------------------------------------------------------------- route */
+
+.layout--route { grid-template-columns: minmax(0, 1fr) minmax(260px, 300px); gap: 40px 72px; }
+/* The rail is first in the document (filters before the list) and sits on the right when there is room. */
+.layout--route > .route-rail { grid-column: 2; grid-row: 1; }
+.layout--route > .main-column { grid-column: 1; grid-row: 1; }
+
+@media (max-width: 900px) {
+  .layout--route { grid-template-columns: minmax(0, 1fr); }
+  .layout--route > .route-rail, .layout--route > .main-column { grid-column: 1; grid-row: auto; }
+}
+
+.plate--rail { gap: 26px; }
+.rail-section { display: flex; flex-direction: column; gap: 16px; }
+.rail-section .holding-list { gap: 14px; margin-top: 0; }
+.rail-section .holding-name { font-size: 16px; }
+
+/* A Region heading on the thread: a short tick across the line, the name, its steps and a link. */
+.route-head { position: relative; display: flex; gap: 20px; padding-bottom: 24px; }
+.route-head .entry-rail { margin-top: 0; }
+.route-head .entry-thread { top: 12px; bottom: -36px; }
+.route-head .entry-rail::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 11px;
+  width: 24px;
+  height: 2px;
+  background: var(--thread);
+}
+
+.route-head-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 20px;
+}
+.route-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.route-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; color: var(--ash); }
+
+/* The thread runs on across groups: only the very last row of the Route ends it. */
+.route-group .entry:last-child { padding-bottom: 36px; }
+.route-group .entry:last-child .entry-thread { display: block; }
+.route-group.is-last .entry:last-child { padding-bottom: 0; }
+.route-group.is-last .entry:last-child .entry-thread { display: none; }
+
+.entry--hidden .entry-thread { border-left-style: dashed; }
+.entry--hidden .entry-note { margin-top: 0; font-size: 15px; line-height: 1.6; color: var(--ash); }
 
 /* ------------------------------------------------------------------- footer */
 
