@@ -1,6 +1,6 @@
 # Phase 5, sheet 2: Mementos, Equipment and shops (orchestrator's research, 2026-10-20)
 
-**Status: draft, being written.** Research for briefs P5-15, P5-16 and P5-18 in `docs/PHASE-5-FULL-TRACKER-PLAN.md`. **This is research, not data.** Nothing here goes into `data/` until Athos approves this sheet and checks the facts. Names are the game's names; every description is in our own words.
+**Status: draft for Athos's review (complete as far as search results allow).** Research for briefs P5-15, P5-16 and P5-18 in `docs/PHASE-5-FULL-TRACKER-PLAN.md`. **This is research, not data.** Nothing here goes into `data/` until Athos approves this sheet and checks the facts. Names are the game's names; every description is in our own words.
 
 **Spoiler warning:** names late-game areas, bosses, wishes and rewards.
 
@@ -79,7 +79,7 @@ Not proposed: Pale Oil, Craftmetal and the other materials (consumed; they stay 
 
 - **E1.** Relics on the Mementos tab, or their own tab?
 - **E2.** Memory Lockets on the Crests tab or on Equipment?
-- **E3.** The Simple Key: Athos's answer 2 says a thing the player obtains is a Collectible. `simple-key` is a Task today (one entry for Pebb's key). Leave it as a Task (it is used up), or turn it into a Collectible with `counts: false` like the Drifter's Cloak (same id)? Recommendation: leave it; changing it moves the Tasks total, and nothing needs it.
+- **E3.** The Simple Key: Athos's answer 2 says a thing the player obtains is a Collectible. `simple-key` is a Task today (one entry for Pebb's key). Leave it as a Task (it is used up), or turn it into a Collectible with `counts: false` like the Drifter's Cloak (same id)? Recommendation: leave it; changing it moves the Tasks total, and nothing needs it. The other three Simple Keys are not in `data/`: one from beating the Roachkeeper at the top of the tower in Sinner's Road [PCG-SK, single; an Act 1 Region], one bought from Jubilana (section 3.9), and a fourth whose source is not found (its door is in the High Halls, west of the Ventrica station [wiki (snippet)]). Whatever E3 decides should apply to all four.
 - **E4.** Fleas: track them now (30 Tasks), later, or never?
 - **E5.** Shakra's pins and markers are cheap shop entries. Track them (they add to "Rosaries still to spend") or leave them out? Recommendation: track the Quill (the map needs it) and the pins; they are real purchases a completionist buys.
 
@@ -310,11 +310,67 @@ Our arithmetic: 380 + 320 + 520 + 1100 = 2320, the total "all the Bellhome upgra
 
 ## 4. Already in `data/items.json` versus new
 
-(being written)
+Read on 2026-10-20: `dataVersion` 5, 63 entries, steps 10 to 610 in tens plus 11 and 25. **No Memento, relic, map, Memory Locket or furniture is in `data/`.** A script checked every id proposed here (75) against `data/items.json`, `data/regions.json` and the ids in `docs/PHASE-3-ACT-3.md`: all are valid slugs, none collides, no proposed step repeats or hits an existing step, and every new step comes after the steps of the entries it requires.
 
-## 5. Brief for Dev C (P5-16 and P5-18)
+**Existing entries this sheet touches (14):**
 
-(being written)
+| id | What changes | Why |
+|---|---|---|
+| `magnetite-brooch`, `mask-shard-bone-bottom`, `simple-key`, `compass`, `crafting-kit-forge`, `magma-bell`, `sting-shard`, `weighted-belt`, `tool-pouch-pilgrims-rest`, `curveclaw`, `fractured-mask`, `multibinder` | add `price` (section 3.12) | shop entries; prices confirmed, `compass` with a recorded conflict |
+| `spool-fragment-bellhart` | add `price: 270` **and** correct `how` to "sold by Frey for 270 Rosaries once the courier quest is done" | the current `how` says it comes with the quest; three sources say it is bought |
+| `fractured-mask` (again) | maybe `missable: true` with a note | Mottled Skarr dies in Act 2; sources disagree on whether the mask stays at his feet (section 3.5). Athos decides |
+| `sharpened-needle` | nothing (free) | |
+
+`simple-key` is a Task; `price` on a Task is allowed by the contract (it says "shop entries", not Collectibles) and `rosariesToSpend` reads any entry with a `price`. Said here so nobody is surprised that a Task appears on the Rosaries page.
+
+**New, by batch:**
+
+| Batch | Entries | Where listed |
+|---|---|---|
+| **P5-16, Act 1 Regions, ready** | 16 tracked finds (4 relics, 11 Memory Lockets, the Bellhome Key) + 18 tracked shop entries (11 maps, Quill, Bench Pins, Shell Marker, 4 furnishings) = **34** | 2.3, 3.2, 3.6 |
+| Act 1 Regions, **not ready** | 2 Rune Harps (place not found), 4 pins and markers (Region not found) | 2.3, 3.2 |
+| Act 2 batch | relics (14), keys (6 + Jubilana's Simple Key), Ruined Tool, Materium, 7 Memory Lockets, maps, Gramophone, Ventrica Pins, and the Act 2 shop Collectibles of sections 3.3 and 3.7 to 3.10 (Tools, Crafting Kits, Spool Fragment, Mask Shard, Needle upgrades) | 2.4, 3 |
+| Act 3 batch | 8 Mementos + the Clover Dancers Task (M2), Farsight, Arcane Egg, Craw Summons, Crawbell | 1, 2.4 |
+
+## 5. Brief for Dev C (P5-16 and P5-18): do not hand out until Athos approves this sheet
+
+**Before either task, Athos answers:** M1 to M4, E1 to E5, and the three points below. Each changes what Dev C writes.
+
+1. **Region Complete and the Route.** Contract section 8 leaves open whether tracked entries count toward a Region's Complete state and appear on the Route. P5-16 adds 34 tracked entries across 10 Act 1 Regions. As things stand, a player who had Greymoor Complete would see it drop back (two Memory Lockets, a Bone Scroll and a map are not done), and "Next on the route" could point at a map. **Recommendation:** decide this before P5-16 (keep tracked entries off the Route and out of Complete, which is a change to `render.js`, `main.js` and possibly `requirements.js`, so a Dev A and Dev B task first). If Athos prefers to keep them in, P5-16's done criteria must list the Regions whose state changes so nobody takes it for a bug.
+2. **Single-source facts.** Five map prices and two Memory Locket places rest on one source. Enter them, or wait?
+3. **The `how` fix on `spool-fragment-bellhart`** is a content change to an Act 1 entry; Athos confirms it in game or on the wiki.
+
+### P5-15 (qa-tests), from this sheet
+
+Add `map-tool`, `memory-locket`, `key`, `key-item` and `furnishing` to `TRACKED_TYPES` (the list then has eight), each with a test that a `counts: false` Collectible of that type gives no warning and that the same type without `counts` gives the rule 12 warning that names `counts`. `flea` needs nothing (Task types are free). Remove any type Athos rejects in E1 to E5 before handing it out.
+
+### P5-16 (dev-c): tracked entries in Act 1 Regions
+
+- **Files:** `data/items.json`; `data/regions.json` and `data/endings.json` for `dataVersion` only.
+- **Depends on:** this sheet approved; P5-15 and P5-12 merged; point 1 above decided.
+- **Scope:** the 34 "ready" rows of sections 2.3, 3.2 (step-numbered Act 1 maps and the Quill, Bench Pins and Shell Marker) and 3.6 (the four furnishings), exactly as listed: `id`, `name`, `type`, `regionId`, `area` (the Sub-area in brackets), `requires`, `step`. Every entry: `kind: "collectible"`, `counts: false`. `how` in our own words from the sheet's "how" text (shorten, do not copy a source). `price` only where the sheet marks it confirmed (bold) **and** Athos accepted it; otherwise leave `price` out and say so in the handoff. `source`: the URL of the first source code in the row that is not a wiki snippet, FX snippet or `low` site (Sources list below); if a row has only wiki snippets, ask the orchestrator. No `missable` unless Athos says so. No Mementos (all Act 3) and none of the "not ready" rows. Raise `dataVersion` by one in all three files.
+- **Done when:** `node scripts/validate-data.js` gives no error and no warning; `node --test "tests/*.test.js"` passes; served locally, the Home Collectibles headline and "Collectibles by type" are unchanged, the Mementos tab reads "Not in the guide yet" (no Mementos in Act 1) or shows the four relics if Athos puts relics there, and the Equipment and other tabs show the new entries with a done and total that match a hand count (say which). The handoff lists, per Region, its numbers and state before and after.
+
+### P5-18 (dev-c): shop prices
+
+- **Files:** `data/*.json`. **Depends on:** this sheet approved (it doubles as the "sheet 3" the plan names for shops and prices); P5-2 merged (it is).
+- **Scope:** `price` on the 13 existing entries in section 3.12, values as listed; the `how` fix on `spool-fragment-bellhart` if Athos confirmed it; `missable` on `fractured-mask` only if Athos says so. Prices with a "conflict" note that Athos has not settled stay out. Raise `dataVersion`.
+- **Done when:** validator clean; tests pass; served locally, the Rosaries page (once P5-17 has built it) or a throwaway `rosariesToSpend` call against `data/` gives `total` 3350 before any entry is marked done (3350 + the P5-16 prices if P5-16 is merged first; say which), and "Next to buy" with nothing done is `simple-key` (step 25, the lowest priced step that is Available from the start; our reading of the data, check it).
+
+## 6. Riskiest facts and all open questions
+
+**Riskiest facts (check in game first):**
+
+1. `spool-fragment-bellhart` is bought (270), not given: contradicts current data [NL-SF, FX (snippet), SR-V].
+2. `fractured-mask` may be missable once Mottled Skarr dies in Act 2 (conflict, 3.5).
+3. The heart Memento: one of four, decided by which heart is kept (section 1); the Pollen and Hunter's Heart versions rest on one source.
+4. The Guardian's Memento may be missable before the Everbloom (one source).
+5. Compass and Quill prices: three sources agree on 70 and 50, but GC (the Act 1 sheet's main source) swaps them (50 and 70).
+6. Map prices in GR-MAP alone (Hunter's March, Shellwood, Wormways, Blasted Steps, Sinner's Road).
+7. Memory Locket places: only 11 placed; two of the 20 not found at all.
+8. Egg of Flealia: all 30 fleas [NL-FL, NC-FL summary] versus 29 (sheet 1).
+
+**Open questions:** M1 to M4 (section 1), E1 to E5 (section 2.2), and points 1 to 3 of section 5.
 
 ## Sources
 
