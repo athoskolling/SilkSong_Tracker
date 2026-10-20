@@ -1,5 +1,5 @@
-// main.js: picks behaviour from <body data-page="...">. Today only the Region page exists
-// (Home, Route and Account arrive in Phase 2).
+// main.js: picks behaviour from <body data-page="...">: home (a temporary redirect until the real
+// Home arrives in Phase 2), region and account (sign-in only for now). The Route page arrives in Phase 2.
 //
 // This file is the glue: it loads the guide content (data.js), reads Progress only through
 // progress.js, asks requirements.js what is Available or missing, turns the answers into a plain
@@ -22,19 +22,262 @@ import {
   missingForRegion,
   nextStep,
 } from './requirements.js';
-import { renderMessage, renderShell, renderBody, joinNames } from './render.js';
+import {
+  signIn,
+  completeEmailLinkSignIn,
+  signOut,
+  onAuthChange,
+} from './firebase.js';
+import {
+  renderMessage,
+  renderShell,
+  renderBody,
+  joinNames,
+  syncText,
+  renderAccountShell,
+  renderAccountPlate,
+  setAccountMessage,
+} from './render.js';
 
 const page = document.body.dataset.page;
-if (page === 'region') {
-  startRegionPage();
+startPage();
+
+// What every page does, then what this page does.
+function startPage() {
+  if (isSampleMode()) document.getElementById('banner').hidden = false;
+
+  // The footer line says where Progress is, on every page.
+  onSyncStatus((status) => {
+    document.getElementById('sync-status').textContent = syncText(status);
+  });
+
+  if (page === 'home') startHomePage();
+  else if (page === 'account') startAccountPage();
+  else if (page === 'region') {
+    startRegionPage();
+    finishEmailLink(); // not awaited: a normal page load must not wait on it
+  }
+}
+
+// ------------------------------------------------------------- email sign-in link
+
+// docs/CONTRACTS.md section 4: main.js asks on every page load. It is cheap when the address bar
+// holds no sign-in link (firebase.js answers 'not-a-link' without loading the SDK).
+// Returns true when it sent the visitor to the Account page, so a caller can stop.
+async function finishEmailLink() {
+  try {
+    const result = await completeEmailLinkSignIn();
+    if (result === 'needs-email') {
+      // The link was opened on a device that does not remember the address. Only the Account page
+      // asks for it, so go there with the link's query string kept.
+      location.replace(`account.html${location.search}${location.hash}`);
+      return true;
+    }
+  } catch (error) {
+    console.error(error);
+    announce(error.message); // already written for people
+  }
+  return false;
+}
+
+// -------------------------------------------------------------------- home page
+
+// TEMPORARY until Home is built in Phase 2: send the visitor to the first Region. "First" is the
+// Region with the lowest `order` (data.js sorts by it), read from data/, so nothing here names a
+// Region and it keeps working when the guide grows.
+async function startHomePage() {
+  const app = document.getElementById('app');
+  try {
+    if (await finishEmailLink()) return;
+    const data = await loadOrExplain(app);
+    if (!data) return;
+    const first = data.regions[0];
+    if (!first) {
+      renderMessage(app, { heading: 'No regions yet', paragraphs: ['The guide has no regions yet.'] });
+      return;
+    }
+    const href = pageHref('region.html', { id: first.id }, data.sample);
+    document.getElementById('open-guide').setAttribute('href', href);
+    // replace, not assign: Back from the Region page must not land here and bounce forward again.
+    location.replace(href);
+  } catch (error) {
+    console.error(error);
+    renderMessage(app, {
+      heading: 'Something went wrong',
+      paragraphs: [`The page could not be built: ${error.message}`, 'Reload the page. If it happens again, tell the person who maintains the guide.'],
+    });
+  }
+}
+
+// ----------------------------------------------------------------- account page
+
+// The sign-in half of the Account screen. Backup, "Start a new run", "How saving works" and
+// "Guide data" arrive in Phase 2. Sign-in goes through firebase.js; Progress stays in progress.js,
+// which wires itself to sign-in on import (so signing in here starts the merge and the sync).
+async function startAccountPage() {
+  const app = document.getElementById('app');
+  const { plate, message } = renderAccountShell(app);
+
+  const state = {
+    user: null,
+    authKnown: false, // true after the first answer from onAuthChange
+    linkPending: true, // true until completeEmailLinkSignIn has answered
+    needsEmail: false, // the link was opened on a device that does not remember the address
+    busy: false,
+    email: '',
+    status: { state: 'local', at: null, message: '' },
+    combined: null, // kept for as long as the page shows this account (see onSyncStatus below)
+  };
+
+  function phase() {
+    if (state.user) return 'signed-in';
+    if (state.needsEmail) return 'needs-email';
+    if (!state.authKnown || state.linkPending) return 'checking';
+    return 'signed-out';
+  }
+
+  function focusKeyOf(element) {
+    return element && element.dataset ? element.dataset.focusKey : null;
+  }
+
+  function focusByKey(key) {
+    if (!key) return;
+    const again = plate.querySelector(`[data-focus-key="${CSS.escape(key)}"]`);
+    if (again) again.focus();
+  }
+
+  function render() {
+    // Keep what the visitor typed: the plate is rebuilt on every state change.
+    const field = plate.querySelector('#email-in');
+    if (field) state.email = field.value;
+    const key = focusKeyOf(document.activeElement);
+
+    renderAccountPlate(plate, {
+      phase: phase(),
+      busy: state.busy,
+      email: state.email,
+      user: state.user,
+      syncText: syncText(state.status),
+      combined: state.combined,
+    });
+    focusByKey(key);
+  }
+
+  function say(text, kind) {
+    setAccountMessage(message, text, kind);
+  }
+
+  // Runs one sign-in action: buttons are off while it runs (so a second popup cannot open), and
+  // any error is shown as its own message, which firebase.js already wrote for people.
+  async function attempt(action) {
+    const key = focusKeyOf(document.activeElement);
+    state.busy = true;
+    say('');
+    render();
+    try {
+      await action();
+    } catch (error) {
+      console.error(error);
+      say(error.message, 'error');
+    } finally {
+      state.busy = false;
+      render();
+      focusByKey(key);
+    }
+  }
+
+  function linkIsInAddressBar() {
+    return Boolean(new URLSearchParams(location.search).get('oobCode'));
+  }
+
+  render(); // "Checking whether you are signed in." until the first answers arrive
+
+  app.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-action]');
+    if (!button || button.disabled) return;
+    if (button.dataset.action === 'sign-in-google') attempt(() => signIn('google'));
+    else if (button.dataset.action === 'sign-out') attempt(() => signOut());
+  });
+
+  // The email fields are real forms, so Enter works and the browser can fill the address in.
+  app.addEventListener('submit', (event) => {
+    const form = event.target.closest('form[data-action]');
+    if (!form) return;
+    event.preventDefault();
+    if (state.busy) return;
+    const address = form.elements.email.value.trim();
+    state.email = address;
+
+    if (form.dataset.action === 'send-link') {
+      attempt(async () => {
+        await signIn('email-link', address);
+        say(`We sent a sign-in link to ${address}. Open it on this device to finish signing in.`);
+      });
+    } else if (form.dataset.action === 'finish-email') {
+      attempt(async () => {
+        if (!address) throw new Error('Enter your email address first.');
+        try {
+          const result = await completeEmailLinkSignIn(address);
+          // 'signed-in': onAuthChange brings the account. 'not-a-link': the address bar no longer holds one.
+          if (result !== 'needs-email') state.needsEmail = false;
+          if (result === 'not-a-link') throw new Error('This page has no sign-in link. Ask for a new link.');
+        } catch (error) {
+          // firebase.js removes a used or expired link from the address bar; asking again would never work.
+          if (!linkIsInAddressBar()) state.needsEmail = false;
+          throw error;
+        }
+      });
+    }
+  });
+
+  onAuthChange((user) => {
+    state.user = user;
+    state.authKnown = true;
+    if (!user) state.combined = null;
+    render();
+  });
+
+  // Never wait forever on the sign-in service: after a few seconds offer the sign-in buttons anyway.
+  setTimeout(() => {
+    if (!state.authKnown) {
+      state.authKnown = true;
+      render();
+    }
+  }, 6000);
+
+  onSyncStatus((status) => {
+    state.status = status;
+    // progress.js reports `combined` once, on the first sign-in; keep it so a later status
+    // (for example "synced") does not make the plate vanish.
+    if (status.combined) state.combined = status.combined;
+    render();
+  });
+
+  // Content data is only needed so progress.js can stamp dataVersion and mark Regions Visited; a
+  // data problem must not stop anyone from signing in.
+  try {
+    const { items, dataVersion } = await loadData();
+    configureProgress({ items, dataVersion });
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const result = await completeEmailLinkSignIn();
+    if (result === 'needs-email') state.needsEmail = true;
+  } catch (error) {
+    console.error(error);
+    say(error.message, 'error');
+  } finally {
+    state.linkPending = false;
+    render();
+  }
 }
 
 // ------------------------------------------------------------------ the page
 
 async function startRegionPage() {
   const app = document.getElementById('app');
-
-  if (isSampleMode()) document.getElementById('banner').hidden = false;
 
   try {
     await runRegionPage(app);
@@ -246,8 +489,6 @@ async function runRegionPage(app) {
     render();
   });
 
-  onSyncStatus(showSyncStatus);
-
   render();
 }
 
@@ -302,14 +543,4 @@ function showCredit(view, region) {
   const show = view.mode === 'open' && region.heroImage && region.heroCredit;
   credit.hidden = !show;
   credit.textContent = show ? `Hero image: ${region.heroCredit}` : '';
-}
-
-function showSyncStatus(status) {
-  const line = document.getElementById('sync-status');
-  if (status.state === 'syncing') line.textContent = 'Syncing your progress.';
-  else if (status.state === 'synced') line.textContent = 'Synced with your account.';
-  else if (status.state === 'error') {
-    const why = status.message ? ` (${status.message})` : '';
-    line.textContent = `Could not sync${why}. Your progress is saved on this device.`;
-  } else line.textContent = 'Saved on this device.';
 }

@@ -24,8 +24,6 @@
   <div class="page">
     <header class="site-header">
       <div class="frame">
-        <!-- Home, Route and Account pages arrive in Phase 2; these links exist already so the
-             navigation is final, but until then they lead to a missing page. -->
         <a class="logo" href="index.html">
           <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true">
             <path class="line" d="M3 9 H29"/>
@@ -35,7 +33,7 @@
         </a>
         <nav class="site-nav" aria-label="Main">
           <a href="index.html" aria-current="page">Regions</a>
-          <a href="route.html">Route</a>
+          <!-- "Route" returns when route.html exists (Phase 2). Until then the link would lead to a 404. -->
           <a href="account.html">Account and backup</a>
         </nav>
       </div>
@@ -53,8 +51,6 @@
     <footer class="frame site-footer">
       <p id="credit" hidden></p>
       <p id="sync-status" role="status"></p>
-      <!-- Temporary for the vertical slice: sign-in lives on a developer page until the Account page exists. -->
-      <p><a href="tools/auth-check.html">Sign in</a> (temporary, until the Account page exists)</p>
     </footer>
   </div>
 
