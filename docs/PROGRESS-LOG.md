@@ -83,6 +83,9 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos decided checklist item 4: option 1, no draft script.** Entries are written by Athos from his own play, checked against the main wiki by hand; agents never fetch hollowknight.wiki or Fextralife. **Item 8: batch 1 is Moss Grotto, The Marrow, Deep Docks; Bone Bottom is a Sub-area of Moss Grotto.** Both items ticked; the wiki's license name is still to be filled in by Athos. Recorded in STRUCTURE, AGENT-PLAN, PHASE-PROMPTS (Phase 3 rewritten), CLAUDE.md rule 9, `.claude/rules/data.md`, `dev-a.md`. New: `docs/PHASE-3-BATCH-1.md`, the form Athos writes batch 1 in. QA checklist lines N-13 to N-17 still say "blocked: item 4"; QA 2 updates them in its next task (wiki comparisons are Athos's, by hand).
 
+- **Research for batch 1** (orchestrator, findings only): `docs/research/2026-10-20-collectibles-and-endings.md`. The game's completion list is wider than the glossary (adds Silk Hearts, Crafting Kit and Tool Pouch upgrades, Sylphsong, Everbloom); sources count **four** main Endings (five or six with hidden ones), while the plan says five. Both questions are for Athos.
+- **T22 started** (`qa-manual/wiki-lines`): checklist lines N-13 to N-17 updated for item 4 (wiki comparisons by Athos, by hand).
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
