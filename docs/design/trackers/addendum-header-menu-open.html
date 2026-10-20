@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Option M, Menu open | Silksong guide (mockup)</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="trackers.css">
+  <link rel="stylesheet" href="trackers-addendum.css">
+</head>
+<body data-page="header">
+  <a class="skip-link" href="#app">Skip to the content</a>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other states: <a href="addendum-header-six.html">Six links, option A</a> &middot; <a href="addendum-header-wrap.html">Option W: two rows</a> &middot; <a href="addendum-header-menu.html">Option M: Menu closed</a> &middot; <a href="addendum-header-menu-open.html" aria-current="page">Option M: Menu open</a> &middot; <a href="addendum-builds-saved.html">Builds</a> &middot; <a href="addendum-rosaries-shells-set.html">Rosaries</a></div>
+  <div class="page tablet-fix">
+    <header class="site-header menu-mock is-open">
+      <div class="frame">
+        <a class="logo" href="index.html">
+          <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true"><path class="line" d="M3 9 H29"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+          Silksong guide
+        </a>
+        <button type="button" class="nav-toggle" aria-expanded="true" aria-controls="site-menu">Menu</button>
+        <nav id="site-menu" class="site-nav" aria-label="Main">
+          <a href="index.html">Regions</a>
+          <a href="route.html">Route</a>
+          <a href="trackers-crests-partial.html" aria-current="page">Trackers</a>
+          <a href="addendum-rosaries-shells-set.html">Rosaries</a>
+          <a href="addendum-builds-saved.html">Builds</a>
+          <a href="account.html">Account and backup</a>
+        </nav>
+      </div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="hero hero--short">
+        <div class="hero-shade"></div>
+        <div class="hero-shade hero-shade--title"></div>
+        <div class="frame">
+          <h1 class="hero-title">Option M, Menu open</h1>
+          <p class="hero-intro">The same page with the Menu open.</p>
+        </div>
+      </section>
+      <div class="frame">
+        <div class="content">
+          <div class="start-thread start-thread--short" aria-hidden="true"></div>
+        <div class="main-column" style="max-width:760px">
+          <h2 class="section-heading">What this page shows</h2>
+          <p class="section-intro section-intro--wide">On a phone the header is one short row: the logo and a Menu button. The button has aria-expanded and aria-controls; the six links open as a list under it, each at least 48px tall, and Escape closes it and returns focus to the button. The page the reader is on is marked in the list. No hero padding changes.</p>
+          <p class="section-intro section-intro--wide">Cost: one extra tap to move between pages, a small script and new CSS on all pages, and a decision that the menu breakpoint is 640px so the 601 to 625px band is covered too. Because the list has room, the label can be the full Account and backup, so option A is not needed under M.</p>
+        </div>
+        </div>
+      </div>
+    </main>
+    <footer class="frame site-footer">
+      <p>Guide text written in our own words from the Hollow Knight: Silksong wiki and other references. Each entry links its source. Not affiliated with Team Cherry.</p>
+      <p>Layout sample. Names, prices, counts and states are invented to show what a screen can look like; they are not guide data.</p>
+    </footer>
+  </div>
+  <div class="visually-hidden" aria-live="polite" role="status"></div>
+</body>
+</html>

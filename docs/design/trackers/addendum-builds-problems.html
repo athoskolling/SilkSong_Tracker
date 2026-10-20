@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Builds | Silksong guide (mockup)</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="trackers.css">
+  <link rel="stylesheet" href="trackers-addendum.css">
+</head>
+<body data-page="builds">
+  <a class="skip-link" href="#app">Skip to the content</a>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other states: <a href="addendum-builds-new.html">Nothing saved</a> &middot; <a href="addendum-builds-unsaved.html">Not saved</a> &middot; <a href="addendum-builds-saved.html">Saved</a> &middot; <a href="addendum-builds-problems.html" aria-current="page">No longer fits</a> &middot; <a href="addendum-builds-limit-unknown.html">Limit not in the guide</a> &middot; <a href="addendum-builds-layout-unknown.html">Layout not in the guide</a> &middot; <a href="addendum-rosaries-shells-set.html">Rosaries</a> &middot; <a href="addendum-header-six.html">Header</a></div>
+  <div class="page opt-wrap tablet-fix">
+    <header class="site-header">
+      <div class="frame">
+        <a class="logo" href="index.html">
+          <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true"><path class="line" d="M3 9 H29"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+          Silksong guide
+        </a>
+        
+        <nav id="site-menu" class="site-nav nav-short" aria-label="Main">
+          <a href="index.html">Regions</a>
+          <a href="route.html">Route</a>
+          <a href="trackers-crests-partial.html">Trackers</a>
+          <a href="addendum-rosaries-shells-set.html">Rosaries</a>
+          <a href="addendum-builds-saved.html" aria-current="page">Builds</a>
+          <a href="account.html">Account<span class="nav-extra"> and backup</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="hero hero--short">
+        <div class="hero-shade"></div>
+        <div class="hero-shade hero-shade--title"></div>
+        <div class="frame">
+          <h1 class="hero-title">Builds</h1>
+          <p class="hero-intro">Pick a Crest you own, choose a Tool you own for each slot, and save the Build.</p>
+        </div>
+      </section>
+      <div class="frame">
+        <div class="content">
+          <div class="start-thread start-thread--short" aria-hidden="true"></div>
+        <div class="layout layout--route">
+          <aside class="plate plate--rail" aria-label="Your Crests">
+            <div class="rail-section">
+              <h2 class="plate-heading">Your Crests</h2>
+              <fieldset style="border:0;margin:0;padding:0;min-width:0"><legend class="visually-hidden">Choose a Crest</legend>
+              <ul class="tk-crests">
+                <li class="tk-crest"><input type="radio" name="crest" id="crest-c1" value="c1"><label for="crest-c1"><span class="tk-crest-dot" aria-hidden="true"></span><span><span class="tk-crest-name">Sample crest one</span><span class="tk-crest-sub num">4 slots now</span><span class="tk-crest-sub">Build saved</span></span></label></li>
+                <li class="tk-crest"><input type="radio" name="crest" id="crest-c2" value="c2" checked><label for="crest-c2"><span class="tk-crest-dot" aria-hidden="true"></span><span><span class="tk-crest-name">Sample crest two</span><span class="tk-crest-sub num">7 slots now</span><span class="tk-crest-sub">Build saved</span></span></label></li>
+                <li class="tk-crest"><input type="radio" name="crest" id="crest-c3" value="c3"><label for="crest-c3"><span class="tk-crest-dot" aria-hidden="true"></span><span><span class="tk-crest-name">Sample crest three</span><span class="tk-crest-sub num">Not in the guide yet</span></span></label></li>
+                <li class="tk-crest"><input type="radio" name="crest" id="crest-c4" value="c4"><label for="crest-c4"><span class="tk-crest-dot" aria-hidden="true"></span><span><span class="tk-crest-name">Sample crest four</span><span class="tk-crest-sub num">4 slots now</span></span></label></li>
+              </ul></fieldset>
+            </div>
+            <div class="rail-section">
+              <p class="tk-rail-text">Tools and Silk Skills you own: <strong>8</strong>. Each slot lists only what you have marked as done.</p>
+              <p class="tk-rail-text">White slots take Silk Skills. Red, blue and yellow slots take Tools of that colour.</p>
+              <p class="tk-rail-text"><a href="trackers-crests-partial.html">Open the Crests tracker</a></p>
+            </div>
+          </aside>
+          <div class="main-column">
+            <section aria-labelledby="crest-title">
+              <h2 class="tk-crest-title" id="crest-title">Sample crest two</h2>
+              <p class="tk-crest-meta num">7 slots now: 3 red, 1 blue, 2 yellow, 1 white.</p>
+              <div class="bd-stack">
+            <div class="plate bd-opened">
+              <h3 class="plate-subheading">Opened slots</h3>
+              <p class="plate-text">A Memory Locket opens an extra slot on a Crest. Say how many you opened on this one. Each colour has a limit.</p>
+              <div class="os-grid">
+            <div class="os-row">
+              <span class="os-name" id="os-red">Red</span>
+              <div class="os-control" role="group" aria-labelledby="os-red">
+              <button type="button" class="os-btn" aria-label="Open one fewer red slot"><span aria-hidden="true">&minus;</span></button>
+              <output class="os-value num" for="os-red">1</output>
+              <button type="button" class="os-btn" aria-label="Open one more red slot"><span aria-hidden="true">+</span></button>
+            </div>
+              <p class="os-note"><span>Opened 1 of up to 2.</span> <span class="num">3 red slots now (2 base).</span></p>
+            </div>
+            <div class="os-row">
+              <span class="os-name" id="os-blue">Blue</span>
+              <div class="os-control" role="group" aria-labelledby="os-blue">
+              <button type="button" class="os-btn" aria-label="Open one fewer blue slot" disabled><span aria-hidden="true">&minus;</span></button>
+              <output class="os-value num" for="os-blue">0</output>
+              <button type="button" class="os-btn" aria-label="Open one more blue slot"><span aria-hidden="true">+</span></button>
+            </div>
+              <p class="os-note"><span>Opened 0 of up to 1.</span> <span class="num">1 blue slot now (1 base).</span></p>
+            </div>
+            <div class="os-row">
+              <span class="os-name" id="os-yellow">Yellow</span>
+              <div class="os-control os-control--none" aria-hidden="true">&ndash;</div>
+              <p class="os-note"><span>No more can be opened on this Crest.</span> <span class="num">2 yellow slots now (1 base, 1 from an entry you have done).</span></p>
+            </div>
+            <div class="os-row">
+              <span class="os-name" id="os-white">White</span>
+              <div class="os-control os-control--none" aria-hidden="true">&ndash;</div>
+              <p class="os-note"><span>No more can be opened on this Crest.</span> <span class="num">1 white slot now (1 base).</span></p>
+            </div>
+              </div>
+            </div>
+              </div>
+              <h2 class="list-heading list-heading--spaced">Your Build</h2>
+              <div class="bd-stack">
+            <div class="bd-bar is-saved">
+              <p class="bd-status" role="status"><span class="bd-dot bd-dot--saved" aria-hidden="true"></span><span><strong>Saved.</strong> This is the Build saved for this Crest.</span></p>
+              <div class="button-row"><button type="button" class="button button--primary" disabled>Save this Build</button><button type="button" class="button button--secondary">Remove saved Build</button></div>
+            </div>
+            <div class="callout bd-problems" role="group" aria-labelledby="bd-problems-title">
+              <p class="callout-title" id="bd-problems-title">This saved Build no longer fits</p>
+              <p class="callout-text">4 problems, each shown on its slot below. Nothing was removed. Change a slot, mark a missing Tool as done in its tracker, or open more slots.</p>
+            </div>
+              </div>
+              <div class="tk-slots">
+            <section class="route-group tk-slot" aria-labelledby="slot-red">
+              <div class="route-head">
+                <div class="entry-rail"><span class="entry-thread" aria-hidden="true"></span></div>
+                <div class="route-head-body">
+                  <h3 class="tk-slot-name" id="slot-red">Red slots</h3>
+                  <span class="tk-slot-meta num">3 slots. 3 filled. Choose from the Tools you own.</span>
+                </div>
+              </div>
+              <ol class="entries">
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-clear" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-done" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-red-0">Red slot 1</label>
+                <div class="bd-select"><select id="slot-red-0"><option value="">Empty slot</option><option value="sample-tool-one" selected>Sample tool one</option><option value="sample-tool-two">Sample tool two</option><option value="sample-tool-six">Sample tool six</option></select></div>
+                
+                <div class="entry-meta"><span>Tool</span><a class="source-link" href="#" aria-label="Source for Sample tool one">Source</a></div><p class="entry-how">Sample effect in one short sentence, in our own words.</p>
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-blocked" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-red-1">Red slot 2</label>
+                <div class="bd-select"><select id="slot-red-1" aria-describedby="prob-slot-red-1" aria-invalid="true"><option value="">Empty slot</option><option value="sample-tool-three" selected>Sample tool three</option><option value="sample-tool-one">Sample tool one</option><option value="sample-tool-two">Sample tool two</option><option value="sample-tool-six">Sample tool six</option></select></div>
+                <p id="prob-slot-red-1" class="entry-needs is-missing">This does not fit a red slot.</p>
+                
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-clear" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-done" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-red-2">Red slot 3</label>
+                <div class="bd-select"><select id="slot-red-2"><option value="">Empty slot</option><option value="sample-tool-one">Sample tool one</option><option value="sample-tool-two">Sample tool two</option><option value="sample-tool-six" selected>Sample tool six</option></select></div>
+                
+                <div class="entry-meta"><span>Tool</span><a class="source-link" href="#" aria-label="Source for Sample tool six">Source</a></div><p class="entry-how">Sample effect in one short sentence, in our own words.</p>
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-blocked" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <p class="bd-label" id="lab-slot-red-x3">Sample tool two<span class="bd-tag">No slot for it</span></p>
+                <p id="prob-slot-red-x3" class="entry-needs is-missing">This Crest has no room for it: it has 3 red slots now.</p>
+                <div class="bd-inline"><button type="button" class="button button--secondary button--small" aria-describedby="lab-slot-red-x3">Take out of this Build</button></div>
+              </div>
+            </li>
+              </ol>
+            </section>
+            <section class="route-group tk-slot" aria-labelledby="slot-blue">
+              <div class="route-head">
+                <div class="entry-rail"><span class="entry-thread" aria-hidden="true"></span></div>
+                <div class="route-head-body">
+                  <h3 class="tk-slot-name" id="slot-blue">Blue slots</h3>
+                  <span class="tk-slot-meta num">1 slot. 1 filled. Choose from the Tools you own.</span>
+                </div>
+              </div>
+              <ol class="entries">
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-clear" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-done" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-blue-0">Blue slot 1</label>
+                <div class="bd-select"><select id="slot-blue-0"><option value="">Empty slot</option><option value="sample-tool-three" selected>Sample tool three</option><option value="sample-tool-four">Sample tool four</option></select></div>
+                
+                <div class="entry-meta"><span>Tool</span><a class="source-link" href="#" aria-label="Source for Sample tool three">Source</a></div><p class="entry-how">Sample effect in one short sentence, in our own words.</p>
+              </div>
+            </li>
+              </ol>
+            </section>
+            <section class="route-group tk-slot" aria-labelledby="slot-yellow">
+              <div class="route-head">
+                <div class="entry-rail"><span class="entry-thread" aria-hidden="true"></span></div>
+                <div class="route-head-body">
+                  <h3 class="tk-slot-name" id="slot-yellow">Yellow slots</h3>
+                  <span class="tk-slot-meta num">2 slots. 2 filled. Choose from the Tools you own.</span>
+                </div>
+              </div>
+              <ol class="entries">
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-blocked" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-yellow-0">Yellow slot 1</label>
+                <div class="bd-select"><select id="slot-yellow-0" aria-describedby="prob-slot-yellow-0" aria-invalid="true"><option value="">Empty slot</option><option value="sample-tool-nine" selected>Sample tool nine</option><option value="sample-tool-five">Sample tool five</option></select></div>
+                <p id="prob-slot-yellow-0" class="entry-needs is-missing">You have not marked this as done yet.</p>
+                
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-blocked" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-yellow-1">Yellow slot 2</label>
+                <div class="bd-select"><select id="slot-yellow-1" aria-describedby="prob-slot-yellow-1" aria-invalid="true"><option value="">Empty slot</option><option value="retired-sample-id" selected>retired-sample-id</option><option value="sample-tool-five">Sample tool five</option></select></div>
+                <p id="prob-slot-yellow-1" class="entry-needs is-missing">This is no longer in the guide.</p>
+                
+              </div>
+            </li>
+              </ol>
+            </section>
+            <section class="route-group tk-slot is-last" aria-labelledby="slot-white">
+              <div class="route-head">
+                <div class="entry-rail"><span class="entry-thread" aria-hidden="true"></span></div>
+                <div class="route-head-body">
+                  <h3 class="tk-slot-name" id="slot-white">White slots</h3>
+                  <span class="tk-slot-meta num">1 slot. 1 filled. Choose from the Silk Skills you own.</span>
+                </div>
+              </div>
+              <ol class="entries">
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-clear" aria-hidden="true"></span>
+                <span class="mark mark--bead mark--static is-done" aria-hidden="true"></span>
+              </div>
+              <div class="entry-body">
+                <label class="bd-label" for="slot-white-0">White slot 1</label>
+                <div class="bd-select"><select id="slot-white-0"><option value="">Empty slot</option><option value="sample-skill-one" selected>Sample silk skill one</option><option value="sample-skill-two">Sample silk skill two</option></select></div>
+                
+                <div class="entry-meta"><span>Silk skill</span><a class="source-link" href="#" aria-label="Source for Sample silk skill one">Source</a></div><p class="entry-how">Sample effect in one short sentence, in our own words.</p>
+              </div>
+            </li>
+              </ol>
+            </section>
+              </div>
+            </section>
+          </div>
+        </div>
+        </div>
+      </div>
+    </main>
+    <footer class="frame site-footer">
+      <p>Guide text written in our own words from the Hollow Knight: Silksong wiki and other references. Each entry links its source. Not affiliated with Team Cherry.</p>
+      <p>Layout sample. Names, prices, counts and states are invented to show what a screen can look like; they are not guide data.</p>
+    </footer>
+  </div>
+  <div class="visually-hidden" aria-live="polite" role="status"></div>
+</body>
+</html>
