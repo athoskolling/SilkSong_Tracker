@@ -66,7 +66,7 @@ Kind: C = Collectible, T = Task. `requires` names entries in this table. Propose
 | 19 | `warding-bell` | Warding Bell | C, tool | Far Fields | | At the bottom of the central Far Fields room. |
 | 20 | `drifters-cloak` | Drifter's Cloak | T, ability | Far Fields | | The Seamstress's wish, Flexile Spines: collect Spine Cores from Hokers and bring them to her. The cloak lets you glide on air currents. |
 | 21 | `mask-shard-far-fields` | Mask Shard, Far Fields | C, mask-shard | Far Fields | Drifter's Cloak | Above the Seamstress's home; glide up to it. |
-| 22 | `flintslate` | Flintslate | C, tool | Deep Docks | | In the southeast Deep Docks, reached from the south of Far Fields. |
+| 22 | `flintslate` | Flintslate | C, tool | Deep Docks | | Behind a locked gate in Deep Docks, on the way towards Far Fields. The gate needs a Simple Key from a merchant (added as a Task, `simple-key`, T28). |
 | 23 | `fourth-chorus` | Fourth Chorus | T, boss | Far Fields | Drifter's Cloak | Blocks the way up once you have the cloak. Beating it opens the air vents up to Pilgrim's Rest and Greymoor. |
 | 24 | `weighted-belt` | Weighted Belt | C, tool | Far Fields (Pilgrim's Rest) | Fourth Chorus | Sold at Pilgrim's Rest for 160 Rosaries. |
 | 25 | `tool-pouch-pilgrims-rest` | Tool Pouch upgrade, Pilgrim's Rest | C, tool-pouch-upgrade | Far Fields (Pilgrim's Rest) | Fourth Chorus | Sold at Pilgrim's Rest for 220 Rosaries. |
