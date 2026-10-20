@@ -111,6 +111,33 @@
 
 .hero .frame { width: 100%; }
 
+/* A band behind the text of a hero that has a picture (QA G2-2). It is a child of the text frame, so
+   it is exactly as tall as the text and follows it when the title wraps or the intro is long; a fixed
+   gradient from the hero's edge could not promise that. It runs wider than the frame so it has no
+   visible side edges (the page clips what overflows) and fades out above the text, so the picture
+   stays a picture in the upper part. The strengths are what a white picture needs for 3 to 1 under
+   the title and 4.5 to 1 under the crumb and intro, so the guarantee does not depend on the picture. */
+/* With the band in place, the old bottom and side darkening would only dim the picture twice. */
+.hero--picture .hero-shade--title { display: none; }
+.hero--picture .frame { isolation: isolate; }
+.hero--picture .frame::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -112px;
+  bottom: -100px;
+  left: -100vw;
+  right: -100vw;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    color-mix(in srgb, var(--night) 24%, transparent) 40px,
+    var(--scrim-text-top) 112px,
+    var(--scrim-text-bottom) 100%
+  );
+}
+
 .crumb { font-size: 15px; }
 
 .hero-title {
@@ -779,6 +806,9 @@ a.region-card:hover .card-name { color: var(--silk); }
 .route-group .entry:last-child .entry-thread { display: block; }
 .route-group.is-last .entry:last-child { padding-bottom: 0; }
 .route-group.is-last .entry:last-child .entry-thread { display: none; }
+
+/* After the list, level with the thread's marks, not a plate: it is a footnote to the whole Route. */
+.route-legend { margin-top: 44px; max-width: 62ch; }
 
 .entry--hidden .entry-thread { border-left-style: dashed; }
 .entry--hidden .entry-note { margin-top: 0; font-size: 15px; line-height: 1.6; color: var(--ash); }

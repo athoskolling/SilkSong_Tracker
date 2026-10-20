@@ -22,6 +22,10 @@
   --scrim-strong: color-mix(in srgb, var(--night) 88%, transparent);
   --scrim-mid: color-mix(in srgb, var(--night) 80%, transparent);
   --scrim-side: color-mix(in srgb, var(--night) 60%, transparent);
+  /* The band behind a hero picture's text. Strengths worked out so that even a white picture keeps the
+     title at 3 to 1 and the intro at 4.5 to 1 (see components.css, .hero--picture). */
+  --scrim-text-top: color-mix(in srgb, var(--night) 64%, transparent);
+  --scrim-text-bottom: color-mix(in srgb, var(--night) 68%, transparent);
   --plate-border: color-mix(in srgb, var(--ivory) 30%, transparent);
   --plate-border-faint: color-mix(in srgb, var(--ivory) 20%, transparent);
   --next-border: color-mix(in srgb, var(--silk) 60%, transparent);
