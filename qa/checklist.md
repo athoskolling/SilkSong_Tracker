@@ -2,7 +2,7 @@
 
 Owner: QA 2 (`qa-manual`). Source: `docs/DESIGN.md` sections 5 to 8, `docs/AGENT-PLAN.md` section 8 (V1 definition of done), `docs/CONTRACTS.md` sections 3 and 5.
 
-Updated 2026-10-20 (third pass, T22): the wiki lines (N-13, N-14, N-15, N-17) follow the item 4 decision in `docs/PHASE-0-CHECKLIST.md`; no line assumes a draft script or bulk reading. Earlier: second pass (T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
+Updated 2026-10-20 (fourth pass, T23): N-10 follows Athos's Endings decision (four Endings in total, their data ships with the late-game batch, so V1 has none); the late-game check is N-18. Earlier: third pass (T22), where the wiki lines (N-13, N-14, N-15, N-17) follow the item 4 decision in `docs/PHASE-0-CHECKLIST.md`; no line assumes a draft script or bulk reading. Earlier still: second pass (T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
 
 Each line is one checkable statement. **Fails as** is the severity if the line fails: **critical**, **major** or **minor**. A critical line that fails stops V1.
 
@@ -224,7 +224,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | N-7 | No `how` is over 300 characters (the validator warns; a long text may be pasted wiki text). | Count characters. | minor | |
 | N-8 | `node scripts/validate-data.js` passes, and `node scripts/validate-data.js data/sample` passes. | Run both. | critical | |
 | N-9 | No cycle in `requires` (validator rule; the requirements tests cover the cycle function). | Run `node --test tests/`; run the validator. | major | |
-| N-10 | Five Endings are stored in V1, each with `conditions`, `locksOut` and `source`. | Read `data/endings.json`. | major | Phase 3: the file is empty today |
+| N-10 | In V1, `data/endings.json` is valid JSON with an integer `dataVersion` and an empty `endings` array. | Read the file: `endings` is `[]`. Run `node scripts/validate-data.js` (N-8). | major | Decided 2026-10-20 (Athos): V1 has no Ending data. Replaced by N-18 when the late-game batch ships. |
 | N-11 | No `sample-` id appears in `data/`. | Search `data/`. | major | |
 | N-12 | Data sources and attribution are shown in the interface: the footer attribution line and a link to each shown entry's `source` (decided Q7, 2026-10-20, T15). | Read the footer; look for a link to each entry's source. | major | |
 | N-13 | Each entry's `how`, `requires`, `missable`, `step` and `source` agree with the entry's main wiki page. | Athos opens that page in his browser and compares the entry by hand, one page at a time. If no wiki page covers the entry, he says so in the report. QA 2 does not run this. Open question Q9 (`step`) and Q10 (`source` on other sites). | major | Athos. Wiki by hand (item 4, 2026-10-20) |
@@ -232,6 +232,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | N-15 | Text is in our own words; no sentence is pasted from the wiki. | Athos reads each `how` and Region `summary` next to its main wiki page and judges by hand. QA 2 first pass, by search only: for each `how` and summary, search one exact phrase of 6 to 8 words from its middle, in quotation marks, and note the entry id, the query and any hit address. A hit is a flag, not a verdict. Search finds exact matches only, so no hit does not show that the text is ours. The report does not copy the matching text; it names the id and the address, and Athos reads the hit by hand. | major | Athos. Wiki by hand; QA 2 runs the search pass |
 | N-16 | Each entry's `source` links to a page about that entry, not only to its Region's page. | Read the URLs. | minor | Athos decides |
 | N-17 | Per batch, at least 10 percent of entries (rounded up) and never fewer than 5, spread across Regions, are checked against the main wiki. | Athos picks the entries and checks each one by hand (the N-13 method). QA 2 records the picked ids, the count per Region, the batch's entry count and the batch total in `qa/reports/`. A batch with fewer than 5 entries cannot meet the minimum: open question Q12. | major | Athos picks and checks. QA 2 records the picks. Wiki by hand (item 4, 2026-10-20) |
+| N-18 | Four Endings are stored, each with `conditions`, `locksOut` and `source`, and each condition is an existing entry in `items.json`. | Not run in V1. When the late-game batch ships: read `data/endings.json`, count four Endings, and find each condition's id in `data/items.json`. | major | Not run in V1. Replaces N-10 when the late-game batch ships (decided 2026-10-20, Athos). |
 
 ---
 
@@ -240,6 +241,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 - Firestore rules tests in the Emulator (QA 1 runs them; `tests/firestore-rules.test.js`).
 - The published rules and the deploy (Athos only).
 - Screen reader behaviour beyond the DOM attributes (K-15 is Athos).
+- The complete endings screen. V1 does not build it and has no Ending data to show (STRUCTURE section 3; N-10 in V1, N-18 when the late-game batch ships).
 
 ## Open questions this checklist depends on
 
@@ -253,6 +255,7 @@ Closed on 2026-10-20 (decisions recorded in `docs/DESIGN.md`, `GLOSSARY.md` and 
 - **Q6** (closed): "saved" as a verb is fine for Progress (F10, GLOSSARY). (L-2.)
 - **Q7** (closed): a footer attribution line and a Source link per shown entry (T15). (N-12.)
 - **Item 4** (decided 2026-10-20, `docs/PHASE-0-CHECKLIST.md`): no draft script; wiki comparisons are done by Athos by hand; agents never fetch hollowknight.wiki or Fextralife. (N-13, N-14, N-15, N-17.)
+- **Endings** (decided 2026-10-20 by Athos): four Endings, not five. Their data ships with the late-game batch, so V1 `data/endings.json` holds an empty `endings` array. (N-10 in V1; N-18 when the batch ships.)
 
 Still open:
 
