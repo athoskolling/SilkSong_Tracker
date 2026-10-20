@@ -1,6 +1,6 @@
 # Phase 6, places sheet: points of interest per Region (orchestrator's research, 2026-10-20)
 
-**Status: draft for Athos's review.** Research only, not data. Nothing here goes into `data/` until Athos approves this sheet and checks the facts. Names are the game's names; every `how` is in our own words.
+**Status: draft for Athos's review (complete as far as search results allow).** Research only, not data. Nothing here goes into `data/` until Athos approves this sheet and checks the facts. Names are the game's names; every `how` is in our own words.
 
 **Spoiler warning:** names late-game Regions, bosses, wishes and the Act 3 diving bell.
 
@@ -287,7 +287,7 @@ The Act 3 sheet's "southeast bench of Mount Fay" (Brightvein route) is not match
 | `putrified-ducts-bellway-bench` | Bellway bench | bench | | Next to the Putrified Ducts Bellway. | `[]` | GC-PD, DX-PD | 2 | Cost 60 [GC-PD] versus 120 [DX-PD] |
 | `putrified-ducts-bellway` | Putrified Ducts Bellway | bellway | | The Ducts' Bellway station. | `[]` | wiki (snippet), G4G-FT, PCGN-FT, DX-PD | 4 | Position not found. Toll 80 [wiki, G4G-FT] versus 90 [DX-PD] versus 120 [PCGN-FT] |
 | `putrified-ducts-huntress-npc` | The Huntress | npc | | Her wish, Broodfeast, gives the Longclaw (`longclaw`). Runt gives it in Act 3. | `[]` | GC-PD, Act 2 sheet | 2 | |
-| `putrified-ducts-fleatopia-npc` | Fleatopia | npc | Fleatopia | The Flea Caravan's last camp, in a cave at the far east. Vog shows missing fleas for Rosaries; the Act 3 Festival of the Flea games are here. | `[]` | GR-FL, TR-FL, STEAM-FC, Act 3 sheet | 3 | Fleas needed: 25 [GR-FL, STEAM-FC] versus 20 [GC-100] |
+| `putrified-ducts-fleatopia-npc` | Fleatopia | npc | Fleatopia | The Flea Caravan's last camp, in a cave at the far east. Vog shows missing fleas for Rosaries; the Act 3 Festival of the Flea games are here. | `[]` | GR-FL, TR-FL, STEAM-FC, Act 3 sheet | 3 | Fleas needed: 25 [GR-FL, STEAM-FC] versus 20 [GC-PD] |
 
 Not placed: a Fleatopia bench (none found).
 
@@ -339,12 +339,12 @@ Not placed: Shakra (Sands of Karak map [sheet 2]; no directions). "Only one benc
 
 ## Vendors and the entry ids they sell
 
-For linking a shop place to its entries. Prices stay on the entries (`price`), never on places. From `data/items.json` (`dataVersion` 9) and sheet 2.
+For linking a shop place to its entries. Prices stay on the entries (`price`), never on places. From `data/items.json` (`dataVersion` 10) and sheet 2.
 
 | Vendor | place id | entry ids sold (in `data/` today) |
 |---|---|---|
 | Pebb | `moss-grotto-pebb-shop` | `magnetite-brooch`, `mask-shard-bone-bottom`, `simple-key` |
-| Shakra (one place per camp) | `the-marrow-shakra-shop` and the other `-shakra-shop` rows | `compass`, `quill`, `bench-pins`, `shell-marker`, `map-mosslands`, `map-the-marrow` (The Marrow); each other Region's map at that Region's camp: `map-deep-docks`, `map-far-fields`, `map-hunters-march`, `map-greymoor`, `map-bellhart`, `map-shellwood`, `map-wormways`, `map-sinners-road`, `map-blasted-steps` |
+| Shakra (one place per camp) | `the-marrow-shakra-shop` and the other Shakra rows | `compass`, `quill`, `bench-pins`, `shell-marker`, `map-mosslands`, `map-the-marrow` (The Marrow); each other Region's map at that Region's camp: `map-deep-docks`, `map-far-fields`, `map-hunters-march`, `map-greymoor`, `map-bellhart`, `map-shellwood`, `map-wormways`, `map-sinners-road`, `map-blasted-steps` |
 | Forge Daughter | `deep-docks-forge-daughter-shop` | `crafting-kit-forge`, `magma-bell`, `sting-shard` |
 | Mort | `far-fields-mort-shop` | `weighted-belt`, `tool-pouch-pilgrims-rest`, `memory-locket-mort` |
 | Mottled Skarr | `hunters-march-mottled-skarr-shop` | `curveclaw`, `fractured-mask` |
@@ -354,7 +354,7 @@ For linking a shop place to its entries. Prices stay on the entries (`price`), n
 | Jubilana | `choral-chambers-jubilana-shop` | `ascendants-grip`, `mask-shard-songclave`, `spool-extender`, `spider-strings`, `simple-key-jubilana`, `spool-fragment-jubilana`; `white-key` only as a fallback |
 | Twelfth Architect | `underworks-twelfth-architect-shop` | `cogwork-wheel`, `scuttlebrace`, `sawtooth-circlet`, `crafting-kit-architect`, `architect-crest` (its price is the Architect's Key) |
 
-**Every entry with a `price` in `data/` appears once in this table** (a script checked it: 38 priced entries). Not shops: Lumble (`magnetite-dice` is won at dice), Relic Seeker Scrounge and Vaultkeeper Cardinius (they buy), Creige (Nectar, not tracked), Grishkin, Kratt, Loddle and Vog (no stock found, sheet 2 section 3.11).
+**Every entry with a `price` in `data/` appears in this table** (a script checked it: 44 priced entries). Only `memory-locket-mort` and `tool-pouch-pilgrims-rest` appear twice, on purpose (Mort, then Grindle in Act 3). Not shops: Lumble (`magnetite-dice` is won at dice), Relic Seeker Scrounge and Vaultkeeper Cardinius (they buy), Creige (Nectar, not tracked), Grishkin, Kratt, Loddle and Vog (no stock found, sheet 2 section 3.11).
 
 ## Counts per Region
 
@@ -365,7 +365,7 @@ For linking a shop place to its entries. Prices stay on the entries (`price`), n
 | 3 | Deep Docks | 4 | 1 | 2 | 0 | 0 | 1 | 2 | 0 | 10 |
 | 4 | Far Fields | 4 | 1 | 2 | 2 | 0 | 0 | 1 | 0 | 10 |
 | 5 | Hunter's March | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 3 |
-| 6 | Greymoor | 4 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 8 |
+| 6 | Greymoor | 5 | 1 | 1 | 2 | 0 | 0 | 0 | 0 | 9 |
 | 7 | Bellhart | 3 | 1 | 3 | 2 | 1 | 0 | 0 | 0 | 10 |
 | 8 | Shellwood | 2 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 5 |
 | 9 | Wormways | 1 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 4 |
@@ -388,9 +388,9 @@ For linking a shop place to its entries. Prices stay on the entries (`price`), n
 | 26 | Sands of Karak | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 |
 | 27 | The Cradle | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 4 |
 | 28 | The Abyss | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 |
-| | **Total** | **66** | **12** | **20** | **18** | **3** | **4** | **11** | **7** | **141** |
+| | **Total** | **67** | **12** | **20** | **18** | **3** | **4** | **11** | **7** | **142** |
 
-All 12 Bellway stations the sources name are here (Bone Bottom, The Marrow, Deep Docks, Far Fields, Greymoor, Bellhart, Shellwood, Blasted Steps, The Slab, Grand Bellway, Bilewater, Putrified Ducts) [wiki (snippet), FSM, NEO-BW, PCGN-FT], and all 7 Ventrica stations (Terminus, Memorium, High Halls, First Shrine, Choral Chambers, Grand Bellway, Underworks) [wiki (snippet), DG-V]. All three wishboards. All four Simple Key doors (Deep Docks, Wormways, Sinner's Road, High Halls) [Act 2 sheet decision 5]. 66 of about 82 benches.
+All 12 Bellway stations the sources name are here (Bone Bottom, The Marrow, Deep Docks, Far Fields, Greymoor, Bellhart, Shellwood, Blasted Steps, The Slab, Grand Bellway, Bilewater, Putrified Ducts) [wiki (snippet), FSM, NEO-BW, PCGN-FT], and all 7 Ventrica stations (Terminus, Memorium, High Halls, First Shrine, Choral Chambers, Grand Bellway, Underworks) [wiki (snippet), DG-V]. All three wishboards. All four Simple Key doors (Deep Docks, Wormways, Sinner's Road, High Halls) [Act 2 sheet decision 5]. 67 of about 82 benches.
 
 ## Riskiest facts (check in game first)
 
@@ -399,12 +399,12 @@ All 12 Bellway stations the sources name are here (Bone Bottom, The Marrow, Deep
 3. **Bell Shrines:** five in Act 1 (The Marrow, Deep Docks, Greymoor, Bellhart, Shellwood [wiki (snippet)]) versus a Far Fields Bell Shrine [GC-B]. Which bench in each Region is the shrine rests on GC-B alone except The Marrow.
 4. **Bellway and bench tolls** were lowered by a patch [wiki (snippet) history], so every toll quoted from an older guide may be stale. The sheet puts no toll in `how` except where two sources agree (30 for the lower Marrow bench).
 5. **Mottled Skarr's gate** (Fourth Chorus or not) and **the Flea Caravan's thresholds** (15, 20 or 25 fleas).
-6. **Single-source benches** (agree 1): 23 rows. Positions from GC-B, GG-SR, GG-BW and the wiki snippets were not cross-checked.
+6. **Single-source rows** (agree 1): 11 rows, most of them benches. Positions from GC-B, GG-SR, GG-BW and the wiki snippets were not cross-checked.
 7. **Diving Bell Key from Ballow or the Caretaker** (already open in the Act 3 sheet).
 
 ## Open questions (Athos)
 
-- **P1. Scope.** 141 places, 66 of them benches. Ship benches and Bellways for every Region first (they are what a player needs most), then shops, doors and wishboards, then NPCs and arenas? Recommendation: one file, all kinds, but Athos checks the 78 benches and stations first, because they are the riskiest by count.
+- **P1. Scope.** 142 places, 67 of them benches. Ship benches and Bellways for every Region first (they are what a player needs most), then shops, doors and wishboards, then NPCs and arenas? Recommendation: one file, all kinds, but Athos checks the 86 benches and stations first, because they are the riskiest by count.
 - **P2. Ventrica stations:** a kind of their own (`ventrica`) or `other`? Recommendation: **add `ventrica`** (or rename `bellway` to `travel` with a field saying which network). Seven stations and their own toll machines; on a Region page "Fast travel" is the heading a player looks for, and `other` hides them. The contract task decides.
 - **P3. "Any Simple Key" doors.** `requires` can only say "all of". The sheet copies the data's pairing (Pebb's key for the Deep Docks door, and so on) so places and entries agree. The Green Prince's cage opens no entry, so it gets no key. Keep the pairing?
 - **P4. Groups.** The Underworks toll benches are one row because the rooms are not known. Allowed, or one row per bench only?
@@ -416,14 +416,15 @@ All 12 Bellway stations the sources name are here (Bone Bottom, The Marrow, Deep
 
 ## Brief for Dev C (`data/places.json`)
 
-**Do not hand out until Athos approves this sheet and the places contract is approved.**
+**Do not hand out until Athos approves this sheet and the third-round contract text (ADR 0007).**
 
-- **Contract status:** read on 2026-10-20 at the end of this research. `docs/CONTRACTS.md` has **no places section yet** (no `places.json` shape, no kind list, no validator rule). The field names below are this sheet's proposal; when the contract task lands, its names win and this brief is updated.
-- **File:** `data/places.json`, `{ "dataVersion": <same as the other three>, "places": [ ... ] }` (proposal; whether it joins the one shared `dataVersion` is for the contract).
-- **One object per row**, fields: `id` (the id column, unchanged: permanent, ADR 0003; must not collide with any id in `items.json`, `regions.json` or `endings.json`), `name`, `kind`, `regionId` (the section's Region id), `area` (omit when blank), `how` (our words, under 300 characters), `requires` (entry ids only, `[]` when none; the Region's `requires` are not copied), `source` (one http or https link; see below). Optional `sells` on a shop: the entry ids from the Vendors table (never prices). Nothing goes into Progress: places are not ticked.
-- **`source`:** the first guide link in the row's sources (the list below), not a wiki snippet: the wiki was never opened, so it cannot be the link we checked against. Where the only source is "wiki (snippet)" or a sheet, use the sheet's source for that fact, or leave the row out until Athos gives one. Athos may later swap a `source` for `https://mapgenie.io/hollow-knight-silksong` as "where the place can be seen" when he checks it on that map; never a deeper MapGenie link, and never text from it.
-- **Leave out:** rows Athos strikes; every disagreement goes into Athos's review, not into `how`. No toll or price numbers in `how` beyond what the row already says.
-- **Checks:** a throwaway script (not committed) confirms every `requires` and `sells` id exists in `items.json`, every `regionId` exists, ids are slugs and unique across the four files, and `how` is under 300 characters. `node scripts/validate-data.js` must still pass (it does not read `places.json` until the validator task adds a rule).
+- **Contract:** read on 2026-10-20 at the end of this research. `docs/CONTRACTS.md` section 1, "`places.json`", and validator rule 16 now exist (third round, awaiting Athos's review). This sheet's columns match them: `id`, `name`, `kind`, `regionId` (the section's Region id), `area` (omit when blank), `how`, `requires`, `sells` (shops only), `source`. The kind list is the same eight kinds. `requires` has the contract's meaning (own plus Region's, read by `missingForPlace`), so a row's `[]` stays `[]`.
+- **Ids.** The contract suggests `<kind>-<name>` but does not enforce it; this sheet uses `<regionId>-<place>-<kind>` because the task asked for a Region prefix, and it makes the 13 Shakra and 4 Flea Caravan rows readable. Either form is valid under rule 16; **the orchestrator or Athos picks one before Dev C starts**, because ids are permanent (the Rosaries page links to `place-<id>`). The script check above holds for both forms.
+- **`sells`:** the entry ids in the Vendors table, on the matching shop row, in that order (an entry sold by two vendors is listed by both, as the contract allows). Never a price on a Place.
+- **`source`:** one http or https link, the first guide page in the row's sources (the list below), never "wiki (snippet)" (the wiki was never opened, so it is not a page we read). Where the only source is a wiki snippet or an earlier sheet, use that sheet's source for the fact, or leave the row out until Athos gives one. A MapGenie link (`https://mapgenie.io/hollow-knight-silksong/...`) goes in only when Athos supplies it, per "Sources and MapGenie"; no agent writes or invents one, and no text comes from it.
+- **`how`:** the sheet's text, our words, under 300 characters (all 142 are). Disagreements stay in Athos's review, not in `how`. No toll numbers beyond what the row already says.
+- **Leave out:** rows Athos strikes; rows whose open question (P2 to P7) he settles otherwise. If he picks P2's `ventrica` kind, that is a contract change first (rule 16's list), not a data edit.
+- **Checks:** `node scripts/validate-data.js` (rule 16 once the validator task merges it) and `node --test "tests/*.test.js"` pass. A throwaway script (not committed) confirms every `requires` and `sells` id exists in `items.json`, ids are unique across all files, and every priced entry in `items.json` is sold by at least one shop.
 
 ## Sources
 
@@ -442,7 +443,7 @@ Search-result pages only; none was opened.
 - G4G-FT: [guides4gamers, fast travel](https://guides4gamers.com/hollow-knight-silksong/pois/fast-travel/)
 - G8-FL, G8-NPC, G8-SK, G8-W: Game8: [fleas](https://game8.co/games/Hollow-Knight-Silksong/archives/549001), [NPCs](https://game8.co/games/Hollow-Knight-Silksong/archives/548973), [Simple Keys](https://game8.co/games/Hollow-Knight-Silksong/archives/549778), [wishes](https://game8.co/games/Hollow-Knight-Silksong/archives/549042)
 - GB-DB, GB-MF, GBL-SB: Gamer Blurb: [diving bell](https://gamerblurb.com/articles/hollow-knight-silksong-deep-docks-diving-bell-guide-location), [Mount Fay](https://gamerblurb.com/articles/hollow-knight-silksong-mount-fay-guide-benches-map), [Silver Bells](https://gamerblurb.com/articles/hollow-knight-silksong-gather-silver-bells-guide-locations)
-- GC-100, GC-B, GC-CC, GC-DD, GC-MAR, GC-ML, GC-PD, GC-SR, GC-SW, GC-WW: game-checklists.com: [100 percent](https://game-checklists.com/silksong/100-percent.html), [all benches](https://game-checklists.com/silksong/all-benches.html), [Choral Chambers](https://game-checklists.com/silksong/choral-chambers.html), [Deep Docks](https://game-checklists.com/silksong/deep-docks.html), [The Marrow](https://game-checklists.com/silksong/the-marrow.html), [Memory Lockets](https://game-checklists.com/silksong/all-memory-lockets.html), [Putrified Ducts](https://game-checklists.com/silksong/putrified-ducts.html), [Sinner's Road](https://game-checklists.com/silksong/sinners-road.html), [Shellwood](https://game-checklists.com/silksong/shellwood.html), [Whiteward](https://game-checklists.com/silksong/whiteward.html)
+- GC-B, GC-CC, GC-DD, GC-MAR, GC-ML, GC-PD, GC-SR, GC-SW, GC-WW: game-checklists.com: [all benches](https://game-checklists.com/silksong/all-benches.html), [Choral Chambers](https://game-checklists.com/silksong/choral-chambers.html), [Deep Docks](https://game-checklists.com/silksong/deep-docks.html), [The Marrow](https://game-checklists.com/silksong/the-marrow.html), [Memory Lockets](https://game-checklists.com/silksong/all-memory-lockets.html), [Putrified Ducts](https://game-checklists.com/silksong/putrified-ducts.html), [Sinner's Road](https://game-checklists.com/silksong/sinners-road.html), [Shellwood](https://game-checklists.com/silksong/shellwood.html), [Whiteward](https://game-checklists.com/silksong/whiteward.html)
 - GG-A3, GG-AC, GG-BW, GG-GM, GG-HM, GG-SR: Gamer Guides: [Act 3](https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-3), [Architect's Key](https://www.gamerguides.com/hollow-knight-silksong/guide/crests/architect/architect-key-crest), [Bilewater benches](https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-2/bilewater-benches), [Greymoor benches](https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-1/greymoor-benches), [Hunter's March](https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-1/hunters-march-bench-locations-and-walkthrough), [Sinner's Road benches](https://www.gamerguides.com/hollow-knight-silksong/guide/walkthrough/act-1/sinners-road-benches)
 - GH-AB: [GamesHedge, Abyss map](https://www.gameshedge.com/hollow-knight-silksong-the-abyss-map-guide/)
 - GP-GRP: one search on the Green Prince's door; results were Deltia's [Simple Key doors](https://deltiasgaming.com/hollow-knight-silksong-where-to-use-the-simple-key), [Gamer Guides Simple Key](https://www.gamerguides.com/hollow-knight-silksong/guide/items/exploration/simple-key), [Nintendo Life Simple Keys](https://www.nintendolife.com/guides/hollow-knight-silksong-simple-key-locations-where-to-find-every-locked-door), wiki (snippet) Simple Key; the summary did not say which said "second room" and "any key"
