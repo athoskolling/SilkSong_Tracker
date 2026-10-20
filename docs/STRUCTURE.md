@@ -35,7 +35,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Spoilers:** Collectibles in Regions that are not Visited stay hidden by default, with an option to show everything.
 - **Firebase:** own project (ADR 0004, replaces the shared project of ADR 0002); rules are published only after passing Firebase Emulator tests.
 - **Vertical slice before parallel work:** one Region, two entries, a working requirement chain and a real login, end to end. Only then widen.
-- **Global Route:** `step` is one sequence across all Regions; region pages are filtered views of that Route.
+- **Global Route:** `step` is one sequence across all Regions; region pages are filtered views of that Route. Since Phase 5 the Route holds what leads to 100 percent and the Endings (counted Collectibles, Tasks, `missable` entries and everything they and the Regions need); a tracked-only extra that nothing on the Route needs is off the Route and appears only on its Region page and its Tracker (orchestrator, delegated by Athos, 2026-10-20; `docs/CONTRACTS.md` section 1, "On the Route or not").
 - **Visited and Available Regions:** *Visited* is set by hand and also automatically when the player completes something in the Region (it controls spoilers). *Available* is computed from the Region's `requires`, based on Progress.
 - **Locked Regions:** show only the name and what is missing (for example "needs Swift Step"); they open when the requirements are met.
 - **All Regions in the model, content in batches:** the model and interface support the whole game from the start; content ships in batches, only after it is verified.
@@ -200,6 +200,8 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 Points of attention: cycles in the data (validate), ids that do not exist (validate on load) and entries with no requirements (always available).
 
 Regions use the same logic: a Region is *Available* when all of its `requires` are in `done`. An entry is only Available when its Region is Available too: its real requirements are its own `requires` plus its Region's. Otherwise it is *Locked*, and the interface shows only the name and what is missing (the Region's own pending list).
+
+Phase 5 adds a third question, answered from the data alone: **is this entry on the Route?** (`routeIds`, `docs/CONTRACTS.md` section 2). "Next on the route", "Holding you up", the Route page and a Region's Complete state look only at entries on the Route; counts, Trackers and Rosaries do not.
 
 ## 7. V1 screens
 

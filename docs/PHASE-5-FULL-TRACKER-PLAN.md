@@ -314,3 +314,94 @@ Nothing in P5-5 to P5-11 touches `data/`, the four existing pages, `main.js` or 
 - **Shell Shards may mean something else.** Built only after Athos confirms.
 - **Unchecked facts reaching data.** Disputed facts stay out; undisputed ones need Athos's go (P5-14).
 - **The game's decryption key in a public repository.** P5-24 waits for Athos.
+
+## The Route rule (2026-10-20, delegated by Athos)
+
+**Why.** Sheet 2 (`docs/PHASE-5-SHEET-2-MEMENTOS-EQUIPMENT-SHOPS.md`, section 5 point 1) found that P5-16's 34 tracked entries would knock Complete Act 1 Regions back and could make "Next on the route" point at a map, because every entry with a `step` was on the Route. Athos delegated the decision ("do what is best for the project").
+
+**Decision** (exact text: `docs/CONTRACTS.md` section 1 "On the Route or not", section 2 `routeIds`, `nextStep` and `holdingYouUp`, section 5, rule 14, and section 7). An entry is on the Route when it is counted, a Task, `missable`, or needed (down the chain) by an entry on the Route or by a Region. Everything else (in practice a `counts: false` Collectible nothing on the Route needs) is off the Route: listed and ticked on its Region page and its Tracker, never on the Route page, never "Next on the route", never in "Holding you up", and never keeping a Region from Complete. One pure function, `routeIds(items, regions) -> Set`, holds the rule; the interface never re-derives it.
+
+**What moves on today's data** (checked with a throwaway prototype of the rule against `data/` at `dataVersion` 5 and `data/sample` at `dataVersion` 3; P5-25 must reproduce these numbers):
+
+| | `data/` | `data/sample` |
+|---|---|---|
+| Entries / on the Route | 63 / 62 | 30 / 25 |
+| Off the Route | `hunter-crest` | `sample-crest-three`, `sample-red-tool-plus`, `sample-memento`, `sample-map`, `sample-memento-two` |
+| `nextStep`, nothing done | `moss-mother` (unchanged) | `sample-ability` (unchanged) |
+| `nextStep` after the first is done | `silk-spear` (today `hunter-crest`) | `sample-key` (unchanged) |
+| Ticking `nextStep` until null | 62 entries (today 63) | 25 entries (today 30) |
+| `holdingYouUp`, nothing done, as id and `blocks.length` | `moss-mother` 70, `simple-key` 1 (unchanged) | `sample-ability` 8, `sample-cloak` 6 (today 7: `sample-memento-two` drops out), `sample-lever` 3, `sample-crest` 2; `sample-red-tool` (today 1, for `sample-red-tool-plus`) is gone |
+| Region entries on the Route | Moss Grotto 8 of 9; every other Region all of its entries | Region F 10 of 14, Region G 2 of 3; others all |
+| Region card Complete | Moss Grotto no longer needs the Hunter Crest | Regions F and G no longer need their off-Route entries |
+| `regionProgress`, Home Collectibles (49), Tasks (12), by type | unchanged | unchanged |
+
+All 62 entries from before Phase 5 keep their place on the Route. The Hunter Crest is the one change, and it is a Phase 5 entry: a starting Crest the game does not count and nothing needs. It stays on the Moss Grotto page and the Crests tab, where the player ticks it for the Build picker. Keeping it on the Route by making something require it was rejected: that would be an invented game fact.
+
+### Order of these tasks
+
+1. Before P5-27 is handed out, the orchestrator updates `docs/DESIGN.md` (section 5, Region card: Complete means every entry on the Route is done; section 6, Region page: the "Not on the route" label).
+2. P5-25 (Dev A) and P5-26 (QA 1) are written in parallel (different files). Merge P5-25, then P5-26 straight after, with nothing in between. Between the two merges exactly one existing test fails (named in P5-25), because it encodes the rule being retired. Run `node --test "tests/*.test.js"` and both validator commands after P5-26.
+3. P5-27 (Dev B) and P5-28 (QA 1) after P5-26 is merged; different files, so in parallel. Merge one at a time, tests and validators after each.
+4. QA 2 pass on Home, Route and Region with `data/` and `?data=sample`.
+5. P5-16 may then go (its dependency).
+
+Nothing in these four tasks touches `data/`, `data/sample/`, `js/progress.js`, `js/firebase.js`, `firestore.rules`, `js/trackers-page.js` or any HTML page.
+
+### P5-25 (dev-a): `routeIds`, and `nextStep` and `holdingYouUp` follow it
+
+- **Goal:** the Route rule in `docs/CONTRACTS.md` section 2, in one place, with no other answer changed.
+- **Files:** `js/requirements.js` only (owner: Dev A). Tests are QA 1's (P5-26); do not edit `tests/`.
+- **Exact changes:**
+  1. `export function routeIds(items, regions)`, returning a `Set` of entry ids, as the contract says. Write the walk as an internal helper that takes the index (like `itemIsAvailable`), so `nextStep` and `holdingYouUp` reuse the index they already build. Start from every entry where `isCounted(item) || item.kind === 'task' || item.missable === true`, plus `requirementsOfRegion` of every Region; for each id, add it and push `requirementsOfItem` of it. A Set of ids already added stops cycles; do not report a cycle here. Unknown ids throw through `getItem` and `getRegion`, as everywhere. A comment says why the function exists (the one place the rule lives; the data alone decides it; closed under requirements, so nothing needed by the Route is ever off it).
+  2. `nextStep`: only entries in the Set can be returned. Signature unchanged.
+  3. `holdingYouUp`: the loop over entries skips entries off the Route before anything else. The Region loop is unchanged. Signature unchanged.
+  4. Nothing else changes: `isAvailable`, `missingFor`, `missingForRegion`, `isRegionAvailable`, `regionProgress`, `isCounted` and `rosariesToSpend` give the same answers as before.
+- **Done when:** `node --test "tests/*.test.js"` passes except exactly one test, `nextStep: can return an entry with counts: false, then moves past it once it is done`, which encodes the retired rule (P5-26 replaces it); any other failure is a bug to fix here. `node scripts/validate-data.js` and `node scripts/validate-data.js data/sample` still print `0 warning(s)`. A throwaway script (not committed) prints, for `data/` and `data/sample`, before and after the change where the function existed before: `routeIds` size and the ids off it; `nextStep` with nothing done and after the first id is done; how many entries ticking `nextStep` until null reaches; `holdingYouUp` with nothing done as `[id, blocks.length]`; `regionProgress` for every Region. The numbers match the table above; paste the output into the handoff.
+
+### P5-26 (qa-tests): tests for the Route rule
+
+- **Goal:** cover the Phase 5 Route sentence in `docs/CONTRACTS.md` section 2 ("Rules the tests must cover").
+- **Files:** `tests/requirements.test.js` (owner: QA 1). Written against the contract; merged straight after P5-25.
+- **Cases** (small invented objects unless a case says `data/sample`; never the real `data/`):
+  - Replace `nextStep: can return an entry with counts: false, then moves past it once it is done` with two tests: a `counts: false` entry that a counted entry requires is returned by `nextStep` and passed once done; a `counts: false` entry that nothing needs is never returned, even when it has the lowest `step` and is Available, and `nextStep` is `null` when only such entries are left.
+  - `routeIds` holds: a counted Collectible; a Task (also one with `counts: false`); a `missable: true` entry with `counts: false` that nothing needs; a `counts: false` entry required by a counted one; two `counts: false` entries in a chain under a counted one (two links down); a `counts: false` entry in a Region's `requires`, also when that Region has no entries; a `counts: false` entry required by the Region of a counted entry.
+  - `routeIds` leaves out: a `counts: false` entry that nothing needs; a `counts: false` "key" required only by two `counts: false` "furnishings" (the key is off, like the furnishings).
+  - `routeIds` returns a `Set`, does not change the arrays it is given, does not depend on the order of `items`, throws on an unknown `regionId`, on an unknown id in an entry's `requires` and on one in a Region's `requires`, and returns (holding both ids) for a cycle between two counted entries instead of looping.
+  - `holdingYouUp`: a `counts: false` entry off the Route, waiting on an Available requirement, is not in any `blocks`; when that requirement also holds up a counted entry, `blocks` lists only the counted one. The existing test `holdingYouUp: a counts: false entry can hold up an entry and a Region` stays (that entry is needed, so it is on the Route).
+  - `data/sample` pins: `routeIds` has 25 ids, and the ids off it are exactly `sample-crest-three`, `sample-red-tool-plus`, `sample-memento`, `sample-map`, `sample-memento-two`; every Ending condition in the sample's `endings.json` is in it; ticking `nextStep` from nothing until `null` reaches 25 entries, none of them off the Route; `holdingYouUp(new Set(), ...)` equals exactly:
+    `[{ id: 'sample-ability', blocks: ['sample-key', 'sample-door', 'sample-shard', 'sample-boss', 'sample-charm', 'sample-flea', 'sample-region-b', 'sample-region-c'] }, { id: 'sample-cloak', blocks: ['sample-crest-two', 'sample-yellow-tool', 'sample-slot-upgrade', 'sample-crest-four', 'sample-yellow-tool-two', 'sample-region-g'] }, { id: 'sample-lever', blocks: ['sample-skill', 'sample-shard-two', 'sample-region-d'] }, { id: 'sample-crest', blocks: ['sample-quest', 'sample-tool-two'] }]`
+    (the orchestrator's prototype; if P5-25 gives something else, report it, do not change the pin to match).
+  - The existing `regionProgress` pins and `counts and price change no answer about requirements` stay as they are (both still hold under the new rule).
+- **Done when:** all tests pass after P5-25 is merged; the handoff lists each case and the command run.
+
+### P5-27 (dev-b): the Route page, Region cards, Home and the Region page follow `routeIds`
+
+- **Goal:** the interface behaviour in `docs/CONTRACTS.md` section 5 ("Phase 5, the Route rule").
+- **Files:** `js/main.js` and `js/render.js` (owner: Dev B). Not `requirements.js`, `trackers-page.js` or any CSS unless the label needs one rule in `css/components.css` (say so).
+- **Depends on:** P5-25 and P5-26 merged; `docs/DESIGN.md` updated by the orchestrator (step 1 above).
+- **Exact changes:**
+  1. `loadGuide`: import `routeIds`; work out the Set once and put it on the guide as `onRoute`; `routeOrder` holds only entries in the Set, by `step`. Nothing else in the page decides what is on the Route.
+  2. Route page: no change beyond what `routeOrder` now holds; check that groups, "Steps X to Y" and hidden counts come from it.
+  3. `regionCard`: Complete as in the contract (every entry on the Route in the Region done; all entries when none of them is on the Route). Update the comment above it, which still says "every entry in it is done".
+  4. Home: `allDone` means every entry on the Route is done (and there is at least one). `render.js`: heading "Everything on the route is done", text "Every step on the route so far is marked done. Extras that are not on the route stay on their Region pages."
+  5. `makeEntryView` gets `onRoute: guide.onRoute.has(item.id)`. In `render.js` `entryRow`, a row with `onRoute === false` shows "Not on the route" in the place of "Step N" (same element, no `num` class). It is text, not colour only.
+  6. Leave the counts, Visited, spoiler hiding, the Locked chain, `holdingViews` and the Trackers page as they are.
+- **Done when**, served with `python3 -m http.server 8000` (say what you looked at):
+  - `data/`: Home Collectibles 0 of 49, Tasks 0 of 12, "Collectibles by type" and every Region card bar as before. With "Show everything" on, the Route lists 62 entries (63 before; the Hunter Crest is gone). "Next on the route" is Moss Mother with nothing done, and Silk Spear once Moss Mother is ticked (before: Hunter Crest). The Moss Grotto page lists 9 entries; the Hunter Crest row reads "Not on the route" and toggles. Ticking Moss Grotto's 8 entries on the Route (Moss Mother, Silk Spear, Simple Key, the Moss Grotto Spool Fragment, Druid's Eye, Magnetite Brooch, the Bone Bottom Mask Shard, Wanderer Crest) makes its card Complete without the Hunter Crest.
+  - `?data=sample`: the Route lists 25 entries with "Show everything" on (30 before); the Region F card is Complete once its 10 entries on the Route are done (14 before) and Region G with its 2 (3 before); the five off-Route rows read "Not on the route" on their Region pages; Home "Holding you up" starts with `sample-ability`, then `sample-cloak` (blocks 6).
+  - Keyboard and screen reader behaviour of the rows is unchanged; nothing scrolls sideways at 390px; `node --test "tests/*.test.js"` and both validator commands pass.
+
+### P5-28 (qa-tests): validator rule 14
+
+- **Goal:** the warning in `docs/CONTRACTS.md` section 6, rule 14.
+- **Files:** `scripts/validate-data.js` and `tests/validate-data.test.js` (owner: QA 1).
+- **Depends on:** P5-25 merged (the validator imports `routeIds` from `../js/requirements.js`; it does not copy the rule).
+- **Exact changes:** after the existing checks, and only when rules 1 to 5 reported no error, call `routeIds(items, regions)` and give a rule 14 warning for each Ending condition not in it, naming the Ending id and the condition id, saying the Route must lead to every Ending and that the orchestrator decides the fix (Ending conditions become a root of `routeIds`). Update the header comment's rule list.
+- **Tests:** a copy of `data/sample` where one Ending's condition is a new `counts: false` Collectible that nothing needs gives exactly one rule 14 warning; the untouched sample gives none; a copy with a rule 3 error (an unknown id in `requires`) reports rule 3 and neither crashes nor prints rule 14.
+- **Done when:** all tests pass; `node scripts/validate-data.js` and `node scripts/validate-data.js data/sample` print exactly what they printed before (`0 warning(s)`).
+
+### Risks of the Route rule
+
+- **A `requires` left out of the data drops an entry off the Route without an error** (a key that opens a counted entry but is not in its `requires`). Each data batch's handoff lists the tracked entries that land on the Route and why; QA 2 compares the Route with the sheet.
+- **A player never ticks the Hunter Crest** because the Route no longer shows it, and the Build picker then offers no Crest. Its `how` already says to tick it; P5-21's empty state should point to the Crests tab.
+- **The legend** ("A bead is a collectible and counts toward your totals") is already wrong for `counts: false` Collectibles since P5-13; this rule does not change that. Open point for Dev B's next pass on `render.js`.
