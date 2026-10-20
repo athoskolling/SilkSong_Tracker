@@ -69,9 +69,10 @@ const COLLECTIBLE_TYPES = [
 ];
 
 // Tracked-only types (Phase 5, ADR 0005): Collectibles the game does not count toward 100 percent.
-// An entry of one of these types is counted only if it says "counts": false. The list grows when
-// the Mementos and Equipment sheet is approved (docs/CONTRACTS.md section 6, rule 12).
-const TRACKED_TYPES = ['memento', 'relic', 'map'];
+// An entry of one of these types is counted only if it says "counts": false. The last five come from
+// the Mementos and Equipment sheet (docs/PHASE-5-SHEET-2-MEMENTOS-EQUIPMENT-SHOPS.md, section 2.2).
+// Fleas are not on this list on purpose: they are Tasks, and Task types are free.
+const TRACKED_TYPES = ['memento', 'relic', 'map', 'map-tool', 'memory-locket', 'key', 'key-item', 'furnishing'];
 
 // The colours of Tools (contract section 1, toolColor). The colour decides which Crest slots a Tool fits.
 const TOOL_COLORS = ['red', 'blue', 'yellow'];
