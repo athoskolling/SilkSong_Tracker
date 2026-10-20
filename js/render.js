@@ -1001,7 +1001,7 @@ export function renderTrackersShell(app) {
 
   const tabs = h('div', { class: 'tk-tabs', role: 'tablist', 'aria-label': 'Trackers' });
   const main = h('div', { class: 'main-column' });
-  const rail = h('aside', { class: 'plate plate--rail', 'aria-label': 'Options' });
+  const rail = h('aside', { class: 'plate plate--rail', 'aria-label': 'Plan and options' });
   app.replaceChildren(
     hero,
     h(
@@ -1024,6 +1024,25 @@ export function renderTrackersBody(parts, view) {
   parts.tabs.replaceChildren(...view.tabs.map(trackerTab));
   parts.main.replaceChildren(trackerPanel(view.panel));
   parts.rail.replaceChildren(
+    h(
+      'div',
+      { class: 'rail-section' },
+      h('h2', { class: 'plate-heading' }, 'Plan with what you have'),
+      h(
+        'ul',
+        { class: 'holding-list' },
+        h(
+          'li',
+          { class: 'holding-item' },
+          h(
+            'div',
+            {},
+            h('a', { class: 'holding-name', href: view.rosariesHref }, 'Rosaries'),
+            h('p', { class: 'holding-text' }, 'Add up what the shop entries you have not bought still cost.')
+          )
+        )
+      )
+    ),
     h('div', { class: 'toggles' }, switchControl('show-all', 'Show everything, spoilers included', view.showAll)),
     h(
       'p',
@@ -1164,5 +1183,236 @@ function trackerHiddenRow(panel) {
       h('span', { class: 'mark mark--bead mark--static mark--region', 'aria-hidden': 'true' })
     ),
     h('div', { class: 'entry-body' }, h('p', { class: 'entry-note' }, text))
+  );
+}
+
+// ------------------------------------------------------------------ rosaries
+
+// "3,350". A fixed locale, so the page reads the same on every device.
+export function formatRosaries(n) {
+  return n.toLocaleString('en-US');
+}
+
+// "500 Rosaries", "1 Rosary".
+export function rosaryText(n) {
+  return `${formatRosaries(n)} ${n === 1 ? 'Rosary' : 'Rosaries'}`;
+}
+
+// The Rosaries page: a short hero and the layout renderRosariesBody fills. Built once.
+export function renderRosariesShell(app) {
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h(
+      'div',
+      { class: 'frame' },
+      h('h1', { class: 'hero-title' }, 'Rosaries'),
+      h('p', { class: 'hero-intro' }, 'Tick the shop entries you have bought. The page adds up what the rest still costs.')
+    )
+  );
+
+  const layout = h('div', { class: 'layout layout--route' });
+  app.replaceChildren(
+    hero,
+    h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
+  );
+  return layout;
+}
+
+// view: see runRosariesPage in rosaries-page.js. The rail is first in the document, as on the Route page, so
+// the total comes before the list; CSS puts it on the right on a wide screen.
+export function renderRosariesBody(layout, view) {
+  if (view.empty) {
+    layout.className = 'layout layout--side-only';
+    layout.replaceChildren(
+      h(
+        'aside',
+        { class: 'plate' },
+        h('h2', { class: 'plate-heading' }, 'Not in the guide yet'),
+        h('p', { class: 'plate-text' }, 'Shop entries and their prices ship in a later batch. Until then there is nothing to add up.'),
+        h('p', {}, h('a', { href: view.trackersHref }, 'Back to all trackers'))
+      )
+    );
+    return;
+  }
+  layout.className = 'layout layout--route';
+  layout.replaceChildren(rosariesRail(view), rosariesMain(view));
+}
+
+function rosariesRail(view) {
+  return h(
+    'aside',
+    { class: 'plate plate--rail route-rail', 'aria-labelledby': 'need-heading' },
+    h(
+      'div',
+      { class: 'rail-section' },
+      h('h2', { class: 'plate-heading', id: 'need-heading' }, 'Still needed'),
+      h(
+        'div',
+        {},
+        h('p', { class: view.need === 0 ? 'tk-need tk-need-zero' : 'tk-need' }, h('span', { class: 'num' }, formatRosaries(view.need))),
+        h('p', { class: 'tk-need-label' }, view.needLabel)
+      ),
+      countBlock('collectibles', 'Bought', view.bought, { needle: !view.complete, complete: view.complete }),
+      h(
+        'p',
+        { class: 'plate-help' },
+        'The total follows what you tick and is worked out from the prices. You never type it. It counts entries you cannot buy yet too.'
+      )
+    ),
+    h('div', { class: 'toggles' }, switchControl('show-all', 'Show everything, spoilers included', view.showAll))
+  );
+}
+
+function rosariesMain(view) {
+  return h(
+    'div',
+    { class: 'main-column' },
+    nextToBuy(view),
+    h('h2', { class: 'list-heading list-heading--spaced' }, 'Shops by region'),
+    ...view.groups.map((group, i) => rosariesGroup(group, i === view.groups.length - 1)),
+    h(
+      'p',
+      { class: 'route-legend plate-help' },
+      'Tick an entry when you buy it. A bead is a Collectible and a knot is a Task. Entries marked Not counted are tracked here but do not add to the 100 percent count on Home.'
+    )
+  );
+}
+
+// The plate above the list. With something to buy it names the entry and has its own button, so the next
+// purchase is one press away; otherwise it says why there is nothing to buy.
+function nextToBuy(view) {
+  const next = view.next;
+  if (next) {
+    return h(
+      'section',
+      { class: 'next-plate tk-next', 'aria-labelledby': 'next-buy-heading' },
+      h('p', { class: 'next-label' }, 'Next to buy'),
+      h('h2', { class: 'next-name', id: 'next-buy-heading' }, next.name),
+      h(
+        'div',
+        { class: 'entry-meta next-meta' },
+        h('span', {}, typeLabel(next.type)),
+        h('span', {}, next.regionName),
+        next.uncounted ? h('span', { class: 'flag-uncounted' }, 'Not counted') : null,
+        sourceLink(next)
+      ),
+      h('p', { class: 'tk-price-line' }, `${rosaryText(next.price)}. Buying it leaves ${formatRosaries(next.leaves)} still needed.`),
+      h('p', { class: 'next-how' }, 'The first shop entry in route order that you can buy now and have not bought.'),
+      h(
+        'div',
+        { class: 'next-actions' },
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'button button--secondary',
+            'data-action': 'toggle-done',
+            'data-id': next.id,
+            'data-focus-key': 'next-buy',
+          },
+          'Mark as bought'
+        ),
+        h('a', { href: next.regionHref }, `Open ${next.regionName}`)
+      )
+    );
+  }
+
+  if (view.complete) {
+    return h(
+      'section',
+      { class: 'tk-done-plate', 'aria-labelledby': 'next-buy-heading' },
+      h('p', { class: 'next-label' }, 'Next to buy'),
+      h('h2', { class: 'next-name', id: 'next-buy-heading', tabindex: '-1' }, 'Nothing left to buy'),
+      h('p', { class: 'next-how' }, 'Every shop entry in the guide is marked as bought.')
+    );
+  }
+
+  // Entries are left, but each one needs something else first.
+  return h(
+    'section',
+    { class: 'next-plate tk-next', 'aria-labelledby': 'next-buy-heading' },
+    h('p', { class: 'next-label' }, 'Next to buy'),
+    h('h2', { class: 'next-name', id: 'next-buy-heading', tabindex: '-1' }, 'Nothing you can buy yet'),
+    h('p', { class: 'next-how' }, 'Every shop entry that is left needs something else first. The entries below say what.')
+  );
+}
+
+function rosariesGroup(group, isLast) {
+  const headingId = `shop-${group.id}`;
+  const hidden = group.hiddenNote
+    ? h(
+        'li',
+        { class: 'entry entry--hidden' },
+        h(
+          'div',
+          { class: 'entry-rail' },
+          h('span', { class: 'entry-thread', 'aria-hidden': 'true' }),
+          h('span', { class: 'mark mark--bead mark--static mark--region', 'aria-hidden': 'true' })
+        ),
+        h('div', { class: 'entry-body' }, h('p', { class: 'entry-note' }, group.hiddenNote))
+      )
+    : null;
+
+  return h(
+    'section',
+    { class: isLast ? 'route-group tk-group is-last' : 'route-group tk-group', 'aria-labelledby': headingId },
+    h(
+      'div',
+      { class: 'route-head' },
+      h('div', { class: 'entry-rail' }, h('span', { class: 'entry-thread', 'aria-hidden': 'true' })),
+      h(
+        'div',
+        { class: 'route-head-body' },
+        h('h3', { class: 'route-name', id: headingId }, h('a', { href: group.href }, group.name)),
+        h('span', { class: 'route-meta' }, h('span', { class: 'num' }, group.meta))
+      )
+    ),
+    h('ol', { class: 'entries' }, ...group.rows.map(rosaryRow), hidden)
+  );
+}
+
+// One shop entry: name and price on the first line, then type, flags and what it needs.
+function rosaryRow(entry) {
+  const needsId = `needs-${entry.id}`;
+  const threadClasses = ['entry-thread'];
+  if (entry.done) threadClasses.push('is-clear');
+  if (!entry.available) threadClasses.push('is-blocked');
+
+  const toggle = h(
+    'button',
+    {
+      type: 'button',
+      class: 'entry-mark',
+      'aria-pressed': String(entry.done),
+      'aria-label': entry.name,
+      'aria-describedby': entry.needs ? needsId : null,
+      'data-action': 'toggle-done',
+      'data-id': entry.id,
+      'data-focus-key': `done:${entry.id}`,
+    },
+    h('span', { class: markClasses(entry) })
+  );
+
+  return h(
+    'li',
+    { class: entry.done ? 'entry is-done' : 'entry' },
+    h('div', { class: 'entry-rail' }, h('span', { class: threadClasses.join(' '), 'aria-hidden': 'true' }), toggle),
+    h(
+      'div',
+      { class: 'entry-body' },
+      h('div', { class: 'entry-head tk-head' }, h('span', { class: 'entry-name' }, entry.name), h('span', { class: 'tk-price num' }, rosaryText(entry.price))),
+      h(
+        'div',
+        { class: 'entry-meta' },
+        h('span', {}, typeLabel(entry.type)),
+        entry.uncounted ? h('span', { class: 'flag-uncounted' }, 'Not counted') : null,
+        entry.done ? h('span', { class: 'flag-done' }, 'Bought') : null,
+        sourceLink(entry)
+      ),
+      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+    )
   );
 }
