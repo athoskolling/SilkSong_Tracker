@@ -1,5 +1,5 @@
 {
-  "dataVersion": 1,
+  "dataVersion": 2,
   "items": [
     {
       "id": "moss-mother",
@@ -11,7 +11,7 @@
       "how": "The first boss, in the upper part of the Ruined Chapel. Cut the two vines blocking the entrance to reach her. Beating her opens the way up out of Moss Grotto.",
       "requires": [],
       "step": 10,
-      "source": "https://hollowknightsilksong.wiki.fextralife.com/Moss+Mother"
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
     },
     {
       "id": "silk-spear",
@@ -21,9 +21,737 @@
       "regionId": "moss-grotto",
       "area": "Mosshome",
       "how": "A Silk Skill. Reach Mosshome from The Marrow by heading left past Shakra, the map seller. Climb to its upper part and interact with the idol there to learn it.",
-      "requires": ["moss-mother"],
+      "requires": [
+        "moss-mother"
+      ],
       "step": 20,
-      "source": "https://hollowknightsilksong.wiki.fextralife.com/Moss+Grotto"
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "spool-fragment-moss-grotto",
+      "name": "Spool Fragment, Moss Grotto",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "moss-grotto",
+      "how": "In a trap room east of the lift.",
+      "requires": [],
+      "step": 30,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "druids-eye",
+      "name": "Druid's Eye",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "moss-grotto",
+      "area": "Mosshome",
+      "how": "The Moss Druid's wish, Berry Picking: gather Mossberries from the mossy lowlands and bring them back.",
+      "requires": [
+        "moss-mother"
+      ],
+      "step": 40,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "shard-pendant",
+      "name": "Shard Pendant",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "the-marrow",
+      "how": "In a small room west of the tall central chamber.",
+      "requires": [],
+      "step": 50,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "compass",
+      "name": "Compass",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "the-marrow",
+      "area": "Shakra",
+      "how": "Sold by Shakra the map seller for 70 Rosaries.",
+      "requires": [],
+      "step": 60,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "bell-beast",
+      "name": "Bell Beast",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-marrow",
+      "area": "Marrow Bellway",
+      "how": "Trapped in silk at the Bellway. Cut it free with Silk Spear and beat it; the Bellway then works for travel.",
+      "requires": [
+        "silk-spear"
+      ],
+      "step": 70,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "silk-heart-bell-beast",
+      "name": "Silk Heart, Bell Beast",
+      "kind": "collectible",
+      "type": "silk-heart",
+      "regionId": "the-marrow",
+      "area": "Marrow Bellway",
+      "how": "After the win, touch the silk the Bell Beast leaves behind and climb the short challenge of crumbling platforms it opens; the Silk Heart is at the top.",
+      "requires": [
+        "bell-beast"
+      ],
+      "step": 80,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "straight-pin",
+      "name": "Straight Pin",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "the-marrow",
+      "how": "In Grindle's prison cell, in the tall room at the far right near the way to Hunter's March. Free him to reach it.",
+      "requires": [],
+      "step": 90,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "tool-pouch-loddle",
+      "name": "Tool Pouch upgrade, Loddle",
+      "kind": "collectible",
+      "type": "tool-pouch-upgrade",
+      "regionId": "the-marrow",
+      "how": "Pass Loddle's aiming challenge with the Straight Pin.",
+      "requires": [
+        "straight-pin"
+      ],
+      "step": 100,
+      "source": "https://game-checklists.com/silksong/the-marrow.html"
+    },
+    {
+      "id": "magnetite-brooch",
+      "name": "Magnetite Brooch",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "moss-grotto",
+      "area": "Bone Bottom",
+      "how": "Sold in the Bone Bottom shop for 120 Rosaries.",
+      "requires": [
+        "moss-mother"
+      ],
+      "step": 110,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "swift-step",
+      "name": "Swift Step",
+      "kind": "collectible",
+      "type": "ancestral-art",
+      "regionId": "deep-docks",
+      "how": "Climb to the top of the Deep Docks and bind the Weaver effigy there. A dash.",
+      "requires": [],
+      "step": 120,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "crafting-kit-forge",
+      "name": "Crafting Kit, Forge Daughter",
+      "kind": "collectible",
+      "type": "crafting-kit-upgrade",
+      "regionId": "deep-docks",
+      "area": "Forge",
+      "how": "Sold by the Forge Daughter for 180 Rosaries.",
+      "requires": [],
+      "step": 130,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "magma-bell",
+      "name": "Magma Bell",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "deep-docks",
+      "area": "Forge",
+      "how": "Sold by the Forge Daughter for 110 Rosaries and a Craftmetal.",
+      "requires": [],
+      "step": 140,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "sting-shard",
+      "name": "Sting Shard",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "deep-docks",
+      "area": "Forge",
+      "how": "Sold by the Forge Daughter for 140 Rosaries and a Craftmetal.",
+      "requires": [],
+      "step": 150,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "spool-fragment-deep-docks",
+      "name": "Spool Fragment, Deep Docks",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "deep-docks",
+      "area": "Forge",
+      "how": "At the end of a platforming challenge near the Forge Daughter.",
+      "requires": [],
+      "step": 160,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "lace",
+      "name": "Lace",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "deep-docks",
+      "how": "Dash in mid-air to reach the lever near Shakra's room; it opens Lace's arena. Beating her opens the way to Far Fields.",
+      "requires": [
+        "swift-step"
+      ],
+      "step": 170,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "mask-shard-bone-bottom",
+      "name": "Mask Shard, Bone Bottom shop",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "moss-grotto",
+      "area": "Bone Bottom",
+      "how": "Sold in the Bone Bottom shop for 300 Rosaries.",
+      "requires": [
+        "moss-mother"
+      ],
+      "step": 180,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "warding-bell",
+      "name": "Warding Bell",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "far-fields",
+      "how": "At the bottom of the central Far Fields room.",
+      "requires": [],
+      "step": 190,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "drifters-cloak",
+      "name": "Drifter's Cloak",
+      "kind": "task",
+      "type": "ability",
+      "regionId": "far-fields",
+      "how": "The Seamstress's wish, Flexile Spines: collect Spine Cores from Hokers and bring them to her. The cloak lets you glide on air currents.",
+      "requires": [],
+      "step": 200,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "mask-shard-far-fields",
+      "name": "Mask Shard, Far Fields",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "far-fields",
+      "how": "Above the Seamstress's home; glide up to it.",
+      "requires": [
+        "drifters-cloak"
+      ],
+      "step": 210,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "flintslate",
+      "name": "Flintslate",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "deep-docks",
+      "how": "In the southeast Deep Docks, reached from the south of Far Fields.",
+      "requires": [],
+      "step": 220,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "fourth-chorus",
+      "name": "Fourth Chorus",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "far-fields",
+      "how": "Blocks the way up once you have the cloak. Beating it opens the air vents up to Pilgrim's Rest and Greymoor.",
+      "requires": [
+        "drifters-cloak"
+      ],
+      "step": 230,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "weighted-belt",
+      "name": "Weighted Belt",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "far-fields",
+      "area": "Pilgrim's Rest",
+      "how": "Sold at Pilgrim's Rest for 160 Rosaries.",
+      "requires": [
+        "fourth-chorus"
+      ],
+      "step": 240,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "tool-pouch-pilgrims-rest",
+      "name": "Tool Pouch upgrade, Pilgrim's Rest",
+      "kind": "collectible",
+      "type": "tool-pouch-upgrade",
+      "regionId": "far-fields",
+      "area": "Pilgrim's Rest",
+      "how": "Sold at Pilgrim's Rest for 220 Rosaries.",
+      "requires": [
+        "fourth-chorus"
+      ],
+      "step": 250,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "curveclaw",
+      "name": "Curveclaw",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "hunters-march",
+      "how": "Sold by Mottled Skarr for 140 Rosaries.",
+      "requires": [],
+      "step": 260,
+      "source": "https://game-checklists.com/silksong/hunters-march.html"
+    },
+    {
+      "id": "fractured-mask",
+      "name": "Fractured Mask",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "hunters-march",
+      "how": "Sold by Mottled Skarr for 260 Rosaries.",
+      "requires": [],
+      "step": 270,
+      "source": "https://game-checklists.com/silksong/hunters-march.html"
+    },
+    {
+      "id": "savage-beastfly",
+      "name": "Savage Beastfly",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "hunters-march",
+      "area": "Chapel of the Beast",
+      "how": "In the Chapel of the Beast at the east end of the March, after a short climb.",
+      "requires": [],
+      "step": 280,
+      "source": "https://game-checklists.com/silksong/hunters-march.html"
+    },
+    {
+      "id": "beast-crest",
+      "name": "Beast Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "hunters-march",
+      "area": "Chapel of the Beast",
+      "how": "Bind the great husk in the chapel after the fight.",
+      "requires": [
+        "savage-beastfly"
+      ],
+      "step": 290,
+      "source": "https://game-checklists.com/silksong/hunters-march.html"
+    },
+    {
+      "id": "thread-storm",
+      "name": "Thread Storm",
+      "kind": "collectible",
+      "type": "silk-skill",
+      "regionId": "greymoor",
+      "area": "Craw Lake",
+      "how": "Survive the crows' gauntlet at Craw Lake, then pogo up outside to the effigy.",
+      "requires": [],
+      "step": 300,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "reaper-crest",
+      "name": "Reaper Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "greymoor",
+      "area": "Chapel of the Reaper",
+      "how": "In the arena of the Chapel of the Reaper.",
+      "requires": [],
+      "step": 310,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "threefold-pin",
+      "name": "Threefold Pin",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "greymoor",
+      "area": "Craw House",
+      "how": "In a hidden room above the Craw House; set the bouncing platforms moving to reach it.",
+      "requires": [],
+      "step": 320,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "flea-brew",
+      "name": "Flea Brew",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "greymoor",
+      "how": "Fleamaster Mooshka's wish, The Lost Fleas: once five fleas have joined the Flea Caravan, it moves on and she gives you this.",
+      "requires": [],
+      "step": 330,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "moorwing",
+      "name": "Moorwing",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "greymoor",
+      "how": "Greymoor's last boss, at its far left. Beating it opens the way to Bellhart.",
+      "requires": [],
+      "step": 340,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "mask-shard-shellwood",
+      "name": "Mask Shard, Shellwood",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "shellwood",
+      "how": "Behind a breakable wall, past a trap of flowers.",
+      "requires": [],
+      "step": 350,
+      "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "longpin",
+      "name": "Longpin",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "shellwood",
+      "how": "Behind the wasp nest in Shellwood.",
+      "requires": [],
+      "step": 360,
+      "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "pollip-pouch",
+      "name": "Pollip Pouch",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "shellwood",
+      "how": "Greyroot's wish, Rite of the Pollip: gather Pollip Hearts from the purple flowers of Shellwood.",
+      "requires": [],
+      "step": 370,
+      "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "sister-splinter",
+      "name": "Sister Splinter",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "shellwood",
+      "how": "Shellwood's boss, reached by the lift to the central bench.",
+      "requires": [],
+      "step": 380,
+      "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "cling-grip",
+      "name": "Cling Grip",
+      "kind": "collectible",
+      "type": "ancestral-art",
+      "regionId": "shellwood",
+      "how": "West of Sister Splinter's arena, past a pogo course: bind the Weaver effigy. Lets you cling to and jump off walls.",
+      "requires": [
+        "sister-splinter"
+      ],
+      "step": 390,
+      "source": "https://game-checklists.com/silksong/shellwood.html"
+    },
+    {
+      "id": "widow",
+      "name": "Widow",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "bellhart",
+      "how": "Climb with Cling Grip to her arena. Beating her lifts Bellhart's curse.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 400,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "needolin",
+      "name": "Needolin",
+      "kind": "collectible",
+      "type": "ancestral-art",
+      "regionId": "bellhart",
+      "how": "Given when Bellhart is freed from its curse.",
+      "requires": [
+        "widow"
+      ],
+      "step": 410,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "sharpened-needle",
+      "name": "Sharpened Needle",
+      "kind": "collectible",
+      "type": "needle-upgrade",
+      "regionId": "bellhart",
+      "how": "Pinmaster Plinney sharpens the Needle for free once the town is freed.",
+      "requires": [
+        "widow"
+      ],
+      "step": 420,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "crafting-kit-creige",
+      "name": "Crafting Kit, Creige",
+      "kind": "collectible",
+      "type": "crafting-kit-upgrade",
+      "regionId": "bellhart",
+      "how": "Creige's wish, Crawbug Clearing: hunt Crawbugs in Greymoor and bring back their Ragpelt.",
+      "requires": [
+        "widow"
+      ],
+      "step": 430,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "my-missing-courier",
+      "name": "My Missing Courier",
+      "kind": "task",
+      "type": "quest",
+      "regionId": "bellhart",
+      "how": "Frey's wish: find the courier Tipp, last seen in lower Shellwood.",
+      "requires": [
+        "widow"
+      ],
+      "step": 440,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "spool-fragment-bellhart",
+      "name": "Spool Fragment, Bellhart",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "bellhart",
+      "how": "Comes with finishing the courier quest for Frey.",
+      "requires": [
+        "my-missing-courier"
+      ],
+      "step": 450,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "multibinder",
+      "name": "Multibinder",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "bellhart",
+      "how": "Sold in Bellhart for 880 Rosaries once the courier quest is done.",
+      "requires": [
+        "my-missing-courier"
+      ],
+      "step": 460,
+      "source": "https://game-checklists.com/silksong/bellhart.html"
+    },
+    {
+      "id": "spool-fragment-greymoor",
+      "name": "Spool Fragment, Greymoor",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "greymoor",
+      "how": "Near the shortcut to Sinner's Road; climb to it with Cling Grip.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 470,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "pimpillo",
+      "name": "Pimpillo",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "greymoor",
+      "area": "Yarnaby's tower",
+      "how": "In Yarnaby's tower; climb with Cling Grip. Costs a Craftmetal.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 480,
+      "source": "https://game-checklists.com/silksong/greymoor.html"
+    },
+    {
+      "id": "mask-shard-deep-docks",
+      "name": "Mask Shard, Deep Docks",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "deep-docks",
+      "how": "Above the westernmost bench; climb to it with Cling Grip.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 490,
+      "source": "https://game-checklists.com/silksong/deep-docks.html"
+    },
+    {
+      "id": "wanderer-crest",
+      "name": "Wanderer Crest",
+      "kind": "collectible",
+      "type": "crest",
+      "regionId": "moss-grotto",
+      "area": "Bonegrave",
+      "how": "In the Chapel of the Wanderer at Bonegrave; reach it with Cling Grip.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 500,
+      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+    },
+    {
+      "id": "mask-shard-wormways",
+      "name": "Mask Shard, Wormways",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "wormways",
+      "how": "Behind a breakable wall in the south of the Wormways.",
+      "requires": [],
+      "step": 510,
+      "source": "https://game-checklists.com/silksong/wormways.html"
+    },
+    {
+      "id": "dead-bugs-purse",
+      "name": "Dead Bug's Purse",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "wormways",
+      "how": "Near the northern entrance of the Wormways.",
+      "requires": [],
+      "step": 520,
+      "source": "https://game-checklists.com/silksong/wormways.html"
+    },
+    {
+      "id": "barbed-bracelet",
+      "name": "Barbed Bracelet",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sinners-road",
+      "how": "In a pit at the end of the first road.",
+      "requires": [],
+      "step": 530,
+      "source": "https://game-checklists.com/silksong/sinners-road.html"
+    },
+    {
+      "id": "tacks",
+      "name": "Tacks",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "sinners-road",
+      "how": "Crull and Benjin's wish, Roach Guts: hunt the Muckroaches of Sinner's Road and bring back their guts.",
+      "requires": [],
+      "step": 540,
+      "source": "https://game-checklists.com/silksong/sinners-road.html"
+    },
+    {
+      "id": "great-conchflies",
+      "name": "Great Conchflies",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "blasted-steps",
+      "how": "Two burrowing bosses in the northwest of the Blasted Steps, blocking the way to the Pinstress.",
+      "requires": [],
+      "step": 550,
+      "source": "https://game-checklists.com/silksong/blasted-steps.html"
+    },
+    {
+      "id": "needle-strike",
+      "name": "Needle Strike",
+      "kind": "collectible",
+      "type": "ability",
+      "regionId": "blasted-steps",
+      "area": "Pinstress's hut",
+      "how": "Talk to the Pinstress in her hut at the far west end and train with her. A charged Needle attack.",
+      "requires": [
+        "great-conchflies"
+      ],
+      "step": 560,
+      "source": "https://game-checklists.com/silksong/blasted-steps.html"
+    },
+    {
+      "id": "silkspeed-anklets",
+      "name": "Silkspeed Anklets",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "far-fields",
+      "area": "Weavenest Cindril",
+      "how": "In Weavenest Cindril, which needs the Needolin.",
+      "requires": [
+        "needolin"
+      ],
+      "step": 570,
+      "source": "https://game-checklists.com/silksong/far-fields.html"
+    },
+    {
+      "id": "spool-fragment-weavenest-atla",
+      "name": "Spool Fragment, Weavenest Atla",
+      "kind": "collectible",
+      "type": "spool-fragment",
+      "regionId": "weavenest-atla",
+      "how": "Through the west exit of the lift shaft.",
+      "requires": [
+        "cling-grip"
+      ],
+      "step": 580,
+      "source": "https://game-checklists.com/silksong/weavenest-atla.html"
+    },
+    {
+      "id": "mask-shard-weavenest-atla",
+      "name": "Mask Shard, Weavenest Atla",
+      "kind": "collectible",
+      "type": "mask-shard",
+      "regionId": "weavenest-atla",
+      "how": "Through the east exit of the lift shaft.",
+      "requires": [],
+      "step": 590,
+      "source": "https://game-checklists.com/silksong/weavenest-atla.html"
+    },
+    {
+      "id": "moss-mother-duo",
+      "name": "Moss Mother duo",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "weavenest-atla",
+      "how": "Two Moss Mothers at once, west of the Weavenest Atla bench.",
+      "requires": [],
+      "step": 600,
+      "source": "https://game-checklists.com/silksong/weavenest-atla.html"
+    },
+    {
+      "id": "weavelight",
+      "name": "Weavelight",
+      "kind": "collectible",
+      "type": "tool",
+      "regionId": "weavenest-atla",
+      "how": "Past the two Moss Mothers, west of the bench.",
+      "requires": [
+        "moss-mother-duo"
+      ],
+      "step": 610,
+      "source": "https://game-checklists.com/silksong/weavenest-atla.html"
     }
   ]
 }

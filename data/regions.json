@@ -1,12 +1,111 @@
 {
-  "dataVersion": 1,
+  "dataVersion": 2,
   "regions": [
     {
       "id": "moss-grotto",
       "name": "Moss Grotto",
       "order": 1,
-      "summary": "Where the game starts. Nothing is needed to enter.",
+      "summary": "Where the game starts. Moss caves with the village of Bone Bottom, the Ruined Chapel and Mosshome.",
       "requires": []
+    },
+    {
+      "id": "the-marrow",
+      "name": "The Marrow",
+      "order": 2,
+      "summary": "Bone caverns past Bone Bottom. Shakra sells maps here, and the Bell Beast is trapped at the Bellway.",
+      "requires": [
+        "moss-mother"
+      ]
+    },
+    {
+      "id": "deep-docks",
+      "name": "Deep Docks",
+      "order": 3,
+      "summary": "Hot docks of lava and machinery, reached from The Marrow's Bellway. The Forge Daughter works here.",
+      "requires": [
+        "bell-beast"
+      ]
+    },
+    {
+      "id": "far-fields",
+      "name": "Far Fields",
+      "order": 4,
+      "summary": "Wide grasslands past the Deep Docks. The Seamstress lives here, and Pilgrim's Rest sits above.",
+      "requires": [
+        "lace"
+      ]
+    },
+    {
+      "id": "hunters-march",
+      "name": "Hunter's March",
+      "order": 5,
+      "summary": "A hunting ground of the Skarr, reached from The Marrow. Crossing it takes the Drifter's Cloak.",
+      "requires": [
+        "drifters-cloak"
+      ]
+    },
+    {
+      "id": "greymoor",
+      "name": "Greymoor",
+      "order": 6,
+      "summary": "Rainy moors above Far Fields, home of the Halfway House and the crows.",
+      "requires": [
+        "fourth-chorus"
+      ]
+    },
+    {
+      "id": "bellhart",
+      "name": "Bellhart",
+      "order": 7,
+      "summary": "A town under a silk curse until its Widow is beaten.",
+      "requires": [
+        "moorwing"
+      ]
+    },
+    {
+      "id": "shellwood",
+      "name": "Shellwood",
+      "order": 8,
+      "summary": "A forest of shells and flowers west of Bellhart.",
+      "requires": [
+        "moorwing"
+      ]
+    },
+    {
+      "id": "wormways",
+      "name": "Wormways",
+      "order": 9,
+      "summary": "Tunnels west of Bone Bottom. The easy way in is from Shellwood.",
+      "requires": [
+        "moorwing"
+      ]
+    },
+    {
+      "id": "sinners-road",
+      "name": "Sinner's Road",
+      "order": 10,
+      "summary": "A road out of upper Greymoor, toward Bilewater.",
+      "requires": [
+        "cling-grip"
+      ]
+    },
+    {
+      "id": "blasted-steps",
+      "name": "Blasted Steps",
+      "order": 11,
+      "summary": "Cliffs and sands on the way to the Citadel's gate.",
+      "requires": [
+        "cling-grip"
+      ]
+    },
+    {
+      "id": "weavenest-atla",
+      "name": "Weavenest Atla",
+      "order": 12,
+      "summary": "A Weaver nest behind a door in Moss Grotto that opens to the Needolin.",
+      "requires": [
+        "needolin"
+      ]
     }
   ]
 }
