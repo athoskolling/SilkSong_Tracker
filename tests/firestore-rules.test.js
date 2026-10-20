@@ -346,13 +346,12 @@ describe('firestore.rules', { skip: SKIP }, () => {
     });
   });
 
-  describe('(i) shellShards is not accepted yet (ADR 0006)', () => {
-    // TEMPORARY refusal test. It must be FLIPPED, not deleted, when shellShards is added.
-    // shellShards is provisional: Athos has not confirmed the typed-number reading, so
-    // firestore.rules refuse any document that carries the key. When Athos confirms it and
-    // firestore.rules accept it (docs/CONTRACTS.md section 1: an integer from 0 to 999999, or null), replace
-    // this test with the acceptance cases: null and 0 accepted; -1, 1.5, "10" and 1000000 refused.
-    test('shellShards is refused for the owner (flip this when the rules add the key)', async () => {
+  describe('(i) the dropped shellShards key is refused (ADR 0007)', () => {
+    // Permanent test. shellShards was dropped from Progress (ADR 0007): no setter, no import
+    // key and no field in firestore.rules. The rules refuse a document that carries it, like any
+    // other unknown key, on purpose. If the key ever comes back, it comes back through a new
+    // contract and ADR, and this test changes with it.
+    test('a document carrying the dropped shellShards key is refused for the owner', async () => {
       const path = 'silksong_progress/alice';
       refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ shellShards: int(120) }) }));
       refused(await call('PATCH', path, { as: 'alice', fields: progressFields({ shellShards: { nullValue: null } }) }));

@@ -262,7 +262,7 @@ test('import adds to what is there and never removes', async () => {
   await setDone('mine', true);
   const backup = { done: { mine: true, theirs: true }, visited: { r: true }, updatedAt: 1, dataVersion: 1 };
   const result = await importProgress(fileOf(JSON.stringify(backup)));
-  assert.deepEqual(result, { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0 });
   const { done, visited } = await loadProgress();
   assert.deepEqual([...done].sort(), ['mine', 'theirs']);
   assert.deepEqual([...visited], ['r']);
@@ -272,7 +272,7 @@ test('import of a smaller backup removes nothing', async () => {
   await setDone('a', true);
   await setDone('b', true);
   const result = await importProgress(fileOf(JSON.stringify({ done: { a: true }, visited: {} })));
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0 });
   assert.equal((await loadProgress()).done.size, 2);
 });
 
@@ -282,7 +282,7 @@ test('an import that adds nothing does not notify or move updatedAt', async () =
   let calls = 0;
   onProgressChange(() => (calls += 1));
   const result = await importProgress(fileOf(JSON.stringify({ done: { a: true }, visited: {} })));
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0 });
   assert.equal(calls, 0);
   assert.equal(stored(storage).updatedAt, stamp);
 });
@@ -426,7 +426,7 @@ test('sample mode: export, import and clear act on the sample Progress', async (
   assert.deepEqual(Object.keys(exported.done), ['fake']);
 
   const backup = JSON.stringify({ done: { 'fake-two': true }, visited: { 'fake-region': true } });
-  assert.deepEqual(await importProgress(fileOf(backup)), { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(await importProgress(fileOf(backup)), { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0 });
   assert.deepEqual(Object.keys(storedSample(storage).done).sort(), ['fake', 'fake-two']);
 
   await clearProgress();
@@ -447,7 +447,7 @@ test('sample mode: sync status stays local', async () => {
 // ------------------------------------------------- player choices (ADR 0006)
 // crestSlots and builds are optional fields of Progress (docs/CONTRACTS.md sections 1 and 3).
 // "Missing is not empty": an absent field means a copy written by a page that does not know it,
-// so an ordinary change never adds it. shellShards is not covered here (Athos has not confirmed it).
+// so an ordinary change never adds it. shellShards was dropped (ADR 0007), so no test covers it here.
 
 const CREST = 'reaper-crest';
 const CREST_B = 'second-crest';
@@ -866,7 +866,7 @@ test('export leaves absent player choices absent, and includes the present ones'
 test('import of a backup from before Phase 5 adds ids only and creates no player-choice field', async () => {
   await setDone('mine', true);
   const result = await importProgress(fileOf(JSON.stringify({ done: { theirs: true }, visited: {} })));
-  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0 });
   assert.equal('crestSlots' in stored(storage), false);
   assert.equal('builds' in stored(storage), false);
 });
@@ -875,7 +875,7 @@ test('an import of empty player-choice objects adds nothing and creates no field
   await setDone('mine', true);
   const file = { done: { theirs: true }, visited: {}, crestSlots: {}, builds: {} };
   const result = await importProgress(fileOf(JSON.stringify(file)));
-  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0 });
   assert.equal('crestSlots' in stored(storage), false);
   assert.equal('builds' in stored(storage), false);
 });
@@ -885,7 +885,7 @@ test('import takes the larger opened-slot numbers and reports the sum of the inc
   const file = { done: {}, visited: {}, crestSlots: { [CREST]: { blue: 1, red: 3, yellow: 2 }, [CREST_B]: { white: 1 } } };
   const result = await importProgress(fileOf(JSON.stringify(file)));
   // red 1 -> 3 (+2), yellow 0 -> 2 (+2), white 0 -> 1 (+1); blue stays 2 (the file's 1 is smaller)
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 5, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 5, addedBuilds: 0 });
   assert.deepEqual(stored(storage).crestSlots, { [CREST]: { red: 3, blue: 2, yellow: 2 }, [CREST_B]: { white: 1 } });
 });
 
@@ -905,7 +905,7 @@ test('an import that adds no player choices does not notify or move updatedAt', 
   const seen = collectChanges();
   const file = { done: {}, visited: {}, crestSlots: { [CREST]: { blue: 2 } }, builds: { [CREST]: BUILD_B } };
   const result = await importProgress(fileOf(JSON.stringify(file)));
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0 });
   assert.equal(seen.length, 0);
   assert.equal(stored(storage).updatedAt, stamp);
 });
