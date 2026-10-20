@@ -3,16 +3,19 @@
 // Why a second script and not an edit of _build.mjs: the T30 pages were reviewed as they are. Regenerating them
 // would change their header and wording behind the reviewer's back. This script only writes new files.
 // What the addendum covers (Athos, second answers, 2026-10-20): saving a Build, opened slots (Memory Lockets),
-// the Shell Shards number, and the header with six links.
+// and the header with six links. The provisional Shell Shards number was removed in P5-31 (Athos dropped it).
+// P5-31: the helpers below are exported and the file only writes when run directly, so _build-places.mjs can reuse
+// them. The optional hooks (soldBy, beforeBuild, afterSlots, railExtra, calloutOverride) default to nothing, so the
+// P5-10 pages come out look the same.
 // ALL CONTENT BELOW IS INVENTED to show states. None of it is game data; never copy it into data/.
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const n = (v) => v.toLocaleString('en-US');
-const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
-const entries = (count) => plural(count, 'entry', 'entries');
+export const n = (v) => v.toLocaleString('en-US');
+export const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+export const entries = (count) => plural(count, 'entry', 'entries');
 
 // ------------------------------------------------------------------ shared pieces
 
@@ -21,14 +24,14 @@ const NAV = [
   ['index.html', 'Regions'],
   ['route.html', 'Route'],
   ['trackers-crests-partial.html', 'Trackers'],
-  ['addendum-rosaries-shells-set.html', 'Rosaries'],
+  ['addendum-rosaries.html', 'Rosaries'],
   ['addendum-builds-saved.html', 'Builds'],
   ['account.html', 'Account and backup'],
 ];
 
 // mode: 'inline' = the links are always shown (desktop, and option A on a phone);
 // 'menu' / 'menu-open' = option M, a Menu button on a phone. current marks the page the reader is on.
-function header(current, mode = 'inline') {
+export function header(current, mode = 'inline') {
   const links = NAV.map(([href, label]) => {
     const cur = label === current ? ' aria-current="page"' : '';
     const text = label === 'Account and backup' && mode === 'inline' ? 'Account<span class="nav-extra"> and backup</span>' : label;
@@ -49,7 +52,7 @@ function header(current, mode = 'inline') {
     </header>`;
 }
 
-function stateBar(current, states) {
+export function stateBar(current, states) {
   const links = states
     .map(([file, label]) => `<a href="${file}"${file === current ? ' aria-current="page"' : ''}>${label}</a>`)
     .join(' &middot; ');
@@ -62,7 +65,7 @@ const FOOTER_NOTE =
 // heroClass: ' opt-wrap tablet-fix' is the spacing used for the Builds and Rosaries screenshots, so the title is not
 // covered while the choice between option W and option M is open (see the header pages).
 const PHONE_HEADER = ' opt-wrap tablet-fix';
-function page({ file, title, bodyAttr, navCurrent, navMode, h1, intro, main, states, heroClass = PHONE_HEADER }) {
+export function page({ file, title, bodyAttr, navCurrent, navMode, h1, intro, main, states, heroClass = PHONE_HEADER }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -106,7 +109,7 @@ ${main}
 `;
 }
 
-function needleBar({ done, total, label }) {
+export function needleBar({ done, total, label }) {
   const percent = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 0;
   const complete = total > 0 && done === total;
   const text = `${done} of ${total}`;
@@ -120,11 +123,11 @@ function needleBar({ done, total, label }) {
           </div>`;
 }
 
-function toggle(label) {
+export function toggle(label) {
   return `<label class="switch"><input type="checkbox" class="switch-input"><span class="switch-track" aria-hidden="true"></span><span class="switch-text">${label}</span></label>`;
 }
 
-function hiddenRow(text) {
+export function hiddenRow(text) {
   return `            <li class="entry entry--hidden">
               <div class="entry-rail">
                 <span class="entry-thread" aria-hidden="true"></span>
@@ -136,11 +139,11 @@ function hiddenRow(text) {
 
 // ------------------------------------------------------------------ Builds
 
-const COLOURS = ['red', 'blue', 'yellow', 'white'];
-const Cap = (s) => s[0].toUpperCase() + s.slice(1);
+export const COLOURS = ['red', 'blue', 'yellow', 'white'];
+export const Cap = (s) => s[0].toUpperCase() + s.slice(1);
 
 // Invented items the player owns (marked done). Tools by colour; Silk Skills fit white slots.
-const TOOLS = {
+export const TOOLS = {
   'sample-tool-one': { name: 'Sample tool one', colour: 'red', type: 'Tool' },
   'sample-tool-two': { name: 'Sample tool two', colour: 'red', type: 'Tool' },
   'sample-tool-six': { name: 'Sample tool six', colour: 'red', type: 'Tool' },
@@ -152,15 +155,15 @@ const TOOLS = {
   // Known to the guide but not marked done by this player (used in the "no longer fits" state).
   'sample-tool-nine': { name: 'Sample tool nine', colour: 'yellow', type: 'Tool', owned: false },
 };
-const owned = (id) => TOOLS[id] && TOOLS[id].owned !== false;
-const ownedFor = (c) => Object.entries(TOOLS).filter(([id, t]) => t.colour === c && owned(id)).map(([id, t]) => ({ id, ...t }));
-const OWNED_COUNT = Object.keys(TOOLS).filter(owned).length;
+export const owned = (id) => TOOLS[id] && TOOLS[id].owned !== false;
+export const ownedFor = (c) => Object.entries(TOOLS).filter(([id, t]) => t.colour === c && owned(id)).map(([id, t]) => ({ id, ...t }));
+export const OWNED_COUNT = Object.keys(TOOLS).filter(owned).length;
 
-const EFFECT = 'Sample effect in one short sentence, in our own words.';
+export const EFFECT = 'Sample effect in one short sentence, in our own words.';
 
 // A Crest as the picker sees it: base slots, the most it can open, what the player opened, and what
 // done entries grant (the Vesticrest style). slotsFor() in js/builds.js does this sum; here it is hand-written.
-const CRESTS = [
+export const CRESTS = [
   { id: 'c1', name: 'Sample crest one', slots: { red: 2, blue: 1, yellow: 0, white: 1 }, max: { red: 2, blue: 1, yellow: 0, white: 1 }, opened: {}, grants: {} },
   {
     id: 'c2', name: 'Sample crest two',
@@ -173,7 +176,7 @@ const CRESTS = [
   { id: 'c4', name: 'Sample crest four', slots: { red: 1, blue: 1, yellow: 1, white: 1 }, max: null, opened: {}, grants: {} },
 ];
 
-function slotsNow(crest) {
+export function slotsNow(crest) {
   const out = {};
   for (const c of COLOURS) {
     const extra = crest.max ? crest.max[c] - crest.slots[c] : 0;
@@ -181,10 +184,10 @@ function slotsNow(crest) {
   }
   return out;
 }
-const total = (o) => COLOURS.reduce((s, c) => s + o[c], 0);
+export const total = (o) => COLOURS.reduce((s, c) => s + o[c], 0);
 
 // "3 red, 1 blue" style summary; zero colours are left out.
-function slotSummary(now) {
+export function slotSummary(now) {
   return COLOURS.filter((c) => now[c] > 0).map((c) => `${now[c]} ${c}`).join(', ');
 }
 
@@ -259,7 +262,7 @@ function overflowRow({ crest, c, i, id, idp }) {
             </li>`;
 }
 
-function colourGroup({ crest, c, current, saved, problems, last }) {
+export function colourGroup({ crest, c, current, saved, problems, last }) {
   const now = slotsNow(crest);
   const idp = `slot-${c}`;
   const list = current[c] || [];
@@ -292,7 +295,7 @@ ${body}
 }
 
 // Opened slots: one row per colour with a stepper. The limit is slotsMax minus slots (never a number typed by hand).
-function openedPlate(crest) {
+export function openedPlate(crest) {
   if (!crest.max) {
     return `            <div class="plate bd-opened">
               <h3 class="plate-subheading">Opened slots</h3>
@@ -331,7 +334,7 @@ ${rows}
 }
 
 // The save bar. status: 'none' (nothing chosen, nothing saved), 'unsaved', 'saved'.
-function saveBar({ status, changed, hasSaved }) {
+export function saveBar({ status, changed, hasSaved }) {
   if (status === 'unsaved') {
     return `            <div class="bd-bar is-unsaved">
               <p class="bd-status" role="status"><span class="bd-dot bd-dot--open" aria-hidden="true"></span><span><strong>Not saved.</strong> ${plural(changed, 'slot differs', 'slots differ')} from the Build you saved.</span></p>
@@ -350,7 +353,7 @@ function saveBar({ status, changed, hasSaved }) {
             </div>`;
 }
 
-function buildsPage({ file, crestId, saved = {}, current = saved, status, problemsOn = false, states }) {
+export function buildsPage({ file, crestId, saved = {}, current = saved, status, problemsOn = false, states, beforeBuild = '', afterSlots = '', railExtra = '', calloutOverride = null }) {
   const crest = CRESTS.find((c) => c.id === crestId);
   const unknownLayout = !crest.slots;
   const savedFor = (c) => (c.id === crestId ? saved : c.id === 'c1' ? { red: ['sample-tool-one'] } : {});
@@ -370,7 +373,7 @@ ${CRESTS.map((c) => {
               <p class="tk-rail-text">Tools and Silk Skills you own: <strong>${OWNED_COUNT}</strong>. Each slot lists only what you have marked as done.</p>
               <p class="tk-rail-text">White slots take Silk Skills. Red, blue and yellow slots take Tools of that colour.</p>
               <p class="tk-rail-text"><a href="trackers-crests-partial.html">Open the Crests tracker</a></p>
-            </div>
+            </div>${railExtra}
           </aside>`;
 
   let mainCol;
@@ -395,7 +398,7 @@ ${CRESTS.map((c) => {
       for (let i = 0; i < len; i++) if ((a[i] || '') !== (b[i] || '')) diff++;
       return s + diff;
     }, 0);
-    const callout = problems.length
+    const callout = calloutOverride !== null ? calloutOverride : problems.length
       ? `            <div class="callout bd-problems" role="group" aria-labelledby="bd-problems-title">
               <p class="callout-title" id="bd-problems-title">This saved Build no longer fits</p>
               <p class="callout-text">${plural(problems.length, 'problem', 'problems')}, each shown on its slot below. Nothing was removed. Change a slot, mark a missing Tool as done in its tracker, or open more slots.</p>
@@ -409,6 +412,7 @@ ${CRESTS.map((c) => {
               <div class="bd-stack">
 ${openedPlate(crest)}
               </div>
+${beforeBuild}
               <h2 class="list-heading list-heading--spaced">Your Build</h2>
               <div class="bd-stack">
 ${saveBar({ status, changed, hasSaved: Object.keys(saved).length > 0 })}
@@ -417,6 +421,7 @@ ${callout}
               <div class="tk-slots">
 ${groups}
               </div>
+${afterSlots}
             </section>
           </div>`;
   }
@@ -443,33 +448,33 @@ const BUILD_STATES = [
   ['addendum-builds-problems.html', 'No longer fits'],
   ['addendum-builds-limit-unknown.html', 'Limit not in the guide'],
   ['addendum-builds-layout-unknown.html', 'Layout not in the guide'],
-  ['addendum-rosaries-shells-set.html', 'Rosaries'],
+  ['addendum-rosaries.html', 'Rosaries'],
   ['addendum-header-six.html', 'Header'],
 ];
 
-const SAVED_BUILD = {
+export const SAVED_BUILD = {
   red: ['sample-tool-one', 'sample-tool-two', 'sample-tool-six'],
   blue: ['sample-tool-three'],
   yellow: ['sample-tool-five'],
   white: ['sample-skill-one'],
 };
-const EDITED_BUILD = {
+export const EDITED_BUILD = {
   red: ['sample-tool-one', 'sample-tool-six', 'sample-tool-two'],
   blue: ['sample-tool-four'],
   yellow: ['sample-tool-five', ''],
   white: ['sample-skill-two'],
 };
 // A saved Build that has stopped fitting, with all four problems.
-const BROKEN_BUILD = {
+export const BROKEN_BUILD = {
   red: ['sample-tool-one', 'sample-tool-three', 'sample-tool-six', 'sample-tool-two'],
   blue: ['sample-tool-three'],
   yellow: ['sample-tool-nine', 'retired-sample-id'],
   white: ['sample-skill-one'],
 };
 
-// ------------------------------------------------------------------ Rosaries with the Shell Shards number
+// ------------------------------------------------------------------ Rosaries
 
-const SHOP = [
+export const SHOP = [
   { region: 'Sample region A', href: 'region.html', visited: true, items: [
     { name: 'Sample shop entry one', step: 10, price: 80, type: 'Tool' },
     { name: 'Sample shop entry two', step: 12, price: 120, type: 'Crafting upgrade' },
@@ -488,7 +493,7 @@ const SHOP = [
   ] },
 ];
 
-function shopRow(e, i, idp) {
+export function shopRow(e, i, idp, soldBy = '') {
   const id = `${idp}-${i}`;
   const done = e.bought;
   const blocked = !done && e.needs;
@@ -502,42 +507,21 @@ function shopRow(e, i, idp) {
               <div class="entry-body">
                 <div class="entry-head tk-head"><span class="entry-name">${e.name}</span><span class="tk-price num">${n(e.price)} Rosaries</span></div>
                 <div class="entry-meta"><span>${e.type}</span>${e.uncounted ? '<span class="flag-uncounted">Not counted</span>' : ''}${done ? '<span class="flag-done">Bought</span>' : ''}</div>
-                ${blocked ? `<p id="${needsId}" class="entry-needs is-missing">${e.needs}</p>` : ''}
+                ${blocked ? `<p id="${needsId}" class="entry-needs is-missing">${e.needs}</p>` : ''}${soldBy}
               </div>
             </li>`;
 }
 
-// shells: { mode: 'none' (block left out) | 'empty' | 'set' | 'error', value }
-function rosariesPage({ file, shells, states }) {
-  const bought = new Set(['Sample shop entry one', 'Sample shop entry two', 'Sample shop entry five']);
+// soldBy(entry) and soldByNext(entry) return the "Sold by" markup for a row and for the Next to buy plate (P5-31);
+// both default to nothing. bought: names of the entries marked as bought.
+export function rosariesPage({ file, states, soldBy = () => '', soldByNext = () => '', bought: boughtNames = ['Sample shop entry one', 'Sample shop entry two', 'Sample shop entry five'], extraAfterNext = '' }) {
+  const bought = new Set(boughtNames);
   const groups = SHOP;
   const all = groups.flatMap((g) => g.items.map((it) => ({ ...it, group: g, bought: bought.has(it.name) })));
   const needed = all.filter((e) => !e.bought).reduce((s, e) => s + e.price, 0);
   const done = all.filter((e) => e.bought).length;
   const hiddenUnbought = all.filter((e) => !e.group.visited && !e.bought).length;
   const next = all.filter((e) => !e.bought && e.group.visited && !e.needs).sort((a, b) => a.step - b.step)[0];
-
-  // The whole Shell Shards place is this one block. Dropping it (Athos has not confirmed it) means deleting
-  // the block and the mockup note; nothing else on the page depends on it.
-  let shellBlock = '';
-  if (shells.mode !== 'none') {
-    const invalid = shells.mode === 'error';
-    const value = shells.mode === 'set' ? shells.value : invalid ? '12x' : '';
-    const help = invalid
-      ? '<span class="is-error">Enter a whole number from 0 to 999,999, or leave it empty.</span>'
-      : shells.mode === 'set'
-        ? 'Saved with your progress.'
-        : 'Type the number you have. Leave it empty if you do not want to keep track.';
-    shellBlock = `
-            <div class="rail-section rail-section--rule ss-block">
-              <div class="ss-field">
-                <label class="field-label" for="shell-shards">Shell Shards you have</label>
-                <input class="field-input ss-input num" id="shell-shards" type="text" inputmode="numeric" autocomplete="off" maxlength="7" value="${value}" aria-describedby="shell-help"${invalid ? ' aria-invalid="true"' : ''}>
-                <p class="ss-help" id="shell-help" aria-live="polite">${help}</p>
-              </div>
-              <p class="mock-note"><strong>Mockup note, not part of the page.</strong> Provisional: Athos has not confirmed that Shell Shards is a number the player types. To drop it, delete this block (the label, the field and this note). The Rosaries total above does not use it.</p>
-            </div>`;
-  }
 
   const rail = `          <aside class="plate plate--rail" aria-label="Rosaries still needed">
             <div class="rail-section">
@@ -548,7 +532,7 @@ function rosariesPage({ file, shells, states }) {
               </div>
               ${needleBar({ done, total: all.length, label: 'Bought' })}
               <p class="plate-help">The total follows what you tick and is worked out from the prices. You never type it. It counts entries you cannot buy yet too.</p>
-            </div>${shellBlock}
+            </div>
             <div class="toggles">${toggle('Show everything, spoilers included')}</div>
           </aside>`;
 
@@ -556,7 +540,7 @@ function rosariesPage({ file, shells, states }) {
               <p class="next-label">Next to buy</p>
               <h2 class="next-name">${next.name}</h2>
               <div class="entry-meta next-meta"><span>${next.type}</span><span>${next.group.region}</span></div>
-              <p class="tk-price-line">${n(next.price)} Rosaries. Buying it leaves ${n(needed - next.price)} still needed.</p>
+              <p class="tk-price-line">${n(next.price)} Rosaries. Buying it leaves ${n(needed - next.price)} still needed.</p>${soldByNext(next)}
               <p class="next-how">The first shop entry on the route that you can buy now and have not bought.</p>
               <div class="next-actions"><button type="button" class="button button--secondary">Mark as bought</button><a href="${next.group.href}">Open ${next.group.region}</a></div>
             </div>`;
@@ -567,7 +551,7 @@ function rosariesPage({ file, shells, states }) {
       const doneHere = items.filter((e) => e.bought).length;
       const last = gi === groups.length - 1;
       const rowsHtml = g.visited
-        ? items.map((e, i) => shopRow(e, i, `shop-${gi}`)).join('\n')
+        ? items.map((e, i) => shopRow(e, i, `shop-${gi}`, soldBy(e))).join('\n')
         : hiddenRow(`${entries(items.length)} hidden until you visit this region. Their prices are in the total.`);
       // The Region name is the link (T31), as on the Route; there is no separate "Open region" link.
       return `            <section class="route-group tk-group${last ? ' is-last' : ''}" aria-labelledby="shop-${gi}">
@@ -605,11 +589,8 @@ ${list}
   });
 }
 
-const ROSARY_STATES = [
-  ['addendum-rosaries-shells-empty.html', 'Shell Shards empty'],
-  ['addendum-rosaries-shells-set.html', 'Shell Shards typed'],
-  ['addendum-rosaries-shells-error.html', 'Shell Shards error'],
-  ['addendum-rosaries-no-shells.html', 'Without Shell Shards'],
+export const ROSARY_STATES = [
+  ['addendum-rosaries.html', 'Rosaries'],
   ['addendum-builds-saved.html', 'Builds'],
   ['addendum-header-six.html', 'Header'],
 ];
@@ -622,7 +603,7 @@ const HEADER_STATES = [
   ['addendum-header-menu.html', 'Option M: Menu closed'],
   ['addendum-header-menu-open.html', 'Option M: Menu open'],
   ['addendum-builds-saved.html', 'Builds'],
-  ['addendum-rosaries-shells-set.html', 'Rosaries'],
+  ['addendum-rosaries.html', 'Rosaries'],
 ];
 
 function headerPage({ file, mode, heroClass, h1, intro, notes }) {
@@ -644,10 +625,7 @@ files['addendum-builds-problems.html'] = buildsPage({ file: 'addendum-builds-pro
 files['addendum-builds-limit-unknown.html'] = buildsPage({ file: 'addendum-builds-limit-unknown.html', crestId: 'c4', saved: {}, current: {}, status: 'none', states: BUILD_STATES });
 files['addendum-builds-layout-unknown.html'] = buildsPage({ file: 'addendum-builds-layout-unknown.html', crestId: 'c3', states: BUILD_STATES });
 
-files['addendum-rosaries-shells-set.html'] = rosariesPage({ file: 'addendum-rosaries-shells-set.html', shells: { mode: 'set', value: '240' }, states: ROSARY_STATES });
-files['addendum-rosaries-shells-empty.html'] = rosariesPage({ file: 'addendum-rosaries-shells-empty.html', shells: { mode: 'empty' }, states: ROSARY_STATES });
-files['addendum-rosaries-shells-error.html'] = rosariesPage({ file: 'addendum-rosaries-shells-error.html', shells: { mode: 'error' }, states: ROSARY_STATES });
-files['addendum-rosaries-no-shells.html'] = rosariesPage({ file: 'addendum-rosaries-no-shells.html', shells: { mode: 'none' }, states: ROSARY_STATES });
+files['addendum-rosaries.html'] = rosariesPage({ file: 'addendum-rosaries.html', states: ROSARY_STATES });
 
 files['addendum-header-six.html'] = headerPage({
   file: 'addendum-header-six.html', mode: 'inline', heroClass: '', h1: 'Header, six links',
@@ -683,5 +661,8 @@ files['addendum-header-menu-open.html'] = headerPage({
   ] },
 });
 
-for (const [name, html] of Object.entries(files)) writeFileSync(join(here, name), html);
-console.log(`wrote ${Object.keys(files).length} files`);
+// Only write when run directly: _build-places.mjs imports the helpers above.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  for (const [name, html] of Object.entries(files)) writeFileSync(join(here, name), html);
+  console.log(`wrote ${Object.keys(files).length} files`);
+}

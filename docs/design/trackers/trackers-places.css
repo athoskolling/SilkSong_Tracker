@@ -1,0 +1,132 @@
+/* trackers-places.css: the P5-31 pieces (Places on the Region page, "Sold by" on the Rosaries page, Templates and
+   Synergies on the Build picker). Loaded after trackers.css and trackers-addendum.css by the addendum-places-*,
+   addendum-templates-* and addendum-rosaries pages only, so earlier mockups are untouched.
+   Colors are tokens only. If these screens are built, the Places rules merge into css/components.css (the Region
+   page), the rest into css/trackers.css. */
+
+/* ------------------------------------------------------------------ Places in this region */
+
+/* The section is one plate under the entry thread, not more rows on the thread: no rail, no bead, no knot, no
+   button. That is the whole answer to "must not look tickable". The plate border is the dashed style used for
+   information (Holding you up, Account), never for something you act on. */
+.pl-section { margin-top: 56px; gap: 24px; }
+.entries + .pl-section { margin-top: 64px; }
+.pl-group { display: flex; flex-direction: column; }
+.pl-kind { font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.1; }
+.pl-list { margin: 12px 0 0; padding: 0; list-style: none; }
+
+/* A row has no left rail; its edges are the plate's. The 14px side padding is only there so the landing
+   highlight (below) has room around the text; a negative margin keeps the text aligned with the heading. */
+.pl {
+  margin: 0 -14px;
+  padding: 16px 14px;
+  border-top: 1px dashed var(--plate-border-faint);
+  scroll-margin-top: 24px;
+}
+.pl-name { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; color: var(--ivory); overflow-wrap: anywhere; }
+.pl .entry-meta { margin-top: 4px; }
+.pl .entry-how { margin-top: 8px; }
+.pl .entry-needs { margin-top: 8px; }
+
+/* Landing from another page (#place-<id>): the stitched look of "Next on the route". The outline sits inside
+   the row so nothing moves. Text carries the meaning too: the row is simply the one the link named. */
+.pl:target, .pl.is-target {
+  background: var(--next-fill);
+  outline: 1.5px dashed var(--next-border);
+  outline-offset: -1.5px;
+}
+
+/* What a shop sells: a read-only list. Price when the entry has one; "Bought" once the entry is done. */
+.pl-sells-label { margin-top: 14px; font-size: 14px; font-weight: 600; color: var(--ivory); }
+.pl-stock { margin: 6px 0 0; padding: 0; list-style: none; }
+.pl-stock li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 16px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--plate-border-faint);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.pl-stock-name { color: var(--ivory); overflow-wrap: anywhere; }
+.pl-stock-end { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+.pl-stock-price { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-bought { font-size: 13px; font-weight: 500; color: var(--bronze); }
+.pl-stock li.is-bought .pl-stock-name { color: var(--ash); }
+.pl-stock li.is-bought .pl-stock-price { font-weight: 400; color: var(--ash); }
+
+@media (max-width: 600px) {
+  .pl-section { padding: 22px 18px; }
+  .pl { margin: 0 -8px; padding: 14px 8px; }
+  .pl-stock li { flex-direction: column; align-items: flex-start; }
+}
+
+/* ------------------------------------------------------------------ "Sold by" on the Rosaries page */
+
+.tk-sold { margin: 8px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.tk-sold li + li { margin-top: 2px; }
+.tk-sold a { color: var(--ivory); }
+.tk-sold a:hover { color: var(--silk); }
+.next-plate .tk-sold { margin-top: 12px; font-size: 15px; }
+
+/* ---------------------------------------------------------------- Build picker: Templates */
+
+.tp-section .list-heading { margin-bottom: 14px; }
+.tp-intro { max-width: 62ch; }
+.tp-intro p + p { margin-top: 8px; }
+.tp-list { margin: 24px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 20px; }
+
+/* A card is a lacquer panel with the dashed border: it is information with one action, not a plate of its own
+   kind. The standing line carries the state in words and in the shape of its dot (filled, hollow, dashed). */
+.tp { padding: 22px 24px 24px; border: 1.5px dashed var(--plate-border); background: var(--lacquer); }
+.tp-name { font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 1.1; overflow-wrap: anywhere; }
+.tp-tags { margin-top: 10px; align-items: center; }
+.tp-tag { padding: 0 8px; border: 1px dashed var(--thread); line-height: 1.5; color: var(--ash); }
+/* "From a guide" is a solid outline and "Our suggestion" a dashed one, so the two differ in more than words. */
+.tp-tag--guide { border-style: solid; }
+.tp-goal { margin-top: 12px; max-width: 60ch; font-size: 15px; line-height: 1.6; color: var(--ash); }
+
+.tp-slots { margin: 14px 0 0; display: grid; gap: 4px; font-size: 15px; line-height: 1.5; }
+.tp-slots > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 0 12px; }
+.tp-slots dt { font-size: 13px; line-height: 1.8; color: var(--ash); }
+.tp-slots dd { margin: 0; overflow-wrap: anywhere; }
+
+.tp-states { margin: 16px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.tp-states li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.5; }
+.tp-states .bd-dot { margin-top: 6px; }
+.tp-states .is-needs { color: var(--silk); }
+.tp-states strong { font-weight: 600; }
+.bd-dot--dashed { border: 2px dashed var(--ash); }
+.bd-dot--hollow { border: 2px solid var(--silk); }
+.tp-actions { margin-top: 18px; }
+.tp-note { margin-top: 10px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.tp-ask { margin-top: 18px; }
+.tp-ask .button-row { margin-top: 14px; }
+
+@media (max-width: 600px) {
+  .tp { padding: 20px 18px 22px; }
+  .tp-slots > div { grid-template-columns: minmax(0, 1fr); }
+  .tp-slots dt { line-height: 1.4; }
+}
+
+/* ---------------------------------------------------------------- Build picker: Synergies */
+
+.sy-section { margin-top: 56px; gap: 0; }
+.sy-block + .sy-block { margin-top: 26px; padding-top: 26px; border-top: 1px dashed var(--plate-border-faint); }
+.sy-list { margin: 18px 0 0; padding: 0; list-style: none; }
+.sy { padding: 14px 0; border-top: 1px dashed var(--plate-border-faint); }
+.sy:first-child { border-top: 0; padding-top: 0; }
+.sy-pair { font-size: 17px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.sy-note { margin-top: 4px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+.sy-effect { margin-top: 6px; max-width: 60ch; font-size: 15px; line-height: 1.6; color: var(--ash); }
+.sy .entry-meta { margin-top: 6px; }
+.sy-none { font-size: 15px; line-height: 1.6; color: var(--ash); }
+@media (max-width: 600px) {
+  .sy-section { padding: 22px 18px; }
+}
+
+/* Rail text under the optional switch (option B). */
+.tk-rail-switch { display: flex; flex-direction: column; gap: 10px; }
+.tp-section + .mock-note { margin-top: 20px; }

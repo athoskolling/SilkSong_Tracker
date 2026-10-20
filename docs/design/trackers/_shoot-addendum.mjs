@@ -1,4 +1,5 @@
-// Screenshots of the P5-10 addendum pages (addendum-*.html). Run (Playwright and Chromium are preinstalled):
+// Screenshots of the P5-10 addendum pages (addendum-*.html; the P5-31 pages have their own _shoot-places.mjs).
+// Re-shooting every page changes many PNGs by a few pixels, so shoot only what changed (copy the loop, narrow `pages`). Run (Playwright and Chromium are preinstalled):
 //   PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers NODE_PATH=/opt/node-tools/node_modules node docs/design/trackers/_shoot-addendum.mjs
 // Desktop 1280 at scale 1 and phone 390 at scale 2, as in T30. The three header pages also get 360 and 320.
 // Reports horizontal overflow and the number of header rows at 1280, 390, 360 and 320.
@@ -10,7 +11,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const here = dirname(fileURLToPath(import.meta.url));
-const pages = readdirSync(here).filter((f) => f.startsWith('addendum-') && f.endsWith('.html')).map((f) => f.replace('.html', ''));
+const pages = readdirSync(here).filter((f) => f.startsWith('addendum-') && f.endsWith('.html') && !/^addendum-(places|templates)-/.test(f)).map((f) => f.replace('.html', ''));
 const headerPages = pages.filter((p) => p.startsWith('addendum-header-'));
 
 const views = [
@@ -23,7 +24,6 @@ const views = [
 const focusShots = [
   ['addendum-builds-saved', '#slot-red-0', 'focus-select', ['desktop', 'mobile']],
   ['addendum-builds-saved', '.os-row:nth-child(1) .os-btn:last-child', 'focus-stepper', ['desktop', 'mobile']],
-  ['addendum-rosaries-shells-set', '#shell-shards', 'focus-shells', ['desktop', 'mobile']],
 ];
 
 const hide = '.mock-states{display:none !important}';

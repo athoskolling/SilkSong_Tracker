@@ -1,5 +1,4 @@
-/* trackers-addendum.css: the P5-10 pieces (saving a Build, opened slots, the Shell Shards number, the header
-   with six links). Loaded after trackers.css by the addendum-*.html pages only, so the T30 pages are untouched.
+/* trackers-addendum.css: the P5-10 pieces (saving a Build, opened slots, the header with six links). Loaded after trackers.css by the addendum-*.html pages only, so the T30 pages are untouched.
    Colors are tokens only. If these screens are built, this file merges into css/trackers.css. */
 
 /* --------------------------------------------------------------- Build: save bar and slots */
@@ -111,15 +110,6 @@
   .os-note { grid-column: 1 / -1; }
   .os-control--none { width: auto; }
 }
-
-/* ------------------------------------------------------------ Shell Shards number (provisional) */
-
-.rail-section--rule { padding-top: 22px; border-top: 1px dashed var(--plate-border-faint); }
-.ss-field { display: flex; flex-direction: column; gap: 8px; }
-.ss-input { flex: none; width: 10ch; max-width: 100%; text-align: right; font-variant-numeric: tabular-nums; }
-.ss-input[aria-invalid="true"] { border-color: var(--silk); border-style: dashed; }
-.ss-help { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ash); }
-.ss-help .is-error { color: var(--silk); }
 
 /* A note for the reviewer that sits inside the mockup. It is not part of the page and is never built. */
 .mock-note {
