@@ -33,28 +33,19 @@
         </a>
         <nav class="site-nav" aria-label="Main">
           <a href="index.html" aria-current="page">Regions</a>
-          <!-- "Route" returns when route.html exists (Phase 2). Until then the link would lead to a 404. -->
+          <a href="route.html">Route</a>
           <a href="account.html">Account and backup</a>
         </nav>
       </div>
     </header>
 
     <main id="app" tabindex="-1">
-      <!-- TEMPORARY until Home is built in Phase 2. js/main.js reads data/regions.json, takes the
-           Region with the lowest `order` and sends the visitor to its page. The link below is the
-           way in when JavaScript is off or the redirect has not happened yet; main.js points it at
-           the first Region too. The address written here is only the fallback for the no-JavaScript
-           case (ids are permanent, ADR 0003, so it cannot break; it can only stop being the first). -->
-      <div class="frame main-plain">
-        <div class="plate message">
-          <h1 class="plate-heading">Silksong guide</h1>
-          <p class="plate-text">Follow the route, mark what you finish and see what is missing.</p>
-          <p class="plate-text"><a id="open-guide" href="region.html?id=moss-grotto">Open the guide</a></p>
-          <noscript>
-            <p class="plate-text">The guide needs JavaScript. Turn it on in your browser and reload this page.</p>
-          </noscript>
+      <!-- js/main.js fills this in. -->
+      <noscript>
+        <div class="frame main-plain">
+          <p>The guide needs JavaScript. Turn it on in your browser and reload this page.</p>
         </div>
-      </div>
+      </noscript>
     </main>
 
     <footer class="frame site-footer">

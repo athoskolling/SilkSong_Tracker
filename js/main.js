@@ -1,5 +1,5 @@
-// main.js: picks behaviour from <body data-page="...">: home (a temporary redirect until the real
-// Home arrives in Phase 2), region and account (sign-in only for now). The Route page arrives in Phase 2.
+// main.js: picks behaviour from <body data-page="...">: home, region, route and account (the
+// sign-in half; js/account-page.js builds the rest of the Account page).
 //
 // This file is the glue: it loads the guide content (data.js), reads Progress only through
 // progress.js, asks requirements.js what is Available or missing, turns the answers into a plain
@@ -21,6 +21,7 @@ import {
   isRegionAvailable,
   missingForRegion,
   nextStep,
+  holdingYouUp,
 } from './requirements.js';
 import {
   signIn,
@@ -32,6 +33,10 @@ import {
   renderMessage,
   renderShell,
   renderBody,
+  renderHomeShell,
+  renderHomeBody,
+  renderRouteShell,
+  renderRouteBody,
   joinNames,
   syncText,
   renderAccountShell,
@@ -44,18 +49,32 @@ startPage();
 
 // What every page does, then what this page does.
 function startPage() {
-  if (isSampleMode()) document.getElementById('banner').hidden = false;
+  if (isSampleMode()) {
+    document.getElementById('banner').hidden = false;
+    keepSampleOnHeaderLinks();
+  }
 
   // The footer line says where Progress is, on every page.
   onSyncStatus((status) => {
     document.getElementById('sync-status').textContent = syncText(status);
   });
 
+  if (page === 'account') {
+    startAccountPage();
+    return;
+  }
   if (page === 'home') startHomePage();
-  else if (page === 'account') startAccountPage();
-  else if (page === 'region') {
-    startRegionPage();
-    finishEmailLink(); // not awaited: a normal page load must not wait on it
+  else if (page === 'region') startRegionPage();
+  else if (page === 'route') startRoutePage();
+  finishEmailLink(); // not awaited: a normal page load must not wait on it
+}
+
+// The header links are written in the HTML. While ?data=sample is on, they must keep it, or one
+// click on "Route" would quietly switch the visitor to the real data.
+function keepSampleOnHeaderLinks() {
+  for (const link of document.querySelectorAll('.site-header a[href]')) {
+    const [file] = link.getAttribute('href').split('?');
+    link.setAttribute('href', pageHref(file, {}, true));
   }
 }
 
@@ -80,33 +99,388 @@ async function finishEmailLink() {
   return false;
 }
 
-// -------------------------------------------------------------------- home page
+// ------------------------------------------------------------ shared by Home, Route and Region
 
-// TEMPORARY until Home is built in Phase 2: send the visitor to the first Region. "First" is the
-// Region with the lowest `order` (data.js sorts by it), read from data/, so nothing here names a
-// Region and it keeps working when the guide grows.
-async function startHomePage() {
-  const app = document.getElementById('app');
+// Runs a page and, when a data bug throws on purpose (for example a cycle in `requires`), says
+// so instead of leaving a blank page.
+async function runGuarded(app, run) {
   try {
-    if (await finishEmailLink()) return;
-    const data = await loadOrExplain(app);
-    if (!data) return;
-    const first = data.regions[0];
-    if (!first) {
-      renderMessage(app, { heading: 'No regions yet', paragraphs: ['The guide has no regions yet.'] });
-      return;
-    }
-    const href = pageHref('region.html', { id: first.id }, data.sample);
-    document.getElementById('open-guide').setAttribute('href', href);
-    // replace, not assign: Back from the Region page must not land here and bounce forward again.
-    location.replace(href);
+    await run(app);
   } catch (error) {
     console.error(error);
+    document.title = 'Something went wrong | Silksong guide';
     renderMessage(app, {
       heading: 'Something went wrong',
       paragraphs: [`The page could not be built: ${error.message}`, 'Reload the page. If it happens again, tell the person who maintains the guide.'],
     });
   }
+}
+
+// Loads the content once, hands the entry list to progress.js (so marking an entry can also mark its
+// Region Visited), and returns lookups every page needs. Returns null when the data did not load
+// (loadOrExplain has already told the visitor).
+async function loadGuide(app) {
+  const data = await loadOrExplain(app);
+  if (!data) return null;
+  const { regions, items, dataVersion, sample } = data;
+  configureProgress({ items, dataVersion });
+
+  const itemsById = new Map(items.map((item) => [item.id, item]));
+  const regionsById = new Map(regions.map((region) => [region.id, region]));
+  const routeOrder = items.slice().sort((a, b) => a.step - b.step);
+  return {
+    regions,
+    items,
+    sample,
+    itemsById,
+    regionsById,
+    routeOrder,
+    // Ids are unique across entries and Regions (contract section 1), so one lookup serves both.
+    nameOf(id) {
+      const found = itemsById.get(id) || regionsById.get(id);
+      return found ? found.name : id;
+    },
+    regionNameOf(regionId) {
+      const region = regionsById.get(regionId);
+      return region ? region.name : regionId;
+    },
+  };
+}
+
+// One row of the thread, with everything render.js needs already decided. Used by the Region page
+// and the Route page, so an entry reads the same on both.
+function makeEntryView(item, guide, done, nextId) {
+  const available = isAvailable(item.id, done, guide.items, guide.regions);
+  return {
+    id: item.id,
+    name: item.name,
+    kind: item.kind,
+    type: item.type,
+    regionId: item.regionId,
+    area: item.area || '',
+    how: item.how,
+    step: item.step,
+    missable: item.missable === true,
+    missableNote: item.missableNote || '',
+    done: done.has(item.id),
+    available,
+    isNext: nextId === item.id,
+    needs: needsLine(item, available, guide, done),
+  };
+}
+
+// "Needs A, B" when something stands in the way; "Needs A, done" when the entry's own
+// requirements are all met; nothing when the entry has none.
+function needsLine(item, available, guide, done) {
+  if (!available) {
+    const missing = missingFor(item.id, done, guide.items, guide.regions);
+    if (missing.length === 0) return null;
+    return { text: `Needs ${joinNames(missing.map(guide.nameOf))}`, missing: true };
+  }
+  if (item.requires.length > 0) {
+    return { text: `Needs ${joinNames(item.requires.map(guide.nameOf))}, done`, missing: false };
+  }
+  return null;
+}
+
+// "Holding you up", as names. Each blocker lists the entries and Regions it holds up.
+function holdingViews(guide, done, limit) {
+  return holdingYouUp(done, guide.items, guide.regions)
+    .slice(0, limit)
+    .map(({ id, blocks }) => {
+      const blocker = guide.itemsById.get(id);
+      const entries = [];
+      const regionNames = [];
+      for (const blockedId of blocks) {
+        const blocked = guide.itemsById.get(blockedId);
+        if (blocked) entries.push({ name: blocked.name, regionName: guide.regionNameOf(blocked.regionId) });
+        else if (guide.regionsById.has(blockedId)) regionNames.push(guide.regionsById.get(blockedId).name);
+      }
+      return { id, name: blocker.name, kind: blocker.kind, entries, regions: regionNames };
+    });
+}
+
+// Tasks are not in requirements.js (they never count toward totals), so they are counted here.
+function taskProgress(items, done) {
+  const tasks = items.filter((item) => item.kind === 'task');
+  return { done: tasks.filter((item) => done.has(item.id)).length, total: tasks.length };
+}
+
+// Entries stay hidden until the player visits the Region, marks something in it, or asks to read
+// ahead (DESIGN.md section 6). A Locked Region stays hidden unless the player asks to read ahead.
+function regionIsRevealed(region, guide, state, regionsWithDone) {
+  if (state.showAll) return true;
+  if (!isRegionAvailable(region.id, state.done, guide.regions)) return false;
+  return state.visited.has(region.id) || regionsWithDone.has(region.id);
+}
+
+function regionsWithDoneEntries(guide, done) {
+  return new Set(guide.items.filter((item) => done.has(item.id)).map((item) => item.regionId));
+}
+
+// Loads Progress and keeps `state` current, including changes from another device.
+async function trackProgress(state, render) {
+  const progress = await loadProgress();
+  state.done = progress.done;
+  state.visited = progress.visited;
+  onProgressChange((next) => {
+    state.done = next.done;
+    state.visited = next.visited;
+    render();
+  });
+}
+
+// Puts keyboard focus back on the same control after a re-render replaced the elements.
+function focusKeyBefore() {
+  const el = document.activeElement;
+  return el && el.dataset ? el.dataset.focusKey || null : null;
+}
+
+function restoreFocus(app, key) {
+  if (!key) return;
+  const again = app.querySelector(`[data-focus-key="${CSS.escape(key)}"]`);
+  if (again) again.focus();
+}
+
+// Marks or unmarks an entry from a click on a done toggle. Marking an entry that is not Available
+// is allowed: the guide follows the real game (contract section 3).
+async function handleToggleClick(event, guide, state) {
+  const button = event.target.closest('[data-action="toggle-done"]');
+  if (!button) return;
+  const item = guide.itemsById.get(button.dataset.id);
+  if (!item) return;
+  const value = !state.done.has(item.id);
+  try {
+    await setDone(item.id, value);
+    announce(`${value ? 'Marked as done' : 'Marked as not done'}: ${item.name}`);
+  } catch (error) {
+    console.error(error);
+    announce('That change could not be saved. Try again.');
+  }
+}
+
+// -------------------------------------------------------------------- home page
+
+async function startHomePage() {
+  await runGuarded(document.getElementById('app'), runHomePage);
+}
+
+async function runHomePage(app) {
+  const guide = await loadGuide(app);
+  if (!guide) return;
+  const { regions, items, sample } = guide;
+  document.title = 'Silksong guide';
+
+  const state = { done: new Set(), visited: new Set() };
+
+  function buildView() {
+    const nextId = nextStep(state.done, items, regions);
+    const withDone = regionsWithDoneEntries(guide, state.done);
+    const nextItem = nextId ? guide.itemsById.get(nextId) : null;
+
+    const collectibles = items.filter((item) => item.kind === 'collectible');
+    return {
+      routeHref: pageHref('route.html', {}, sample),
+      hasEntries: items.length > 0,
+      allDone: items.length > 0 && items.every((item) => state.done.has(item.id)),
+      next: nextItem && {
+        name: nextItem.name,
+        type: nextItem.type,
+        step: nextItem.step,
+        how: nextItem.how,
+        regionName: guide.regionNameOf(nextItem.regionId),
+        regionHref: pageHref('region.html', { id: nextItem.regionId }, sample),
+      },
+      holding: holdingViews(guide, state.done, 3),
+      totals: {
+        collectibles: { done: collectibles.filter((item) => state.done.has(item.id)).length, total: collectibles.length },
+        tasks: taskProgress(items, state.done),
+        byType: collectiblesByType(collectibles, state.done),
+      },
+      regions: regions.map((region) => regionCard(region, guide, state, withDone, nextItem)),
+    };
+  }
+
+  function render() {
+    const key = focusKeyBefore();
+    renderHomeBody(body, buildView());
+    restoreFocus(app, key);
+  }
+
+  const body = renderHomeShell(app);
+  await trackProgress(state, render);
+  render();
+}
+
+// "Collectibles by type": one row per type, in alphabetical order so the list does not jump about.
+function collectiblesByType(collectibles, done) {
+  const byType = new Map();
+  for (const item of collectibles) {
+    const row = byType.get(item.type) || { type: item.type, done: 0, total: 0 };
+    row.total += 1;
+    if (done.has(item.id)) row.done += 1;
+    byType.set(item.type, row);
+  }
+  return [...byType.values()].sort((a, b) => a.type.localeCompare(b.type));
+}
+
+// A Region card is in exactly one of five states (DESIGN.md section 5):
+//   empty     no entries yet ("Not in the guide yet")
+//   locked    its requirements are not met
+//   complete  every entry in it is done (Collectibles and Tasks)
+//   visited   marked Visited, or something in it is done
+//   available open, but not visited yet
+function regionCard(region, guide, state, regionsWithDone, nextItem) {
+  const regionItems = guide.items.filter((item) => item.regionId === region.id);
+  const open = isRegionAvailable(region.id, state.done, guide.regions);
+
+  let cardState;
+  if (regionItems.length === 0) cardState = 'empty';
+  else if (!open) cardState = 'locked';
+  else if (regionItems.every((item) => state.done.has(item.id))) cardState = 'complete';
+  else if (state.visited.has(region.id) || regionsWithDone.has(region.id)) cardState = 'visited';
+  else cardState = 'available';
+
+  const card = {
+    id: region.id,
+    name: region.name,
+    state: cardState,
+    href: pageHref('region.html', { id: region.id }, guide.sample),
+    // A Locked Region never shows its picture (less to spoil), same as its own page.
+    heroUrl: region.heroImage && cardState !== 'locked' && cardState !== 'empty' ? imageUrl(region.heroImage) : null,
+    heroPosition: region.heroPosition || '50% 40%',
+    collectibles: regionProgress(region.id, state.done, guide.items),
+    tasks: taskProgress(regionItems, state.done),
+    needs: null,
+    hasNext: Boolean(nextItem) && nextItem.regionId === region.id,
+  };
+
+  if (cardState === 'locked') {
+    const missing = missingForRegion(region.id, state.done, guide.regions, guide.items).map(guide.nameOf);
+    card.needs = missing.length ? `Needs ${listWithMore(missing, 3)}` : null;
+  }
+  return card;
+}
+
+// "A, B and C", or "A, B, C and 2 more" when the list is long.
+function listWithMore(names, max) {
+  if (names.length <= max) return joinNames(names);
+  const rest = names.length - max;
+  return `${names.slice(0, max).join(', ')} and ${rest} more`;
+}
+
+// ------------------------------------------------------------------- route page
+
+async function startRoutePage() {
+  await runGuarded(document.getElementById('app'), runRoutePage);
+}
+
+async function runRoutePage(app) {
+  const guide = await loadGuide(app);
+  if (!guide) return;
+  const { regions, items, sample } = guide;
+  document.title = 'Route | Silksong guide';
+
+  // The filters and show-all are session-only on purpose (same reason as the Region page).
+  const state = { done: new Set(), visited: new Set(), showAll: false, onlyNow: false, hideDone: false };
+
+  // The route is one list in `step` order. A Region can appear more than once when its steps are
+  // interleaved with another Region's, so entries are grouped in runs of the same Region.
+  function buildView() {
+    const nextId = nextStep(state.done, items, regions);
+    const withDone = regionsWithDoneEntries(guide, state.done);
+    const revealedCache = new Map();
+    const revealed = (regionId) => {
+      if (!revealedCache.has(regionId)) {
+        revealedCache.set(regionId, regionIsRevealed(guide.regionsById.get(regionId), guide, state, withDone));
+      }
+      return revealedCache.get(regionId);
+    };
+
+    const groups = [];
+    let shownCount = 0;
+    for (const item of guide.routeOrder) {
+      let group = groups[groups.length - 1];
+      if (!group || group.regionId !== item.regionId) {
+        group = {
+          regionId: item.regionId,
+          name: guide.regionNameOf(item.regionId),
+          href: pageHref('region.html', { id: item.regionId }, sample),
+          locked: !isRegionAvailable(item.regionId, state.done, regions),
+          firstStep: item.step,
+          lastStep: item.step,
+          rows: [],
+          hiddenCount: 0,
+        };
+        groups.push(group);
+      }
+      group.lastStep = item.step;
+
+      // The next step is always shown, even in a Region that is still hidden: Home names it too,
+      // and a new game would otherwise open on a Route with nothing to do.
+      if (!revealed(item.regionId) && item.id !== nextId) {
+        group.hiddenCount += 1;
+        continue;
+      }
+      const row = makeEntryView(item, guide, state.done, nextId);
+      if (state.hideDone && row.done) continue;
+      if (state.onlyNow && (row.done || !row.available)) continue;
+      group.rows.push(row);
+      shownCount += 1;
+    }
+
+    return {
+      hasEntries: items.length > 0,
+      showAll: state.showAll,
+      onlyNow: state.onlyNow,
+      hideDone: state.hideDone,
+      filtered: state.onlyNow || state.hideDone,
+      shownCount,
+      groups: groups.filter((group) => group.rows.length > 0 || group.hiddenCount > 0),
+      holding: holdingViews(guide, state.done, 5),
+    };
+  }
+
+  // After a click that makes a row disappear (a filter is on), keyboard focus would fall to the
+  // page. Remember where it was in the list of toggles and land on the toggle now at that place.
+  function toggleKeys() {
+    return [...app.querySelectorAll('[data-action="toggle-done"]')].map((el) => el.dataset.focusKey);
+  }
+
+  function render(announceCount = false) {
+    const key = focusKeyBefore();
+    const keysBefore = toggleKeys();
+    const view = buildView();
+    renderRouteBody(layout, view);
+
+    if (key && key.startsWith('done:') && !app.querySelector(`[data-focus-key="${CSS.escape(key)}"]`)) {
+      const toggles = app.querySelectorAll('[data-action="toggle-done"]');
+      const target = toggles[Math.min(Math.max(keysBefore.indexOf(key), 0), toggles.length - 1)];
+      if (target) target.focus();
+    } else {
+      restoreFocus(app, key);
+    }
+    if (announceCount) announce(`Showing ${view.shownCount} ${view.shownCount === 1 ? 'step' : 'steps'}.`);
+  }
+
+  const layout = renderRouteShell(app);
+  await trackProgress(state, render);
+
+  app.addEventListener('click', (event) => handleToggleClick(event, guide, state));
+  app.addEventListener('change', (event) => {
+    const input = event.target.closest('[data-action]');
+    if (!input) return;
+    if (input.dataset.action === 'show-all') state.showAll = input.checked;
+    else if (input.dataset.action === 'only-now') state.onlyNow = input.checked;
+    else if (input.dataset.action === 'hide-done') state.hideDone = input.checked;
+    else return;
+    render(true);
+  });
+
+  // The "Choice point" marker (DESIGN.md section 6) is not built: the data rule that says which
+  // Step closes an Ending is still open (docs/CONTRACTS.md section 8). When it is decided, it
+  // becomes one more kind of row between entries in buildView, drawn by renderRouteBody.
+  render();
 }
 
 // ----------------------------------------------------------------- account page
@@ -277,44 +651,24 @@ async function startAccountPage() {
 // ------------------------------------------------------------------ the page
 
 async function startRegionPage() {
-  const app = document.getElementById('app');
-
-  try {
-    await runRegionPage(app);
-  } catch (error) {
-    // A data bug (for example a cycle in `requires`) throws on purpose; say so instead of a blank page.
-    console.error(error);
-    document.title = 'Something went wrong | Silksong guide';
-    renderMessage(app, {
-      heading: 'Something went wrong',
-      paragraphs: [`The page could not be built: ${error.message}`, 'Reload the page. If it happens again, tell the person who maintains the guide.'],
-    });
-  }
+  await runGuarded(document.getElementById('app'), runRegionPage);
 }
 
 async function runRegionPage(app) {
-  const data = await loadOrExplain(app);
-  if (!data) return;
-  const { regions, items, dataVersion, sample } = data;
-
-  // Hand the entry list to progress.js once, so marking an entry can also mark its Region Visited.
-  configureProgress({ items, dataVersion });
+  const guide = await loadGuide(app);
+  if (!guide) return;
+  const { regions, items, sample, itemsById, regionsById } = guide;
 
   const region = findRegion(app, regions, sample);
   if (!region) return;
 
   document.title = `${region.name} | Silksong guide`;
 
-  const itemsById = new Map(items.map((item) => [item.id, item]));
-  const regionsById = new Map(regions.map((r) => [r.id, r]));
   const regionItems = items.filter((item) => item.regionId === region.id).sort((a, b) => a.step - b.step);
 
   // State for this page. showAll is session-only on purpose: Progress stores only ids, and
   // progress.js is the only module allowed to write localStorage, so a UI preference has no home.
   const state = { done: new Set(), visited: new Set(), showAll: false };
-  const progress = await loadProgress();
-  state.done = progress.done;
-  state.visited = progress.visited;
 
   let layout = null;
   let shellMode = null;
@@ -354,46 +708,10 @@ async function runRegionPage(app) {
     return view;
   }
 
-  function nameOf(id) {
-    const item = itemsById.get(id);
-    return item ? item.name : id;
-  }
-
   // One row per entry, with everything render.js needs already decided.
   function entryViews() {
-    const next = nextStep(state.done, items, regions);
-    return regionItems.map((item) => {
-      const available = isAvailable(item.id, state.done, items, regions);
-      return {
-        id: item.id,
-        name: item.name,
-        kind: item.kind,
-        type: item.type,
-        area: item.area || '',
-        how: item.how,
-        step: item.step,
-        missable: item.missable === true,
-        missableNote: item.missableNote || '',
-        done: state.done.has(item.id),
-        available,
-        isNext: next === item.id,
-        needs: needsLine(item, available),
-      };
-    });
-  }
-
-  // "Needs A, B" when something stands in the way; "Needs A, done" when the entry's own
-  // requirements are all met; nothing when the entry has none.
-  function needsLine(item, available) {
-    if (!available) {
-      const missing = missingFor(item.id, state.done, items, regions);
-      if (missing.length === 0) return null;
-      return { text: `Needs ${joinNames(missing.map(nameOf))}`, missing: true };
-    }
-    if (item.requires.length > 0) {
-      return { text: `Needs ${joinNames(item.requires.map(nameOf))}, done`, missing: false };
-    }
-    return null;
+    const nextId = nextStep(state.done, items, regions);
+    return regionItems.map((item) => makeEntryView(item, guide, state.done, nextId));
   }
 
   // The Locked screen: the Region's own requirements (so a finished one reads "Collected") plus
@@ -421,10 +739,9 @@ async function runRegionPage(app) {
   // Collectibles come from requirements.js. It has no function for Tasks (they never count
   // toward totals), so the Tasks line is counted here from the Region's own entries.
   function countsForRegion() {
-    const tasks = regionItems.filter((item) => item.kind === 'task');
     return {
       collectibles: regionProgress(region.id, state.done, items),
-      tasks: { done: tasks.filter((item) => state.done.has(item.id)).length, total: tasks.length },
+      tasks: taskProgress(regionItems, state.done),
     };
   }
 
@@ -432,9 +749,7 @@ async function runRegionPage(app) {
   // between Locked and Available, so the start thread plays once.
   function render() {
     const view = buildView();
-    const focusKey = document.activeElement && document.activeElement.dataset
-      ? document.activeElement.dataset.focusKey
-      : null;
+    const focusKey = focusKeyBefore();
 
     if (!layout || shellMode !== view.mode) {
       layout = renderShell(app, view);
@@ -444,27 +759,10 @@ async function runRegionPage(app) {
     showCredit(view, region);
 
     // The elements were replaced, so put keyboard focus back on the same control.
-    if (focusKey) {
-      const again = app.querySelector(`[data-focus-key="${CSS.escape(focusKey)}"]`);
-      if (again) again.focus();
-    }
+    restoreFocus(app, focusKey);
   }
 
-  app.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-action="toggle-done"]');
-    if (!button) return;
-    const item = itemsById.get(button.dataset.id);
-    if (!item) return;
-    const value = !state.done.has(item.id);
-    try {
-      // Marking an entry that is not Available is allowed: the guide follows the real game.
-      await setDone(item.id, value);
-      announce(`${value ? 'Marked as done' : 'Marked as not done'}: ${item.name}`);
-    } catch (error) {
-      console.error(error);
-      announce('That change could not be saved. Try again.');
-    }
-  });
+  app.addEventListener('click', (event) => handleToggleClick(event, guide, state));
 
   app.addEventListener('change', async (event) => {
     const input = event.target.closest('[data-action]');
@@ -483,12 +781,7 @@ async function runRegionPage(app) {
   });
 
   // Every change, including one that arrives from another device, comes through here.
-  onProgressChange((next) => {
-    state.done = next.done;
-    state.visited = next.visited;
-    render();
-  });
-
+  await trackProgress(state, render);
   render();
 }
 
@@ -508,7 +801,7 @@ async function loadOrExplain(app) {
 }
 
 // Reads ?id= and finds the Region. With no id, or an id the guide does not have, explains
-// and links to the first Region (the Home page does not exist until Phase 2).
+// and lists the Regions to choose from.
 function findRegion(app, regions, sample) {
   const id = new URLSearchParams(location.search).get('id');
   const region = id ? regions.find((r) => r.id === id) : null;

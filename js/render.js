@@ -1,4 +1,4 @@
-// render.js: builds the Region page's DOM from a plain "view" object (see regionView in main.js).
+// render.js: builds the pages' DOM (Region, Home, Route, Account) from plain "view" objects made in main.js.
 // It never reads Progress, never calls requirements.js and never fetches: main.js does that and hands
 // over finished facts (done, available, next, needs text...). Text from data goes in through
 // textContent only, never innerHTML.
@@ -327,26 +327,35 @@ function switchControl(action, label, checked) {
   );
 }
 
-// "1 of 3" with the needle-and-thread bar under it.
-function countBlock(kind, label, count) {
+// "1 of 3" with the needle-and-thread bar under it. Options:
+//   needle    draw the needle at the filled end (the Region card leaves it out)
+//   complete  fill the thread in bronze instead of silk (a finished Region)
+//   card      the smaller type of the Region card
+function countBlock(kind, label, count, { needle = true, complete = false, card = false } = {}) {
   const text = `${count.done} of ${count.total}`;
   const percent = count.total > 0 ? Math.min(100, Math.round((count.done / count.total) * 100)) : 0;
 
-  const needle = svg(
-    'svg',
-    { class: 'bar-needle', width: 28, height: 18, viewBox: '0 0 28 18', 'aria-hidden': 'true', style: `left: calc(${percent}% - 22px)` },
-    svg('path', { class: 'line', d: 'M3 9 H27' }),
-    svg('ellipse', { class: 'eye', cx: 4.5, cy: 9, rx: 2.3, ry: 3.6 })
-  );
+  const needleSvg = needle
+    ? svg(
+        'svg',
+        { class: 'bar-needle', width: 28, height: 18, viewBox: '0 0 28 18', 'aria-hidden': 'true', style: `left: calc(${percent}% - 22px)` },
+        svg('path', { class: 'line', d: 'M3 9 H27' }),
+        svg('ellipse', { class: 'eye', cx: 4.5, cy: 9, rx: 2.3, ry: 3.6 })
+      )
+    : null;
+
+  const barClasses = ['bar', `bar--${kind}`];
+  if (complete) barClasses.push('bar--complete');
+  if (card) barClasses.push('bar--card');
 
   return h(
     'div',
-    {},
+    { class: card ? 'count-block count-block--card' : 'count-block' },
     h('div', { class: `count-row count-row--${kind}` }, h('span', {}, label), h('span', { class: 'count-value num' }, text)),
     h(
       'div',
       {
-        class: `bar bar--${kind}`,
+        class: barClasses.join(' '),
         role: 'progressbar',
         'aria-label': `${label}: ${text}`,
         'aria-valuemin': 0,
@@ -355,8 +364,362 @@ function countBlock(kind, label, count) {
       },
       h('div', { class: 'bar-track' }),
       h('div', { class: 'bar-fill', style: { width: `${percent}%` } }),
-      needle
+      needleSvg
     )
+  );
+}
+
+// ------------------------------------------------------------ holding you up
+
+function pluralEntries(n) {
+  return `${n} ${n === 1 ? 'entry' : 'entries'}`;
+}
+
+// "Blocks <entry> and 1 more entry in <Region>", "Blocks the region <Region>" (DESIGN.md section 6).
+// item = { entries: [{ name, regionName }], regions: [name] }. The "rail" variant (Route page) is
+// shorter and gives a count, because the rail is narrow.
+export function blocksText(item, variant = 'full') {
+  const regionPart = item.regions.length
+    ? `the ${item.regions.length === 1 ? 'region' : 'regions'} ${joinNames(item.regions)}`
+    : '';
+  if (item.entries.length === 0) return `Blocks ${regionPart}.`;
+
+  let entryPart;
+  const first = item.entries[0];
+  const rest = item.entries.length - 1;
+  if (variant === 'rail') {
+    entryPart = pluralEntries(item.entries.length);
+  } else if (rest === 0) {
+    entryPart = `${first.name} in ${first.regionName}`;
+  } else if (item.entries.every((entry) => entry.regionName === first.regionName)) {
+    entryPart = `${first.name} and ${rest} more ${rest === 1 ? 'entry' : 'entries'} in ${first.regionName}`;
+  } else {
+    entryPart = `${first.name} and ${rest} more ${rest === 1 ? 'entry' : 'entries'}`;
+  }
+  return regionPart ? `Blocks ${entryPart} and ${regionPart}.` : `Blocks ${entryPart}.`;
+}
+
+// The list used on Home and in the Route rail. items: [{ id, name, kind, entries, regions }]
+// The mark is hollow (not dashed): a blocker is something the player can do now.
+function holdingList(items, variant) {
+  return h(
+    'ul',
+    { class: 'holding-list' },
+    ...items.map((item) =>
+      h(
+        'li',
+        { class: 'holding-item' },
+        h('span', { class: `mark ${item.kind === 'task' ? 'mark--knot' : 'mark--bead'} holding-mark`, 'aria-hidden': 'true' }),
+        h(
+          'div',
+          {},
+          h('span', { class: 'holding-name' }, item.name),
+          h('p', { class: 'holding-text' }, blocksText(item, variant))
+        )
+      )
+    )
+  );
+}
+
+// ---------------------------------------------------------------------- home
+
+// Hero, and the place the body fills. Built once. Returns the element renderHomeBody fills.
+export function renderHomeShell(app) {
+  const hero = h(
+    'section',
+    { class: 'hero hero--short hero--home' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h(
+      'div',
+      { class: 'frame' },
+      h('h1', { class: 'hero-title' }, 'Every collectible.', h('br'), 'Every ending.'),
+      h('p', { class: 'hero-intro' }, 'Mark what you have, see what comes next, and see what each locked region still needs.')
+    )
+  );
+
+  const body = h('div', { class: 'content' });
+  app.replaceChildren(hero, h('div', { class: 'frame' }, body));
+  return body;
+}
+
+// view: see runHomePage in main.js.
+export function renderHomeBody(body, view) {
+  body.replaceChildren(
+    h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }),
+    h(
+      'div',
+      { class: 'layout layout--home' },
+      h('div', { class: 'home-main' }, nextPlate(view), holdingSection(view)),
+      totalsPlate(view.totals)
+    ),
+    regionsSection(view.regions)
+  );
+}
+
+function nextPlate(view) {
+  const actions = [h('a', { href: view.routeHref }, 'See the whole route')];
+
+  if (view.next) {
+    actions.push(h('a', { href: view.next.regionHref }, `Open ${view.next.regionName}`));
+    return h(
+      'section',
+      { class: 'next-plate', 'aria-labelledby': 'next-heading' },
+      h('span', { class: 'next-label' }, 'Next on the route'),
+      h('h2', { class: 'next-name', id: 'next-heading' }, view.next.name),
+      h(
+        'div',
+        { class: 'entry-meta next-meta' },
+        h('span', {}, typeLabel(view.next.type)),
+        h('span', {}, view.next.regionName),
+        h('span', { class: 'num' }, `Step ${view.next.step}`)
+      ),
+      h('p', { class: 'next-how' }, view.next.how),
+      h('p', { class: 'next-actions' }, ...actions)
+    );
+  }
+
+  // Nothing to point at: say why and where to look instead.
+  let heading = 'Nothing is available right now';
+  let text = 'Finish what is holding you up, below, to open more of the route.';
+  if (!view.hasEntries) {
+    heading = 'Nothing in the guide yet';
+    text = 'The guide has no entries yet.';
+  } else if (view.allDone) {
+    heading = 'Everything in the guide is done';
+    text = 'Every entry that is in the guide so far is marked done.';
+  }
+  return h(
+    'section',
+    { class: 'next-plate', 'aria-labelledby': 'next-heading' },
+    h('span', { class: 'next-label' }, 'Next on the route'),
+    h('h2', { class: 'next-name', id: 'next-heading' }, heading),
+    h('p', { class: 'next-how' }, text),
+    h('p', { class: 'next-actions' }, ...actions)
+  );
+}
+
+function holdingSection(view) {
+  return h(
+    'section',
+    { 'aria-labelledby': 'holding-heading' },
+    h('h2', { class: 'section-heading', id: 'holding-heading' }, 'What is holding you up'),
+    h('p', { class: 'section-intro' }, 'The things you are missing that block the most entries or a whole region.'),
+    view.holding.length
+      ? holdingList(view.holding, 'full')
+      : h('p', { class: 'section-intro holding-empty' }, 'Nothing is blocked right now.'),
+    h('p', { class: 'holding-more' }, h('a', { href: view.routeHref }, 'See everything on the route'))
+  );
+}
+
+function totalsPlate(totals) {
+  return h(
+    'aside',
+    { class: 'plate plate--counts', 'aria-labelledby': 'thread-heading' },
+    h('h2', { class: 'plate-heading', id: 'thread-heading' }, 'Your thread'),
+    countBlock('collectibles', 'Collectibles', totals.collectibles),
+    countBlock('tasks', 'Tasks', totals.tasks),
+    totals.byType.length
+      ? h(
+          'div',
+          {},
+          h('h3', { class: 'type-heading' }, 'Collectibles by type'),
+          h(
+            'dl',
+            { class: 'type-list' },
+            ...totals.byType.map((row) =>
+              h('div', { class: 'type-row' }, h('dt', {}, typeLabel(row.type)), h('dd', { class: 'num' }, `${row.done} of ${row.total}`))
+            )
+          )
+        )
+      : null
+  );
+}
+
+function regionsSection(cards) {
+  return h(
+    'section',
+    { class: 'regions', 'aria-labelledby': 'regions-heading' },
+    h('h2', { class: 'section-heading section-heading--big', id: 'regions-heading' }, 'Regions'),
+    h(
+      'p',
+      { class: 'section-intro section-intro--wide' },
+      'A region opens when you meet what it needs. Entries in regions you have not visited stay hidden until you visit them or choose to show everything.'
+    ),
+    cards.length
+      ? h('ul', { class: 'region-grid' }, ...cards.map((card) => h('li', {}, regionCard(card))))
+      : h('p', { class: 'section-intro' }, 'The guide has no regions yet.')
+  );
+}
+
+const CARD_LABELS = {
+  complete: 'Complete',
+  visited: 'Visited',
+  available: 'Available',
+  locked: 'Locked',
+  empty: 'Not in the guide yet',
+};
+
+// One Region card, in exactly one of five states. card: see regionCard in main.js.
+function regionCard(card) {
+  const stateRow = h(
+    'div',
+    { class: 'card-state' },
+    card.state === 'empty' ? null : h('span', { class: `state-dot state-dot--${card.state}`, 'aria-hidden': 'true' }),
+    CARD_LABELS[card.state]
+  );
+
+  const parts = [stateRow, h('h3', { class: 'card-name' }, card.name)];
+
+  if (card.state === 'complete' || card.state === 'visited') {
+    // A Region with no Collectibles shows its Tasks, so the card still has a count to read.
+    const useTasks = card.collectibles.total === 0;
+    parts.push(
+      useTasks
+        ? countBlock('tasks', 'Tasks', card.tasks, { needle: false, card: true })
+        : countBlock('collectibles', 'Collectibles', card.collectibles, { needle: false, card: true, complete: card.state === 'complete' })
+    );
+  } else if (card.state === 'available') {
+    parts.push(h('p', { class: 'card-note' }, 'Not visited yet. Its entries are hidden.'));
+  } else if (card.state === 'locked') {
+    if (card.needs) parts.push(h('p', { class: 'card-needs' }, card.needs));
+    parts.push(h('p', { class: 'card-note' }, 'Its entries stay hidden.'));
+  } else {
+    parts.push(h('p', { class: 'card-note' }, 'Its entries ship in a later batch.'));
+  }
+  if (card.hasNext) parts.push(h('p', { class: 'card-next' }, 'Next on the route is here'));
+
+  const thumb = card.heroUrl
+    ? h(
+        'div',
+        { class: 'card-thumb' },
+        h('img', { src: card.heroUrl, alt: '', loading: 'lazy', style: { objectPosition: card.heroPosition } })
+      )
+    : null;
+
+  const classes = `region-card region-card--${card.state}${card.hasNext ? ' region-card--next' : ''}`;
+  const inner = [thumb, h('div', { class: 'card-body' }, ...parts)];
+  // A Region with no entries has nothing to open, so its card is not a link.
+  return card.state === 'empty' ? h('div', { class: classes }, ...inner) : h('a', { class: classes, href: card.href }, ...inner);
+}
+
+// --------------------------------------------------------------------- route
+
+// Hero, and the layout renderRouteBody fills. Built once. Returns the layout element.
+export function renderRouteShell(app) {
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h(
+      'div',
+      { class: 'frame' },
+      h('h1', { class: 'hero-title' }, 'Route'),
+      h('p', { class: 'hero-intro' }, 'Every step across all regions, in order. Anything waiting on something else shows what it needs.')
+    )
+  );
+
+  const layout = h('div', { class: 'layout layout--route' });
+  app.replaceChildren(
+    hero,
+    h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
+  );
+  return layout;
+}
+
+// view: see runRoutePage in main.js. The rail comes first in the document so keyboard users meet
+// the filters before the list; CSS puts it on the right on a wide screen.
+export function renderRouteBody(layout, view) {
+  layout.replaceChildren(routeRail(view), routeList(view));
+}
+
+function routeRail(view) {
+  return h(
+    'aside',
+    { class: 'plate plate--rail route-rail', 'aria-labelledby': 'filters-heading' },
+    h('h2', { class: 'plate-heading', id: 'filters-heading' }, 'Show on the route'),
+    h(
+      'div',
+      { class: 'toggles' },
+      switchControl('only-now', 'Only what I can do now', view.onlyNow),
+      switchControl('hide-done', 'Hide finished steps', view.hideDone),
+      switchControl('show-all', 'Show everything, spoilers included', view.showAll)
+    ),
+    h(
+      'section',
+      { class: 'rail-section', 'aria-labelledby': 'rail-holding-heading' },
+      h('h2', { class: 'plate-subheading', id: 'rail-holding-heading' }, 'Holding you up'),
+      view.holding.length
+        ? holdingList(view.holding, 'rail')
+        : h('p', { class: 'plate-help' }, 'Nothing is blocked right now.')
+    ),
+    h(
+      'p',
+      { class: 'plate-help' },
+      'A bead is a collectible and counts toward your totals. A knot is a task: it adds nothing by itself but opens something else. A dashed thread means something is still missing.'
+    )
+  );
+}
+
+function routeList(view) {
+  if (!view.hasEntries) {
+    return h('div', { class: 'main-column' }, h('p', { class: 'plate-text' }, 'The guide has no entries yet.'));
+  }
+  if (view.groups.length === 0) {
+    return h('div', { class: 'main-column' }, h('p', { class: 'plate-text' }, 'No steps match these choices. Turn one off to see more.'));
+  }
+  return h(
+    'div',
+    { class: 'main-column route-list' },
+    ...view.groups.map((group, i) => routeGroup(group, i === view.groups.length - 1))
+  );
+}
+
+function routeGroup(group, isLast) {
+  const range =
+    group.firstStep === group.lastStep ? `Step ${group.firstStep}` : `Steps ${group.firstStep} to ${group.lastStep}`;
+  const headingId = `group-${group.regionId}-${group.firstStep}`;
+
+  const hidden = group.hiddenCount
+    ? h(
+        'li',
+        { class: 'entry entry--hidden' },
+        h(
+          'div',
+          { class: 'entry-rail' },
+          h('span', { class: 'entry-thread', 'aria-hidden': 'true' }),
+          h('span', { class: 'mark mark--bead mark--static mark--region', 'aria-hidden': 'true' })
+        ),
+        h(
+          'div',
+          { class: 'entry-body' },
+          h(
+            'p',
+            { class: 'entry-note' },
+            group.locked
+              ? `${pluralEntries(group.hiddenCount)} hidden. They appear once this region is open and you visit it.`
+              : `${group.rows.length ? 'And ' : ''}${pluralEntries(group.hiddenCount)} hidden until you visit this region.`
+          )
+        )
+      )
+    : null;
+
+  return h(
+    'section',
+    { class: isLast ? 'route-group is-last' : 'route-group', 'aria-labelledby': headingId },
+    h(
+      'div',
+      { class: 'route-head' },
+      h('div', { class: 'entry-rail' }, h('span', { class: 'entry-thread', 'aria-hidden': 'true' })),
+      h(
+        'div',
+        { class: 'route-head-body' },
+        h('h2', { class: 'route-name', id: headingId }, group.name),
+        h('span', { class: 'route-meta' }, h('span', { class: 'num' }, range), h('a', { href: group.href }, 'Open region'))
+      )
+    ),
+    h('ol', { class: 'entries' }, ...group.rows.map(entryRow), hidden)
   );
 }
 
