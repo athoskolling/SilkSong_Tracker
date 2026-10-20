@@ -1,5 +1,5 @@
 {
-  "dataVersion": 11,
+  "dataVersion": 12,
   "items": [
     {
       "id": "moss-mother",
@@ -20,7 +20,7 @@
       "counts": false,
       "type": "crest",
       "regionId": "moss-grotto",
-      "how": "The starting Crest; you have it from the beginning. Tick it to use it in the Build picker.",
+      "how": "The starting Crest, owned from the beginning.",
       "slots": {
         "red": 1,
         "blue": 1,
@@ -86,7 +86,7 @@
       "kind": "collectible",
       "type": "spool-fragment",
       "regionId": "moss-grotto",
-      "how": "Behind a breakable wall in the mossy rooms above Bone Bottom: from the Mosshome lift go right and break the weak wall in the left corner of the next room. Guides give different routes.",
+      "how": "Behind a breakable wall in the mossy rooms above Bone Bottom: from the Mosshome lift go right and break the weak wall in the left corner of the next room.",
       "requires": [],
       "step": 30,
       "source": "https://hollowknight.wiki/w/Spool_Fragment"
@@ -154,7 +154,7 @@
       "counts": false,
       "type": "map",
       "regionId": "the-marrow",
-      "how": "Sold by Shakra, whom you first meet in The Marrow, for 40 Rosaries. Some guides call it the Bone Bottom Map.",
+      "how": "Sold by Shakra, whom you first meet in The Marrow, for 40 Rosaries. It is also called the Bone Bottom Map.",
       "price": 40,
       "requires": [],
       "step": 64,
@@ -566,7 +566,7 @@
       "counts": false,
       "type": "map",
       "regionId": "hunters-march",
-      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "how": "Sold by Shakra.",
       "requires": [],
       "step": 258,
       "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
@@ -629,7 +629,7 @@
       "counts": false,
       "type": "memory-locket",
       "regionId": "hunters-march",
-      "how": "In a hidden room past the chapel boss. Only one description of this spot exists so far.",
+      "how": "In a hidden room past the chapel boss.",
       "requires": [
         "savage-beastfly"
       ],
@@ -682,7 +682,7 @@
       "counts": false,
       "type": "map",
       "regionId": "greymoor",
-      "how": "Sold by Shakra for 70 Rosaries. One guide says 50.",
+      "how": "Sold by Shakra for 70 Rosaries.",
       "price": 70,
       "requires": [],
       "step": 305,
@@ -808,7 +808,7 @@
       "counts": false,
       "type": "map",
       "regionId": "shellwood",
-      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "how": "Sold by Shakra.",
       "requires": [],
       "step": 355,
       "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
@@ -965,7 +965,7 @@
       "kind": "task",
       "type": "quest",
       "regionId": "bellhart",
-      "how": "Frey's wish at the Bellhart Wishwall: follow the goods Tipp dropped, starting in lower Shellwood, to find him. Guides disagree on where he ends up; return to the Bellhart shopkeeper after you talk to him.",
+      "how": "Frey's wish at the Bellhart Wishwall: follow the goods Tipp dropped, starting in lower Shellwood, to find him. Return to the Bellhart shopkeeper after you talk to him.",
       "requires": [
         "widow"
       ],
@@ -1023,7 +1023,7 @@
       "counts": false,
       "type": "furnishing",
       "regionId": "bellhart",
-      "how": "Furniture for your Bellhome, sold by Frey for 380 Rosaries. Guides disagree on the price (250 and 280 also appear).",
+      "how": "Furniture for your Bellhome, sold by Frey for 380 Rosaries.",
       "price": 380,
       "requires": [
         "bellhome-key"
@@ -1125,7 +1125,7 @@
       "type": "crest",
       "regionId": "moss-grotto",
       "area": "Bonegrave",
-      "how": "In the Chapel of the Wanderer at Bonegrave, west of the Ruined Chapel; you fight a few waves of enemies for it. Cling Grip gets you there down the main funnel in Bone Bottom; guides also describe a way in with a Simple Key through the Wormways.",
+      "how": "In the Chapel of the Wanderer at Bonegrave, west of the Ruined Chapel; you fight a few waves of enemies for it. Cling Grip gets you there down the main funnel in Bone Bottom. Another way in uses a Simple Key through the Wormways.",
       "slots": {
         "red": 1,
         "blue": 0,
@@ -1163,7 +1163,7 @@
       "counts": false,
       "type": "map",
       "regionId": "wormways",
-      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "how": "Sold by Shakra.",
       "requires": [],
       "step": 515,
       "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
@@ -1212,7 +1212,7 @@
       "counts": false,
       "type": "map",
       "regionId": "sinners-road",
-      "how": "Sold by Shakra. One guide gives 90 Rosaries; nobody else confirms it yet.",
+      "how": "Sold by Shakra.",
       "requires": [],
       "step": 535,
       "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
@@ -1248,7 +1248,7 @@
       "counts": false,
       "type": "map",
       "regionId": "blasted-steps",
-      "how": "Sold by Shakra. One guide gives 70 Rosaries; nobody else confirms it yet.",
+      "how": "Sold by Shakra.",
       "requires": [],
       "step": 555,
       "source": "https://gamerant.com/hollow-knight-silksong-all-area-maps-locations/"
@@ -1274,7 +1274,7 @@
       "counts": false,
       "type": "memory-locket",
       "regionId": "blasted-steps",
-      "how": "Pogo across the hanging bells, then drop into a dark passage. Only one guide describes this spot.",
+      "how": "Pogo across the hanging bells, then drop into a dark passage.",
       "requires": [],
       "step": 565,
       "source": "https://nerdschalk.com/how-many-memory-lockets-are-there-in-silksong-all-locations-listed/"
@@ -1496,14 +1496,14 @@
       "type": "tool",
       "regionId": "choral-chambers",
       "area": "Songclave",
-      "how": "Sold by Jubilana in the Songclave for 350 Rosaries. One source says she sells it only in Act 2.",
+      "how": "Sold by Jubilana in the Songclave for 350 Rosaries.",
       "price": 350,
       "toolColor": "yellow",
       "requires": [
         "wandering-merchant"
       ],
       "missable": true,
-      "missableNote": "Jubilana's shop opens only after the Wandering Merchant wish, which guides say can be done only in Act 2. Not confirmed whether it can be done later.",
+      "missableNote": "Jubilana's shop opens only after the Wandering Merchant wish, which is an Act 2 wish. Buy it in Act 2; later it may not be possible.",
       "step": 720,
       "source": "https://nerdschalk.com/silksong-ascendants-grip-location-route-rewards-requirements-more/"
     },
@@ -1548,7 +1548,6 @@
       "regionId": "choral-chambers",
       "area": "Songclave",
       "how": "Sold by Jubilana in the Songclave. Any Simple Key opens any locked door; the guide spends this one on the High Halls door.",
-      "price": 650,
       "requires": [
         "wandering-merchant"
       ],
@@ -1717,7 +1716,7 @@
         "clawline"
       ],
       "missable": true,
-      "missableNote": "Act 2 only. One guide says they also leave for good if they move into the Songclave.",
+      "missableNote": "Act 2 only. They may also leave for good if they move into the Songclave.",
       "step": 865,
       "source": "https://deltiasgaming.com/?p=345743"
     },
@@ -2018,8 +2017,7 @@
       "kind": "collectible",
       "type": "tool",
       "regionId": "blasted-steps",
-      "how": "Sold by Grindle for 740 Rosaries.",
-      "price": 740,
+      "how": "Sold by Grindle.",
       "toolColor": "blue",
       "effect": "Makes the Clawline steal Rosaries and Shell Shards, and hit harder.",
       "requires": [
@@ -2514,7 +2512,7 @@
       "kind": "collectible",
       "type": "crest",
       "regionId": "greymoor",
-      "how": "Infestation Operation: while cursed, visit Yarnaby at the top left of Greymoor, buy Steel Spines from Crull and Benjin in the Sinner's Road jail (260 Rosaries in most guides, 160 in one) and bring them to her. The curse lifts and the Cursed Crest becomes the Witch Crest.",
+      "how": "Infestation Operation: while cursed, visit Yarnaby at the top left of Greymoor, buy Steel Spines (about 260 Rosaries) from Crull and Benjin in the Sinner's Road jail and bring them to her. The curse lifts and the Cursed Crest becomes the Witch Crest.",
       "slots": {
         "red": 2,
         "blue": 0,
@@ -2650,7 +2648,7 @@
       "type": "memento",
       "regionId": "sands-of-karak",
       "area": "Watcher at the Edge",
-      "how": "Use Silk Soar to reach a dormant statue, the Watcher at the Edge, at the far west edge of the Sands of Karak. Play the Needolin to wake it and beat it. One guide puts the statue in the Blasted Steps instead.",
+      "how": "Use Silk Soar to reach a dormant statue, the Watcher at the Edge, at the far west edge of the Sands of Karak. Play the Needolin to wake it and beat it. Reports differ on this spot.",
       "requires": [
         "silk-soar",
         "needolin"
@@ -2769,7 +2767,7 @@
       "type": "memento",
       "regionId": "blasted-steps",
       "area": "Lost Garmond",
-      "how": "The Hero's Call wish on the Bellhart Wishwall: find and beat Lost Garmond in the Blasted Steps, then talk to him. Guides disagree on when the wish appears; the guide waits for the Everbloom.",
+      "how": "The Hero's Call wish on the Bellhart Wishwall: find and beat Lost Garmond in the Blasted Steps, then talk to him. The wish may not appear until late in the game, so the route waits for the Everbloom.",
       "requires": [
         "everbloom"
       ],
