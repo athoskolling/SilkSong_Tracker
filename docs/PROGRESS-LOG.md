@@ -40,6 +40,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **Sample data widened** (orchestrator): two more invented Regions and seven entries, for the five Region card states, "Holding you up" and "Collectibles by type". Existing sample entries unchanged; 88 tests pass.
 - **Structure:** `account.html` also loads `js/account-page.js` (contract section 5 and 7), so Account and Home/Route are built in parallel with one owner per file.
 
+- **T11 merged** (`dev-a/account-backup`, dev-a acting as Dev B): Backup file (download, add with union), Start a new run with confirmation (Escape cancels, focus handled), How saving works, Guide data. Orchestrator checked: 88 tests pass, Account loads with no console errors at 1280 and 390 px, layout matches the design. Dev A drove download, add, reject and clear in a headless browser (29 checks). The `.account-column` meeting point with `render.js` recorded in contract section 5. **Not pushed yet**: its header links to `route.html`, which arrives with T10.
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.

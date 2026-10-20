@@ -274,7 +274,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 - Read data through a small `data.js`-style loader owned by Dev B that fetches `data/*.json` with relative URLs.
 - Read Progress and requirements only through the functions above.
 - Each page sets `<body data-page="home|region|route|account">`; `main.js` picks behaviour from it.
-- Exception (Phase 2): `account.html` also loads `js/account-page.js`, which builds the Backup file, Start a new run, How saving works and Guide data sections. `main.js` keeps the sign-in plate. Why: it lets the Account page and the Home and Route pages be built at the same time without two people editing `main.js` and `render.js`. It may be folded into `main.js` later.
+- Exception (Phase 2): `account.html` also loads `js/account-page.js`, which builds the Backup file, Start a new run, How saving works and Guide data sections. `main.js` keeps the sign-in plate. Why: it lets the Account page and the Home and Route pages be built at the same time without two people editing `main.js` and `render.js`. It may be folded into `main.js` later. **The one point where they meet:** `account-page.js` finds the element with class `account-column` that `render.js` builds on the Account page and adds its sections after the sign-in plate. `render.js` must keep that class on the Account page's main column; renaming it breaks the Account page without an error.
 - Every state in the design has a visible equivalent in the interface: Available, Locked, Visited, Complete, Not in the guide yet, next on the route, missable, needs something, done.
 
 ## 6. Cross-checks the validator must enforce (`scripts/validate-data.js`)
