@@ -8,8 +8,9 @@
 // Every problem names the file, the id (or the position, when the entry has no id) and the rule.
 //
 // Rule numbers are the ones in docs/CONTRACTS.md section 6:
-//   1  each file parses and has an integer dataVersion; the three versions are equal
-//   2  ids are lowercase slugs, unique across the three files
+//   1  each file parses and has an integer dataVersion; the versions are equal (builds.json and
+//      places.json too, when they exist)
+//   2  ids are lowercase slugs, unique across all the files (templates, synergies and Places too)
 //   3  regionId and every id in requires, unlocks and conditions exist, and are of the right kind
 //   4  no loop in requires (an entry also needs its Region's requires)
 //   5  step is a unique integer across all entries
@@ -17,7 +18,8 @@
 //   7  every entry has a name, how and a web link as source
 //   8  a Region's heroImage has a credit, a relative .jpg or .png path, and the file exists
 //   9  locksOut names existing Ending ids, and an Ending never locks itself out
-//  10  warning: how over 300 characters, effect over 200 characters (pasted wiki text)
+//  10  warning: how over 300 characters (entries and Places), effect over 200 (entries and synergies),
+//      goal over 200 (templates): pasted wiki text
 //  11  the field shapes of section 1, including counts, price and toolColor. Printed as
 //      "rule shape", the label this check has always had
 //  12  warning: a Collectible's type is on the approved list, checked against counts
@@ -26,25 +28,43 @@
 //      counts, a toolColor on a non-Tool, and an upgrade whose colour differs from its base's
 //  14  warning: an Ending condition is not on the Route (routeIds). Runs only when rules 1 to 5 pass
 //      and every requires list is a list of ids, because routeIds cannot read anything else
+//  15  builds.json (Phase 5, third round, ADR 0007, optional file): the shape and links of each
+//      template and synergy; each template's Build fits its Crest with every slot opened and every
+//      grantsSlots entry done (checkBuild from js/builds.js, the picker's own code); warning for a
+//      repeated template. The fit check runs only when rules 1 to 5 and 13 found nothing
+//  16  places.json (Phase 5, third round, ADR 0007, optional file): the shape of each Place, its
+//      kind, Region and links (requires, sells); warning for a MapGenie source that is not the
+//      Silksong map, in every file
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
 // the tests run. It imports isCounted and routeIds from js/requirements.js, which is plain ES module
-// code with no imports of its own, so the counting and Route rules are written once.
+// code with no imports of its own, so the counting and Route rules are written once. Likewise rule 15
+// imports checkBuild and slotsFor from js/builds.js (also plain, no imports).
 
-import { readFileSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { isCounted, routeIds } from '../js/requirements.js';
+import { checkBuild, slotsFor } from '../js/builds.js';
 
 // heroImage paths are relative to the site root (the folder with index.html), which is the
 // repository root here, not the data folder (section 1 and 6, rule 8).
 export const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+// The three core files. All three must exist (rule 1).
 const COLLECTIONS = [
   { key: 'regions', file: 'regions.json', kind: 'region' },
   { key: 'items', file: 'items.json', kind: 'entry' },
   { key: 'endings', file: 'endings.json', kind: 'ending' },
+];
+
+// The optional files (ADR 0007). Each one is checked when it is there and is not a problem when it is not.
+// builds.json holds two lists in one file, so it is read once; `rule` is the rule its shape errors use.
+const OPTIONAL_COLLECTIONS = [
+  { key: 'templates', file: 'builds.json', kind: 'template', rule: 15 },
+  { key: 'synergies', file: 'builds.json', kind: 'synergy', rule: 15 },
+  { key: 'places', file: 'places.json', kind: 'place', rule: 16 },
 ];
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -53,6 +73,20 @@ const SPOILER_LEVELS = [0, 1, 2];
 const HERO_EXTENSIONS = ['.jpg', '.png'];
 const LONG_HOW = 300;
 const LONG_EFFECT = 200;
+const LONG_GOAL = 200;
+
+// Rule 16: the kinds of Place (contract section 1, places.json).
+const PLACE_KINDS = ['bench', 'bellway', 'shop', 'npc', 'wishboard', 'arena', 'door', 'other'];
+
+// Rule 15: a colour of a saved Build or template holds 1 to this many ids (contract section 1; a guard, not a game fact).
+const BUILD_MAX_IDS = 12;
+
+// Rule 16: the only MapGenie page a source may cite (contract section 1, "Sources and MapGenie").
+const MAPGENIE_SILKSONG = 'https://mapgenie.io/hollow-knight-silksong/';
+
+// Rule 15's fit check runs only when none of these rules reported an error: checkBuild reads the
+// records and the Build fields they check (contract section 6, rule 15).
+const FIT_GATE_RULES = [1, 2, 3, 4, 5, 13];
 
 // Rule 12: the Collectible types that count toward 100 percent (docs/CONTRACTS.md section 6). Task
 // types are not on this list and stay free. `ability` (added 2026-10-20) is for a counted ability
@@ -85,8 +119,15 @@ const TOOL_COLORS = ['red', 'blue', 'yellow'];
 // The four colours of a Crest's slots and of grantsSlots (rule 13). White slots take Silk Skills.
 const SLOT_COLORS = ['red', 'blue', 'yellow', 'white'];
 
-const KIND_NAME = { region: 'Region', entry: 'entry', ending: 'Ending' };
-const KIND_ID = { region: 'a Region id', entry: 'an entry id', ending: 'an Ending id' };
+const KIND_NAME = { region: 'Region', entry: 'entry', ending: 'Ending', template: 'template', synergy: 'synergy', place: 'Place' };
+const KIND_ID = {
+  region: 'a Region id',
+  entry: 'an entry id',
+  ending: 'an Ending id',
+  template: 'a template id',
+  synergy: 'a synergy id',
+  place: 'a Place id',
+};
 const WANTED = { region: 'a Region id', entry: 'entry ids', ending: 'Ending ids' };
 
 // ------------------------------------------------------------------ reporting
@@ -194,23 +235,47 @@ function readJson(filePath, file, report) {
   return json;
 }
 
-// Keeps the three files apart. A file that cannot be read gives list === null, and every check
-// that would need it is skipped, so one broken file does not flood the report with false errors.
+// Keeps the lists apart. A file that cannot be read gives list === null, and every check that would need
+// it is skipped, so one broken file does not flood the report with false errors. The optional files
+// (ADR 0007) are read only when they exist; when one is absent its lists are null, which the checks
+// already treat as "nothing to check". builds.json holds two lists, so it is read once for both.
 function loadCollections(dir, report) {
-  return COLLECTIONS.map(({ key, file, kind }) => {
-    const doc = readJson(path.join(dir, file), file, report);
-    let list = null;
-    if (doc && Array.isArray(doc[key])) list = doc[key];
-    else if (doc) report.error('shape', fileRef(file), `there must be an array named "${key}".`);
-    return { key, file, kind, doc, list };
+  const docs = new Map();
+  const read = (file) => {
+    if (!docs.has(file)) docs.set(file, readJson(path.join(dir, file), file, report));
+    return docs.get(file);
+  };
+  const core = COLLECTIONS.map((spec) => listOf(spec, read(spec.file), report, false));
+  const optional = OPTIONAL_COLLECTIONS.map((spec) => {
+    if (!existsSync(path.join(dir, spec.file))) return { ...spec, doc: null, list: null, optional: true };
+    return listOf(spec, read(spec.file), report, true);
   });
+  return [...core, ...optional];
+}
+
+// The list named by spec.key in a file's document. A document with no such array is a shape error,
+// reported under the rule that owns the list (rule 15 or 16 for the optional files, "shape" otherwise).
+function listOf(spec, doc, report, optional) {
+  let list = null;
+  if (doc && Array.isArray(doc[spec.key])) list = doc[spec.key];
+  else if (doc) report.error(spec.rule ?? 'shape', fileRef(spec.file), `there must be an array named "${spec.key}".`);
+  return { ...spec, doc, list, optional };
+}
+
+// One collection per list, so a file read for two lists (builds.json) must be counted once here.
+function filesRead(collections) {
+  const seen = new Map();
+  for (const c of collections) {
+    if (c.doc && !seen.has(c.file)) seen.set(c.file, c);
+  }
+  return [...seen.values()];
 }
 
 // ------------------------------------------------------------------ rule 1: versions
 
-// Every file has an integer dataVersion, and all three are the same number (one version for data/).
+// Every file has an integer dataVersion, and all of them are the same number (one version for data/).
 function checkVersions(collections, report) {
-  const withDoc = collections.filter((c) => c.doc);
+  const withDoc = filesRead(collections);
   const reference = withDoc.find((c) => Number.isInteger(c.doc.dataVersion));
   for (const c of withDoc) {
     const version = c.doc.dataVersion;
@@ -229,7 +294,7 @@ function checkVersions(collections, report) {
 
 // ------------------------------------------------------------------ rule 2: ids
 
-// Every id is a lowercase slug and is used once across the three files.
+// Every id is a lowercase slug and is used once across all the files (rule 2).
 // Returns owners: id -> { kind, file, record }, the first record that uses the id. A non-slug id
 // is still recorded, so references to it resolve and only the slug problem is reported.
 function collectIds(collections, report) {
@@ -241,7 +306,7 @@ function collectIds(collections, report) {
         return;
       }
       if (typeof record.id !== 'string') {
-        report.error(2, ref, 'has no id. Every Region, entry and Ending needs a permanent slug id.');
+        report.error(2, ref, 'has no id. Every Region, entry, Ending, template, synergy and Place needs a permanent slug id.');
         return;
       }
       if (!SLUG.test(record.id)) {
@@ -249,7 +314,7 @@ function collectIds(collections, report) {
       }
       const owner = owners.get(record.id);
       if (owner) {
-        report.error(2, ref, `id "${record.id}" is already used in ${owner.file} (as ${KIND_ID[owner.kind]}). Ids must be unique across the three files.`);
+        report.error(2, ref, `id "${record.id}" is already used in ${owner.file} (as ${KIND_ID[owner.kind]}). Ids must be unique across all the data files.`);
       } else {
         owners.set(record.id, { kind: c.kind, file: c.file, record });
       }
@@ -436,18 +501,37 @@ function typeKey(type) {
   return type.toLowerCase().replace(/_/g, '-').replace(/s$/, '');
 }
 
+// Every source in every file (entries, Endings, templates, synergies, Places) goes through here.
 function checkSource(ctx, rule, ref, value) {
   if (!isText(value) || !isWebLink(value)) {
-    ctx.report.error(rule, ref, '"source" must be a web link (http or https) to the page the entry came from.');
-  }
-}
-
-function checkRegionId(ctx, ref, value) {
-  if (typeof value !== 'string') {
-    ctx.report.error(3, ref, '"regionId" must be the id of a Region in regions.json.');
+    ctx.report.error(rule, ref, '"source" must be a web link (http or https) to the page it was checked against.');
     return;
   }
-  checkReference(ctx, 3, ref, 'regionId', value, 'region');
+  warnMapGenie(ctx, ref, value);
+}
+
+// Rule 16 (warning): MapGenie may be cited for the Silksong map only, and only to show where something is
+// (contract section 1, "Sources and MapGenie"). A link to any other MapGenie page, such as a Hollow Knight
+// map, is most likely a wrong game, so it warns. The project cannot check what a MapGenie page shows; that
+// is Athos's check in a browser.
+function warnMapGenie(ctx, ref, value) {
+  const url = new URL(value);
+  const onMapGenie = url.hostname === 'mapgenie.io' || url.hostname.endsWith('.mapgenie.io');
+  if (!onMapGenie || url.href.startsWith(MAPGENIE_SILKSONG)) return;
+  ctx.report.warning(
+    16,
+    ref,
+    `"source" is a MapGenie page that is not under ${MAPGENIE_SILKSONG}. MapGenie may be cited only for the Silksong map, and only to show where something is. A Hollow Knight map is not a source for Silksong.`
+  );
+}
+
+// `rule` is the rule this field belongs to: 3 for entries, 16 for Places.
+function checkRegionId(ctx, ref, value, rule = 3) {
+  if (typeof value !== 'string') {
+    ctx.report.error(rule, ref, '"regionId" must be the id of a Region in regions.json.');
+    return;
+  }
+  checkReference(ctx, rule, ref, 'regionId', value, 'region');
 }
 
 function checkMissable(ctx, ref, item) {
@@ -744,10 +828,299 @@ function canWorkOutRoute(ctx, byKey) {
   return [...byKey.items.list, ...byKey.regions.list].every((record) => isObject(record) && isIdList(record.requires));
 }
 
+// ------------------------------------------------------------------ rule 15: Build templates and synergies
+
+// builds.json (ADR 0007, contract section 1). A template is a suggested Build for one Crest; a synergy is
+// two Tools (or a Tool and a Silk Skill) that work together. Both point at entries; nothing points at them.
+function checkBuilds(ctx, templates, synergies) {
+  // The gate is the contract's (section 6, rule 15): no error from rules 1 to 5 or 13. A Crest is only found
+  // when items.json loaded, so the fit check always has the entries it reads.
+  const canFit = !ctx.report.errors.some((error) => FIT_GATE_RULES.includes(error.rule));
+  forEachRecord(templates, (template, ref) => checkTemplate(ctx, ref, template, canFit));
+  const pairs = new Map(); // "a|b" (sorted) -> the first synergy that names the pair
+  forEachRecord(synergies, (synergy, ref) => checkSynergy(ctx, ref, synergy, pairs));
+  warnRepeatedTemplates(ctx, templates);
+}
+
+// A template's own checks come first. The fit check runs only when they found nothing for this template,
+// so one mistake gives one error, and a Build of the wrong shape is never handed to checkBuild.
+function checkTemplate(ctx, ref, template, canFit) {
+  if (!isObject(template)) return;
+  const errorsBefore = ctx.report.errors.length;
+  requireText(ctx, 15, ref, template, 'name');
+  requireText(ctx, 15, ref, template, 'goal');
+  if (typeof template.goal === 'string' && template.goal.length > LONG_GOAL) {
+    ctx.report.warning(10, ref, `"goal" is ${template.goal.length} characters (over ${LONG_GOAL}). Keep it short, in our own words: say what the Build is for.`);
+  }
+  if (typeof template.editorial !== 'boolean') {
+    ctx.report.error(15, ref, `"editorial" must be true or false, found ${describe(template.editorial)}. true: the grouping is ours; false: a source recommends this Build.`);
+  }
+  checkSource(ctx, 15, ref, template.source);
+  const crest = checkTemplateCrest(ctx, ref, template.crestId);
+  checkTemplateBuild(ctx, ref, template.build);
+  const clean = ctx.report.errors.length === errorsBefore;
+  if (canFit && clean && crest !== null) checkTemplateFit(ctx, ref, template, crest);
+}
+
+// The Crest must be an entry of type "crest" with both slots and slotsMax (contract section 1, Template).
+// Without them the fit cannot be checked, and the picker shows that Crest as "Not in the guide yet".
+function checkTemplateCrest(ctx, ref, crestId) {
+  if (!isText(crestId)) {
+    ctx.report.error(15, ref, '"crestId" must be the id of a Crest in items.json.');
+    return null;
+  }
+  const owner = ctx.owners.get(crestId);
+  if (!owner) {
+    if (ctx.complete) ctx.report.error(15, ref, `"crestId" lists "${crestId}", which does not exist in items.json.`);
+    return null;
+  }
+  if (owner.kind !== 'entry') {
+    ctx.report.error(15, ref, `"crestId" lists "${crestId}", which is ${KIND_ID[owner.kind]}. "crestId" needs the id of a Crest entry.`);
+    return null;
+  }
+  const crest = owner.record;
+  if (crest.type !== 'crest') {
+    ctx.report.error(15, ref, `"crestId" lists "${crestId}", which has type ${describe(crest.type)}, not "crest".`);
+    return null;
+  }
+  if (crest.slots === undefined || crest.slotsMax === undefined) {
+    ctx.report.error(15, ref, `"crestId" "${crestId}" is a Crest without both "slots" and "slotsMax". Without them the fit cannot be checked, and the picker shows the Crest as "Not in the guide yet".`);
+    return null;
+  }
+  return crest;
+}
+
+// The Build of a template has the shape of a saved Build (section 1): one or more colours, each a list of
+// 1 to 12 entry ids, and no id twice in the template.
+function checkTemplateBuild(ctx, ref, build) {
+  if (!isObject(build)) {
+    ctx.report.error(15, ref, '"build" must be an object with one or more of the colours red, blue, yellow and white.');
+    return;
+  }
+  const keys = Object.keys(build);
+  if (keys.length === 0) {
+    ctx.report.error(15, ref, '"build" has no colours. Give at least one colour with its ids.');
+    return;
+  }
+  for (const key of keys) {
+    if (!SLOT_COLORS.includes(key)) {
+      ctx.report.error(15, ref, `"build" has the key "${key}", which is not a colour. The colours are red, blue, yellow and white.`);
+    }
+  }
+  const seen = new Set();
+  for (const colour of SLOT_COLORS) {
+    if (build[colour] !== undefined) checkTemplateColour(ctx, ref, colour, build[colour], seen);
+  }
+}
+
+function checkTemplateColour(ctx, ref, colour, ids, seen) {
+  const field = `build.${colour}`;
+  if (!isIdList(ids)) {
+    ctx.report.error(15, ref, `"${field}" must be a list of entry ids (text), for example ["some-id"].`);
+    return;
+  }
+  if (ids.length === 0 || ids.length > BUILD_MAX_IDS) {
+    ctx.report.error(15, ref, `"${field}" has ${ids.length} ids. A colour holds 1 to ${BUILD_MAX_IDS}.`);
+  }
+  for (const id of ids) {
+    checkTemplateId(ctx, ref, field, id);
+    if (seen.has(id)) ctx.report.error(15, ref, `"${field}" lists "${id}" again. An id appears once in a template.`);
+    seen.add(id);
+  }
+}
+
+// A template holds base entry ids (a saved Build stores base ids, section 1), so an upgrade is refused.
+function checkTemplateId(ctx, ref, field, id) {
+  const owner = ctx.owners.get(id);
+  if (!owner) {
+    if (ctx.complete) ctx.report.error(15, ref, `"${field}" lists "${id}", which does not exist in items.json.`);
+    return;
+  }
+  if (owner.kind !== 'entry') {
+    ctx.report.error(15, ref, `"${field}" lists "${id}", which is ${KIND_ID[owner.kind]}. A Build holds entry ids from items.json.`);
+    return;
+  }
+  if (owner.record.upgradeOf !== undefined) {
+    ctx.report.error(15, ref, `"${field}" lists "${id}", an upgraded entry. A saved Build stores base ids, so list "${owner.record.upgradeOf}" instead.`);
+  }
+}
+
+// The fit check (contract section 6, rule 15). checkBuild is the picker's own code, so the validator and the
+// page cannot disagree. "Fits" here means: with every slot opened (slotsMax, per colour) and every grantsSlots
+// entry done. Every id is an entry at this point (checkTemplateId passed), so checkBuild reports no unknown id.
+function checkTemplateFit(ctx, ref, template, crest) {
+  const everyId = new Set(ctx.entries.map((item) => item.id));
+  const everyOpened = { [template.crestId]: openedToMax(crest) };
+  const slots = slotsFor(template.crestId, everyId, ctx.entries, everyOpened);
+  const colourOf = colourOfIds(template.build);
+  for (const problem of checkBuild(template.crestId, template.build, everyId, ctx.entries, everyOpened)) {
+    const colour = colourOf.get(problem.id);
+    const field = `build.${colour}`;
+    const item = ctx.owners.get(problem.id).record;
+    if (problem.problem === 'wrong-colour') {
+      ctx.report.error(15, ref, `"${field}" lists "${problem.id}", which does not fit ${colour} slots: ${whyNotFit(item)}.`);
+    } else if (problem.problem === 'no-room') {
+      ctx.report.error(15, ref, `"${field}" has no room for "${problem.id}". With every slot opened and every grantsSlots entry done, the Crest has ${slots[colour]} ${colour} slot(s).`);
+    } else {
+      ctx.report.error(15, ref, `"${field}" lists "${problem.id}", which the Build cannot use (${problem.problem}).`);
+    }
+  }
+}
+
+// Every slot opened: for each colour, slotsMax less slots. This is the crestSlots value checkBuild reads.
+function openedToMax(crest) {
+  return Object.fromEntries(SLOT_COLORS.map((colour) => [colour, crest.slotsMax[colour] - crest.slots[colour]]));
+}
+
+// Which colour each id is listed under. An id is in one colour only (checkTemplateColour reports a repeat),
+// so a Map from id to colour is exact.
+function colourOfIds(build) {
+  const colourOf = new Map();
+  for (const colour of SLOT_COLORS) {
+    if (!Array.isArray(build[colour])) continue;
+    for (const id of build[colour]) colourOf.set(id, colour);
+  }
+  return colourOf;
+}
+
+function whyNotFit(item) {
+  if (item.type === 'silk-skill') return 'a Silk Skill fits white slots only';
+  if (item.type === 'tool' && item.toolColor !== undefined) return `it is a ${item.toolColor} Tool`;
+  if (item.type === 'tool') return 'a Tool with no toolColor cannot be placed in a Build';
+  return 'only Tools with a toolColor and Silk Skills go in a Build';
+}
+
+// Synergy (contract section 1): two different entries, each a Tool with a toolColor or a Silk Skill, base ids
+// only, and a source that names both. A pair appears once, in either order.
+function checkSynergy(ctx, ref, synergy, pairs) {
+  if (!isObject(synergy)) return;
+  requireText(ctx, 15, ref, synergy, 'effect');
+  if (typeof synergy.effect === 'string' && synergy.effect.length > LONG_EFFECT) {
+    ctx.report.warning(10, ref, `"effect" is ${synergy.effect.length} characters (over ${LONG_EFFECT}). Keep it short, in our own words: what the two do together.`);
+  }
+  checkSource(ctx, 15, ref, synergy.source);
+  const usableA = checkSynergyEntry(ctx, ref, 'a', synergy.a);
+  const usableB = checkSynergyEntry(ctx, ref, 'b', synergy.b);
+  if (!usableA || !usableB) return;
+  if (synergy.a === synergy.b) {
+    ctx.report.error(15, ref, '"a" and "b" are the same entry. A synergy needs two different entries.');
+    return;
+  }
+  const key = [synergy.a, synergy.b].sort().join('|');
+  const first = pairs.get(key);
+  if (first !== undefined) {
+    ctx.report.error(15, ref, `"a" and "b" are the same pair as ${label(first)}. A pair appears once, in either order.`);
+  } else {
+    pairs.set(key, ref);
+  }
+}
+
+function checkSynergyEntry(ctx, ref, field, id) {
+  if (!isText(id)) {
+    ctx.report.error(15, ref, `"${field}" must be the id of an entry: a Tool with a toolColor, or a Silk Skill.`);
+    return false;
+  }
+  const owner = ctx.owners.get(id);
+  if (!owner) {
+    if (ctx.complete) ctx.report.error(15, ref, `"${field}" lists "${id}", which does not exist in items.json.`);
+    return false;
+  }
+  if (owner.kind !== 'entry') {
+    ctx.report.error(15, ref, `"${field}" lists "${id}", which is ${KIND_ID[owner.kind]}. A synergy names two entries.`);
+    return false;
+  }
+  const item = owner.record;
+  if (item.upgradeOf !== undefined) {
+    ctx.report.error(15, ref, `"${field}" lists "${id}", an upgraded entry. A synergy names base entries; say which version it means in "effect".`);
+    return false;
+  }
+  const placeable = (item.type === 'tool' && TOOL_COLORS.includes(item.toolColor)) || item.type === 'silk-skill';
+  if (!placeable) {
+    ctx.report.error(15, ref, `"${field}" lists "${id}", which is neither a Tool with a toolColor nor a Silk Skill. Only those go in a Build.`);
+    return false;
+  }
+  return true;
+}
+
+// Two templates for the same Crest with the same ids in the same colours say the same thing twice (warning).
+// Order inside a colour does not count: the same ids are the same Build.
+function warnRepeatedTemplates(ctx, templates) {
+  const first = new Map();
+  forEachRecord(templates, (template, ref) => {
+    if (!isObject(template) || !isText(template.crestId) || !isObject(template.build)) return;
+    const key = repeatKey(template);
+    if (key === null) return;
+    const earlier = first.get(key);
+    if (earlier !== undefined) {
+      ctx.report.warning(15, ref, `this template has the same Crest and the same ids in the same colours as ${label(earlier)}. Keep one of them, or change what it lists.`);
+    } else {
+      first.set(key, ref);
+    }
+  });
+}
+
+function repeatKey(template) {
+  const parts = SLOT_COLORS.filter((colour) => isIdList(template.build[colour]) && template.build[colour].length > 0).map(
+    (colour) => `${colour}:${[...template.build[colour]].sort().join(',')}`
+  );
+  return parts.length === 0 ? null : `${template.crestId}|${parts.join(';')}`;
+}
+
+// ------------------------------------------------------------------ rule 16: Places
+
+// places.json (ADR 0007, contract section 1). A Place is a fixed spot (a bench, a shop, an NPC). It is never
+// done, never counted and has no step, so only its links are checked here: requires and sells name entries.
+function checkPlaces(ctx, collection) {
+  forEachRecord(collection, (place, ref) => {
+    if (!isObject(place)) return;
+    requireText(ctx, 16, ref, place, 'name');
+    requireText(ctx, 16, ref, place, 'how');
+    if (typeof place.how === 'string' && place.how.length > LONG_HOW) {
+      ctx.report.warning(10, ref, `"how" is ${place.how.length} characters (over ${LONG_HOW}). Long text is often pasted wiki text: write it in our own words.`);
+    }
+    checkPlaceKind(ctx, ref, place.kind);
+    checkRegionId(ctx, ref, place.regionId, 16);
+    optionalText(ctx, 16, ref, place, 'area');
+    checkIdList(ctx, 16, ref, place, 'requires', 'entry');
+    checkSells(ctx, ref, place);
+    checkSource(ctx, 16, ref, place.source);
+  });
+}
+
+function checkPlaceKind(ctx, ref, kind) {
+  if (!PLACE_KINDS.includes(kind)) {
+    ctx.report.error(16, ref, `"kind" must be one of ${PLACE_KINDS.join(', ')}, found ${describe(kind)}.`);
+  }
+}
+
+// sells lists the entries a shop sells, in the vendor's order. Only a shop has it, and a shop has at least one.
+function checkSells(ctx, ref, place) {
+  if (place.kind !== 'shop') {
+    if (place.sells !== undefined) {
+      ctx.report.error(16, ref, `"sells" is only for a shop (kind "shop"), found kind ${describe(place.kind)}.`);
+    }
+    return;
+  }
+  if (place.sells === undefined) {
+    ctx.report.error(16, ref, '"sells" is required on a shop: list the entry ids it sells, in the vendor\'s order.');
+    return;
+  }
+  checkIdList(ctx, 16, ref, place, 'sells', 'entry');
+  if (!isIdList(place.sells)) return; // a shape error is already reported
+  if (place.sells.length === 0) {
+    ctx.report.error(16, ref, '"sells" is empty. A shop sells at least one entry.');
+    return;
+  }
+  const repeat = place.sells.find((id, index) => place.sells.indexOf(id) !== index);
+  if (repeat !== undefined) {
+    ctx.report.error(16, ref, `"sells" lists "${repeat}" twice. A vendor lists each entry once.`);
+  }
+}
+
 // ------------------------------------------------------------------ the whole check
 
-// Checks the three JSON files in `dir`. `siteRoot` is where heroImage paths are looked up
-// (tests point it somewhere else; the CLI never does).
+// Checks the JSON files in `dir`: the three core files, and builds.json and places.json when they exist.
+// `siteRoot` is where heroImage paths are looked up (tests point it somewhere else; the CLI never does).
 export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   const report = new Report();
   const collections = loadCollections(dir, report);
@@ -758,13 +1131,17 @@ export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
     report,
     owners,
     siteRoot,
-    complete: collections.every((c) => c.list !== null),
+    // Only the core files must all be readable. An absent optional file is not a problem.
+    complete: collections.filter((c) => !c.optional).every((c) => c.list !== null),
+    entries: byKey.items.list,
   };
   checkRegions(ctx, byKey.regions);
   checkEntries(ctx, byKey.items);
   checkEndings(ctx, byKey.endings);
   reportLoops(ctx, requirementGraph(ctx, byKey.items), byKey.items.file);
   checkUpgradeLoops(ctx, byKey.items);
+  checkBuilds(ctx, byKey.templates, byKey.synergies);
+  checkPlaces(ctx, byKey.places);
   // Last, so that every rule 1 to 5 error is already in the report when the gate looks at it.
   checkEndingsOnRoute(ctx, byKey);
   return { errors: report.errors, warnings: report.warnings };

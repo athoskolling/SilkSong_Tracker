@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 import { validate, formatProblem } from '../scripts/validate-data.js';
+// Used only to prove a fixture's premise (that a Build fails with nothing opened); the rules under test are the validator's.
+import { checkBuild } from '../js/builds.js';
 
 const SAMPLE = fileURLToPath(new URL('../data/sample/', import.meta.url));
 const SCRIPT = fileURLToPath(new URL('../scripts/validate-data.js', import.meta.url));
@@ -1572,4 +1574,855 @@ test('the command exits 1 when the folder does not exist', () => {
   const run = spawnSync(process.execPath, [SCRIPT, path.join(tempFolder(), 'missing')], { encoding: 'utf8' });
   assert.equal(run.status, 1);
   assert.match(run.stderr, /regions\.json.*rule 1/);
+});
+
+// ------------------------------------------------------------------ Phase 5, third round: rules 15 and 16
+// builds.json (Build templates and synergies, rule 15) and places.json (Places, rule 16), contract section 1,
+// section 6 and ADR 0007. Each test writes its own copy of the sample with the files it needs; data/ is never
+// read. Sample facts these tests rely on (see data/sample/items.json):
+//   sample-crest-one    slots red 1, blue 1, yellow 0, white 1; slotsMax red 1, blue 2, yellow 1, white 1
+//                       (room to open one blue and one yellow slot, and no red or white room)
+//   sample-crest-two    slots but no slotsMax; sample-crest has neither; sample-crest-four slots = slotsMax
+//   sample-red-tool, sample-red-tool-two (red), sample-yellow-tool (yellow), sample-blue-tool (blue),
+//   sample-skill (a Silk Skill, fits white), sample-key (a Tool with no toolColor), sample-region-a (a Region),
+//   sample-red-tool-plus (an upgrade of sample-red-tool), sample-slot-upgrade (a Task with grantsSlots blue 1, yellow 1)
+
+// A template that is ready as it is: sample-crest-one with one red Tool, one blue Tool and the Silk Skill.
+// Each test changes one field through `fields`.
+const goodTemplate = (fields = {}) => ({
+  id: 'sample-template-one',
+  crestId: 'sample-crest-one',
+  name: 'Sample template one',
+  goal: 'Sample goal, not game data.',
+  build: { red: ['sample-red-tool'], blue: ['sample-blue-tool'], white: ['sample-skill'] },
+  editorial: true,
+  source: 'https://example.invalid/sample-template-one',
+  ...fields,
+});
+
+const goodSynergy = (fields = {}) => ({
+  id: 'sample-synergy-one',
+  a: 'sample-red-tool',
+  b: 'sample-blue-tool',
+  effect: 'Sample effect, not game data.',
+  source: 'https://example.invalid/sample-synergy-one',
+  ...fields,
+});
+
+const goodPlace = (fields = {}) => ({
+  id: 'bench-sample-one',
+  name: 'Sample bench',
+  kind: 'bench',
+  regionId: 'sample-region-a',
+  how: 'Sample text, not game data.',
+  requires: [],
+  source: 'https://example.invalid/bench-sample-one',
+  ...fields,
+});
+
+const goodShop = (fields = {}) => goodPlace({ id: 'shop-sample-one', name: 'Sample shop', kind: 'shop', sells: ['sample-red-tool-two'], ...fields });
+
+// The two lists of builds.json are both required, so a test that writes the file writes both (empty by default).
+function writeBuilds(dir, { templates = [], synergies = [], dataVersion = 3 } = {}) {
+  writeFileSync(path.join(dir, 'builds.json'), JSON.stringify({ dataVersion, templates, synergies }, null, 2));
+}
+
+function writePlaces(dir, { places = [], dataVersion = 3 } = {}) {
+  writeFileSync(path.join(dir, 'places.json'), JSON.stringify({ dataVersion, places }, null, 2));
+}
+
+// A copy of the sample with builds.json and/or places.json written into it. The options are those of
+// writeBuilds and writePlaces, so `{ builds: { templates: [...] } }` writes only the templates list (and no synergies).
+function withFiles({ builds, places } = {}) {
+  const dir = copySample();
+  if (builds) writeBuilds(dir, builds);
+  if (places) writePlaces(dir, places);
+  return dir;
+}
+
+// Adds an entry to a copy of the sample, on the next free step. Used for a second blue Tool.
+function addEntry(dir, fields) {
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      kind: 'collectible',
+      type: 'tool',
+      regionId: 'sample-region-f',
+      how: 'Sample text, not game data.',
+      requires: [],
+      missable: false,
+      step,
+      source: `https://example.invalid/${fields.id}`,
+      ...fields,
+    });
+  });
+}
+
+// Asserts that the copy gives exactly one error: of `rule`, naming the file and id, and with a message that matches `text`.
+function assertOneError(result, rule, { file, id, text }) {
+  assertOnlyRule(result, rule, { file, id });
+  assert.equal(result.errors.length, 1, `exactly one error:\n${result.errors.map(formatProblem).join('\n')}`);
+  assert.match(result.errors[0].message, text);
+}
+
+// ---- no new file gives no new message; a valid new file gives none either
+
+test('rule 15 and 16: a copy with no builds.json and no places.json gives no message (both files are optional)', () => {
+  assertClean(validate(copySample()));
+});
+
+test('rule 15 and 16: valid builds.json and places.json give no message', () => {
+  const dir = withFiles({
+    builds: { templates: [goodTemplate()], synergies: [goodSynergy()] },
+    places: { places: [goodPlace(), goodShop()] },
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 15 and 16: both lists may be empty, in both files', () => {
+  const dir = withFiles({ builds: { templates: [], synergies: [] }, places: { places: [] } });
+  assertClean(validate(dir));
+});
+
+// ---- rule 1: the optional files' dataVersion and parsing
+
+test('rule 1: a builds.json that is not valid JSON is named', () => {
+  const dir = copySample();
+  writeFileSync(path.join(dir, 'builds.json'), '{ "dataVersion": 3, ');
+  assertOnlyRule(validate(dir), 1, { file: 'builds.json' });
+});
+
+test('rule 1: a places.json whose dataVersion differs from the other files is named', () => {
+  const dir = withFiles({ places: { places: [goodPlace()], dataVersion: 2 } });
+  assertOnlyRule(validate(dir), 1, { file: 'places.json' });
+});
+
+test('rule 1: a builds.json whose dataVersion is text is named, and the templates still check', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate()], dataVersion: '3' } });
+  assertOnlyRule(validate(dir), 1, { file: 'builds.json' });
+});
+
+test('rule 1: a builds.json with one dataVersion is read once, so one version error is one error', () => {
+  // Both lists come from one file: a version error there must not be reported once per list.
+  const dir = withFiles({ builds: { templates: [], synergies: [], dataVersion: 2 } });
+  const result = validate(dir);
+  assertOnlyRule(result, 1, { file: 'builds.json' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+});
+
+// ---- rule 2: ids across all the files
+
+test('rule 2: a template id that is already an entry id is named (ids are unique across all files)', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ id: 'sample-key' })] } });
+  assertOnlyRule(validate(dir), 2, { file: 'builds.json', id: 'sample-key' });
+});
+
+test('rule 2: a Place id that is an entry id is named (the Place-equals-entry case)', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ id: 'sample-key', kind: 'bench' })] } });
+  assertOnlyRule(validate(dir), 2, { file: 'places.json', id: 'sample-key' });
+});
+
+test('rule 2: a Place id that is a synergy id in builds.json is named', () => {
+  const dir = withFiles({
+    builds: { synergies: [goodSynergy({ id: 'sample-place-clash' })] },
+    places: { places: [goodPlace({ id: 'sample-place-clash' })] },
+  });
+  assertOnlyRule(validate(dir), 2, { file: 'places.json', id: 'sample-place-clash' });
+});
+
+test('rule 2: a synergy id that is not a slug is named', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ id: 'Sample Synergy' })] } });
+  assertOnlyRule(validate(dir), 2, { file: 'builds.json', id: 'Sample Synergy' });
+});
+
+test('rule 2: a template with no id is named by its position', () => {
+  const template = goodTemplate();
+  delete template.id;
+  const dir = withFiles({ builds: { templates: [template] } });
+  const result = validate(dir);
+  assertOnlyRule(result, 2, { file: 'builds.json' });
+  assert.ok(result.errors.some((e) => e.position === 'template number 1'), 'the position names template number 1');
+});
+
+test('rule 2: two Places with the same id are named (the second one)', () => {
+  const dir = withFiles({ places: { places: [goodPlace(), goodShop({ id: 'bench-sample-one' })] } });
+  assertOnlyRule(validate(dir), 2, { file: 'places.json', id: 'bench-sample-one' });
+});
+
+test('rule 2: two templates with the same id are named (the second one)', () => {
+  const dir = withFiles({
+    builds: { templates: [goodTemplate(), goodTemplate({ build: { red: ['sample-red-tool'] } })] },
+  });
+  assertOnlyRule(validate(dir), 2, { file: 'builds.json', id: 'sample-template-one' });
+});
+
+// ---- rule 15: the shape and the Crest of a template (each one alone)
+
+test('rule 15: a template with no name is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ name: '' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"name" must be a non-empty text/ });
+});
+
+test('rule 15: a template with no goal is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ goal: '   ' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"goal" must be a non-empty text/ });
+});
+
+test('rule 15: a template with no editorial is an error (the choice must be made on purpose)', () => {
+  const template = goodTemplate();
+  delete template.editorial;
+  const dir = withFiles({ builds: { templates: [template] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"editorial" must be true or false, found nothing/ });
+});
+
+test('rule 15: an editorial that is text, not true or false, is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ editorial: 'yes' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"editorial" must be true or false, found "yes"/ });
+});
+
+test('rule 15: a template with a source that is not a web link is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ source: 'not a link' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"source" must be a web link/ });
+});
+
+test('rule 15: a template with no build is an error', () => {
+  const template = goodTemplate();
+  delete template.build;
+  const dir = withFiles({ builds: { templates: [template] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"build" must be an object/ });
+});
+
+test('rule 15: a build with no colours is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: {} })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"build" has no colours/ });
+});
+
+test('rule 15: a build with a colour that is not a list is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: 'sample-red-tool' } })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"build\.red" must be a list of entry ids/ });
+});
+
+test('rule 15: a template with no crestId is an error', () => {
+  const template = goodTemplate();
+  delete template.crestId;
+  const dir = withFiles({ builds: { templates: [template] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"crestId" must be the id of a Crest/ });
+});
+
+test('rule 15: an unknown crestId is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-no-such-crest' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"crestId" lists "sample-no-such-crest", which does not exist in items\.json/,
+  });
+});
+
+test('rule 15: a crestId that is not a Crest (a Tool) is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-key' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"crestId" lists "sample-key", which has type "tool", not "crest"/,
+  });
+});
+
+test('rule 15: a crestId that is a Region id is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-region-a' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"crestId" lists "sample-region-a", which is a Region id/,
+  });
+});
+
+test('rule 15: a Crest with slots but no slotsMax is an error (its fit cannot be checked)', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-crest-two', build: { red: ['sample-red-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"sample-crest-two" is a Crest without both "slots" and "slotsMax"/,
+  });
+});
+
+test('rule 15: a Crest with slotsMax but no slots is a rule 15 error, and rule 13 names the slotsMax', () => {
+  // sample-crest-four has slots and slotsMax. Without slots, slotsMax is a rule 13 error, and the template
+  // cannot be fitted either: both are reported, and the fit check is skipped (the gate is rule 13).
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    delete entry(json, 'sample-crest-four').slots;
+  });
+  writeBuilds(dir, { templates: [goodTemplate({ crestId: 'sample-crest-four', build: { blue: ['sample-blue-tool'] } })] });
+  const result = validate(dir);
+  assert.deepEqual(result.errors.map((e) => String(e.rule)).sort(), ['13', '15'], result.errors.map(formatProblem).join('\n'));
+  assert.ok(result.errors.some((e) => e.rule === 13 && /"slotsMax" is given without "slots"/.test(e.message)));
+  assert.ok(result.errors.some((e) => e.rule === 15 && /"sample-crest-four" is a Crest without both "slots" and "slotsMax"/.test(e.message)));
+});
+
+test('rule 15: a Crest with no slots at all is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-crest', build: { red: ['sample-red-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"sample-crest" is a Crest without both "slots" and "slotsMax"/,
+  });
+});
+
+// ---- rule 15: the ids of a template's Build (each one alone)
+
+test('rule 15: a colour key that is not a colour is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool'], green: ['sample-blue-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build" has the key "green", which is not a colour/,
+  });
+});
+
+test('rule 15: an empty list of ids in a colour is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: [] } })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"build\.red" has 0 ids/ });
+});
+
+test('rule 15: 13 ids in one colour is an error (a colour holds at most 12)', () => {
+  // Thirteen distinct entries, none an upgrade, so only the count is wrong. The fit check is skipped.
+  const thirteen = [
+    'sample-ability', 'sample-key', 'sample-door', 'sample-shard', 'sample-boss', 'sample-charm', 'sample-lever',
+    'sample-crest', 'sample-flea', 'sample-quest', 'sample-tool-two', 'sample-skill', 'sample-shard-two',
+  ];
+  assert.equal(thirteen.length, 13);
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: thirteen } })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-template-one', text: /"build\.red" has 13 ids\. A colour holds 1 to 12/ });
+});
+
+test('rule 15: the same id in two colours is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool'], blue: ['sample-red-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.blue" lists "sample-red-tool" again/,
+  });
+});
+
+test('rule 15: the same id twice in one colour is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" lists "sample-red-tool" again/,
+  });
+});
+
+test('rule 15: an upgraded entry (upgradeOf) is refused, and the message names its base', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool-plus'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /an upgraded entry\. A saved Build stores base ids, so list "sample-red-tool" instead/,
+  });
+});
+
+test('rule 15: a Region id in a build is an error (a Build holds entry ids)', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-region-a'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" lists "sample-region-a", which is a Region id/,
+  });
+});
+
+test('rule 15: an id that is not in items.json is an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-no-such-entry'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" lists "sample-no-such-entry", which does not exist in items\.json/,
+  });
+});
+
+// ---- rule 15: the fit check (checkBuild with every slot opened and every grantsSlots entry done)
+
+test('rule 15: a Tool of the wrong colour (a blue Tool under red) does not fit, and the message says so', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-blue-tool'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" lists "sample-blue-tool", which does not fit red slots: it is a blue Tool/,
+  });
+});
+
+test('rule 15: one id more than the Crest holds at its most is an error, and the message gives the count', () => {
+  // sample-crest-one has one red slot, no red room to open (slotsMax red is 1) and no red grant in the sample.
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" has no room for "sample-red-tool-two"\. With every slot opened and every grantsSlots entry done, the Crest has 1 red slot/,
+  });
+});
+
+test('rule 15: a silk skill under a colour that is not white does not fit', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { blue: ['sample-skill'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.blue" lists "sample-skill", which does not fit blue slots: a Silk Skill fits white slots only/,
+  });
+});
+
+test('rule 15: a Tool with no toolColor cannot be placed in any colour', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-key'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" lists "sample-key", which does not fit red slots: a Tool with no toolColor cannot be placed/,
+  });
+});
+
+test('rule 15: a template that fits only with every slot opened passes (checked at slotsMax)', () => {
+  // Without the grant, sample-crest-one has one blue slot and room for one more only when it is opened.
+  // The two blue Tools need that opened slot. The validator opens every slot, so it passes.
+  const dir = copySample();
+  addEntry(dir, { id: 'sample-blue-tool-two', name: 'Sample blue tool two', toolColor: 'blue' });
+  edit(dir, 'items.json', (json) => {
+    delete entry(json, 'sample-slot-upgrade').grantsSlots;
+  });
+  writeBuilds(dir, { templates: [goodTemplate({ build: { blue: ['sample-blue-tool', 'sample-blue-tool-two'] } })] });
+  // The premise: with nothing opened, the second blue Tool has no room (checkBuild is the picker's own code).
+  const items = JSON.parse(readFileSync(path.join(dir, 'items.json'), 'utf8')).items;
+  const ids = new Set(items.map((item) => item.id));
+  const withNothingOpened = checkBuild('sample-crest-one', { blue: ['sample-blue-tool', 'sample-blue-tool-two'] }, ids, items, undefined);
+  assert.deepEqual(withNothingOpened, [{ id: 'sample-blue-tool-two', problem: 'no-room' }]);
+  assertClean(validate(dir));
+});
+
+test('rule 15: a template that fits only thanks to a grantsSlots entry passes', () => {
+  // sample-crest-one has one red slot and no red room to open. The grant adds one red slot, so two red Tools fit.
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-slot-upgrade').grantsSlots.red = 1;
+  });
+  writeBuilds(dir, { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] });
+  assertClean(validate(dir));
+});
+
+test('rule 15: the same two red Tools without that grant have no room (the grant is what makes it pass)', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-template-one',
+    text: /"build\.red" has no room for "sample-red-tool-two"/,
+  });
+});
+
+test('rule 15: a template that names the base Tool (not its upgrade) passes', () => {
+  // The base sample-red-tool is listed. The upgrade sample-red-tool-plus is never listed (see the upgrade test above).
+  const dir = withFiles({ builds: { templates: [goodTemplate({ build: { red: ['sample-red-tool'] } })] } });
+  assertClean(validate(dir));
+});
+
+// ---- rule 15: the warnings for templates
+
+test('rule 15: two templates for the same Crest with the same ids in the same colours warn once, on the second', () => {
+  const dir = withFiles({
+    builds: { templates: [goodTemplate(), goodTemplate({ id: 'sample-template-two', name: 'Sample template two' })] },
+  });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 15, { file: 'builds.json', id: 'sample-template-two' });
+  assert.equal(result.warnings.length, 1, result.warnings.map(formatProblem).join('\n'));
+  assert.match(result.warnings[0].message, /the same Crest and the same ids in the same colours as "sample-template-one"/);
+});
+
+test('rule 15: the same ids in a different order inside one colour are the same Build and warn', () => {
+  const dir = copySample();
+  addEntry(dir, { id: 'sample-blue-tool-two', name: 'Sample blue tool two', toolColor: 'blue' });
+  writeBuilds(dir, {
+    templates: [
+      goodTemplate({ build: { blue: ['sample-blue-tool', 'sample-blue-tool-two'] } }),
+      goodTemplate({ id: 'sample-template-two', build: { blue: ['sample-blue-tool-two', 'sample-blue-tool'] } }),
+    ],
+  });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 15, { file: 'builds.json', id: 'sample-template-two' });
+});
+
+test('rule 15: the same ids for two different Crests are not a repeat (no warning)', () => {
+  const dir = withFiles({
+    builds: {
+      templates: [
+        goodTemplate({ build: { blue: ['sample-blue-tool'] } }),
+        goodTemplate({ id: 'sample-template-two', crestId: 'sample-crest-four', build: { blue: ['sample-blue-tool'] } }),
+      ],
+    },
+  });
+  assertClean(validate(dir));
+});
+
+// ---- rule 15: the rule 10 length warnings for goal and effect
+
+test('rule 10: a template goal over 200 characters is a warning, not an error', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ goal: 'a'.repeat(201) })] } });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 10, { file: 'builds.json', id: 'sample-template-one' });
+  assert.equal(result.warnings.length, 1);
+});
+
+test('rule 10: a template goal of exactly 200 characters gives no warning', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ goal: 'a'.repeat(200) })] } });
+  assertClean(validate(dir));
+});
+
+test('rule 10: a synergy effect over 200 characters is a warning, not an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ effect: 'a'.repeat(201) })] } });
+  assertOnlyWarningRule(validate(dir), 10, { file: 'builds.json', id: 'sample-synergy-one' });
+});
+
+// ---- rule 15: synergies (each error alone)
+
+test('rule 15: a synergy that pairs a Silk Skill with a Tool with a toolColor passes', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ a: 'sample-skill', b: 'sample-red-tool' })] } });
+  assertClean(validate(dir));
+});
+
+test('rule 15: a synergy whose two ends are the same entry is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ a: 'sample-red-tool', b: 'sample-red-tool' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"a" and "b" are the same entry/,
+  });
+});
+
+test('rule 15: the same pair reversed is an error, and names the first synergy', () => {
+  const dir = withFiles({
+    builds: {
+      synergies: [goodSynergy(), goodSynergy({ id: 'sample-synergy-two', a: 'sample-blue-tool', b: 'sample-red-tool' })],
+    },
+  });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-two',
+    text: /"a" and "b" are the same pair as "sample-synergy-one"/,
+  });
+});
+
+test('rule 15: a Crest used as a synergy end is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ a: 'sample-crest-one' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"a" lists "sample-crest-one", which is neither a Tool with a toolColor nor a Silk Skill/,
+  });
+});
+
+test('rule 15: an upgraded entry as a synergy end is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ a: 'sample-red-tool-plus' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"a" lists "sample-red-tool-plus", an upgraded entry/,
+  });
+});
+
+test('rule 15: a Tool with no toolColor as a synergy end is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ b: 'sample-key' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"b" lists "sample-key", which is neither a Tool with a toolColor nor a Silk Skill/,
+  });
+});
+
+test('rule 15: an unknown id as a synergy end is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ b: 'sample-no-such-entry' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"b" lists "sample-no-such-entry", which does not exist in items\.json/,
+  });
+});
+
+test('rule 15: a Region id as a synergy end is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ b: 'sample-region-a' })] } });
+  assertOneError(validate(dir), 15, {
+    file: 'builds.json',
+    id: 'sample-synergy-one',
+    text: /"b" lists "sample-region-a", which is a Region id/,
+  });
+});
+
+test('rule 15: a synergy with an empty effect is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ effect: '' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-synergy-one', text: /"effect" must be a non-empty text/ });
+});
+
+test('rule 15: a synergy source that is not a web link is an error', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ source: 'sample' })] } });
+  assertOneError(validate(dir), 15, { file: 'builds.json', id: 'sample-synergy-one', text: /"source" must be a web link/ });
+});
+
+// ---- rule 15: a rule 13 or rule 3 error skips the fit check, and nothing crashes
+
+test('rule 15: with a rule 13 error present, the fit check is skipped and only the rule 13 error is reported', () => {
+  // sample-crest-one's red slot count becomes text. The template below would have no room for its second red
+  // Tool, but the fit check does not run on a Crest whose fields are broken (rule 13), so only rule 13 fires.
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-crest-one').slots.red = '2';
+  });
+  writeBuilds(dir, { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] });
+  const result = validate(dir);
+  assertOnlyRule(result, 13, { file: 'items.json', id: 'sample-crest-one' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+});
+
+test('rule 15: with a rule 3 error present, the fit check is skipped and only the rule 3 error is reported', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').requires.push('sample-no-such-entry');
+  });
+  writeBuilds(dir, { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] });
+  assertOnlyRule(validate(dir), 3, { file: 'items.json', id: 'sample-key' });
+});
+
+test('rule 15: a shape error in another file does not skip the fit check (the gate is rules 1 to 5 and 13 only)', () => {
+  // endings.json has no list: a shape error, which is not in the gate. The fit check still runs on the template.
+  const dir = copySample();
+  writeFileSync(path.join(dir, 'endings.json'), JSON.stringify({ dataVersion: 3, endings: 'not a list' }));
+  writeBuilds(dir, { templates: [goodTemplate({ build: { red: ['sample-red-tool', 'sample-red-tool-two'] } })] });
+  const result = validate(dir);
+  assert.deepEqual(result.errors.map((e) => String(e.rule)).sort(), ['15', 'shape'], result.errors.map(formatProblem).join('\n'));
+  assert.ok(result.errors.some((e) => e.rule === 15 && /has no room for "sample-red-tool-two"/.test(e.message)));
+});
+
+test('rule 15: without items.json the new file gives nothing but the missing file (no crash)', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate()], synergies: [goodSynergy()] } });
+  rmSync(path.join(dir, 'items.json'));
+  assertOnlyRule(validate(dir), 1, { file: 'items.json' });
+});
+
+// ---- rule 16: Places (each error alone)
+
+test('rule 16: a valid Place with a requires that names an entry is clean', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ requires: ['sample-key'] })] } });
+  assertClean(validate(dir));
+});
+
+test('rule 16: a Place kind that is not on the list is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ kind: 'hut' })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'bench-sample-one',
+    text: /"kind" must be one of bench, bellway, shop, npc, wishboard, arena, door, other, found "hut"/,
+  });
+});
+
+test('rule 16: a Place with no kind is an error', () => {
+  const place = goodPlace();
+  delete place.kind;
+  const dir = withFiles({ places: { places: [place] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one', text: /"kind" must be one of/ });
+});
+
+test('rule 16: a Place in a Region that does not exist is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ regionId: 'sample-no-such-region' })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'bench-sample-one',
+    text: /"regionId" lists "sample-no-such-region", which does not exist/,
+  });
+});
+
+test('rule 16: a Place whose regionId is an entry, not a Region, is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ regionId: 'sample-key' })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'bench-sample-one',
+    text: /"regionId" lists "sample-key", which is an entry id/,
+  });
+});
+
+test('rule 16: a Region id in a Place requires is an error (requires holds entry ids)', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ requires: ['sample-region-a'] })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'bench-sample-one',
+    text: /"requires" lists "sample-region-a", which is a Region id/,
+  });
+});
+
+test('rule 16: a Place requires that is not a list is a shape error naming the Place', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ requires: 'sample-key' })] } });
+  assertOnlyRule(validate(dir), 'shape', { file: 'places.json', id: 'bench-sample-one' });
+});
+
+test('rule 16: sells on an npc is an error (only a shop sells)', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ id: 'npc-sample-one', kind: 'npc', sells: ['sample-red-tool'] })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'npc-sample-one',
+    text: /"sells" is only for a shop \(kind "shop"\), found kind "npc"/,
+  });
+});
+
+test('rule 16: a shop with an empty sells is an error', () => {
+  const dir = withFiles({ places: { places: [goodShop({ sells: [] })] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'shop-sample-one', text: /"sells" is empty/ });
+});
+
+test('rule 16: a shop with no sells is an error', () => {
+  const shop = goodShop();
+  delete shop.sells;
+  const dir = withFiles({ places: { places: [shop] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'shop-sample-one', text: /"sells" is required on a shop/ });
+});
+
+test('rule 16: an entry id twice in sells is an error', () => {
+  const dir = withFiles({ places: { places: [goodShop({ sells: ['sample-red-tool-two', 'sample-red-tool-two'] })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'shop-sample-one',
+    text: /"sells" lists "sample-red-tool-two" twice/,
+  });
+});
+
+test('rule 16: an unknown id in sells is an error', () => {
+  const dir = withFiles({ places: { places: [goodShop({ sells: ['sample-no-such-entry'] })] } });
+  assertOneError(validate(dir), 16, {
+    file: 'places.json',
+    id: 'shop-sample-one',
+    text: /"sells" lists "sample-no-such-entry", which does not exist/,
+  });
+});
+
+test('rule 16: a shop that sells an entry sold elsewhere too is clean (an entry may be listed by two vendors)', () => {
+  const dir = withFiles({
+    places: { places: [goodShop(), goodShop({ id: 'shop-sample-two', name: 'Sample shop two', regionId: 'sample-region-f' })] },
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 16: a Place with no name is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ name: '' })] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one', text: /"name" must be a non-empty text/ });
+});
+
+test('rule 16: a Place with no how is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ how: '' })] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one', text: /"how" must be a non-empty text/ });
+});
+
+test('rule 16: a Place with no source is an error', () => {
+  const place = goodPlace();
+  delete place.source;
+  const dir = withFiles({ places: { places: [place] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one', text: /"source" must be a web link/ });
+});
+
+test('rule 16: an area that is not text is an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ area: 4 })] } });
+  assertOneError(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one', text: /"area" must be a non-empty text when it is given/ });
+});
+
+test('rule 10: a Place how over 300 characters is a warning, not an error', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ how: 'a'.repeat(301) })] } });
+  assertOnlyWarningRule(validate(dir), 10, { file: 'places.json', id: 'bench-sample-one' });
+});
+
+test('rule 16: a places.json with no places list is a rule 16 error naming the file', () => {
+  // A file that is there but has no list is a shape error, not a silent pass.
+  const dir = copySample();
+  writeFileSync(path.join(dir, 'places.json'), JSON.stringify({ dataVersion: 3 }));
+  assertOnlyRule(validate(dir), 16, { file: 'places.json' });
+});
+
+// ---- rule 15: a builds.json with a missing list
+
+test('rule 15: a builds.json with no synergies list is a rule 15 error naming the file', () => {
+  const dir = copySample();
+  writeFileSync(path.join(dir, 'builds.json'), JSON.stringify({ dataVersion: 3, templates: [] }));
+  assertOnlyRule(validate(dir), 15, { file: 'builds.json' });
+});
+
+// ---- rule 16: MapGenie sources (a warning, in every file)
+
+test('rule 16: a Hollow Knight MapGenie source on an entry is a warning that names the Silksong address', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').source = 'https://mapgenie.io/hollow-knight/maps/sample';
+  });
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 16, { file: 'items.json', id: 'sample-key' });
+  assert.match(result.warnings[0].message, /not under https:\/\/mapgenie\.io\/hollow-knight-silksong\//);
+});
+
+test('rule 16: a Silksong MapGenie source on an entry is not a warning', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').source = 'https://mapgenie.io/hollow-knight-silksong/maps/sample';
+  });
+  assertClean(validate(dir));
+});
+
+test('rule 16: a MapGenie source on an Ending is a warning', () => {
+  const dir = copySample();
+  edit(dir, 'endings.json', (json) => {
+    ending(json, 'sample-ending-one').source = 'https://mapgenie.io/hollow-knight/';
+  });
+  assertOnlyWarningRule(validate(dir), 16, { file: 'endings.json', id: 'sample-ending-one' });
+});
+
+test('rule 16: a MapGenie source on a template is a warning', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ source: 'https://mapgenie.io/hollow-knight/' })] } });
+  assertOnlyWarningRule(validate(dir), 16, { file: 'builds.json', id: 'sample-template-one' });
+});
+
+test('rule 16: a MapGenie source on a synergy is a warning', () => {
+  const dir = withFiles({ builds: { synergies: [goodSynergy({ source: 'https://www.mapgenie.io/hollow-knight/' })] } });
+  assertOnlyWarningRule(validate(dir), 16, { file: 'builds.json', id: 'sample-synergy-one' });
+});
+
+test('rule 16: a MapGenie source on a Place is a warning', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ source: 'https://mapgenie.io/hollow-knight/map' })] } });
+  assertOnlyWarningRule(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one' });
+});
+
+test('rule 16: a Silksong MapGenie source on a Place is not a warning', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ source: 'https://mapgenie.io/hollow-knight-silksong/maps/sample/bench' })] } });
+  assertClean(validate(dir));
+});
+
+test('rule 16: a MapGenie Silksong link written with http (not https) is still a warning (the contract names https)', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ source: 'http://mapgenie.io/hollow-knight-silksong/maps/sample' })] } });
+  assertOnlyWarningRule(validate(dir), 16, { file: 'places.json', id: 'bench-sample-one' });
+});
+
+test('rule 16: a host that only contains mapgenie.io is not MapGenie, so no warning', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ source: 'https://mapgenie.io.example.invalid/hollow-knight/' })] } });
+  assertClean(validate(dir));
+});
+
+test('rule 16: an upper-case host for the Silksong map is still the Silksong map (no warning)', () => {
+  const dir = withFiles({ places: { places: [goodPlace({ source: 'https://MapGenie.io/hollow-knight-silksong/maps/sample' })] } });
+  assertClean(validate(dir));
+});
+
+// ---- the command line for the new rules
+
+test('rule 15: the command prints a builds.json error with file, id and rule, and exits 1', () => {
+  const dir = withFiles({ builds: { templates: [goodTemplate({ crestId: 'sample-no-such-crest' })] } });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 1, run.stdout + run.stderr);
+  assert.match(run.stderr, /ERROR builds\.json, id "sample-template-one", rule 15: "crestId" lists "sample-no-such-crest"/);
+});
+
+test('rule 16: the command prints the MapGenie warning with file, id and rule, and exits 0', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').source = 'https://mapgenie.io/hollow-knight/';
+  });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stderr, /WARNING items\.json, id "sample-key", rule 16: "source" is a MapGenie page/);
+  assert.match(run.stdout, /passed.*1 warning/);
 });
