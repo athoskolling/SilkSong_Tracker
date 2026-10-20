@@ -97,7 +97,7 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 
 ### Route (`route.html`)
 - Title "Route", intro "Every step across all regions, in order. Anything waiting on something else shows what it needs."
-- Entries grouped under a Region heading ("Deep Docks", "Steps 34 to 40", "Open region"), all in `step` order.
+- Entries grouped under a Region heading ("Deep Docks" as a link to the Region page, "Steps 34 to 40"), all in `step` order.
 - **Show on the route** filter: "Only what I can do now", "Hide finished steps".
 - Spoilers on the Route: entries in a Region that is not Visited show only as a count, except the next step, which is always shown (Home names it anyway; Athos, 2026-10-20).
 - **Holding you up** rail (right on desktop, above the list on a phone).
