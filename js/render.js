@@ -1040,6 +1040,16 @@ export function renderTrackersBody(parts, view) {
             h('a', { class: 'holding-name', href: view.rosariesHref }, 'Rosaries'),
             h('p', { class: 'holding-text' }, 'Add up what the shop entries you have not bought still cost.')
           )
+        ),
+        h(
+          'li',
+          { class: 'holding-item' },
+          h(
+            'div',
+            {},
+            h('a', { class: 'holding-name', href: view.buildsHref }, 'Pick a build'),
+            h('p', { class: 'holding-text' }, 'See the Crests you own, their slots and the Tools you own for each.')
+          )
         )
       )
     ),
@@ -1424,6 +1434,360 @@ function rosaryRow(entry) {
         sourceLink(entry)
       ),
       entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+    )
+  );
+}
+
+// ------------------------------------------------------------------ builds
+
+// The Build picker: a short hero and the layout renderBuildsBody fills. Built once. Returns the two elements
+// renderBuildsBody changes (the hero's intro line differs when no Crest is owned).
+export function renderBuildsShell(app) {
+  const intro = h('p', { class: 'hero-intro' });
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h('div', { class: 'frame' }, h('h1', { class: 'hero-title' }, 'Builds'), intro)
+  );
+
+  const layout = h('div', { class: 'layout layout--route' });
+  app.replaceChildren(
+    hero,
+    h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
+  );
+  return { layout, intro };
+}
+
+// view: see runBuildsPage in builds-page.js. Like the Rosaries page, the rail (the Crest list) comes first in
+// the document, so a keyboard or screen reader user chooses the Crest before reading its slots; CSS puts it on
+// the right on a wide screen.
+export function renderBuildsBody(parts, view) {
+  parts.intro.textContent = view.intro;
+
+  if (view.noCrest) {
+    parts.layout.className = 'layout layout--route';
+    parts.layout.replaceChildren(
+      h(
+        'div',
+        { class: 'main-column' },
+        h(
+          'section',
+          { class: 'plate bd-empty', 'aria-labelledby': 'bd-empty-heading' },
+          h('h2', { class: 'plate-heading', id: 'bd-empty-heading' }, 'You do not own a Crest yet'),
+          h('p', { class: 'plate-text' }, 'Mark a Crest as done in the Crests tracker. It then appears here with its slots and the Tools you own that could go in each.'),
+          h('p', {}, h('a', { class: 'button button--primary', href: view.trackersHref }, 'Open the Crests tracker'))
+        )
+      )
+    );
+    return;
+  }
+
+  parts.layout.className = 'layout layout--route';
+  parts.layout.replaceChildren(buildsRail(view), buildsMain(view.crest));
+}
+
+function buildsRail(view) {
+  return h(
+    'aside',
+    { class: 'plate plate--rail route-rail', 'aria-label': 'Your Crests' },
+    h(
+      'div',
+      { class: 'rail-section' },
+      h('h2', { class: 'plate-heading' }, 'Your Crests'),
+      h(
+        'fieldset',
+        { class: 'bd-fieldset' },
+        h('legend', { class: 'visually-hidden' }, 'Choose a Crest'),
+        h('ul', { class: 'tk-crests' }, ...view.crests.map(crestChoice))
+      )
+    ),
+    h(
+      'div',
+      { class: 'rail-section' },
+      h('p', { class: 'tk-rail-text' }, 'Tools and Silk Skills you own: ', h('strong', {}, String(view.ownedCount)), '. Each slot lists only what you have marked as done.'),
+      h('p', { class: 'tk-rail-text' }, 'White slots take Silk Skills. Red, blue and yellow slots take Tools of that colour.'),
+      h('p', { class: 'tk-rail-text' }, h('a', { href: view.trackersHref }, 'Open the Crests tracker'))
+    )
+  );
+}
+
+function crestChoice(crest) {
+  const id = `crest-${crest.id}`;
+  return h(
+    'li',
+    { class: 'tk-crest' },
+    h('input', { type: 'radio', name: 'crest', id, value: crest.id, checked: crest.selected, 'data-action': 'pick-crest', 'data-focus-key': `crest:${crest.id}` }),
+    h(
+      'label',
+      { for: id },
+      h('span', { class: 'tk-crest-dot', 'aria-hidden': 'true' }),
+      h(
+        'span',
+        {},
+        h('span', { class: 'tk-crest-name' }, crest.name),
+        h('span', { class: 'tk-crest-sub num' }, crest.sub),
+        crest.saved ? h('span', { class: 'tk-crest-sub' }, 'Build saved') : null
+      )
+    )
+  );
+}
+
+function buildsMain(crest) {
+  const head = [
+    h('h2', { class: 'tk-crest-title', id: 'crest-title', tabindex: '-1' }, crest.name),
+    crest.meta ? h('p', { class: 'tk-crest-meta num' }, crest.meta) : null,
+  ];
+
+  if (crest.layoutUnknown) {
+    return h(
+      'div',
+      { class: 'main-column' },
+      h(
+        'section',
+        { 'aria-labelledby': 'crest-title' },
+        ...head,
+        h(
+          'div',
+          { class: 'plate bd-unknown' },
+          h('h3', { class: 'plate-subheading' }, 'Not in the guide yet'),
+          h('p', { class: 'plate-text' }, 'The slots for this Crest are not in the guide yet, so there is nothing to fill. You can still mark the Crest as done in the Crests tracker.')
+        )
+      )
+    );
+  }
+
+  return h(
+    'div',
+    { class: 'main-column' },
+    h(
+      'section',
+      { 'aria-labelledby': 'crest-title' },
+      ...head,
+      h('div', { class: 'bd-stack' }, openedSlots(crest.opened)),
+      h('h2', { class: 'list-heading list-heading--spaced' }, 'Your Build'),
+      h('div', { class: 'bd-stack' }, saveBar(crest.bar), crest.problems ? problemsCallout(crest.problems) : null),
+      h('div', { class: 'tk-slots' }, ...crest.colours.map((colour, i) => slotSection(colour, i === crest.colours.length - 1)))
+    )
+  );
+}
+
+// ---- opened slots
+
+function openedSlots(opened) {
+  const intro = h('p', { class: 'plate-text' }, 'A Memory Locket opens an extra slot on a Crest. Say how many you opened on this one. Each colour has a limit.');
+  if (!opened.limitKnown) {
+    return h(
+      'div',
+      { class: 'plate bd-opened' },
+      h('h3', { class: 'plate-subheading' }, 'Opened slots'),
+      h('p', { class: 'plate-text' }, 'How many extra slots this Crest can open is not in the guide yet, so the page does not count opened slots for it.')
+    );
+  }
+  return h(
+    'div',
+    { class: 'plate bd-opened' },
+    h('h3', { class: 'plate-subheading' }, 'Opened slots'),
+    intro,
+    h('div', { class: 'os-grid' }, ...opened.rows.map(openedRow))
+  );
+}
+
+function openedRow(row) {
+  const nameId = `os-${row.colour}`;
+  let control;
+  if (row.stepper) {
+    control = h(
+      'div',
+      { class: 'os-control', role: 'group', 'aria-labelledby': nameId },
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'os-btn',
+          'aria-label': `Open one fewer ${row.colour} slot`,
+          disabled: !row.canDown,
+          'data-action': 'step',
+          'data-colour': row.colour,
+          'data-dir': 'down',
+          'data-focus-key': `step:${row.colour}:down`,
+        },
+        h('span', { 'aria-hidden': 'true' }, '−')
+      ),
+      h('output', { class: 'os-value num', for: nameId }, String(row.opened)),
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'os-btn',
+          'aria-label': `Open one more ${row.colour} slot`,
+          disabled: !row.canUp,
+          'data-action': 'step',
+          'data-colour': row.colour,
+          'data-dir': 'up',
+          'data-focus-key': `step:${row.colour}:up`,
+        },
+        h('span', { 'aria-hidden': 'true' }, '+')
+      )
+    );
+  } else {
+    control = h('div', { class: 'os-control os-control--none', 'aria-hidden': 'true' }, '–');
+  }
+  return h(
+    'div',
+    { class: 'os-row' },
+    h('span', { class: 'os-name', id: nameId }, row.label),
+    control,
+    h('p', { class: 'os-note' }, h('span', {}, row.note), ' ', h('span', { class: 'num' }, row.count))
+  );
+}
+
+// ---- the save bar
+
+// Three looks (docs/design/trackers/addendum-builds-*.html). The status line is not a live region of its own: the
+// page script announces every change through #announcer, because this element is replaced on every render and a
+// replaced live region is not reliably read out.
+function saveBar(bar) {
+  const dot = bar.state === 'saved' ? 'bd-dot bd-dot--saved' : 'bd-dot bd-dot--open';
+  const buttons = [
+    h(
+      'button',
+      { type: 'button', class: 'button button--primary', disabled: !bar.canSave, 'data-action': 'save', 'data-focus-key': 'save' },
+      'Save this Build'
+    ),
+  ];
+  if (bar.canUndo) {
+    buttons.push(h('button', { type: 'button', class: 'button button--secondary', 'data-action': 'undo', 'data-focus-key': 'undo' }, 'Undo changes'));
+  }
+  if (bar.canRemove) {
+    buttons.push(h('button', { type: 'button', class: 'button button--secondary', 'data-action': 'remove', 'data-focus-key': 'remove' }, 'Remove saved Build'));
+  }
+  return h(
+    'div',
+    { class: `bd-bar is-${bar.state}` },
+    h(
+      'p',
+      { class: 'bd-status', id: 'bd-status', tabindex: '-1', 'data-focus-key': 'status' },
+      h('span', { class: dot, 'aria-hidden': 'true' }),
+      h('span', {}, h('strong', {}, bar.strong), ` ${bar.text}`)
+    ),
+    h('div', { class: 'button-row' }, ...buttons)
+  );
+}
+
+function problemsCallout(problems) {
+  return h(
+    'div',
+    { class: 'callout bd-problems', role: 'group', 'aria-labelledby': 'bd-problems-title' },
+    h('p', { class: 'callout-title', id: 'bd-problems-title' }, problems.title),
+    h('p', { class: 'callout-text' }, problems.text)
+  );
+}
+
+// ---- the slots
+
+function slotSection(colour, isLast) {
+  const headingId = `slot-${colour.colour}`;
+  return h(
+    'section',
+    { class: isLast ? 'route-group tk-slot is-last' : 'route-group tk-slot', 'aria-labelledby': headingId },
+    h(
+      'div',
+      { class: 'route-head' },
+      h('div', { class: 'entry-rail' }, h('span', { class: 'entry-thread', 'aria-hidden': 'true' })),
+      h(
+        'div',
+        { class: 'route-head-body' },
+        h('h3', { class: 'tk-slot-name', id: headingId }, colour.title),
+        h('span', { class: 'tk-slot-meta num' }, colour.meta)
+      )
+    ),
+    h('ol', { class: 'entries' }, ...colour.rows.map(slotRow))
+  );
+}
+
+function slotRow(row) {
+  const threadClasses = ['entry-thread'];
+  const markParts = ['mark', 'mark--bead', 'mark--static'];
+  if (row.problem) {
+    threadClasses.push('is-blocked');
+    markParts.push('is-blocked');
+  } else if (row.filled) {
+    threadClasses.push('is-clear');
+    markParts.push('is-done');
+  }
+  const rail = h(
+    'div',
+    { class: 'entry-rail' },
+    h('span', { class: threadClasses.join(' '), 'aria-hidden': 'true' }),
+    h('span', { class: markParts.join(' '), 'aria-hidden': 'true' })
+  );
+
+  const problemId = `prob-${row.key}`;
+  const problem = row.problem ? h('p', { id: problemId, class: 'entry-needs is-missing' }, row.problem) : null;
+
+  // A saved id that has no slot any more: no select, its name, a tag and a way to take it out.
+  if (row.overflow) {
+    const labelId = `lab-${row.key}`;
+    return h(
+      'li',
+      { class: 'entry' },
+      rail,
+      h(
+        'div',
+        { class: 'entry-body' },
+        h('p', { class: 'bd-label', id: labelId }, row.name, h('span', { class: 'bd-tag' }, 'No slot for it')),
+        problem,
+        h(
+          'div',
+          { class: 'bd-inline' },
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'button button--secondary button--small',
+              'aria-describedby': labelId,
+              'data-action': 'take-out',
+              'data-colour': row.colour,
+              'data-id': row.id,
+              'data-focus-key': `out:${row.colour}:${row.id}`,
+            },
+            'Take out of this Build'
+          )
+        )
+      )
+    );
+  }
+
+  const selectId = `slot-${row.key}`;
+  const select = h(
+    'select',
+    {
+      id: selectId,
+      'aria-describedby': row.problem ? problemId : null,
+      'aria-invalid': row.problem ? 'true' : null,
+      'data-action': 'pick-slot',
+      'data-colour': row.colour,
+      'data-index': row.index,
+      'data-focus-key': `slot:${row.colour}:${row.index}`,
+    },
+    ...row.options.map((option) => h('option', { value: option.value, selected: option.selected, disabled: option.disabled }, option.label))
+  );
+
+  const item = row.item;
+  return h(
+    'li',
+    { class: 'entry' },
+    rail,
+    h(
+      'div',
+      { class: 'entry-body' },
+      h('label', { class: 'bd-label', for: selectId }, row.label),
+      h('div', { class: 'bd-select' }, select),
+      problem,
+      item ? h('div', { class: 'entry-meta' }, h('span', {}, typeLabel(item.type)), sourceLink(item)) : null,
+      item && item.effect ? h('p', { class: 'entry-how' }, item.effect) : null
     )
   );
 }
