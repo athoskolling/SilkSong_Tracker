@@ -50,7 +50,7 @@ There is no build. These exist once the matching files do:
 
 ## Agents (`.claude/agents/`)
 
-`orchestrator` (Opus 5.5, high; run the project with `claude --agent orchestrator`), `dev-a` (data and logic) and `dev-b` (interface) on Sonnet 5.5 high, `qa-tests` and `qa-manual` on Haiku 5.5 `xhigh`, `tutor` on Sonnet 5.5 high (read-only; explains the project to Athos, run it in a second terminal with `claude --agent tutor`). The orchestrator logs every task in `docs/PROGRESS-LOG.md`. Workers run in git worktrees that start from the orchestrator's current `HEAD` (`.claude/settings.json`), so the orchestrator commits before spawning them. Stage 1 uses only the orchestrator and `dev-a`.
+`orchestrator` (Opus 5.5, high; run the project with `claude --agent orchestrator`), `dev-a` (logic, sync, tools), `dev-b` (interface) and `dev-c` (data content, added 2026-10-20) on Sonnet 5.5 high, `qa-tests` and `qa-manual` on Haiku 5.5 `xhigh`, `tutor` on Sonnet 5.5 high (read-only; explains the project to Athos, run it in a second terminal with `claude --agent tutor`). The orchestrator logs every task in `docs/PROGRESS-LOG.md`. Workers run in git worktrees that start from the orchestrator's current `HEAD` (`.claude/settings.json`), so the orchestrator commits before spawning them. Stage 1 uses only the orchestrator and `dev-a`.
 
 ## Style
 

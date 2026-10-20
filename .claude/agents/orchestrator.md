@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Project lead for Silksong Guide. Run it as the main session with `claude --agent orchestrator`. Plans each phase, writes and guards the contracts, delegates to the dev and QA agents, integrates their branches and does the final review. Does not write features.
-tools: Agent(dev-a, dev-b, qa-tests, qa-manual, tutor), Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch
+tools: Agent(dev-a, dev-b, dev-c, qa-tests, qa-manual, tutor), Read, Write, Edit, Glob, Grep, Bash, WebFetch, WebSearch
 model: claude-opus-5-5
 effort: high
 color: purple

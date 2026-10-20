@@ -23,6 +23,7 @@ Starts only when the vertical slice works and the contracts have been proven in 
 |---|---|---|---|
 | **Orchestrator** | `orchestrator` | Opus 5.5 (`high`) | Owns the environment. Creates the scaffold, defines the contracts, hands out tasks, integrates, resolves conflicts and does the final review. Does not write features. |
 | **Dev A: data and logic** | `dev-a` | Sonnet 5.5 (`high`) | `data/`, `requirements.js`, `progress.js`, `firebase.js`, Firestore rules. |
+| **Dev C: data content** | `dev-c` | Sonnet 5.5 (`high`) | `data/*.json` batches from approved sheets (Acts 2 and 3), so Dev A can work on logic in parallel. Added at Athos's request, 2026-10-20. |
 | **Dev B: interface** | `dev-b` | Sonnet 5.5 (`high`) | HTML, CSS, `render.js`, `main.js`, screens and accessibility. |
 | **QA 1: automated tests** | `qa-tests` | Haiku 5.5 (`xhigh`) | Logic tests and the data validator. |
 | **QA 2: manual QA and review** | `qa-manual` | Haiku 5.5 (`xhigh`) | Screen checklist, responsiveness, login flow and checking the data against the wiki. |
@@ -41,7 +42,8 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 | Path | Owner |
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
-| `data/*.json`, `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
+| `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data) |
+| `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `js/account-page.js`, `img/` | Dev B (Phase 2: `dev-a` may act as Dev B for named UI files, one task at a time, when it speeds things up; Athos, 2026-10-19) |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
