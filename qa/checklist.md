@@ -2,6 +2,8 @@
 
 Owner: QA 2 (`qa-manual`). Source: `docs/DESIGN.md` sections 5 to 8, `docs/AGENT-PLAN.md` section 8 (V1 definition of done), `docs/CONTRACTS.md` sections 3 and 5.
 
+Updated 2026-10-20 (second pass, T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
+
 Each line is one checkable statement. **Fails as** is the severity if the line fails: **critical**, **major** or **minor**. A critical line that fails stops V1.
 
 ## How to run
@@ -10,13 +12,14 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 - Check each screen at **1280 px** and at **390 px** wide (browser device mode, touch off).
 - Keyboard lines: use Tab, Shift+Tab, Enter and Space only. No mouse.
 - Use `?data=sample` for the Locked, Not in the guide yet and two-Region states. Real data has one Region today. A new game means an empty browser profile (or cleared site data).
-- Every line that changes Progress: check the stored value in the browser's localStorage key `silksong-guide:progress:v1`.
+- Every line that changes Progress: check the stored value in the browser's localStorage key `silksong-guide:progress:v1` (or `silksong-guide:progress:sample:v1` in sample mode).
 
 ## Marks used in this list
 
 - **Athos**: needs a real person with a real account, a second device, or the published site. Not run by an agent.
 - **blocked: checklist item 4**: compares data with the wiki. Not run until `docs/PHASE-0-CHECKLIST.md` item 4 (wiki license and terms) is checked.
 - **decision**: the spec does not settle the behaviour. The line cannot pass until the orchestrator (with Athos) decides; see `qa/reports/` for the open question number.
+- **decided**: the behaviour is settled by a decision recorded in `docs/DESIGN.md` or `GLOSSARY.md` (2026-10-20 or earlier). The line is checked against that decision.
 
 ---
 
@@ -33,7 +36,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | A-7 | The card that holds the next Step says "Next on the route is here". | Compare with the plate. | minor | |
 | A-8 | New game: totals read "0 of N"; no example progress appears anywhere. | Empty profile; open `/`. | major | |
 | A-9 | Every link on Home leads to a page that exists. | Click each link (Route included). | major | |
-| A-10 | The "next" plate shows the `how` of a Step whose Region has not been Visited. | Look at what the plate shows for a Step in an unvisited Region. | major | decision: open question Q1 |
+| A-10 | The "next" plate shows the name and `how` of the next Step even when its Region has not been Visited (the next Step is always shown on Home and Route). | Look at what the plate shows for a Step in an unvisited Region. | major | decided (2026-10-20, Q1 closed) |
 
 ## B. Region, Available or Visited (`region.html?id=`)
 
@@ -42,7 +45,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | B-1 | New game, Available Region: entries are hidden behind "Its entries stay hidden" and "They appear once you visit the region. Turn on show everything if you want to read ahead.", with the Visited switch. | Empty profile; open `region.html?id=moss-grotto` (real) or `sample-region-a&data=sample`. | major | |
 | B-2 | Entries appear in Step order; each shows name, "Step N", type, Sub-area when present, `how`, and a requirement line ("Needs ..." or "Needs ..., done"). | Visit the Region; read the list. | major | |
 | B-3 | Marking an entry (mouse or Enter/Space) turns its mark bronze and filled, sets aria-pressed to true and announces "Marked as done: <name>". | Mark one entry. | major | |
-| B-4 | Unmarking removes the entry from Progress; the key is deleted when nothing is left. | Mark, unmark, read localStorage. | major | |
+| B-4 | Unmarking deletes the entry's id from `done` (CONTRACTS section 1). The storage key stays, with empty maps. | Mark, unmark, read localStorage. | major | clarified 2026-10-20 (the line used to say "the key is deleted when nothing is left") |
 | B-5 | Marking any entry in the Region sets the Region Visited (Visited switch on, entries stay shown). | Empty profile: mark a Task first. | major | |
 | B-6 | Switching Visited off by hand keeps entries shown when something in the Region is done. | Mark an entry; switch Visited off. | minor | |
 | B-7 | Marking an entry that is not Available is allowed; its line changes to "Needs X, done" once X is done. | Mark a locked entry; then mark its requirement; read the line. | major | |
@@ -66,7 +69,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | C-4 | The Region itself is the last row: "Opens when the steps above are done." | Same page. | minor | |
 | C-5 | The side plate says "Its entries stay hidden" and offers only the "Show everything" switch (no Visited switch). | Same page. | minor | |
 | C-6 | "Show everything" reveals the Region's entries, each with its requirement line in order ("Needs A, B and C"). | Sample Region B, toggle on. | major | |
-| C-7 | Names of requirements that sit in another Region the player has not Visited. | Sample Region B with Sample Region A not Visited: does "Sample ability" show? | major | decision: open question Q2 |
+| C-7 | Names of requirements that sit in another Region are shown, with their Region (decided F3, 2026-10-20). The Region's own entries stay hidden. | Sample Region B with Sample Region A not Visited: "Sample ability" shows; the `how` of Sample Region B's own entries does not. | major | decided (2026-10-20, Q2 closed) |
 | C-8 | When the requirement is marked done, the Region opens (summary as intro, hero image if any, entries hidden until Visited) with no other action. | Mark "Sample ability" in Region A; open Region B. | major | |
 | C-9 | A chain of requirements is walked and listed in Step order (the whole chain, not only the last step). | Sample Region B, "Needs Sample ability, Sample key, Open the sample door and Sample shard" on "Sample charm". | major | |
 
@@ -79,9 +82,9 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | D-3 | "Only what I can do now" and "Hide finished steps" filter the list and combine. | Toggle each; both on. | major | |
 | D-4 | "Holding you up" sits to the right on desktop and above the list on a phone. | 1280 px and 390 px. | minor | |
 | D-5 | A "Can be missed" flag on missable steps, with the reason in the body. | Sample data. | major | |
-| D-6 | A "Choice point" marker appears only where the data says so. | Data with no choice point: no marker. | minor | decision: data rule open (CONTRACTS section 8) |
-| D-7 | Legend at the bottom: "A bead is a collectible ..." text, as in DESIGN section 6. | Scroll to the end. | minor | |
-| D-8 | Route entries from a Region not yet Visited: shown, or hidden with "Show everything". | Sample data, empty profile. | major | decision: open question Q1 |
+| D-6 | A "Choice point" marker appears only where the data says so. | Data with no choice point: no marker. | minor | decision: the marker is not built and its data rule is open (CONTRACTS section 8) |
+| D-7 | Legend at the bottom: "A bead is a collectible ..." text, as in DESIGN section 6. At 390 px the rail moves above the list, so the legend is above the list too: the decision is which one wins. | Scroll to the end at 1280 px; read the position at 390 px. | minor | decision: legend position on a phone (Q8, new 2026-10-20) |
+| D-8 | Route entries from a Region not yet Visited show as a count ("N entries hidden until you visit this region"); the next Step is always shown (DESIGN section 6, decided 2026-10-20). | Sample data, empty profile. | major | decided (2026-10-20, Q1 closed) |
 
 ## E. Account, signed out (`account.html`)
 
@@ -104,7 +107,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | E-15 | "Guide data" shows the data version and the number of Regions, read from `data/`. | Compare with `data/regions.json`. | minor | |
 | E-16 | Footer line reads "Saved on this device." when signed out. | Read the footer. | minor | |
 | E-17 | The start thread does not cross the intro's text at 1280 px or at 390 px. | Look at the intro line on both widths. | minor | |
-| E-18 | Hero art: the Account hero and the Locked Region hero follow the picture in DESIGN (`05`, `03`) or the design owner accepts a plain gradient. | Compare with the PNGs. | minor | decision: open question Q4 |
+| E-18 | Hero art: the Account hero and the Locked Region hero are the plain gradient (decided F9, DESIGN section 5, 2026-10-20). The pictures in DESIGN `05` and `03` are not built. | Compare with the PNGs. | minor | decided (2026-10-20, Q4 closed) |
 
 ## F. Account, signed in (Athos)
 
@@ -123,7 +126,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | G-2 | Region hero is 380 px tall with the slanted edge; the title is smaller and nothing is clipped. | Sample Region A at 390 px. | minor | |
 | G-3 | Entry marks have a hit area of at least 44 by 44 px. | Measure a mark button. | major | |
 | G-4 | The keyboard focus ring on an entry mark is fully visible (not cut off at the left edge). | 390 px, Tab to the first entry mark. | major | |
-| G-5 | Totals plate position: after the list (DESIGN section 6 text) or before it (DESIGN PNG 07). | Compare. | minor | decision: open question Q3 |
+| G-5 | Totals plate position on a phone: after the list (DESIGN section 6 text, decided F7, 2026-10-20). | Read the order at 390 px. | minor | decided (2026-10-20, Q3 closed) |
 | G-6 | Start thread does not cross the intro text on Region or Account. | Look at both pages. | minor | |
 
 ## H. Progress and backup (theme)
@@ -133,12 +136,12 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | H-1 | New game starts empty: nothing marked, no Region Visited, no localStorage key. | Empty profile; open a Region and Account. | major | |
 | H-2 | Mark and unmark survive a reload. | Mark; reload; unmark; reload. | critical | |
 | H-3 | Stored Progress has `done`, `visited`, `updatedAt` (number) and `dataVersion`; `syncedUid` is absent while signed out. | Read localStorage after a change. | major | |
-| H-4 | Progress survives closing and reopening the browser. | Close the browser; reopen the page. | major | not run in this pass |
+| H-4 | Progress survives closing and reopening the browser. | Close the browser; reopen the page. | major | run in the second pass (2026-10-20) |
 | H-5 | An exported file imports back into an empty profile and gives the same Progress. | E-9, then import into a new profile (E-10). | critical | |
 | H-6 | Import is a union: it never removes a done or visited mark, and the message counts match. | Import a file with fewer entries than the profile has. | critical | |
 | H-7 | A rejected file leaves Progress unchanged. | E-11 with Progress set. | major | |
 | H-8 | Ids that no longer exist in `data/` are kept in Progress, not dropped. | Store an unknown id; reload; read storage. | minor | |
-| H-9 | Using `?data=sample` never writes sample ids into the real Progress. | Mark a sample entry; open a real page; read storage. | minor | open question Q5 |
+| H-9 | Using `?data=sample` never writes sample ids into the real Progress; sample mode writes only `silksong-guide:progress:sample:v1` (decided, T16 and T17). | Mark a sample entry; open a real page; read storage. | minor | decided (2026-10-20, Q5 closed) |
 | H-10 | Local Progress survives a failed cloud write (signed in or with the cloud blocked): local change stays and the sync line says so. | Block the Firestore host and mark an entry. | critical | Athos for the signed-in case |
 
 ## I. Sign-in and sync between two browsers (Athos)
@@ -161,7 +164,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | J-2 | Visited is set by hand (switch) and automatically (marking any entry); the switch shows the state. | Both paths. | major | |
 | J-3 | Marking an entry out of order is allowed and the guide says what it needed. | B-7. | major | |
 | J-4 | Locked Regions hide their own entries and summary (C-2). | C-2. | major | |
-| J-5 | Requirement names from unvisited Regions follow the rule that the spec settles (C-7, D-8, A-10). | C-7. | major | decision: open question Q2 |
+| J-5 | Requirement names from unvisited Regions are shown (decided F3); the Region's own entries stay hidden (C-7, A-10, D-8). | C-7. | major | decided (2026-10-20, Q2 closed) |
 
 ## K. Accessibility (theme)
 
@@ -175,12 +178,12 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | K-6 | The live region announces "Marked as done", "Marked as not done" and "could not be saved" messages; the sync line is `role="status"`. | Read the DOM and the announcements. | major | |
 | K-7 | One h1 per page; landmarks header, nav (labelled Main), main and footer. | Read the DOM. | minor | |
 | K-8 | The decorative hero image has `alt=""`; any other image has alt text. | Read the DOM. | minor | |
-| K-9 | No state is carried by colour alone: done (bronze fill and state text), next (ring and "Next on the route"), blocked (dashed mark and "Needs ..."), missable ("Can be missed"). | Look with colour ignored. | major | |
+| K-9 | No state is carried by colour alone: done (solid bronze mark against the hollow one, the shape DESIGN section 8 accepts), next (ring and "Next on the route"), blocked (dashed mark and "Needs ..."), missable ("Can be missed"). The Region row has no word "Done". | Look with colour ignored. | major | wording clarified 2026-10-20 |
 | K-10 | Body text and labels reach 4.5 to 1 contrast against their background. | Compute from the tokens (report, table of pairs). | major | |
-| K-11 | Focus rings, bead and knot borders, the thread and the switch reach 3 to 1 against their background. | Compute from the tokens. | minor (decorative) / major (focus ring) | |
+| K-11 | Focus rings, bead and knot borders, the thread and the switch reach 3 to 1 against their background. Accepted below 3 to 1 (DESIGN section 3, 2026-10-20): ivory plate border (30%), next-step plate border (silk 60%), the empty Region card border, the bar track, the switch track when off. | Compute from the tokens. | minor (decorative) / major (focus ring) | accepted pairs decided (F8, 2026-10-20) |
 | K-12 | With `prefers-reduced-motion: reduce`, the start thread does not animate and no transition runs. | Emulate the setting; read the computed animation. | major | |
-| K-13 | Text can be enlarged to 200 percent without losing content or controls. | Browser zoom 200 percent on each page. | major | not run in this pass |
-| K-14 | Hero title and intro reach 4.5 to 1 over the image. | Sample the image pixels behind the text. | minor | not run in this pass |
+| K-13 | Text can be enlarged to 200 percent without losing content or controls. | Browser zoom 200 percent on each page. | major | run in the second pass (2026-10-20), approximated by viewport width |
+| K-14 | Hero title and intro reach 4.5 to 1 over the image (the title, as large text, 3 to 1). | Sample the image pixels behind the text. | minor | run in the second pass (2026-10-20) |
 | K-15 | The page works with a screen reader (names, states and live messages read correctly). | Screen reader on Region and Account. | major | Athos |
 
 ## L. Copy and glossary (theme)
@@ -188,7 +191,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | ID | Check (expected) | How to check | Fails as | Note |
 |---|---|---|---|---|
 | L-1 | The glossary words appear for their meaning: Collectible, Task, Region, Route, Step, Available, Locked, Visited, Progress. | Read the copy. | minor | |
-| L-2 | "item", "zone", "unlocked", "quest", "explored", "discovered" and "disabled" are not used for these; "save" is not used for Progress. | Search the copy. | minor | decision: open question Q6 ("saved" is in DESIGN copy) |
+| L-2 | "item", "zone", "unlocked", "quest", "explored", "discovered" and "disabled" are not used for these; "save" is not used as a noun for Progress (the verb is fine). | Search the copy. | minor | decided (GLOSSARY and F10, 2026-10-20: "saved" as a verb is fine; Q6 closed) |
 | L-3 | Sentence case; no all-caps labels. | Read each screen. | minor | |
 | L-4 | Errors say what happened and what to do next, with no apology. | Trigger each error (E-3, E-4, E-8, E-11). | minor | |
 | L-5 | Interface copy for each state matches DESIGN section 6 wording. | Compare with the PNG for each screen. | minor | |
@@ -205,7 +208,7 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | M-4 | Scripts come only from the site, and from the Firebase SDK at one pinned version (only `js/firebase.js` imports it). Fonts come from the Google Fonts stylesheet (DESIGN section 4). | Read the script and link tags; list network hosts. | major | |
 | M-5 | No console errors and no failed requests on load (favicon counted until M-6 is fixed). | Devtools log on each page. | major | |
 | M-6 | A favicon is served or linked, so no 404 for `/favicon.ico` on every load. | Server log. | minor | |
-| M-7 | The published site serves the same pages and sign-in works on its domain. | Open the published address; sign in. | major | Athos |
+| M-7 | The published site serves the same pages and sign-in works on its domain. | Open the published address; sign in. | major | Athos (pages part run in the second pass) |
 | M-8 | Home and Route link only to pages that exist (A-9, D-1). | Click every link. | major | |
 
 ## N. Data attribution and data checks (theme)
@@ -219,11 +222,11 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | N-5 | `missable: true` has a `missableNote`. | Read the files. | major | |
 | N-6 | Each hero image has `heroCredit`, ends in `.jpg` or `.png` and the file exists. | Read the files; check the path. | major | |
 | N-7 | No `how` is over 300 characters (the validator warns; a long text may be pasted wiki text). | Count characters. | minor | |
-| N-8 | `node scripts/validate-data.js` passes, and `node scripts/validate-data.js data/sample` passes. | Run both. | critical | the validator does not exist yet |
+| N-8 | `node scripts/validate-data.js` passes, and `node scripts/validate-data.js data/sample` passes. | Run both. | critical | |
 | N-9 | No cycle in `requires` (validator rule; the requirements tests cover the cycle function). | Run `node --test tests/`; run the validator. | major | |
 | N-10 | Five Endings are stored in V1, each with `conditions`, `locksOut` and `source`. | Read `data/endings.json`. | major | Phase 3: the file is empty today |
 | N-11 | No `sample-` id appears in `data/`. | Search `data/`. | major | |
-| N-12 | Data sources and attribution are shown in the interface: the footer attribution line and a way to reach each entry's `source`. | Read the footer; look for a link to each entry's source. | major | |
+| N-12 | Data sources and attribution are shown in the interface: the footer attribution line and a link to each shown entry's `source` (decided Q7, 2026-10-20, T15). | Read the footer; look for a link to each entry's source. | major | |
 | N-13 | Each entry's `how`, `requires`, `missable`, `step` and `source` agree with the entry's own source page. | Read the source page, one page at a time. | major | blocked: checklist item 4 |
 | N-14 | Region summaries and Region requirements agree with the source. | Same. | major | blocked: checklist item 4 |
 | N-15 | Text is in our own words; no sentence is pasted from the wiki. | Compare the text with the source page. | major | blocked: checklist item 4 |
@@ -240,10 +243,18 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 
 ## Open questions this checklist depends on
 
-- **Q1**: On Home and Route, may a Step show its `how` (and its entry name) when its Region has not been Visited? (A-10, D-8.)
-- **Q2**: Locked and "Needs" lines name requirements that sit in a Region the player has not Visited. Is that allowed, given "Collectibles in Regions that are not Visited stay hidden"? (C-7, J-5.)
-- **Q3**: On a phone, is the "Your thread here" plate after the entry list (DESIGN text) or before it (DESIGN PNG 07)? (G-5.)
-- **Q4**: Hero art on the Locked and Account pages: the PNGs show an illustration; the code uses a plain gradient. (E-18.)
-- **Q5**: Should `?data=sample` use its own Progress key? (H-9.)
-- **Q6**: "Save" for Progress: CLAUDE.md rule 1 says avoid it; DESIGN copy says "Your progress is saved on this device". (L-2.)
-- **Q7**: Where do the data sources and attribution appear: a footer line only, a link from each entry to its `source`, or both? (N-12.)
+Closed on 2026-10-20 (decisions recorded in `docs/DESIGN.md`, `GLOSSARY.md` and `docs/PROGRESS-LOG.md`):
+
+- **Q1** (closed): the next Step always shows its name and `how`, also in a Region not Visited; the rest of an unvisited Region is a count on the Route. (A-10, D-8.)
+- **Q2** (closed): requirement names from other Regions show on Locked pages and in "Needs" lines (F3); a Region's own entries stay hidden. (C-7, J-5.)
+- **Q3** (closed): on a phone the totals plate comes after the entry list (F7). (G-5.)
+- **Q4** (closed): plain gradient heroes on the Locked and Account pages (F9). (E-18.)
+- **Q5** (closed): sample mode uses its own Progress key (T16, T17). (H-9.)
+- **Q6** (closed): "saved" as a verb is fine for Progress (F10, GLOSSARY). (L-2.)
+- **Q7** (closed): a footer attribution line and a Source link per shown entry (T15). (N-12.)
+
+Still open:
+
+- **Q8** (new): on a phone, is the legend ("A bead is a collectible ...") at the bottom of the page (DESIGN section 6 Route text) or above the list with the filter rail (DESIGN section 6 "rail above the list on a phone")? (D-7.)
+- **CONTRACTS section 8**: the data rule for the Route's "Choice point" marker (D-6), and what the three `spoiler` levels mean (assumed: hidden-until-Visited only).
+- **N-16**: `silk-spear`'s Source points at the Moss Grotto Region page, not an entry page (Athos decides).
