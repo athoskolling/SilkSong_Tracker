@@ -1,7 +1,7 @@
 # First pass: Region, Account and redirect (2026-10-19)
 
 - Task: T13 (Phase 2). Branch: `qa-manual/checklist`. Run by QA 2 (`qa-manual`).
-- Checklist used: `qa/checklist.md` (140 lines; 16 marked Athos, 5 marked blocked).
+- Checklist used: `qa/checklist.md` (140 lines; 18 name Athos as the one who runs them, 4 blocked by checklist item 4).
 - Commits: first pass on `main` at `2d47b79` ("Phase 2 setup"), as the task asks. During the run `origin/main` moved to `0d32c33` (T10 Home and Route, T11 Account backup and new-run sections, and `19667f3` "start thread no longer runs over the intro at 390px"). I re-ran the Region and Account checks against `0d32c33` (exported with `git archive`, served from a scratch folder). Both results are below. Home and Route lines were not run in this pass.
 - Result in one line: **0 critical, 3 major, 7 minor findings** on what I ran. Nothing that I ran is a critical failure. Most of V1 is not reachable by an agent (sign-in, two devices, published site), so V1 cannot be called done from this pass.
 
@@ -199,7 +199,7 @@ Scratch root: `/tmp/claude-1000/-home-afros-Projects-SilkSong-Tracker/9595a567-7
 
 ## 10. Handoff
 
-- Checklist lines: 140 in `qa/checklist.md` (16 marked Athos, 5 blocked by checklist item 4).
+- Checklist lines: 140 in `qa/checklist.md` (18 name Athos, 4 blocked by checklist item 4).
 - Findings: 0 critical, 3 major (F1, F2, F3), 7 minor (F4 to F10). F3 and F7, F9, F10 need a decision before the owner can act.
 - Top three for the owners: F1 (Dev B, focus ring at 390 px), F2 (Dev B, no data attribution in the interface; placement is a decision), F3 (orchestrator and Athos, requirement names from unvisited Regions).
 - Phase 0 items 8 and 9 and item 4 remain open; item 4 blocks every wiki check.
