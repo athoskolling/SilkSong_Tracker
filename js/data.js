@@ -26,7 +26,9 @@ async function loadFile(folder, name) {
   const path = `${folder}/${name}.json`;
   let response;
   try {
-    response = await fetch(siteUrl(path));
+    // no-cache = ask the server if the file changed (cheap, uses the ETag), so a content update
+    // shows on the next load instead of after GitHub Pages' ten-minute browser cache.
+    response = await fetch(siteUrl(path), { cache: 'no-cache' });
   } catch {
     throw new DataLoadError(
       `Guide data could not be loaded: ${path} could not be reached. Check your connection and reload the page.`
