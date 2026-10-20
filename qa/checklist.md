@@ -2,7 +2,7 @@
 
 Owner: QA 2 (`qa-manual`). Source: `docs/DESIGN.md` sections 5 to 8, `docs/AGENT-PLAN.md` section 8 (V1 definition of done), `docs/CONTRACTS.md` sections 3 and 5.
 
-Updated 2026-10-20 (second pass, T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
+Updated 2026-10-20 (third pass, T22): the wiki lines (N-13, N-14, N-15, N-17) follow the item 4 decision in `docs/PHASE-0-CHECKLIST.md`; no line assumes a draft script or bulk reading. Earlier: second pass (T18). Lines whose behaviour the decisions of 2026-10-20 settled are changed here, with the decision named in the line. Results of each run are in `qa/reports/`, not in this file.
 
 Each line is one checkable statement. **Fails as** is the severity if the line fails: **critical**, **major** or **minor**. A critical line that fails stops V1.
 
@@ -16,8 +16,8 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 
 ## Marks used in this list
 
-- **Athos**: needs a real person with a real account, a second device, or the published site. Not run by an agent.
-- **blocked: checklist item 4**: compares data with the wiki. Not run until `docs/PHASE-0-CHECKLIST.md` item 4 (wiki license and terms) is checked.
+- **Athos**: needs a real person with a real account, a second device, the published site, or a wiki page compared by hand. Not run by an agent.
+- **wiki by hand**: compares an entry or a Region with its main wiki page (hollowknight.wiki). Athos does it himself, in his browser, one page at a time, as decided in `docs/PHASE-0-CHECKLIST.md` item 4 (2026-10-20). Rules: no agent fetches hollowknight.wiki (it answers bots with HTTP 403) or Fextralife (its terms forbid automated access); nobody reads the wiki in bulk; no draft script runs. QA 2 may run only the web search steps a line names: it searches, and it does not open a hit. A hit goes into the report for Athos to read by hand. Other guides are for cross-checking a fact, never the text we rewrite.
 - **decision**: the spec does not settle the behaviour. The line cannot pass until the orchestrator (with Athos) decides; see `qa/reports/` for the open question number.
 - **decided**: the behaviour is settled by a decision recorded in `docs/DESIGN.md` or `GLOSSARY.md` (2026-10-20 or earlier). The line is checked against that decision.
 
@@ -227,11 +227,11 @@ Each line is one checkable statement. **Fails as** is the severity if the line f
 | N-10 | Five Endings are stored in V1, each with `conditions`, `locksOut` and `source`. | Read `data/endings.json`. | major | Phase 3: the file is empty today |
 | N-11 | No `sample-` id appears in `data/`. | Search `data/`. | major | |
 | N-12 | Data sources and attribution are shown in the interface: the footer attribution line and a link to each shown entry's `source` (decided Q7, 2026-10-20, T15). | Read the footer; look for a link to each entry's source. | major | |
-| N-13 | Each entry's `how`, `requires`, `missable`, `step` and `source` agree with the entry's own source page. | Read the source page, one page at a time. | major | blocked: checklist item 4 |
-| N-14 | Region summaries and Region requirements agree with the source. | Same. | major | blocked: checklist item 4 |
-| N-15 | Text is in our own words; no sentence is pasted from the wiki. | Compare the text with the source page. | major | blocked: checklist item 4 |
+| N-13 | Each entry's `how`, `requires`, `missable`, `step` and `source` agree with the entry's main wiki page. | Athos opens that page in his browser and compares the entry by hand, one page at a time. If no wiki page covers the entry, he says so in the report. QA 2 does not run this. Open question Q9 (`step`) and Q10 (`source` on other sites). | major | Athos. Wiki by hand (item 4, 2026-10-20) |
+| N-14 | Region summaries and Region requirements agree with the main wiki page for that Region. | Athos opens the Region page in his browser and compares the summary and the `requires` by hand. QA 2 does not run this. `regions.json` has no `source` field, so the report names the page used (open question Q11). | major | Athos. Wiki by hand (item 4, 2026-10-20) |
+| N-15 | Text is in our own words; no sentence is pasted from the wiki. | Athos reads each `how` and Region `summary` next to its main wiki page and judges by hand. QA 2 first pass, by search only: for each `how` and summary, search one exact phrase of 6 to 8 words from its middle, in quotation marks, and note the entry id, the query and any hit address. A hit is a flag, not a verdict. Search finds exact matches only, so no hit does not show that the text is ours. The report does not copy the matching text; it names the id and the address, and Athos reads the hit by hand. | major | Athos. Wiki by hand; QA 2 runs the search pass |
 | N-16 | Each entry's `source` links to a page about that entry, not only to its Region's page. | Read the URLs. | minor | Athos decides |
-| N-17 | Per batch, at least 10 percent of entries and never fewer than 5 (across Regions) are checked against the source. | Pick the sample; record the picks. | major | blocked: checklist item 4 |
+| N-17 | Per batch, at least 10 percent of entries (rounded up) and never fewer than 5, spread across Regions, are checked against the main wiki. | Athos picks the entries and checks each one by hand (the N-13 method). QA 2 records the picked ids, the count per Region, the batch's entry count and the batch total in `qa/reports/`. A batch with fewer than 5 entries cannot meet the minimum: open question Q12. | major | Athos picks and checks. QA 2 records the picks. Wiki by hand (item 4, 2026-10-20) |
 
 ---
 
@@ -252,9 +252,14 @@ Closed on 2026-10-20 (decisions recorded in `docs/DESIGN.md`, `GLOSSARY.md` and 
 - **Q5** (closed): sample mode uses its own Progress key (T16, T17). (H-9.)
 - **Q6** (closed): "saved" as a verb is fine for Progress (F10, GLOSSARY). (L-2.)
 - **Q7** (closed): a footer attribution line and a Source link per shown entry (T15). (N-12.)
+- **Item 4** (decided 2026-10-20, `docs/PHASE-0-CHECKLIST.md`): no draft script; wiki comparisons are done by Athos by hand; agents never fetch hollowknight.wiki or Fextralife. (N-13, N-14, N-15, N-17.)
 
 Still open:
 
 - **Q8** (new): on a phone, is the legend ("A bead is a collectible ...") at the bottom of the page (DESIGN section 6 Route text) or above the list with the filter rail (DESIGN section 6 "rail above the list on a phone")? (D-7.)
 - **CONTRACTS section 8**: the data rule for the Route's "Choice point" marker (D-6), and what the three `spoiler` levels mean (assumed: hidden-until-Visited only).
 - **N-16**: `silk-spear`'s Source points at the Moss Grotto Region page, not an entry page (Athos decides).
+- **Q9** (new, 2026-10-20, N-13): the wiki gives no Route position, so `step` cannot be compared with it. Proposal: N-13 compares `how`, `requires` and `missable` with the wiki, and `step` is checked against the Route Athos wrote (N-4). Athos decides.
+- **Q10** (new, 2026-10-20, N-13 and N-16): `moss-mother` links `source` to a Fextralife page, and `silk-spear` to the Moss Grotto Region page on Fextralife. The item 4 decision names the main wiki as the page to compare with. Athos decides whether these links change; the change to `data/` is dev-a's (owner of `data/*.json`).
+- **Q11** (new, 2026-10-20, N-14): `regions.json` has no `source` field (CONTRACTS section 1), so a Region has no recorded page to compare with. Proposal: the report names the wiki page used for each Region; a Region `source` field would be a contract change for the orchestrator. Athos decides.
+- **Q12** (new, 2026-10-20, N-17): a batch with fewer than 5 entries cannot meet "never fewer than 5". Proposal: check every entry in that batch. Athos decides.
