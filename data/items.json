@@ -1,5 +1,5 @@
 {
-  "dataVersion": 3,
+  "dataVersion": 4,
   "items": [
     {
       "id": "moss-mother",
@@ -45,10 +45,10 @@
       "kind": "collectible",
       "type": "spool-fragment",
       "regionId": "moss-grotto",
-      "how": "In a trap room east of the lift.",
+      "how": "Behind a breakable wall in the mossy rooms above Bone Bottom: from the Mosshome lift go right and break the weak wall in the left corner of the next room. Guides give different routes.",
       "requires": [],
       "step": 30,
-      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+      "source": "https://hollowknight.wiki/w/Spool_Fragment"
     },
     {
       "id": "druids-eye",
@@ -383,10 +383,10 @@
       "type": "silk-skill",
       "regionId": "greymoor",
       "area": "Craw Lake",
-      "how": "Survive the crows' gauntlet at Craw Lake, then pogo up outside to the effigy.",
+      "how": "Win the bird fights in the building at Craw Lake, pull the lever so balloons appear, then pogo up them to the Weaver statue at the top right of Greymoor.",
       "requires": [],
       "step": 300,
-      "source": "https://game-checklists.com/silksong/greymoor.html"
+      "source": "https://silksongwiki.com/database/abilities-and-moveset/thread-storm/"
     },
     {
       "id": "reaper-crest",
@@ -549,12 +549,12 @@
       "kind": "task",
       "type": "quest",
       "regionId": "bellhart",
-      "how": "Frey's wish: find the courier Tipp, last seen in lower Shellwood.",
+      "how": "Frey's wish at the Bellhart Wishwall: follow the goods Tipp dropped, starting in lower Shellwood, to find him. Guides disagree on where he ends up; return to the Bellhart shopkeeper after you talk to him.",
       "requires": [
         "widow"
       ],
       "step": 440,
-      "source": "https://game-checklists.com/silksong/bellhart.html"
+      "source": "https://hollowknight.wiki/w/Couriers_Tipp_&_Pill"
     },
     {
       "id": "spool-fragment-bellhart",
@@ -629,12 +629,12 @@
       "type": "crest",
       "regionId": "moss-grotto",
       "area": "Bonegrave",
-      "how": "In the Chapel of the Wanderer at Bonegrave; reach it with Cling Grip.",
+      "how": "In the Chapel of the Wanderer at Bonegrave, west of the Ruined Chapel; you fight a few waves of enemies for it. Cling Grip gets you there down the main funnel in Bone Bottom; guides also describe a way in with a Simple Key through the Wormways.",
       "requires": [
         "cling-grip"
       ],
       "step": 500,
-      "source": "https://game-checklists.com/silksong/moss-grotto.html"
+      "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/550148"
     },
     {
       "id": "mask-shard-wormways",
