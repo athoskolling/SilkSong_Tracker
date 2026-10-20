@@ -281,6 +281,14 @@
 
 .entry-mark:hover .mark:not(.is-done) { border-color: var(--silk); }
 
+/* The focus ring goes around the mark, not around the 44px hit area. On a phone the hit area starts
+   2px from the screen edge, so a ring drawn at its edge (2px line + 3px offset) lost its left side.
+   Around the 16px mark the ring starts 11px from the edge, and the thread stays where it was. */
+.entry-mark:focus-visible { outline: none; }
+.entry-mark:focus-visible .mark { outline: 2px solid var(--silk); outline-offset: 3px; }
+/* The "next" mark already wears a silk ring 5 to 7px out; the focus ring sits just outside it. */
+.entry-mark:focus-visible .mark.is-next { outline-offset: 9px; }
+
 .entry-body { flex: 1 1 auto; min-width: 0; }
 
 .entry--next .entry-body {

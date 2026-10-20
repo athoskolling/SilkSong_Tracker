@@ -123,7 +123,7 @@ async function loadGuide(app) {
   const data = await loadOrExplain(app);
   if (!data) return null;
   const { regions, items, dataVersion, sample } = data;
-  configureProgress({ items, dataVersion });
+  configureProgress({ items, dataVersion, sample });
 
   const itemsById = new Map(items.map((item) => [item.id, item]));
   const regionsById = new Map(regions.map((region) => [region.id, region]));
@@ -535,6 +535,7 @@ async function startAccountPage() {
       user: state.user,
       syncText: syncText(state.status),
       combined: state.combined,
+      sample: isSampleMode(),
     });
     focusByKey(key);
   }
@@ -632,8 +633,8 @@ async function startAccountPage() {
   // Content data is only needed so progress.js can stamp dataVersion and mark Regions Visited; a
   // data problem must not stop anyone from signing in.
   try {
-    const { items, dataVersion } = await loadData();
-    configureProgress({ items, dataVersion });
+    const { items, dataVersion, sample } = await loadData();
+    configureProgress({ items, dataVersion, sample });
   } catch (error) {
     console.error(error);
   }

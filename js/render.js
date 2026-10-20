@@ -852,6 +852,10 @@ function emailForm(view, { label, action, buttonText }) {
 
 function signedOutParts(view) {
   return [
+    // Sample mode keeps Progress apart and never syncs; say so before the buttons, so nobody wonders.
+    view.sample
+      ? h('p', { class: 'plate-text' }, 'Sample mode never syncs. Its progress stays on this device and is kept apart from your real Progress.')
+      : null,
     h(
       'p',
       { class: 'plate-text' },
@@ -880,7 +884,7 @@ function signedOutParts(view) {
       { class: 'plate-section--rule' },
       emailForm(view, { label: 'Or get a sign-in link by email', action: 'send-link', buttonText: 'Email me the link' })
     ),
-  ];
+  ].filter(Boolean); // replaceChildren would print a null as text
 }
 
 // The link was opened on a device that does not remember the address it was sent to.
