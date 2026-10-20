@@ -22,7 +22,7 @@ Starts only when the vertical slice works and the contracts have been proven in 
 | Role | Claude Code agent | Model | Responsibility |
 |---|---|---|---|
 | **Orchestrator** | `orchestrator` | Opus 5.5 (`high`) | Owns the environment. Creates the scaffold, defines the contracts, hands out tasks, integrates, resolves conflicts and does the final review. Does not write features. |
-| **Dev A: data and logic** | `dev-a` | Sonnet 5.5 (`high`) | `data/`, `requirements.js`, `progress.js`, `firebase.js`, Firestore rules. |
+| **Dev A: data and logic** | `dev-a` | Sonnet 5.5 (`high`) | `data/`, `requirements.js`, `progress.js`, `firebase.js`, Firestore rules; in Phase 5 also `builds.js` and the save file reader. |
 | **Dev C: data content** | `dev-c` | Sonnet 5.5 (`high`) | `data/*.json` batches from approved sheets (Acts 2 and 3), so Dev A can work on logic in parallel. Added at Athos's request, 2026-10-20. |
 | **Dev B: interface** | `dev-b` | Sonnet 5.5 (`high`) | HTML, CSS, `render.js`, `main.js`, screens and accessibility. |
 | **QA 1: automated tests** | `qa-tests` | Haiku 5.5 (`xhigh`) | Logic tests and the data validator. |
@@ -43,10 +43,10 @@ Main rule: **every file has exactly one owner**. Nobody edits another owner's fi
 |---|---|
 | `README.md`, `CLAUDE.md`, `docs/`, `docs/CONTRACTS.md`, folder structure, `.claude/` | Orchestrator |
 | `data/*.json` | Dev C (from 2026-10-20; Dev A may still edit it when a task names it and Dev C is not working on data). In Phase 5 Dev C adds the tracker content (`counts`, `price`, `toolColor`) from approved sheets only |
-| `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
+| `tools/*`, `js/requirements.js`, `js/progress.js`, `js/firebase.js`, `js/firebase-emulator.js`, `js/firebase-config.js`, `js/builds.js` (Phase 5), `firestore.rules`, `firebase.json` | Dev A (`requirements.js` delegated by Athos on 2026-10-19; he reviews it. Data facts come from Athos and the wiki) |
 | `index.html`, `region.html`, `route.html`, `account.html`, `css/*`, `js/main.js`, `js/render.js`, `js/data.js`, `js/account-page.js`, `img/` | Dev B (Phase 2: `dev-a` may act as Dev B for named UI files, one task at a time, when it speeds things up; Athos, 2026-10-19) |
-| Phase 5 interface: the Trackers page, the Build picker and any page script they need (names come with the mockups), and the Phase 5 mockup files (in the folder Dev B's mockup task names; an exception to the orchestrator owning `docs/`) | Dev B (the orchestrator names the exact files in the task; mockups need Athos's review before code) |
-| Phase 5 save file reader (a pure module that turns a save file into entry ids; name set when the research spike ends) | Dev A |
+| Phase 5 interface: `trackers.html`, `rosaries.html`, `builds.html`, `js/trackers-page.js`, `js/rosaries-page.js`, `js/builds-page.js`, any new stylesheet they need, and the Phase 5 mockup files in `docs/design/trackers/` (an exception to the orchestrator owning `docs/`) | Dev B (the orchestrator names the exact files in each task; mockups need Athos's review before code) |
+| Phase 5 save file reader (a pure module that turns a save file into entry ids; name set when the research spike ends) and its read-only preview page (Dev A acting as Dev B for that one page, named in the task) | Dev A |
 | `tests/*`, `scripts/validate-data.js` | QA 1 |
 | `qa/checklist.md`, `qa/reports/*` | QA 2 |
 | `docs/PROGRESS-LOG.md` | Orchestrator (the tutor only reads it) |
@@ -60,7 +60,8 @@ The orchestrator writes this file **before** releasing parallel work. The contra
 Summary (the exact signatures and data shapes are in `docs/CONTRACTS.md`):
 
 - `requirements.js`: `isAvailable`, `missingFor`, `regionProgress`, `isRegionAvailable`, `missingForRegion`, `nextStep`, `holdingYouUp`, and from Phase 5 `isCounted` and `rosariesToSpend`
-- `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`)
+- `progress.js`: `configureProgress`, `loadProgress`, `setDone`, `setVisited`, `onProgressChange`, `onSyncStatus`, `exportProgress`, `importProgress`, `mergeLocalAndCloud`, `clearProgress` (plus the test seams `useStorage` and `useCloud`), and from Phase 5 `setCrestSlots`, `setBuild` and `setShellShards` (provisional)
+- `builds.js` (Phase 5, pure): `slotsFor`, `ownedByColour`, `checkBuild`
 - `firebase.js`: `signIn`, `completeEmailLinkSignIn`, `signOut`, `onAuthChange`; and, for `progress.js` only, `readProgressDoc`, `writeProgressDoc`, `deleteProgressDoc`, `watchProgressDoc`
 
 The interface uses only these functions. It does not touch Firestore or localStorage, and does not read requirement JSON on its own.
@@ -98,9 +99,9 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Repeat until the checklist passes.
 
 **Phase 5: The full tracker (Athos, 2026-10-20; before the Act 2 and Act 3 data)**
-- Plan, order and task briefs: `docs/PHASE-5-FULL-TRACKER-PLAN.md`. Contract changes: `docs/CONTRACTS.md` section 7; why: ADR 0005.
+- Plan, order and task briefs: `docs/PHASE-5-FULL-TRACKER-PLAN.md` (P5-1 to P5-4, then P5-5 to P5-24 after Athos's second answers). Contract changes: `docs/CONTRACTS.md` section 7; why: ADR 0005 and ADR 0006.
 - Every change is additive: Home, Region, Route and Account, Progress, sync and the Act 1 entries keep working unchanged, and the current data passes the validator untouched.
-- Dev A: `isCounted`, `regionProgress` and later `rosariesToSpend` in `requirements.js`; later the save file reader. QA 1: validator rules 6, 11 and 12 and their tests. Dev B: the counts in `main.js` switch to `isCounted` (before any `counts: false` data), then mockups, then the Trackers page and the Build picker. Dev C: tracker content from approved sheets. QA 2: a pass after each step.
+- Dev A: `isCounted`, `regionProgress` and `rosariesToSpend` in `requirements.js`; the player-choice fields in `progress.js` and the matching `firestore.rules`; `builds.js`; the sync rehearsal for the new fields; last, the save file spike and preview. QA 1: validator rules 6, 11, 12 and 13 and the tests for every module above, including the Emulator rules tests. Dev B: the counts in `main.js` switch to `isCounted` (before any `counts: false` data), then the mockup addendum, then the Trackers, Rosaries and Builds pages, each adding its own header link. Dev C: the Drifter's Cloak and Hunter Crest change, then tracker content from approved sheets. QA 2: a pass after each page. Athos: publishes the new Firestore rules before the new `progress.js` is merged.
 
 `docs/PHASE-PROMPTS.md` has a ready-to-paste kickoff prompt for each phase.
 
@@ -143,8 +144,10 @@ The interface uses only these functions. It does not touch Firestore or localSto
 **Phase 5 adds (full tracker):**
 - The current `data/` passes the validator with no edit and the same warnings as before Phase 5; every Home, Region and Route number for the current data is the same as before.
 - No Collectible with `counts: false` appears in a headline count; each Tracker shows its own done and total.
-- Rosaries still to spend follow from the shop entries not done; Progress still holds only ids, and the Firestore rules and sync are unchanged.
-- The Build picker offers only what the player has marked done.
+- Rosaries still to spend follow from the shop entries not done; Rosaries are never a number in Progress.
+- Progress saved before Phase 5 (local, cloud and backup files) loads unchanged; the new fields are optional; a page from before Phase 5 still open on another device cannot erase saved Builds; the Firestore rules still let each user reach only their own document, accept the new fields only as optional keys, and pass in the Emulator before Athos publishes them.
+- The sync rehearsal passes with the new fields across two devices.
+- The Build picker offers only what the player has marked done, and a saved Build and the opened slots survive a reload and sync between two devices.
 - Every new screen matches a mockup Athos approved.
 
 ## 9. Changes from the Portuguese original
@@ -154,4 +157,5 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Haiku "extra" mapped to `xhigh`.
 - Stage 1 clarified: `dev-a` acts as both devs, with the orchestrator naming the owner of each task.
 - Phase 5 (2026-10-20): Phase 5 (full tracker) added to the phases and the definition of done; owners for its new files; Dev C writes the tracker content.
+- Phase 5, second round (2026-10-20): `js/builds.js` and the new pages named in the owner table; the `progress.js` setters in section 4; the definition of done now covers the player-choice fields in Progress (ADR 0006) instead of "Progress holds only ids".
 - Phase 1 (2026-10-19): `requirements.js` delegated to Dev A; `firestore.rules` and its Emulator tests moved into Phase 1, because sync between two devices (the slice's done criterion) cannot work without them; contract summary in section 4 brought up to date; `firebase/` added to the owner table.

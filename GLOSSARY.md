@@ -5,7 +5,7 @@ A progress guide for Hollow Knight: Silksong that helps a player reach maximum c
 ## Language
 
 **Collectible**:
-A permanent thing a player can obtain. Most Collectibles are **counted**: they count toward the site's completion counts, which follow what the game itself counts toward 100 percent (Athos, 2026-10-20): stat items (Mask Shards, Spool Fragments), Silk Hearts, Needle upgrades, abilities (Ancestral Arts, Silk Skills and Needle Strike), Crests, Tools (an upgraded Tool is not counted again), Crafting Kit and Tool Pouch upgrades, Sylphsong and Everbloom. A few are tracked but **not counted**, because the game does not count them (Mementos and Equipment; Athos, 2026-10-20): they appear on their Tracker with their own count and never in the headline number (ADR 0005).
+A permanent thing a player can obtain. Most Collectibles are **counted**: they count toward the site's completion counts, which follow what the game itself counts toward 100 percent (Athos, 2026-10-20): stat items (Mask Shards, Spool Fragments), Silk Hearts, Needle upgrades, abilities (Ancestral Arts, Silk Skills and Needle Strike), Crests, Tools (an upgraded Tool is not counted again), Crafting Kit and Tool Pouch upgrades, Sylphsong and Everbloom. A few are tracked but **not counted**, because the game does not count them (Mementos and Equipment; Athos, 2026-10-20): they appear on their Tracker with their own count and never in the headline number (ADR 0005). A thing the player obtains is a Collectible even when the story needs it to go on (for example the Drifter's Cloak): it stays one entry, not counted if the game does not count it, and what it opens lists it as a requirement (Athos, 2026-10-20).
 _Avoid_: Item, pickup, loot
 
 **Memento**:
@@ -21,11 +21,15 @@ One tab of the Trackers page: every entry of one category (for example Tools, Cr
 _Avoid_: Checklist, list, collection (for the tab)
 
 **Build**:
-A Crest plus the Tools and Silk Skills placed in its slots. The site offers a picker from what the player has marked done; a Build is not stored in Progress.
+A Crest plus the Tools and Silk Skills placed in its slots. The site offers a picker from what the player has marked done, and the player can save one Build per Crest in their Progress (Athos, 2026-10-20; ADR 0006).
 _Avoid_: Loadout, setup, kit (Crafting Kit is a Collectible), charm build
 
+**Opened slot**:
+A Crest slot the player has opened by spending a Memory Locket on that Crest. Recorded per Crest and colour in Progress, because where a Memory Locket goes is the player's choice.
+_Avoid_: Unlocked slot (we do not say unlocked)
+
 **Task**:
-Something a player must do that is tracked but adds nothing to the counts by itself, usually because it unlocks a Collectible (a quest, a boss fight, a delivery).
+Something a player must do that is tracked but adds nothing to the counts by itself, usually because it unlocks a Collectible (a quest, a boss fight, a delivery). Something the player obtains is never a Task, even when it adds nothing to the counts: it is a Collectible that is not counted.
 _Avoid_: Quest (when it means any task), objective
 
 **Ending**:
@@ -69,5 +73,5 @@ A Region the player has marked as visited, or in which they have checked somethi
 _Avoid_: Discovered, explored
 
 **Progress**:
-The set of Collectibles and Tasks a player has marked as done, and the Regions marked as Visited, in their Run.
+The set of Collectibles and Tasks a player has marked as done, and the Regions marked as Visited, in their Run. Since Phase 5 it also keeps a few player choices: the opened slots per Crest, the saved Builds and, if Athos confirms it, the Shell Shards number the player types (ADR 0006).
 _Avoid_: Save data, state

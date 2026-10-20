@@ -25,7 +25,9 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Site language:** English only (names, text and interface). No translation layer.
 - **Two kinds of entry:** Collectible (counts toward progress) and Task (tracked, but does not count). The "X of Y" counters use counted Collectibles only. See `GLOSSARY.md`.
 - **Counts follow the game; Trackers are wider** (Athos, 2026-10-20, ADR 0005): the headline counts use only what the game counts toward 100 percent. Mementos and Equipment are Collectibles marked `counts: false`: tracked on their own Tracker with their own done and total, never in the headline number.
-- **Rosaries without a number in Progress** (Athos, 2026-10-20, ADR 0005): shop entries carry a `price`; the player marks them done when bought, and the Rosaries still to spend are worked out from the prices of what is not bought yet. Progress stays ids only.
+- **Rosaries without a number in Progress** (Athos, 2026-10-20, ADR 0005): shop entries carry a `price`; the player marks them done when bought, and the Rosaries still to spend are worked out from the prices of what is not bought yet. Rosaries are never a number in Progress.
+- **One entry per thing** (Athos, 2026-10-20): something the player obtains is a Collectible even when the story needs it; if the game does not count it, it is `counts: false`, and what it opens lists it in `requires`. The Drifter's Cloak moves from Task to such a Collectible (same id); the Hunter Crest is a normal entry the player ticks, not counted.
+- **A few player choices in Progress** (Athos, 2026-10-20, ADR 0006): the opened slots per Crest (Memory Lockets spent), one saved Build per Crest and, if Athos confirms the reading, a Shell Shards number the player types. Optional fields, so older Progress still loads; the Firestore rules accept them as optional keys.
 - **Endings:** four (the four main endings; Athos, 2026-10-20, replacing the earlier "five"). The model supports them in V1, but **their data ships with the late-game batch, not in V1** (Athos, 2026-10-20): an Ending's conditions must be existing entries, and those entries are late-game. When they ship, each has conditions and a `locksOut` warning. The full endings screen is outside V1. `missable` on entries is optional and defaults to `false`.
 - **Our own counts:** per-category counters ("Tools: 12 of 51"), never claiming to reproduce the game's completion percentage.
 - **One Run per account** in V1. "New run" offers an export before clearing.
@@ -41,7 +43,7 @@ How it differs from Hollow-Thingy: this is a **guide**, not only a checklist. It
 - **Sub-areas:** a text label (`area`) on each entry, with no pages or unlock logic of their own.
 - **Data authorship:** written by Athos from his own play and checked against the main wiki read by hand, in our own words (Athos, 2026-10-20; there is no draft script; see section 8).
 - **Hosting:** GitHub Pages from the start (see section 10).
-- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids), `0004` (own Firebase project) and `0005` (counts follow the game, Trackers are wider, prices on entries), in `docs/adr/`.
+- **ADRs written:** `0001` (local-first with union merge), `0002` (shared Firebase, superseded), `0003` (permanent ids), `0004` (own Firebase project), `0005` (counts follow the game, Trackers are wider, prices on entries) and `0006` (player choices in Progress), in `docs/adr/`.
 
 ## 3. V1 scope
 
@@ -69,13 +71,15 @@ In:
 - A Trackers page with one tab per category (counted and not counted), each with its own done and total.
 - Mementos and Equipment, tracked and not counted (`counts: false`).
 - Shop entries with a Rosary `price`, and a Rosaries panel showing what is still to spend, worked out from what is not bought.
-- A Build picker: choose a Crest and fill its slots from the Tools and Silk Skills the player has marked done. No fixed templates (Athos's answer 3).
-- Reading the game's save file into Progress (last; needs a research spike on the save format).
+- A Build picker: choose a Crest and fill its slots from the Tools and Silk Skills the player has marked done, record the slots opened on each Crest, and save one Build per Crest. No fixed templates and no `data/builds.json`; the Build fields live on entries (Athos, 2026-10-20).
+- A visible Shell Shards number the player types (provisional: the orchestrator's reading of Athos's answer, to be confirmed). No Shell Shards panel.
+- Reading the game's save file (last): a read-only "what does my save say" preview first, after a research spike; whether the repository may ship the game's key is Athos's question.
 - Mockups for every new screen before code (Dev B, reviewed by Athos).
 
 Out:
 - The soundtrack (Athos's answer 5).
-- A typed Rosaries amount or any other number in Progress.
+- A typed Rosaries amount (ADR 0005).
+- Build templates, synergy lists and Steel Soul mode (Athos, 2026-10-20).
 - Boss notes and points of interest stay optional, after everything above.
 
 ## 4. Folder structure (proposal)
@@ -86,7 +90,9 @@ silksong-guide/
 ├── region.html             # one Region (takes ?id=...)
 ├── route.html              # the whole Route in order, with the "Holding you up" rail
 ├── account.html            # sign-in, backup file, new run
-│                           # Phase 5 adds a Trackers page and a Build picker; names come with the mockups
+├── trackers.html           # Phase 5: Trackers, one tab per category
+├── rosaries.html           # Phase 5: Rosaries still to spend, next to buy
+├── builds.html             # Phase 5: Build picker, opened slots, saved Builds
 ├── css/
 │   ├── base.css            # reset, variables (tokens), typography
 │   ├── components.css      # entry rows, plates, thread/progress bars
@@ -100,6 +106,10 @@ silksong-guide/
 │   ├── requirements.js     # resolves requirements: "what is missing for X"
 │   ├── data.js             # loads data/*.json with relative URLs
 │   ├── account-page.js     # Account page: backup, new run, how saving works, guide data (Phase 2)
+│   ├── trackers-page.js    # Phase 5 page scripts, one per new page
+│   ├── rosaries-page.js
+│   ├── builds-page.js
+│   ├── builds.js           # Phase 5: pure Build arithmetic (slots now, what is owned, what does not fit)
 │   └── render.js           # builds the interface from the data
 ├── data/
 │   ├── regions.json        # list of Regions
@@ -161,6 +171,7 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 - `counts` (optional, Phase 5; default true for a Collectible; false = tracked on its Tracker but not counted, for Mementos and Equipment)
 - `price` (optional, Phase 5; Rosaries a vendor asks for the entry)
 - `toolColor` (optional, Phase 5; red, blue or yellow, for Tools, so the Build picker knows which Crest slots a Tool fits)
+- `slots`, `slotsMax` (optional, Phase 5, Crests only; slots per colour when found and with every Memory Locket), `grantsSlots` (slots an entry adds to every Crest, for the Vesticrest), `upgradeOf` (the entry this one upgrades) and `effect` (what it does, our words)
 
 ### Ending (`endings.json`)
 - `id`, `name`, `conditions` (list of entry ids; anything an Ending depends on is an entry, a Task if it does not count)
@@ -171,12 +182,13 @@ The code uses `regions.json`, `items.json` and `endings.json`. Where the glossar
 - `dataVersion` at the top of each file in `data/`: one number shared by all three files, raised in all of them on every content revision (patch or DLC).
 
 ### User Progress
-- **Local:** one localStorage key holding `{ done, visited, updatedAt, dataVersion }`.
+- **Local:** one localStorage key holding `{ done, visited, updatedAt, dataVersion }`, plus the optional Phase 5 fields `crestSlots`, `builds` and `shellShards`.
 - **Cloud:** one document per user at `silksong_progress/{uid}`, same shape.
 - `done`: map `{ [entryId]: true }`.
 - `visited`: map `{ [regionId]: true }`, set by hand or automatically when something in the Region is completed.
-- Stores ids only. No game text is duplicated. Phase 5 keeps this: a bought shop entry or a found Memento is just an id in `done`.
-- **Export/import:** the same object, in a `.json` file. Import **adds** what the file has to what is already there and never removes anything (union, the same rule as the first sign-in).
+- Stores ids, never game text. A bought shop entry or a found Memento is just an id in `done`.
+- Phase 5 player choices (ADR 0006): `crestSlots` (Crest id to slots opened per colour), `builds` (Crest id to the entry ids in its slots, per colour) and the provisional `shellShards` (a number or null). A field missing from a copy means "written by an older page", not "empty", so an older page cannot erase saved Builds.
+- **Export/import:** the same object, in a `.json` file. Import **adds** what the file has to what is already there and never removes anything (union, the same rule as the first sign-in). For the Phase 5 fields: the larger number of opened slots, a Build only for a Crest with none saved, Shell Shards only when none is set.
 
 ## 6. Core logic: requirements
 
@@ -198,7 +210,7 @@ The visual design is finished: see `docs/DESIGN.md`, the PNGs in `docs/design/sc
 3. **Route** (`route.html`): every step across all Regions in order, a "Show on the route" filter and a "Holding you up" rail. This is also where "what is missing" lives, so there is no separate pending page.
 4. **Account and backup** (`account.html`): sign in with Google, GitHub or an email link; download and add a backup file; start a new run; a short "How saving works" explanation.
 
-Phase 5 adds a Trackers page (one tab per category, with the Rosaries panel) and a Build picker. Neither is in the finished design; Dev B makes mockups first and Athos reviews them. The four screens above do not change, except that their counts use `isCounted` (`docs/CONTRACTS.md` section 5), which gives the same numbers for the current data.
+Phase 5 adds three pages, linked from every header (Athos, 2026-10-20, option A on phones): Trackers (one tab per category), Rosaries (still to spend, next to buy, and the Shell Shards number if confirmed) and Builds (the picker, opened slots, saved Builds). Mockups first (Dev B, `docs/design/trackers/`), reviewed by Athos. The four screens above do not change, except that their counts use `isCounted` (`docs/CONTRACTS.md` section 5), which gives the same numbers for the current data.
 
 ## 8. Data: license and accuracy
 
@@ -246,3 +258,4 @@ Phase 5 adds a Trackers page (one tab per category, with the Rosaries panel) and
 - Firebase: the site has its own project instead of sharing Hollow-Thingy's (ADR 0004, Athos, Phase 1).
 - Repository created (public, `athoskolling/SilkSong_Tracker`), so it is no longer an open point. `requirements.js` delegated to Dev A (Athos, Phase 1).
 - Phase 5 (Athos, 2026-10-20): the full tracker scope (section 3), the `counts`, `price` and `toolColor` fields (section 5) and ADR 0005. Reading the save file moves from "out of V1" into Phase 5.
+- Phase 5, second round (Athos, 2026-10-20): one entry per thing; Build fields on entries; three new pages; player choices in Progress (ADR 0006), which replaces "Progress stores ids only".
