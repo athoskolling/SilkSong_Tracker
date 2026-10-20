@@ -16,6 +16,8 @@ import {
   importProgress,
   mergeLocalAndCloud,
   clearProgress,
+  setCrestSlots,
+  setBuild,
 } from '../js/progress.js';
 
 const KEY = 'silksong-guide:progress:v1';
@@ -260,7 +262,7 @@ test('import adds to what is there and never removes', async () => {
   await setDone('mine', true);
   const backup = { done: { mine: true, theirs: true }, visited: { r: true }, updatedAt: 1, dataVersion: 1 };
   const result = await importProgress(fileOf(JSON.stringify(backup)));
-  assert.deepEqual(result, { addedDone: 1, addedVisited: 1 });
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
   const { done, visited } = await loadProgress();
   assert.deepEqual([...done].sort(), ['mine', 'theirs']);
   assert.deepEqual([...visited], ['r']);
@@ -270,7 +272,7 @@ test('import of a smaller backup removes nothing', async () => {
   await setDone('a', true);
   await setDone('b', true);
   const result = await importProgress(fileOf(JSON.stringify({ done: { a: true }, visited: {} })));
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0 });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
   assert.equal((await loadProgress()).done.size, 2);
 });
 
@@ -280,7 +282,7 @@ test('an import that adds nothing does not notify or move updatedAt', async () =
   let calls = 0;
   onProgressChange(() => (calls += 1));
   const result = await importProgress(fileOf(JSON.stringify({ done: { a: true }, visited: {} })));
-  assert.deepEqual(result, { addedDone: 0, addedVisited: 0 });
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
   assert.equal(calls, 0);
   assert.equal(stored(storage).updatedAt, stamp);
 });
@@ -424,7 +426,7 @@ test('sample mode: export, import and clear act on the sample Progress', async (
   assert.deepEqual(Object.keys(exported.done), ['fake']);
 
   const backup = JSON.stringify({ done: { 'fake-two': true }, visited: { 'fake-region': true } });
-  assert.deepEqual(await importProgress(fileOf(backup)), { addedDone: 1, addedVisited: 1 });
+  assert.deepEqual(await importProgress(fileOf(backup)), { addedDone: 1, addedVisited: 1, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
   assert.deepEqual(Object.keys(storedSample(storage).done).sort(), ['fake', 'fake-two']);
 
   await clearProgress();
@@ -440,4 +442,508 @@ test('sample mode: sync status stays local', async () => {
   await setDone('fake', true);
   assert.ok(states.length > 0);
   assert.ok(states.every((state) => state === 'local'), `got ${states.join(', ')}`);
+});
+
+// ------------------------------------------------- player choices (ADR 0006)
+// crestSlots and builds are optional fields of Progress (docs/CONTRACTS.md sections 1 and 3).
+// "Missing is not empty": an absent field means a copy written by a page that does not know it,
+// so an ordinary change never adds it. shellShards is not covered here (Athos has not confirmed it).
+
+const CREST = 'reaper-crest';
+const CREST_B = 'second-crest';
+const BUILD_A = { red: ['tool-one'] };
+const BUILD_B = { blue: ['tool-two'] };
+const ids = (n, prefix = 'tool') => Array.from({ length: n }, (_, i) => `${prefix}-${i}`);
+
+// A storage stand-in that counts writes, so "writes nothing" can be asserted.
+function useCountingStorage(initial = {}) {
+  const inner = fakeStorage(initial);
+  storage = {
+    ...inner,
+    writeCount: 0,
+    setItem(k, v) {
+      storage.writeCount += 1;
+      inner.setItem(k, v);
+    },
+  };
+  useStorage(storage);
+  return storage;
+}
+
+function collectChanges() {
+  const seen = [];
+  onProgressChange((p) => seen.push(p));
+  return seen;
+}
+
+// --- loading and malformed storage
+
+test('Progress without the player choices loads with {} and {}, and loading writes nothing', async () => {
+  useCountingStorage({ [KEY]: JSON.stringify({ done: { a: true }, visited: {}, updatedAt: 5, dataVersion: 1 }) });
+  const before = storage.data.get(KEY);
+  const loaded = await loadProgress();
+  assert.deepEqual(loaded.crestSlots, {});
+  assert.deepEqual(loaded.builds, {});
+  assert.deepEqual([...loaded.done], ['a']);
+  assert.equal(storage.writeCount, 0);
+  assert.equal(storage.data.get(KEY), before);
+});
+
+test('malformed player choices in storage are dropped, and the done ids are kept', async () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({ done: { a: true, b: true }, visited: {}, updatedAt: 5, dataVersion: 1, crestSlots: 'nope', builds: [1, 2] }),
+    }))
+  );
+  const loaded = await loadProgress();
+  assert.deepEqual([...loaded.done].sort(), ['a', 'b']);
+  assert.deepEqual(loaded.crestSlots, {});
+  assert.deepEqual(loaded.builds, {});
+});
+
+test('a malformed part of a player choice is dropped and the good parts are kept', async () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({
+        done: { a: true },
+        visited: {},
+        updatedAt: 5,
+        dataVersion: 1,
+        crestSlots: {
+          [CREST]: { blue: 2, green: 4, red: 0 }, // an unknown colour and a zero
+          'Not A Slug': { blue: 1 }, // a Crest id that is not a slug
+          [CREST_B]: 'x', // not an object
+        },
+        builds: {
+          // a bad id goes; blue repeats tool-one from red, so blue goes; white is empty
+          [CREST]: { red: ['tool-one', 'Not A Slug'], blue: ['tool-one'], white: [] },
+          [CREST_B]: { green: ['tool-two'] }, // an unknown colour only: the Crest goes
+        },
+      }),
+    }))
+  );
+  const loaded = await loadProgress();
+  assert.deepEqual([...loaded.done], ['a']);
+  assert.deepEqual(loaded.crestSlots, { [CREST]: { blue: 2 } });
+  assert.deepEqual(loaded.builds, { [CREST]: { red: ['tool-one'] } });
+});
+
+test('in storage, a colour with more than 12 ids is dropped and a colour with 12 is kept', async () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({ done: {}, visited: {}, updatedAt: 5, dataVersion: 1, builds: { [CREST]: { red: ids(12), blue: ids(13, 'blue') } } }),
+    }))
+  );
+  assert.deepEqual((await loadProgress()).builds, { [CREST]: { red: ids(12) } });
+});
+
+// --- the setters
+
+test('setCrestSlots stores the opened slots, stamps updatedAt and notifies', async () => {
+  useCountingStorage();
+  const seen = collectChanges();
+  const before = Date.now();
+  await setCrestSlots(CREST, { blue: 2, red: 1 });
+  const saved = stored(storage);
+  assert.deepEqual(saved.crestSlots, { [CREST]: { red: 1, blue: 2 } });
+  assert.ok(saved.updatedAt >= before);
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0].crestSlots, { [CREST]: { red: 1, blue: 2 } });
+  assert.deepEqual(seen[0].builds, {});
+});
+
+test('setCrestSlots replaces the opened slots of that Crest and keeps the other Crests', async () => {
+  useCountingStorage();
+  await setCrestSlots(CREST, { blue: 2 });
+  await setCrestSlots(CREST, { red: 1 });
+  await setCrestSlots(CREST_B, { white: 1 });
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { red: 1 }, [CREST_B]: { white: 1 } });
+});
+
+test('setCrestSlots: a zero removes that colour, and all zeros leave the field as {}', async () => {
+  useCountingStorage();
+  await setCrestSlots(CREST, { blue: 2, red: 1 });
+  await setCrestSlots(CREST, { blue: 0, red: 1 });
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { red: 1 } });
+  await setCrestSlots(CREST, { red: 0 });
+  const saved = stored(storage);
+  assert.deepEqual(saved.crestSlots, {}, 'the Crest key is deleted; the field stays, empty');
+  assert.equal(CREST in saved.crestSlots, false);
+});
+
+test('setCrestSlots accepts 1 to 99 opened slots', async () => {
+  useCountingStorage();
+  await setCrestSlots(CREST, { blue: 99, white: 1 });
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { blue: 99, white: 1 } });
+});
+
+test('setBuild saves one Build per Crest, keeps the other Crests and replaces the last Build', async () => {
+  useCountingStorage();
+  await setBuild(CREST, { red: ['tool-one'], blue: ['tool-two'] });
+  await setBuild(CREST_B, { white: ['skill-one'] });
+  await setBuild(CREST, { white: ['skill-one'] });
+  assert.deepEqual(stored(storage).builds, {
+    [CREST]: { white: ['skill-one'] },
+    [CREST_B]: { white: ['skill-one'] },
+  });
+});
+
+test('setBuild does not store empty colour lists', async () => {
+  useCountingStorage();
+  await setBuild(CREST, { red: ['tool-one'], blue: [] });
+  assert.deepEqual(stored(storage).builds, { [CREST]: { red: ['tool-one'] } });
+});
+
+test('setBuild with null, or a Build with no ids, deletes the Build', async () => {
+  useCountingStorage();
+  await setBuild(CREST, BUILD_A);
+  await setBuild(CREST, null);
+  assert.equal(CREST in stored(storage).builds, false);
+  await setBuild(CREST, BUILD_A);
+  await setBuild(CREST, { red: [], blue: [] });
+  assert.equal(CREST in stored(storage).builds, false);
+  assert.deepEqual(stored(storage).builds, {}, 'the field stays, empty');
+});
+
+test('setBuild accepts up to 12 ids in one colour, even when they do not fit the Crest (checkBuild reports that)', async () => {
+  useCountingStorage();
+  await setBuild(CREST, { red: ids(12) });
+  assert.deepEqual(stored(storage).builds, { [CREST]: { red: ids(12) } });
+});
+
+test('the order of the ids in a Build is part of it: a reordered Build is a change', async () => {
+  useCountingStorage();
+  await setBuild(CREST, { red: ['tool-one', 'tool-two'] });
+  const seen = collectChanges();
+  await setBuild(CREST, { red: ['tool-two', 'tool-one'] });
+  assert.equal(seen.length, 1);
+  assert.deepEqual(stored(storage).builds, { [CREST]: { red: ['tool-two', 'tool-one'] } });
+});
+
+test('ids are checked as slugs only: an id the data does not know is stored', async () => {
+  useCountingStorage();
+  await setCrestSlots('no-such-crest', { blue: 1 });
+  await setBuild('no-such-crest', { red: ['no-such-tool'] });
+  assert.deepEqual(stored(storage).crestSlots, { 'no-such-crest': { blue: 1 } });
+  assert.deepEqual(stored(storage).builds, { 'no-such-crest': { red: ['no-such-tool'] } });
+});
+
+test('a setter called again with the same value does not stamp, notify or write', async () => {
+  useCountingStorage();
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, { red: ['tool-one'] });
+  const saved = stored(storage);
+  const writes = storage.writeCount;
+  const seen = collectChanges();
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, { red: ['tool-one'] });
+  await setBuild(CREST, { red: ['tool-one'], blue: [] }); // the empty list is not stored: the same Build
+  await setCrestSlots(CREST_B, {}); // nothing opened: nothing to store
+  assert.equal(seen.length, 0);
+  assert.equal(storage.writeCount, writes);
+  assert.equal(stored(storage).updatedAt, saved.updatedAt);
+});
+
+test('zeros on a Progress without the field change nothing and add no field', async () => {
+  useCountingStorage();
+  const seen = collectChanges();
+  await setCrestSlots(CREST, { blue: 0 });
+  await setCrestSlots(CREST, {});
+  await setBuild(CREST, null);
+  await setBuild(CREST, { red: [] });
+  assert.equal(seen.length, 0);
+  assert.equal(storage.writeCount, 0);
+  assert.equal(storage.data.has(KEY), false, 'nothing was stored');
+});
+
+// A bad argument is an interface bug: a TypeError, and nothing is written or announced.
+const BAD_CREST_SLOTS = [
+  ['Reaper Crest', { blue: 1 }], // not a slug
+  ['', { blue: 1 }],
+  [42, { blue: 1 }],
+  [null, { blue: 1 }],
+  [CREST, null],
+  [CREST, []],
+  [CREST, 'blue'],
+  [CREST, { green: 1 }], // unknown colour
+  [CREST, { blue: 1.5 }],
+  [CREST, { blue: '2' }],
+  [CREST, { blue: -1 }],
+  [CREST, { blue: 100 }],
+  [CREST, { blue: null }],
+  [CREST, { blue: NaN }],
+];
+
+const BAD_BUILDS = [
+  ['Reaper Crest', { red: ['tool-one'] }], // not a slug
+  [42, { red: ['tool-one'] }],
+  [CREST, []], // an array is not a Build
+  [CREST, 'red'],
+  [CREST, { green: ['tool-one'] }], // unknown colour
+  [CREST, { red: 'tool-one' }], // not a list
+  [CREST, { red: ['Tool One'] }], // not a slug
+  [CREST, { red: [7] }],
+  [CREST, { red: ['tool-one', 'tool-one'] }], // an id twice in one colour
+  [CREST, { red: ['tool-one'], blue: ['tool-one'] }], // an id twice across colours
+  [CREST, { red: ids(13) }], // more than 12
+];
+
+test('setCrestSlots refuses a bad argument with a TypeError and writes nothing', async () => {
+  useCountingStorage();
+  const seen = collectChanges();
+  for (const [crestId, opened] of BAD_CREST_SLOTS) {
+    await assert.rejects(setCrestSlots(crestId, opened), TypeError, `setCrestSlots(${JSON.stringify(crestId)}, ${JSON.stringify(opened)})`);
+  }
+  assert.equal(storage.writeCount, 0);
+  assert.equal(seen.length, 0);
+  assert.equal(storage.data.has(KEY), false);
+});
+
+test('setBuild refuses a bad argument with a TypeError and writes nothing', async () => {
+  useCountingStorage();
+  const seen = collectChanges();
+  for (const [crestId, build] of BAD_BUILDS) {
+    await assert.rejects(setBuild(crestId, build), TypeError, `setBuild(${JSON.stringify(crestId)}, ${JSON.stringify(build)})`);
+  }
+  assert.equal(storage.writeCount, 0);
+  assert.equal(seen.length, 0);
+  assert.equal(storage.data.has(KEY), false);
+});
+
+// --- the rest of Progress keeps the fields as they are
+
+test('setDone and setVisited on a Progress without the player choices do not add them', async () => {
+  useCountingStorage({ [KEY]: JSON.stringify({ done: {}, visited: {}, updatedAt: 5, dataVersion: 1 }) });
+  configureProgress({ items: [{ id: 'mask-1', regionId: 'moss-grotto' }] });
+  await setDone('mask-1', true);
+  await setVisited('deep-docks', true);
+  await setDone('mask-1', false);
+  const saved = stored(storage);
+  assert.equal('crestSlots' in saved, false);
+  assert.equal('builds' in saved, false);
+});
+
+test('setDone keeps the saved player choices exactly as they are', async () => {
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, BUILD_A);
+  await setDone('mask-1', true);
+  const loaded = await loadProgress();
+  assert.deepEqual(loaded.crestSlots, { [CREST]: { blue: 2 } });
+  assert.deepEqual(loaded.builds, { [CREST]: BUILD_A });
+});
+
+test('loadProgress hands out copies: changing them does not change the saved Progress', async () => {
+  await setBuild(CREST, BUILD_A);
+  const first = await loadProgress();
+  first.builds[CREST].red.push('tool-two');
+  first.crestSlots.extra = { blue: 1 };
+  delete first.builds[CREST];
+  const again = await loadProgress();
+  assert.deepEqual(again.builds, { [CREST]: BUILD_A });
+  assert.deepEqual(again.crestSlots, {});
+});
+
+// --- merge (pure)
+
+const base = { done: {}, visited: {}, dataVersion: 1 };
+
+test('merge first sign-in: opened slots take the larger number per Crest and colour', () => {
+  const local = { ...base, updatedAt: 1000, crestSlots: { [CREST]: { blue: 2, red: 1 } } };
+  const cloud = { ...base, updatedAt: 500, crestSlots: { [CREST]: { blue: 1, yellow: 3 }, [CREST_B]: { white: 1 } } };
+  assert.deepEqual(mergeLocalAndCloud(local, cloud, 'u1').crestSlots, {
+    [CREST]: { red: 1, blue: 2, yellow: 3 },
+    [CREST_B]: { white: 1 },
+  });
+});
+
+test('merge first sign-in: Builds for different Crests are both kept', () => {
+  const local = { ...base, updatedAt: 1000, builds: { [CREST]: BUILD_A } };
+  const cloud = { ...base, updatedAt: 500, builds: { [CREST_B]: BUILD_B } };
+  assert.deepEqual(mergeLocalAndCloud(local, cloud, 'u1').builds, { [CREST]: BUILD_A, [CREST_B]: BUILD_B });
+});
+
+test('merge first sign-in: for the same Crest the newer copy keeps its Build whole, never glued together', () => {
+  const localBuild = { ...base, updatedAt: 2000, builds: { [CREST]: BUILD_A } };
+  const cloudBuild = { ...base, updatedAt: 1000, builds: { [CREST]: BUILD_B } };
+  assert.deepEqual(mergeLocalAndCloud(localBuild, cloudBuild, 'u1').builds, { [CREST]: BUILD_A }, 'local is newer');
+  assert.deepEqual(
+    mergeLocalAndCloud({ ...localBuild, updatedAt: 500 }, { ...cloudBuild, updatedAt: 1500 }, 'u1').builds,
+    { [CREST]: BUILD_B },
+    'the cloud copy is newer'
+  );
+  assert.deepEqual(
+    mergeLocalAndCloud({ ...localBuild, updatedAt: 1000 }, cloudBuild, 'u1').builds,
+    { [CREST]: BUILD_A },
+    'a tie keeps the local Build'
+  );
+});
+
+test('merge first sign-in: a field on one side only is taken, and on neither side it stays absent', () => {
+  const onlyLocal = mergeLocalAndCloud({ ...base, updatedAt: 1000, crestSlots: { [CREST]: { blue: 1 } } }, { ...base, updatedAt: 500 }, 'u1');
+  assert.deepEqual(onlyLocal.crestSlots, { [CREST]: { blue: 1 } });
+  assert.equal('builds' in onlyLocal, false);
+
+  const onlyCloud = mergeLocalAndCloud({ ...base, updatedAt: 1000 }, { ...base, updatedAt: 500, builds: { [CREST]: BUILD_A } }, 'u1');
+  assert.deepEqual(onlyCloud.builds, { [CREST]: BUILD_A });
+  assert.equal('crestSlots' in onlyCloud, false);
+
+  const neither = mergeLocalAndCloud({ ...base, updatedAt: 1000 }, { ...base, updatedAt: 500 }, 'u1');
+  assert.equal('crestSlots' in neither, false);
+  assert.equal('builds' in neither, false);
+});
+
+test('merge first sign-in: a present empty field is known and takes part in the union', () => {
+  const local = { ...base, updatedAt: 1000, crestSlots: {} };
+  const cloud = { ...base, updatedAt: 500, crestSlots: { [CREST]: { blue: 1 } } };
+  assert.deepEqual(mergeLocalAndCloud(local, cloud, 'u1').crestSlots, { [CREST]: { blue: 1 } });
+  assert.deepEqual(mergeLocalAndCloud(local, { ...base, updatedAt: 500 }, 'u1').crestSlots, {}, 'stays present');
+});
+
+test('merge afterwards (same account): the newer copy wins with its fields, and a field the winner lacks comes from the other copy', () => {
+  const local = {
+    ...base,
+    updatedAt: 1000,
+    syncedUid: 'u1',
+    crestSlots: { [CREST]: { blue: 1 } },
+    builds: { [CREST]: BUILD_A },
+  };
+  const cloud = { ...base, updatedAt: 2000, syncedUid: 'u1', builds: { [CREST_B]: BUILD_B } };
+  const result = mergeLocalAndCloud(local, cloud, 'u1');
+  assert.deepEqual(result.builds, { [CREST_B]: BUILD_B }, 'the winner\'s Builds, whole: not glued to this device\'s');
+  assert.deepEqual(result.crestSlots, { [CREST]: { blue: 1 } }, 'absent in the winner: taken from the other copy');
+  assert.equal(result.updatedAt, 2000);
+  assert.equal(result.syncedUid, 'u1');
+});
+
+test('merge afterwards: an empty field on the winner is its own value and is not filled from the other copy', () => {
+  // This is what "Start a new run" writes: the empty value must win over an older cloud copy.
+  const local = { ...base, updatedAt: 3000, syncedUid: 'u1', builds: {}, crestSlots: {} };
+  const cloud = { ...base, updatedAt: 2000, syncedUid: 'u1', builds: { [CREST]: BUILD_A } };
+  const result = mergeLocalAndCloud(local, cloud, 'u1');
+  assert.deepEqual(result.builds, {});
+  assert.deepEqual(result.crestSlots, {});
+});
+
+test('merge afterwards: a field absent on both sides stays absent', () => {
+  const result = mergeLocalAndCloud({ ...base, updatedAt: 3000, syncedUid: 'u1' }, { ...base, updatedAt: 2000, syncedUid: 'u1' }, 'u1');
+  assert.equal('crestSlots' in result, false);
+  assert.equal('builds' in result, false);
+});
+
+// --- clear, export, import
+
+test('clearProgress writes crestSlots {} and builds {} explicitly, and keeps syncedUid', async () => {
+  useCountingStorage({
+    [KEY]: JSON.stringify({ done: { a: true }, visited: {}, updatedAt: 1, dataVersion: 1, syncedUid: 'u1' }),
+  });
+  await clearProgress();
+  const saved = stored(storage);
+  assert.deepEqual(saved.crestSlots, {});
+  assert.deepEqual(saved.builds, {});
+  assert.equal(saved.syncedUid, 'u1');
+  const loaded = await loadProgress();
+  assert.deepEqual(loaded.crestSlots, {});
+  assert.deepEqual(loaded.builds, {});
+});
+
+test('export leaves absent player choices absent, and includes the present ones', async () => {
+  useStorage(
+    (storage = fakeStorage({
+      [KEY]: JSON.stringify({ done: { a: true }, visited: {}, updatedAt: 9, dataVersion: 1, syncedUid: 'u1' }),
+    }))
+  );
+  const plain = JSON.parse(await exportProgress().text());
+  assert.deepEqual(Object.keys(plain).sort(), ['dataVersion', 'done', 'updatedAt', 'visited']);
+
+  await setCrestSlots(CREST, { blue: 2 });
+  await setBuild(CREST, BUILD_A);
+  const full = JSON.parse(await exportProgress().text());
+  assert.deepEqual(full.crestSlots, { [CREST]: { blue: 2 } });
+  assert.deepEqual(full.builds, { [CREST]: BUILD_A });
+  assert.equal('syncedUid' in full, false);
+});
+
+test('import of a backup from before Phase 5 adds ids only and creates no player-choice field', async () => {
+  await setDone('mine', true);
+  const result = await importProgress(fileOf(JSON.stringify({ done: { theirs: true }, visited: {} })));
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.equal('crestSlots' in stored(storage), false);
+  assert.equal('builds' in stored(storage), false);
+});
+
+test('an import of empty player-choice objects adds nothing and creates no field', async () => {
+  await setDone('mine', true);
+  const file = { done: { theirs: true }, visited: {}, crestSlots: {}, builds: {} };
+  const result = await importProgress(fileOf(JSON.stringify(file)));
+  assert.deepEqual(result, { addedDone: 1, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.equal('crestSlots' in stored(storage), false);
+  assert.equal('builds' in stored(storage), false);
+});
+
+test('import takes the larger opened-slot numbers and reports the sum of the increases', async () => {
+  await setCrestSlots(CREST, { blue: 2, red: 1 });
+  const file = { done: {}, visited: {}, crestSlots: { [CREST]: { blue: 1, red: 3, yellow: 2 }, [CREST_B]: { white: 1 } } };
+  const result = await importProgress(fileOf(JSON.stringify(file)));
+  // red 1 -> 3 (+2), yellow 0 -> 2 (+2), white 0 -> 1 (+1); blue stays 2 (the file's 1 is smaller)
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 5, addedBuilds: 0, tookShellShards: false });
+  assert.deepEqual(stored(storage).crestSlots, { [CREST]: { red: 3, blue: 2, yellow: 2 }, [CREST_B]: { white: 1 } });
+});
+
+test('import adds a Build only for a Crest that has none here, and never replaces one', async () => {
+  await setBuild(CREST, BUILD_A);
+  const file = { done: {}, visited: {}, builds: { [CREST]: BUILD_B, [CREST_B]: { red: ['tool-three'] } } };
+  const result = await importProgress(fileOf(JSON.stringify(file)));
+  assert.equal(result.addedBuilds, 1);
+  assert.equal(result.addedSlots, 0);
+  assert.deepEqual(stored(storage).builds, { [CREST]: BUILD_A, [CREST_B]: { red: ['tool-three'] } });
+});
+
+test('an import that adds no player choices does not notify or move updatedAt', async () => {
+  await setCrestSlots(CREST, { blue: 3 });
+  await setBuild(CREST, BUILD_A);
+  const stamp = stored(storage).updatedAt;
+  const seen = collectChanges();
+  const file = { done: {}, visited: {}, crestSlots: { [CREST]: { blue: 2 } }, builds: { [CREST]: BUILD_B } };
+  const result = await importProgress(fileOf(JSON.stringify(file)));
+  assert.deepEqual(result, { addedDone: 0, addedVisited: 0, addedSlots: 0, addedBuilds: 0, tookShellShards: false });
+  assert.equal(seen.length, 0);
+  assert.equal(stored(storage).updatedAt, stamp);
+});
+
+test('import refuses a file with a malformed player choice whole, and adds no ids either', async () => {
+  await setDone('mine', true);
+  const malformed = [
+    { builds: 'nope' },
+    { builds: null },
+    { builds: [] },
+    { builds: { [CREST]: { green: ['tool-one'] } } }, // unknown colour
+    { builds: { [CREST]: { red: 'tool-one' } } },
+    { builds: { [CREST]: { red: ['Tool One'] } } }, // not a slug
+    { builds: { [CREST]: { red: ['tool-one', 'tool-one'] } } }, // an id twice
+    { builds: { [CREST]: { red: ids(13) } } }, // more than 12
+    { builds: { [CREST]: {} } }, // a Crest with no colour
+    { builds: { 'Bad Crest': { red: ['tool-one'] } } },
+    { crestSlots: 'nope' },
+    { crestSlots: null },
+    { crestSlots: [] },
+    { crestSlots: { [CREST]: { blue: 0 } } }, // the contract gives 1 to 99 (section 1)
+    { crestSlots: { [CREST]: { blue: '2' } } },
+    { crestSlots: { [CREST]: { blue: 100 } } },
+    { crestSlots: { [CREST]: { green: 1 } } },
+  ];
+  for (const extra of malformed) {
+    const text = JSON.stringify({ done: { 'new-one': true }, visited: {}, ...extra });
+    await assert.rejects(
+      importProgress(fileOf(text)),
+      (error) => {
+        assert.match(error.message, /not a Silksong Guide backup/);
+        return true;
+      },
+      `should reject: ${JSON.stringify(extra)}`
+    );
+  }
+  const loaded = await loadProgress();
+  assert.deepEqual([...loaded.done], ['mine'], 'a rejected file adds no id');
+  assert.deepEqual(loaded.crestSlots, {});
+  assert.deepEqual(loaded.builds, {});
 });
