@@ -106,6 +106,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Starting lists for The Marrow and Deep Docks** (orchestrator): `docs/research/2026-10-20-marrow-deep-docks-candidates.md`. The Marrow: 5 Collectible and 2 Task candidates; Deep Docks: 8 and 2 (sources: game-checklists.com and Into Indie Games). Questions for Athos: Swift Step's type (if movement abilities are not Ancestral Arts, the approved types need `ability`), the Region of Grindle's cell, Shakra's shop items, items reached from later areas. Batch 1's starting lists are complete.
 
+- **Phase 3, batch 1 started with Moss Grotto** (Athos). First step is his: confirm or strike each line of `docs/research/2026-10-20-moss-grotto-candidates.md` and answer its three questions (Weavenest Atla, Bonegrave, late items), then write the confirmed entries in `docs/PHASE-3-BATCH-1.md`. No agent spawned yet; Dev A starts when Athos says Moss Grotto is ready. Asked again: are `firestore.rules` published?
+
 ## Open
 
 - Sync between devices cannot work until Athos publishes `firestore.rules` (T8, merged; published rules still deny everything). Then the two-device check.
