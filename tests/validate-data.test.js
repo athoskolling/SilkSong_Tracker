@@ -504,6 +504,128 @@ test('rule 10: a how of exactly 300 characters gives no warning', () => {
   assert.deepEqual(validate(dir).warnings, []);
 });
 
+// ------------------------------------------------------------------ rule 12: Collectible types (warning)
+
+// The approved list from docs/CONTRACTS.md section 6, rule 12. It is written out here on purpose:
+// when the contract changes, this list has to change with it, and the tests show the difference.
+const APPROVED_TYPES = [
+  'mask-shard',
+  'spool-fragment',
+  'silk-heart',
+  'needle-upgrade',
+  'ancestral-art',
+  'silk-skill',
+  'crest',
+  'tool',
+  'crafting-kit-upgrade',
+  'tool-pouch-upgrade',
+  'sylphsong',
+  'everbloom',
+];
+
+const rule12 = (result) => result.warnings.filter((w) => w.rule === 12);
+
+test('rule 12: a Collectible with an unapproved type is a warning, not an error', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').type = 'gizmo';
+  });
+  const result = validate(dir);
+  assert.deepEqual(result.errors, [], 'no errors');
+  assert.equal(result.warnings.length, 1, `only the rule 12 warning:\n${result.warnings.map(formatProblem).join('\n')}`);
+  const [warning] = rule12(result);
+  assert.equal(warning.file, 'items.json');
+  assert.equal(warning.id, 'sample-key');
+  assert.match(warning.message, /"gizmo"/, 'the message names the type found');
+  assert.doesNotMatch(warning.message, /Did you mean/, 'gizmo is not a near miss, so no suggestion');
+});
+
+test('rule 12: the command exits 0 and prints the warning with file, id and rule', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').type = 'silk_skill';
+  });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.match(run.stderr, /WARNING items\.json, id "sample-key", rule 12: .*"silk_skill".*"silk-skill"/);
+  assert.match(run.stdout, /passed.*1 warning/);
+});
+
+test('rule 12: a Collectible with no type gets the shape error only, not a second rule 12 warning', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    delete entry(json, 'sample-key').type;
+  });
+  const result = validate(dir);
+  assertOnlyRule(result, 'shape', { file: 'items.json', id: 'sample-key' });
+  assert.deepEqual(rule12(result), []);
+});
+
+// Task types stay free: a Task can use any label, approved or not, and never warns.
+const TASK_TYPES = ['door', 'Boss fight', 'gizmo', 'mask-shards', 'Tool', 'silk_skill', 'tool'];
+for (const type of TASK_TYPES) {
+  test(`rule 12: a Task with the type "${type}" does not warn`, () => {
+    const dir = copySample();
+    edit(dir, 'items.json', (json) => {
+      assert.equal(entry(json, 'sample-door').kind, 'task', 'sample-door is the Task this test relies on');
+      entry(json, 'sample-door').type = type;
+    });
+    const result = validate(dir);
+    assert.deepEqual(result.errors.map(formatProblem), []);
+    assert.deepEqual(result.warnings.map(formatProblem), []);
+  });
+}
+
+for (const type of APPROVED_TYPES) {
+  test(`rule 12: the approved Collectible type "${type}" passes`, () => {
+    const dir = copySample();
+    edit(dir, 'items.json', (json) => {
+      assert.equal(entry(json, 'sample-key').kind, 'collectible', 'sample-key is the Collectible this test relies on');
+      entry(json, 'sample-key').type = type;
+    });
+    const result = validate(dir);
+    assert.deepEqual(result.errors.map(formatProblem), []);
+    assert.deepEqual(result.warnings.map(formatProblem), []);
+  });
+}
+
+// A near miss gets the closest approved type as a suggestion: lowercase, "_" as "-", a trailing
+// "s" dropped, then compared.
+const NEAR_MISSES = [
+  { type: 'mask-shards', suggestion: 'mask-shard' },
+  { type: 'Tool', suggestion: 'tool' },
+  { type: 'silk_skill', suggestion: 'silk-skill' },
+  { type: 'Silk_Skills', suggestion: 'silk-skill' }, // the steps combine
+];
+for (const { type, suggestion } of NEAR_MISSES) {
+  test(`rule 12: the near miss "${type}" suggests "${suggestion}"`, () => {
+    const dir = copySample();
+    edit(dir, 'items.json', (json) => {
+      entry(json, 'sample-key').type = type;
+    });
+    const result = validate(dir);
+    assert.deepEqual(result.errors, []);
+    assert.equal(rule12(result).length, 1);
+    const [warning] = rule12(result);
+    assert.equal(warning.file, 'items.json');
+    assert.equal(warning.id, 'sample-key');
+    assert.ok(warning.message.includes(`"${type}"`), `names the type found:\n${warning.message}`);
+    assert.ok(warning.message.includes(`Did you mean "${suggestion}"?`), `suggests the approved type:\n${warning.message}`);
+  });
+}
+
+test('rule 12: a type that is not a near miss lists the approved types instead of guessing', () => {
+  const dir = copySample();
+  edit(dir, 'items.json', (json) => {
+    entry(json, 'sample-key').type = 'gizmo';
+  });
+  const [warning] = rule12(validate(dir));
+  assert.doesNotMatch(warning.message, /Did you mean/);
+  for (const approved of APPROVED_TYPES) {
+    assert.ok(warning.message.includes(approved), `the message lists ${approved}:\n${warning.message}`);
+  }
+});
+
 // ------------------------------------------------------------------ extras: section 1 field checks
 
 test('shape: spoiler outside 0, 1, 2', () => {
