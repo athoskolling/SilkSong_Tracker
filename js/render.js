@@ -189,6 +189,38 @@ function sourceLink(entry) {
   );
 }
 
+// The "Make this my goal" control (docs/CONTRACTS.md section 5, "Goal"). The visible words come first in the
+// accessible name and the entry's name follows in hidden text, so a screen reader knows which row it is on
+// (WCAG 2.5.3, label in name). aria-pressed carries the state and the words change as well, so the state is
+// never colour alone. Pressing it when pressed clears the Goal; the page's click handler does that.
+// entry = { id, name, isGoal }
+function goalButton(entry) {
+  const pressed = entry.isGoal === true;
+  return h(
+    'button',
+    {
+      type: 'button',
+      class: 'goal-btn',
+      'aria-pressed': String(pressed),
+      'data-action': 'toggle-goal',
+      'data-id': entry.id,
+      'data-focus-key': `goal:${entry.id}`,
+    },
+    svg(
+      'svg',
+      { class: 'goal-icon', viewBox: '0 0 24 14', 'aria-hidden': 'true' },
+      svg('path', { class: 'line', d: 'M1 7 H23' }),
+      svg('ellipse', { class: 'eye', cx: 6, cy: 7, rx: 3, ry: 4.6 })
+    ),
+    h('span', {}, pressed ? 'Your goal' : 'Make this my goal', h('span', { class: 'visually-hidden' }, `: ${entry.name}`))
+  );
+}
+
+// The control at the foot of an entry row. A done entry has none: nothing is left to follow (Athos, GOAL-4).
+function goalActions(entry) {
+  return entry.done ? null : h('div', { class: 'entry-actions' }, goalButton(entry));
+}
+
 function entryRow(entry) {
   const needsId = `needs-${entry.id}`;
   const rowClasses = ['entry'];
@@ -241,7 +273,8 @@ function entryRow(entry) {
     entry.missable && entry.missableNote ? h('p', { class: 'entry-needs' }, entry.missableNote) : null,
     entry.needs
       ? h('p', { id: needsId, class: entry.needs.missing ? 'entry-needs is-missing' : 'entry-needs' }, entry.needs.text)
-      : null
+      : null,
+    goalActions(entry)
   );
 
   return h(
@@ -492,7 +525,7 @@ export function renderHomeBody(body, view) {
     h(
       'div',
       { class: 'layout layout--home' },
-      h('div', { class: 'home-main' }, nextPlate(view), holdingSection(view)),
+      h('div', { class: 'home-main' }, nextPlate(view), view.goal ? goalPlate(view.goal) : null, holdingSection(view)),
       totalsPlate(view.totals)
     ),
     regionsSection(view.regions)
@@ -504,6 +537,7 @@ function nextPlate(view) {
 
   if (view.next) {
     actions.push(h('a', { href: view.next.regionHref }, `Open ${view.next.regionName}`));
+    actions.push(goalButton(view.next));
     return h(
       'section',
       { class: 'next-plate', 'aria-labelledby': 'next-heading' },
@@ -539,6 +573,46 @@ function nextPlate(view) {
     h('h2', { class: 'next-name', id: 'next-heading' }, heading),
     h('p', { class: 'next-how' }, text),
     h('p', { class: 'next-actions' }, ...actions)
+  );
+}
+
+// The Home plate for the Goal (docs/CONTRACTS.md section 5). A plain dashed plate, not the stitched one, so
+// "Next on the route" stays the only stitched plate on the page. goal = { name, type, regionName, done, left,
+// firstAvailable: { name, type, regionName } | null, href }. main.js passes no goal when there is none or
+// when the stored id is no longer in the guide, so the plate never needs an empty state.
+function goalPlate(goal) {
+  const firstColumn = h(
+    'div',
+    {},
+    h('p', { class: 'goal-plate-name' }, goal.name),
+    h('div', { class: 'entry-meta' }, h('span', {}, typeLabel(goal.type)), h('span', {}, goal.regionName)),
+    h(
+      'p',
+      { class: 'goal-plate-count' },
+      goal.done ? 'Done.' : [h('strong', { class: 'num' }, String(goal.left)), ' left, the goal included.']
+    )
+  );
+  const secondColumn =
+    !goal.done && goal.firstAvailable
+      ? h(
+          'div',
+          {},
+          h('p', { class: 'goal-plate-label' }, 'Available now'),
+          h('p', { class: 'goal-plate-first' }, goal.firstAvailable.name),
+          h(
+            'div',
+            { class: 'entry-meta' },
+            h('span', {}, typeLabel(goal.firstAvailable.type)),
+            h('span', {}, goal.firstAvailable.regionName)
+          )
+        )
+      : null;
+  return h(
+    'section',
+    { class: 'plate goal-plate', 'aria-labelledby': 'goal-plate-heading' },
+    h('h2', { class: 'plate-heading', id: 'goal-plate-heading' }, 'Your goal'),
+    h('div', { class: 'goal-plate-body' }, firstColumn, secondColumn),
+    h('p', { class: 'next-actions' }, h('a', { href: goal.href }, goal.done ? 'Open your goal' : 'See everything it needs'))
   );
 }
 
@@ -1187,7 +1261,8 @@ function trackerRow(entry) {
         entry.uncounted ? h('span', { class: 'flag-uncounted' }, 'Not counted') : null,
         sourceLink(entry)
       ),
-      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null,
+      goalActions(entry)
     )
   );
 }
@@ -1434,7 +1509,8 @@ function rosaryRow(entry) {
         entry.done ? h('span', { class: 'flag-done' }, 'Bought') : null,
         sourceLink(entry)
       ),
-      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null,
+      goalActions(entry)
     )
   );
 }
@@ -1790,5 +1866,201 @@ function slotRow(row) {
       item ? h('div', { class: 'entry-meta' }, h('span', {}, typeLabel(item.type)), sourceLink(item)) : null,
       item && item.effect ? h('p', { class: 'entry-how' }, item.effect) : null
     )
+  );
+}
+
+// ---------------------------------------------------------------------- goal
+
+// The Goal page (<body data-page="goal">, docs/CONTRACTS.md section 5). Built once; renderGoalBody fills it.
+// Returns { intro, thread, layout }: the hero's intro line and the start thread are kept so a tick does not
+// replay the thread, and layout is the part that is replaced.
+export function renderGoalShell(app) {
+  const intro = h('p', { class: 'hero-intro' });
+  const hero = h(
+    'section',
+    { class: 'hero hero--short' },
+    h('div', { class: 'hero-shade' }),
+    h('div', { class: 'hero-shade hero-shade--title' }),
+    h('div', { class: 'frame' }, h('h1', { class: 'hero-title' }, 'Your goal'), intro)
+  );
+  const thread = h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' });
+  const layout = h('div', {});
+  app.replaceChildren(hero, h('div', { class: 'frame' }, h('div', { class: 'content' }, thread, layout)));
+  return { intro, thread, layout };
+}
+
+// view.mode is 'list' | 'none' | 'done' | 'retired'; see runGoalPage in goal-page.js for the fields.
+export function renderGoalBody(parts, view) {
+  const list = view.mode === 'list';
+  parts.intro.textContent = list
+    ? 'Everything it still needs, in route order, with the goal last.'
+    : 'Pick one entry and see everything it still needs.';
+  // No list to lead into, so no start thread on the message pages.
+  parts.thread.hidden = !list;
+  parts.layout.className = list ? 'layout layout--route' : '';
+  if (view.mode === 'list') parts.layout.replaceChildren(goalRail(view), goalListColumn(view));
+  else if (view.mode === 'done') parts.layout.replaceChildren(goalDoneMessage(view));
+  else if (view.mode === 'retired') parts.layout.replaceChildren(goalRetiredMessage(view));
+  else parts.layout.replaceChildren(goalNoneMessage(view));
+}
+
+const GOAL_DEVICE_HELP = 'Your goal is kept on this device only. It is not in the backup file.';
+
+function regionLink(href, name) {
+  return h('span', {}, h('a', { class: 'region-link', href }, name));
+}
+
+function clearGoalButton(primary) {
+  return h(
+    'button',
+    {
+      type: 'button',
+      class: primary ? 'button button--primary' : 'button button--secondary',
+      'data-action': 'clear-goal',
+      'data-focus-key': 'clear-goal',
+    },
+    'Clear my goal'
+  );
+}
+
+function goalRail(view) {
+  const goal = view.goal;
+  return h(
+    'aside',
+    { class: 'plate plate--rail route-rail', 'aria-labelledby': 'goal-heading' },
+    h(
+      'div',
+      { class: 'rail-section' },
+      h('h2', { class: 'plate-heading', id: 'goal-heading' }, 'Your goal'),
+      h('p', { class: 'goal-rail-name' }, goal.name),
+      h('div', { class: 'entry-meta goal-rail-meta' }, h('span', {}, typeLabel(goal.type)), regionLink(goal.regionHref, goal.regionName)),
+      // Not a live region: goal-page.js announces the new count once after a tick.
+      h(
+        'p',
+        { class: 'goal-count' },
+        h('span', { class: 'goal-count-num num' }, String(view.rows.length)),
+        h(
+          'span',
+          { class: 'goal-count-label' },
+          'left, the goal included. ',
+          view.availableCount > 0 ? h('strong', {}, `${view.availableCount} available now.`) : null
+        )
+      ),
+      h('div', { class: 'goal-rail-actions' }, clearGoalButton(false)),
+      h('p', { class: 'plate-help' }, 'Every row is shown in full, spoilers included, because you chose this goal.'),
+      h('p', { class: 'plate-help' }, GOAL_DEVICE_HELP)
+    )
+  );
+}
+
+function goalListColumn(view) {
+  return h(
+    'div',
+    { class: 'main-column' },
+    h('h2', { class: 'visually-hidden' }, 'What it still needs'),
+    h('ol', { class: 'entries goal-list' }, ...view.rows.map(goalRow)),
+    h(
+      'p',
+      { class: 'route-legend plate-help' },
+      'Tick a row when you finish it and it leaves the list. A bead is a collectible and a knot is a task. A dashed thread means something is still missing.'
+    )
+  );
+}
+
+// One row of the Goal's list. Rows here are the Goal's requirements, so they carry no "Make this my goal"
+// control; the Goal's own row (the last) says "Your goal" in words. entry = a row of view.rows.
+function goalRow(entry) {
+  const needsId = `needs-${entry.id}`;
+  const threadClasses = ['entry-thread'];
+  if (!entry.available) threadClasses.push('is-blocked');
+
+  const toggle = h(
+    'button',
+    {
+      type: 'button',
+      class: 'entry-mark',
+      'aria-pressed': 'false', // a done row has left the list, so every row here is not done
+      'aria-label': entry.name,
+      'aria-describedby': entry.needs ? needsId : null,
+      'data-action': 'toggle-done',
+      'data-id': entry.id,
+      'data-focus-key': `done:${entry.id}`,
+    },
+    h('span', { class: markClasses({ kind: entry.kind, done: false, available: entry.available, isNext: entry.isNext }) })
+  );
+
+  return h(
+    'li',
+    { class: entry.isNext ? 'entry entry--next' : 'entry' },
+    h('div', { class: 'entry-rail' }, h('span', { class: threadClasses.join(' '), 'aria-hidden': 'true' }), toggle),
+    h(
+      'div',
+      { class: 'entry-body' },
+      h(
+        'div',
+        { class: 'entry-head' },
+        h('span', { class: 'entry-name' }, entry.name),
+        entry.onRoute === false ? h('span', { class: 'entry-step' }, 'Not on the route') : h('span', { class: 'entry-step num' }, `Step ${entry.step}`)
+      ),
+      h(
+        'div',
+        { class: 'entry-meta' },
+        h('span', {}, typeLabel(entry.type)),
+        regionLink(entry.regionHref, entry.regionName),
+        entry.area ? h('span', {}, entry.area) : null,
+        entry.missable ? h('span', { class: 'flag-missable' }, 'Can be missed') : null,
+        entry.available ? h('span', { class: 'flag-next' }, 'Available now') : null,
+        entry.isGoal ? h('span', { class: 'flag-goal' }, 'Your goal') : null,
+        sourceLink(entry)
+      ),
+      h('p', { class: 'entry-how' }, entry.how),
+      entry.missable && entry.missableNote ? h('p', { class: 'entry-needs' }, entry.missableNote) : null,
+      entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null
+    )
+  );
+}
+
+function goalNoneMessage(view) {
+  return h(
+    'section',
+    { class: 'plate goal-message', 'aria-labelledby': 'goal-heading' },
+    h('h2', { class: 'goal-message-title', id: 'goal-heading', tabindex: '-1' }, 'You have no goal yet'),
+    h(
+      'p',
+      { class: 'goal-message-text' },
+      'Choose an entry with Make this my goal on the route, on a region page or in a tracker. This page then lists everything it still needs, in route order.'
+    ),
+    h('p', { class: 'next-actions' }, h('a', { href: view.routeHref }, 'Open the route'), h('a', { href: view.trackersHref }, 'Open the trackers'))
+  );
+}
+
+function goalDoneMessage(view) {
+  const goal = view.goal;
+  return h(
+    'section',
+    { class: 'plate goal-message goal-message--done', 'aria-labelledby': 'goal-heading' },
+    h('p', { class: 'goal-message-label' }, 'Done'),
+    h('h2', { class: 'goal-message-title', id: 'goal-heading', tabindex: '-1' }, goal.name),
+    h('div', { class: 'entry-meta goal-rail-meta' }, h('span', {}, typeLabel(goal.type)), regionLink(goal.regionHref, goal.regionName)),
+    h('p', { class: 'goal-message-text' }, 'You marked your goal as done. Clear it, then choose another from the route, a region page or a tracker.'),
+    h('div', { class: 'goal-rail-actions' }, clearGoalButton(true), h('a', { href: view.routeHref }, 'Open the route')),
+    h('p', { class: 'plate-help' }, GOAL_DEVICE_HELP)
+  );
+}
+
+// The stored id is not in the guide any more. It is only an id (a slug the player never saw), so the page
+// does not name it.
+function goalRetiredMessage(view) {
+  return h(
+    'section',
+    { class: 'plate goal-message', 'aria-labelledby': 'goal-heading' },
+    h('h2', { class: 'goal-message-title', id: 'goal-heading', tabindex: '-1' }, 'Your goal is no longer in the guide'),
+    h(
+      'p',
+      { class: 'goal-message-text' },
+      'The entry you chose was removed or replaced when the guide was updated, so there is nothing to list. Clear it, then choose another entry.'
+    ),
+    h('div', { class: 'goal-rail-actions' }, clearGoalButton(true), h('a', { href: view.routeHref }, 'Open the route')),
+    h('p', { class: 'plate-help' }, GOAL_DEVICE_HELP)
   );
 }

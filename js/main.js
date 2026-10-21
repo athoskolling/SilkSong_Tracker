@@ -13,6 +13,9 @@ import {
   setVisited,
   onProgressChange,
   onSyncStatus,
+  loadGoal,
+  setGoal,
+  onGoalChange,
 } from './progress.js';
 import {
   isAvailable,
@@ -24,6 +27,7 @@ import {
   holdingYouUp,
   isCounted,
   routeIds,
+  pathTo,
 } from './requirements.js';
 import {
   signIn,
@@ -157,7 +161,7 @@ async function loadGuide(app) {
 
 // One row of the thread, with everything render.js needs already decided. Used by the Region page
 // and the Route page, so an entry reads the same on both.
-function makeEntryView(item, guide, done, nextId) {
+function makeEntryView(item, guide, done, nextId, goalId) {
   const available = isAvailable(item.id, done, guide.items, guide.regions);
   return {
     id: item.id,
@@ -174,6 +178,7 @@ function makeEntryView(item, guide, done, nextId) {
     done: done.has(item.id),
     available,
     isNext: nextId === item.id,
+    isGoal: goalId === item.id,
     onRoute: guide.onRoute.has(item.id),
     needs: needsLine(item, available, guide, done),
   };
@@ -270,6 +275,23 @@ async function handleToggleClick(event, guide, state) {
   }
 }
 
+// "Make this my goal" (docs/CONTRACTS.md section 5, "Goal"). Pressing the control of the current Goal clears it.
+// The Goal is set and read only through progress.js; nothing is marked done or Visited. The page redraws
+// from onGoalChange, so this only changes the Goal and tells the player.
+function handleGoalClick(event, guide) {
+  const button = event.target.closest('[data-action="toggle-goal"]');
+  if (!button) return;
+  const item = guide.itemsById.get(button.dataset.id);
+  if (!item) return;
+  if (loadGoal() === item.id) {
+    setGoal(null);
+    announce(`Goal cleared: ${item.name}.`);
+  } else {
+    setGoal(item.id);
+    announce(`Your goal is now ${item.name}.`);
+  }
+}
+
 // -------------------------------------------------------------------- home page
 
 async function startHomePage() {
@@ -292,12 +314,16 @@ async function runHomePage(app) {
     // Same rule as regionProgress, so the headline and the Region cards always add up: an entry
     // with `counts: false` (a Memento, a map) is tracked but never in the headline.
     const collectibles = items.filter(isCounted);
+    const goalId = loadGoal();
     return {
+      goal: goalPlateView(goalId),
       routeHref: pageHref('route.html', {}, sample),
       hasEntries: items.length > 0,
       // The Route's own idea of "nothing left": extras off the Route do not keep it from being true.
       allDone: guide.routeOrder.length > 0 && guide.routeOrder.every((item) => state.done.has(item.id)),
       next: nextItem && {
+        id: nextItem.id,
+        isGoal: goalId === nextItem.id,
         name: nextItem.name,
         type: nextItem.type,
         step: nextItem.step,
@@ -316,6 +342,29 @@ async function runHomePage(app) {
     };
   }
 
+  // The "Your goal" plate. No Goal, or a stored id the guide no longer has: no plate (the Goal page explains
+  // the second case). A Goal that is done shows the plate with "Done".
+  function goalPlateView(goalId) {
+    const goalItem = goalId ? guide.itemsById.get(goalId) : null;
+    if (!goalItem) return null;
+    const rows = pathTo(goalItem.id, state.done, items, regions);
+    const first = rows.find((row) => row.available);
+    const firstItem = first ? guide.itemsById.get(first.id) : null;
+    return {
+      name: goalItem.name,
+      type: goalItem.type,
+      regionName: guide.regionNameOf(goalItem.regionId),
+      done: state.done.has(goalItem.id),
+      left: rows.length,
+      firstAvailable: firstItem && {
+        name: firstItem.name,
+        type: firstItem.type,
+        regionName: guide.regionNameOf(firstItem.regionId),
+      },
+      href: pageHref('goal.html', {}, sample),
+    };
+  }
+
   function render() {
     const key = focusKeyBefore();
     renderHomeBody(body, buildView());
@@ -324,6 +373,8 @@ async function runHomePage(app) {
 
   const body = renderHomeShell(app);
   await trackProgress(state, render);
+  app.addEventListener('click', (event) => handleGoalClick(event, guide));
+  onGoalChange(() => render());
   render();
 }
 
@@ -405,6 +456,7 @@ async function runRoutePage(app) {
   // interleaved with another Region's, so entries are grouped in runs of the same Region.
   function buildView() {
     const nextId = nextStep(state.done, items, regions);
+    const goalId = loadGoal();
     const withDone = regionsWithDoneEntries(guide, state.done);
     const revealedCache = new Map();
     const revealed = (regionId) => {
@@ -439,7 +491,7 @@ async function runRoutePage(app) {
         group.hiddenCount += 1;
         continue;
       }
-      const row = makeEntryView(item, guide, state.done, nextId);
+      const row = makeEntryView(item, guide, state.done, nextId, goalId);
       if (state.hideDone && row.done) continue;
       if (state.onlyNow && (row.done || !row.available)) continue;
       group.rows.push(row);
@@ -484,6 +536,8 @@ async function runRoutePage(app) {
   await trackProgress(state, render);
 
   app.addEventListener('click', (event) => handleToggleClick(event, guide, state));
+  app.addEventListener('click', (event) => handleGoalClick(event, guide));
+  onGoalChange(() => render());
   app.addEventListener('change', (event) => {
     const input = event.target.closest('[data-action]');
     if (!input) return;
@@ -729,7 +783,8 @@ async function runRegionPage(app) {
   // One row per entry, with everything render.js needs already decided.
   function entryViews() {
     const nextId = nextStep(state.done, items, regions);
-    return regionItems.map((item) => makeEntryView(item, guide, state.done, nextId));
+    const goalId = loadGoal();
+    return regionItems.map((item) => makeEntryView(item, guide, state.done, nextId, goalId));
   }
 
   // The Locked screen: the Region's own requirements (so a finished one reads "Collected") plus
@@ -782,6 +837,7 @@ async function runRegionPage(app) {
   }
 
   app.addEventListener('click', (event) => handleToggleClick(event, guide, state));
+  app.addEventListener('click', (event) => handleGoalClick(event, guide));
 
   app.addEventListener('change', async (event) => {
     const input = event.target.closest('[data-action]');
@@ -801,6 +857,7 @@ async function runRegionPage(app) {
 
   // Every change, including one that arrives from another device, comes through here.
   await trackProgress(state, render);
+  onGoalChange(() => render());
   render();
 }
 
