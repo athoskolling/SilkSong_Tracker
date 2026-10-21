@@ -65,6 +65,7 @@ async function runGoalPage(app) {
     return {
       name: item.name,
       type: item.type,
+      toolColor: item.toolColor,
       regionName: regionNameOf(item.regionId),
       regionHref: pageHref('region.html', { id: item.regionId }, sample),
     };

@@ -907,6 +907,20 @@ a.region-card:hover .card-name { color: var(--silk); }
   .backdrop { display: none; }
 }
 
+/* ---------------------------------------------------------------- entry icons */
+
+/* The pixel-art icon before an entry's name (js/icons.js). Drawn on a 16 px grid and shown at 32 px (exactly
+   twice), so every pixel stays square and sharp. */
+.entry-icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+  image-rendering: pixelated;
+}
+.entry.is-done .entry-icon { opacity: 0.6; }
+
 /* ------------------------------------------------------------ next region */
 
 /* The foot of a Region page: one wide dashed plate that is a link to the next Region in the guide's order. */
