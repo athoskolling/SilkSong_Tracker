@@ -167,6 +167,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **DMF-2 merged and pushed** (`qa-tests/direct-missing-back`): 38 tests (the old 31 plus optional Tasks, entries off the Route, deeper unknown ids, self-cycles); QA 1 caught 18 of 18 deliberate bugs. Orchestrator ran on merged `main`: 777 tests pass, validator 0 warnings on both folders. Pushed with DMF-1 and DMF-3 (Athos: "merge everything and push"). Not merged, still in progress when pushed: DMF-4 (`dev-b/direct-needs-everywhere`, uncommitted work in its worktree) and BG-1 (`dev-b/backdrop-mockup`).
 
+- **BG-1 merged and pushed** (`dev-b/backdrop-mockup`, `docs/design/backdrop/` only, no site code): Deep Docks at three backdrop strengths, no-image and Locked variants, contrast measured against the lightest backdrop pixel (all AA). Dev B recommends b (8 percent, blur 10 px), no backdrop on Locked Regions, and measuring each real picture when it is converted (a bright picture can fail the silk text at b). Four questions for Athos (Locked, one global strength or per Region, worth it, phones). No screen code until he approves. DMF-4 still in progress.
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
