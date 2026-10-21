@@ -155,6 +155,9 @@
   cursor: pointer;
 }
 .dock-head:hover { background: var(--next-fill); }
+@media (min-width: 701px) { .dock-head { cursor: grab; } }
+.goal-dock--dragging { user-select: none; }
+.goal-dock--dragging .dock-head { cursor: grabbing; }
 .dock-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .dock-label { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--silk); }
 .dock-name { font-size: 17px; font-weight: 600; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -13,6 +13,34 @@ import { directMissingFor, pathTo } from './requirements.js';
 import { listWithMore } from './render.js';
 
 const OPEN_KEY = 'silksong-guide:goal-dock-open:v1';
+const POS_KEY = 'silksong-guide:goal-dock-pos:v1';
+const DRAG_MIN = 5; // pixels the pointer must travel before a press on the header counts as a drag
+const DESKTOP = '(min-width: 701px)'; // on a phone the box stays at the bottom, as designed
+
+function onDesktop() {
+  return Boolean(globalThis.matchMedia && globalThis.matchMedia(DESKTOP).matches);
+}
+
+// The place the player dragged it to, { x, y } in pixels from the top left of the window, or null for the
+// default corner. A viewing convenience for this device, like open or collapsed; never Progress.
+function readPosition() {
+  try {
+    const stored = JSON.parse(globalThis.localStorage.getItem(POS_KEY));
+    if (stored && Number.isFinite(stored.x) && Number.isFinite(stored.y)) return { x: stored.x, y: stored.y };
+  } catch {
+    // storage blocked or not JSON: the default corner
+  }
+  return null;
+}
+
+function writePosition(position) {
+  try {
+    if (position) globalThis.localStorage.setItem(POS_KEY, JSON.stringify(position));
+    else globalThis.localStorage.removeItem(POS_KEY);
+  } catch {
+    // a per-viewer convenience only
+  }
+}
 
 // A phone has no room to leave it open: it starts collapsed there, and opens on a tap.
 function defaultOpen() {
@@ -65,6 +93,7 @@ export async function startGoalDock() {
   const regionsById = new Map(regions.map((region) => [region.id, region]));
   const state = { done: new Set() };
   let open = readOpen();
+  let position = readPosition(); // null = the default top-right corner
 
   const dock = el('aside', { id: 'goal-dock', class: 'goal-dock', 'aria-label': 'Your goal', hidden: true });
   document.body.append(dock);
@@ -173,10 +202,12 @@ export async function startGoalDock() {
         'div',
         { class: 'dock-actions' },
         el('a', { class: 'dock-link', href: pageHref('goal.html', {}, sample) }, 'Open the goal page'),
-        el('button', { type: 'button', class: 'dock-link', 'data-action': 'dock-clear' }, 'Clear my goal')
+        el('button', { type: 'button', class: 'dock-link', 'data-action': 'dock-clear' }, 'Clear my goal'),
+        position && onDesktop() ? el('button', { type: 'button', class: 'dock-link', 'data-action': 'dock-reset' }, 'Reset position') : null
       )
     );
     dock.replaceChildren(head, body);
+    applyPosition();
 
     if (!inside) return;
     let target = null;
@@ -194,6 +225,17 @@ export async function startGoalDock() {
     if (event.target.closest('[data-action="dock-open"]')) {
       open = !open;
       writeOpen(open);
+      render();
+      return;
+    }
+    if (suppressClick) {
+      suppressClick = false; // the press that ended a drag is not a click on the header
+      return;
+    }
+    if (event.target.closest('[data-action="dock-reset"]')) {
+      position = null;
+      writePosition(null);
+      applyPosition();
       render();
       return;
     }
@@ -215,7 +257,75 @@ export async function startGoalDock() {
     }
   });
 
+  // ---- moving the box. It is position: fixed, so it stays where it is while the page scrolls.
+
+  let suppressClick = false;
+
+  // Puts the box at the dragged position, kept fully inside the window, or back in the CSS corner.
+  function applyPosition() {
+    if (!position || !onDesktop()) {
+      dock.style.left = '';
+      dock.style.top = '';
+      dock.style.right = '';
+      return;
+    }
+    const x = Math.min(Math.max(0, position.x), Math.max(0, innerWidth - dock.offsetWidth));
+    const y = Math.min(Math.max(0, position.y), Math.max(0, innerHeight - Math.min(dock.offsetHeight, 48)));
+    dock.style.left = x + 'px';
+    dock.style.top = y + 'px';
+    dock.style.right = 'auto';
+  }
+
+  function dragFrom(event) {
+    if (!onDesktop() || event.button !== 0 || event.pointerType === 'touch') return;
+    const head = event.target.closest('.dock-head');
+    if (!head) return;
+    const box = dock.getBoundingClientRect();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    let dragging = false;
+
+    function move(moveEvent) {
+      if (!dragging && Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY) < DRAG_MIN) return;
+      if (!dragging) {
+        dragging = true;
+        dock.classList.add('goal-dock--dragging');
+      }
+      position = { x: box.left + moveEvent.clientX - startX, y: box.top + moveEvent.clientY - startY };
+      applyPosition();
+    }
+
+    function end() {
+      removeEventListener('pointermove', move);
+      removeEventListener('pointerup', end);
+      removeEventListener('pointercancel', end);
+      if (!dragging) return;
+      dock.classList.remove('goal-dock--dragging');
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0); // a drag that ends off the header sends no click
+      writePosition(position);
+      render(); // shows "Reset position"
+    }
+
+    addEventListener('pointermove', move);
+    addEventListener('pointerup', end);
+    addEventListener('pointercancel', end);
+  }
+
+  dock.addEventListener('pointerdown', dragFrom);
+  addEventListener('resize', applyPosition);
+
   dock.addEventListener('keydown', (event) => {
+    // Alt + arrow keys on the header move the box, for people who do not use a mouse.
+    const step = { ArrowLeft: [-20, 0], ArrowRight: [20, 0], ArrowUp: [0, -20], ArrowDown: [0, 20] }[event.key];
+    if (step && event.altKey && onDesktop() && event.target.closest('.dock-head')) {
+      event.preventDefault();
+      const box = dock.getBoundingClientRect();
+      position = { x: box.left + step[0], y: box.top + step[1] };
+      applyPosition();
+      writePosition(position);
+      return;
+    }
     if (event.key === 'Escape' && open && dock.contains(document.activeElement)) {
       open = false;
       writeOpen(false);
