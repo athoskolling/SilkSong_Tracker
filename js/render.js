@@ -50,6 +50,18 @@ export function listWithMore(names, max) {
   return `${names.slice(0, max).join(', ')} and ${names.length - max} more`;
 }
 
+// The "Needs ..." text every page shares (contract section 5, "Needs lines on every page"). It names only
+// the direct requirements not done (at most three, then "and N more") and, when the full chain is longer,
+// counts the rest: "Needs Lace, plus 3 earlier steps". One helper so Home, Region, Route, Trackers and
+// Rosaries cannot disagree. `directNames` are names in step order; `chainLength` is how many ids the full
+// chain (missingFor / missingForRegion) holds. Returns null when nothing direct is missing.
+export function needsText(directNames, chainLength) {
+  if (directNames.length === 0) return null;
+  const earlier = Math.max(0, chainLength - directNames.length);
+  const tail = earlier > 0 ? `, plus ${earlier} earlier ${earlier === 1 ? 'step' : 'steps'}` : '';
+  return `Needs ${listWithMore(directNames, 3)}${tail}`;
+}
+
 // ------------------------------------------------------------------ messages
 
 // A plain page for errors and dead ends: one h1, what happened, what to do next. role="alert" so a screen
