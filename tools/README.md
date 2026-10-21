@@ -72,3 +72,9 @@ Each scenario gets its own account and its own browser profiles (closed afterwar
 - The Builds page itself (checks 7 to 13 drive `progress.js` directly) and how the page shows a Build that no longer fits.
 - The published `firestore.rules` for `crestSlots` and `builds`: the Emulator runs the file in the repository. Athos publishes the rules before the new `progress.js` goes live.
 - When two devices change a Build at the very same moment: the newer copy wins as a whole object.
+
+## make-icons.mjs
+
+Builds the entry icons, `img/icons/<entry-id>.png`: each entry's in-game sprite, shrunk to a 64 × 64 grid, cut to one small palette, outlined and enlarged 4 times with no smoothing (256 × 256).
+
+Setup once: `npm install --no-save sharp`. Run from the repository root: `node tools/make-icons.mjs` (every entry) or `node tools/make-icons.mjs silk-spear lace` (some). The sprites come from a link-shared Google Drive folder of the game's own sprites and are downloaded once into `img/incoming/sprites/` (git-ignored). `tools/icon-sources.json` says which sprite (Drive file id, name, folder) each entry uses; an entry can add `crop` ({ left, top, width, height }) to take one picture out of a sheet, and `manual` is only a note that a person chose it. `PARAMS` at the top of the script sets the grid, palette size and outline for all icons. The sprites are Team Cherry's; see `docs/IMAGES.md`.

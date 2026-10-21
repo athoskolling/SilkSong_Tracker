@@ -1,0 +1,1208 @@
+{
+ "moss-mother": {
+  "file": "1r1mc_ZKosARwIYvEQGwBXdnbcLbrWKtE",
+  "name": "Moss Mother - Mossbone Mother #4267313",
+  "path": "Hunter's Journal"
+ },
+ "hunter-crest": {
+  "file": "1KTjk8hC7hbvLtawFxz-0yjaZ8GlY6v6q",
+  "name": "Hornet_Inv_crest_icon_small__0002_hunter_01",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "silk-spear": {
+  "file": "1f_m6mPlIEUGMtfzDGCjyFfMgj5wAmsDb",
+  "name": "S_needle_throw",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "choral-commandment-bone-bottom": {
+  "file": "1SK8Ok8eroZ9tuzYbfDsQy6qA6dR4jF4i",
+  "name": "Hornet_icon_0000_R_seal_chit",
+  "path": "Inventory & UI"
+ },
+ "simple-key": {
+  "file": "1phd0SARXVKCCw2YPxV6N_5StaVSKC3fp",
+  "name": "I_slab_key",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-moss-grotto": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "druids-eye": {
+  "file": "1Rg6xOFQqOstuXvol4OSvDoQVrJesMPPO",
+  "name": "T_mossmedal",
+  "path": "Inventory & UI/Tools"
+ },
+ "shard-pendant": {
+  "file": "1r-2LB4Ba5N43m_EeNqgdfR3p40kRZWst",
+  "name": "Hornet_Bone_Necklace",
+  "path": "Inventory & UI"
+ },
+ "compass": {
+  "file": "1RtuMpfN5rMgDVaLjYquMxNM3nJDibhqn",
+  "name": "T_Compass",
+  "path": "Inventory & UI/Tools"
+ },
+ "quill": {
+  "file": "1N0SirWDe1lvmjWZZb552kkBInnkPWsyU",
+  "name": "I_quill",
+  "path": "Inventory & UI"
+ },
+ "map-mosslands": {
+  "file": "1ZFFJEyTulXOzUuND8ustYhDe4rzUnS0t",
+  "name": "Shop_map_icon__0003_moss",
+  "path": "Inventory & UI"
+ },
+ "map-the-marrow": {
+  "file": "1zcgdohTDF-TZdHtYqS5_0SKrj26ukdEk",
+  "name": "Shop_map_icon__0008_generic",
+  "path": "Inventory & UI"
+ },
+ "bench-pins": {
+  "file": "1qkDKQPAB_ORxsuO4rfi3VOmzkVtqw9tu",
+  "name": "pin_bench_shop_icon",
+  "path": "Maps/Markers"
+ },
+ "shell-marker": {
+  "file": "1P41kqCryiApIQR0ZXpZCI2Di6Ndu_phB",
+  "name": "Hornet_Map_Marker_Shop_Icons_0000_1",
+  "path": "Maps/Markers"
+ },
+ "bell-beast": {
+  "file": "1DiArgUOg-06Z9wsPPSa350T0KeYM_yo6",
+  "name": "Bell Beast - Bone Beast",
+  "path": "Hunter's Journal"
+ },
+ "silk-heart-bell-beast": {
+  "file": "1GjaNdt0hJuRHhi8c63jY8z65h6DHZLk1",
+  "name": "Inv_0029_spell_core_slim_silk_heart",
+  "path": "Inventory & UI"
+ },
+ "straight-pin": {
+  "file": "1Usk97J-UMNqAD02NPkkg8uvoD_oslwNc",
+  "name": "T_straight_pin",
+  "path": "Inventory & UI/Tools"
+ },
+ "tool-pouch-loddle": {
+  "file": "1TELmKuWYmWfmv55JlX6zEmIggnIa7e61",
+  "name": "Inv_tool_pouch_upgrade",
+  "path": "Inventory & UI"
+ },
+ "magnetite-brooch": {
+  "file": "13O2ddSrh6XyFDwXj2FPPTT3J_uxA5aVx",
+  "name": "T_rosary_magnet",
+  "path": "Inventory & UI/Tools"
+ },
+ "memory-locket-flintbeetles": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "swift-step": {
+  "file": "1h657LK5G7Q5u-i8qEyCHrhgSeW8VcakZ",
+  "name": "Inv_0029_spell_core_outer_icons_0000_1_sprint",
+  "path": "Inventory & UI"
+ },
+ "map-deep-docks": {
+  "file": "1rLvuaCM5MSEemM2IAKT606hvH3YJdrtH",
+  "name": "Shop_map_icon__0006_docks",
+  "path": "Inventory & UI"
+ },
+ "crafting-kit-forge": {
+  "file": "1n48Yj8VaDteu_wCzHQiQV33RKqph8tg5",
+  "name": "icon_tool_kit_upgrade",
+  "path": "Inventory & UI/Tools"
+ },
+ "magma-bell": {
+  "file": "1Lbl9R2peQsKUyq7-qn4SkPI6ddJa8jmP",
+  "name": "Hornet_T_lava_charm",
+  "path": "Inventory & UI/Tools"
+ },
+ "sting-shard": {
+  "file": "1oiGoguM1ZpBp3I-c3ZAofY_Z1WoiuorL",
+  "name": "T_sting_shard",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-deep-docks": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "memory-locket-deep-docks": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "lace": {
+  "file": "1-1jHzMl7T5orwXsfc8Iwksp8GC02-cHJ",
+  "name": "Lace #4267252",
+  "path": "Hunter's Journal"
+ },
+ "mask-shard-bone-bottom": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "warding-bell": {
+  "file": "1UCWZ31cO2aEGZwDWI0A1Ee-RVwC3mg6b",
+  "name": "Hornet_icon_0001_T_bell_shield",
+  "path": "Inventory & UI"
+ },
+ "map-far-fields": {
+  "file": "1EEcraI00zEOmTdfvPyioGy9e8P10xaEe",
+  "name": "Shop_map_icon__0004_fields",
+  "path": "Inventory & UI"
+ },
+ "drifters-cloak": {
+  "file": "1uVz56L4OkjQnhPW6S3JJk7R4fEJDU2Zx",
+  "name": "Inv_0015_dash-cloak",
+  "path": "Inventory & UI"
+ },
+ "weaver-effigy-bone-bottom": {
+  "file": "1sTbSEpZSBXz7_FQkORguTLHfFCz2ei4t",
+  "name": "Hornet_icon_0002_R_weaver_record",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-far-fields": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "bone-scroll-far-fields": {
+  "file": "1eDcPWspuMdu72uSN_1nddTgZfJdsZTFB",
+  "name": "Hornet_icon_0002_R_bone_record",
+  "path": "Inventory & UI"
+ },
+ "flintslate": {
+  "file": "1432fSPsSvxZEKTTU6x2OA2uDv79BkJqm",
+  "name": "Hornet_icon_0003_T_flintstone",
+  "path": "Inventory & UI"
+ },
+ "fourth-chorus": {
+  "file": "15xQ4TORgS47VJpMaAT8wFraY5Pq-eEsD",
+  "name": "Fourth Chorus - Song Golem",
+  "path": "Hunter's Journal"
+ },
+ "weighted-belt": {
+  "file": "13hBQN4i7sf7FoKwl-zg-7019T5JoQu40",
+  "name": "T_weighted_anklet",
+  "path": "Inventory & UI/Tools"
+ },
+ "tool-pouch-pilgrims-rest": {
+  "file": "1TELmKuWYmWfmv55JlX6zEmIggnIa7e61",
+  "name": "Inv_tool_pouch_upgrade",
+  "path": "Inventory & UI"
+ },
+ "memory-locket-mort": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "map-hunters-march": {
+  "file": "115yiztx_t0iRTLzrb7GI-dcZv54AFOp5",
+  "name": "Shop_map_icon__0000_hunters_march",
+  "path": "Inventory & UI"
+ },
+ "curveclaw": {
+  "file": "1TR_mG5iPKA_AuVOq9OooBhom8Zqk4Rau",
+  "name": "T_curve_claw",
+  "path": "Inventory & UI/Tools"
+ },
+ "fractured-mask": {
+  "file": "17mk0cZES4Jhu9PvdY9p_zP6hTYgDh3Ao",
+  "name": "Hornet_T_fractured_mask",
+  "path": "Inventory & UI"
+ },
+ "memory-locket-chapel-of-the-beast": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "savage-beastfly": {
+  "file": "1HE3QXofTgcpHnWHNM1fLtQXTXgbAzB_w",
+  "name": "Savage Beastfly - Bone Flyer Giant",
+  "path": "Hunter's Journal"
+ },
+ "memory-locket-hunters-march-hidden": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "beast-crest": {
+  "file": "1qi1CrSxw5w18g8f2gZKcycmego4SnwVa",
+  "name": "Hornet_Inv_crest_icon_small__0001_beast",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "thread-storm": {
+  "file": "1VXtgFB1zFR06LzX48WA_6sJz-RFcaVXv",
+  "name": "S_thread_sphere",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "map-greymoor": {
+  "file": "18uQH25BEhdyuZsd8kb9gRGc06ti5vv6z",
+  "name": "Shop_map_icon__0001_greymoor",
+  "path": "Inventory & UI"
+ },
+ "reaper-crest": {
+  "file": "1GAZhg8rJXocSKbtAUtzWm_y6irt2Enoz",
+  "name": "Hornet_Inv_crest_icon_small__0005_reaper",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "threefold-pin": {
+  "file": "1ijSmE5Ojn6czoIlylj2PkD_a6wSFNhLe",
+  "name": "T_tri_pin",
+  "path": "Inventory & UI/Tools"
+ },
+ "memory-locket-halfway-home": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "bone-scroll-greymoor": {
+  "file": "1eDcPWspuMdu72uSN_1nddTgZfJdsZTFB",
+  "name": "Hornet_icon_0002_R_bone_record",
+  "path": "Inventory & UI"
+ },
+ "flea-brew": {
+  "file": "1pg16vSvsEbIXN06IZrPy7x-JTGTeMjr7",
+  "name": "T_flea_brew",
+  "path": "Inventory & UI/Tools"
+ },
+ "moorwing": {
+  "file": "1D62HmTVfZ3hFpwYmP0DRRM2U5-5bMRLo",
+  "name": "Moorwing - Vampire Gnat #4267224",
+  "path": "Hunter's Journal"
+ },
+ "memory-locket-moorwing": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-shellwood": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "map-shellwood": {
+  "file": "1-YKT7H7gTiK8fYOiuDl_7gYZUbnQS_Ec",
+  "name": "Shop_map_icon__0002_shellwood",
+  "path": "Inventory & UI"
+ },
+ "longpin": {
+  "file": "1sSHDHG_eDLs0XYaPoHI_JGQvoqzSXSJj",
+  "name": "T_claw_javelin",
+  "path": "Inventory & UI/Tools"
+ },
+ "pollip-pouch": {
+  "file": "1itUZnC_rV6BpeNA-EE4prx-XiGhxuy8S",
+  "name": "T_poison_pouch",
+  "path": "Inventory & UI/Tools"
+ },
+ "sister-splinter": {
+  "file": "1JRkSWPazuk-nWV9S5GqNPrK3Bn_XRvMj",
+  "name": "Sister Splinter - Splinter Queen",
+  "path": "Hunter's Journal"
+ },
+ "cling-grip": {
+  "file": "1-rQ4knxvy98WIrGTYDdqjydVPE74AM9M",
+  "name": "Inv_0029_spell_core_outer_icons_0000_1_wall_jump",
+  "path": "Inventory & UI"
+ },
+ "skull-tyrant": {
+  "file": "1wnq7n6hVVaCTu_7MAsLh3nVsDgGYrH0a",
+  "name": "Skull Tyrant - Skull King #4267291",
+  "path": "Hunter's Journal"
+ },
+ "memory-locket-the-marrow": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "widow": {
+  "file": "1WtgKT6rLwDWqFXPSU9KAlRDQsEewieBM",
+  "name": "Widow - Spinner Boss #4267339",
+  "path": "Hunter's Journal"
+ },
+ "map-bellhart": {
+  "file": "1DCMotyI-_PBTCZwwjv6VJG_pLrM7jnNh",
+  "name": "Shop_map_icon__0007_bellhart",
+  "path": "Inventory & UI"
+ },
+ "memory-locket-frey": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "needolin": {
+  "file": "1ZMdZrRuiNCtaVYigVT5sM_xxq_MfvDzb",
+  "name": "Inv_0029_spell_core_outer_icons_0000_1",
+  "path": "Inventory & UI"
+ },
+ "sharpened-needle": {
+  "file": "1pq9ZDO8QNkO4njODB8I5I0sH7tqnr6Z8",
+  "name": "Inv_0033_inv_nail_02",
+  "path": "Inventory & UI"
+ },
+ "crafting-kit-creige": {
+  "file": "1n48Yj8VaDteu_wCzHQiQV33RKqph8tg5",
+  "name": "icon_tool_kit_upgrade",
+  "path": "Inventory & UI/Tools"
+ },
+ "my-missing-courier": {
+  "file": "1LdmHTsfwrU3hK3Lii_FQcuf77nl2zhrK",
+  "name": "QI_courier",
+  "path": "Inventory & UI/Tasks"
+ },
+ "spool-fragment-bellhart": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "multibinder": {
+  "file": "1K-J-7-Z2tbSdjQbT0i03CWbdOQrPc585",
+  "name": "T_multi_bind",
+  "path": "Inventory & UI/Tools"
+ },
+ "bellhome-key": {
+  "file": "1vhtnQnD--gF0IGh0HpXxoEo-90veBjvL",
+  "name": "I_token_of_faith",
+  "path": "Inventory & UI"
+ },
+ "bellhome-desk": {
+  "file": "1KRJapNLCJUxakC_9d6x8vfvnuCwQ4SrS",
+  "name": "sactx-0-2048x1024-DXT5_BC3-Inventory_Furniture_Items-46c79fe2",
+  "path": "Inventory & UI",
+  "crop": {
+   "left": 885,
+   "top": 80,
+   "width": 145,
+   "height": 125
+  }
+ },
+ "bellhome-gleamlights": {
+  "file": "1AzTjri8WQioKIucnr-Br4vHRv0P1WQxU",
+  "name": "gleamflies",
+  "path": "Inventory & UI"
+ },
+ "bellhome-bell-lacquer": {
+  "file": "1KRJapNLCJUxakC_9d6x8vfvnuCwQ4SrS",
+  "name": "sactx-0-2048x1024-DXT5_BC3-Inventory_Furniture_Items-46c79fe2",
+  "path": "Inventory & UI",
+  "crop": {
+   "left": 0,
+   "top": 436,
+   "width": 140,
+   "height": 122
+  }
+ },
+ "bellhome-personal-spa": {
+  "file": "1KRJapNLCJUxakC_9d6x8vfvnuCwQ4SrS",
+  "name": "sactx-0-2048x1024-DXT5_BC3-Inventory_Furniture_Items-46c79fe2",
+  "path": "Inventory & UI",
+  "crop": {
+   "left": 868,
+   "top": 905,
+   "width": 130,
+   "height": 100
+  }
+ },
+ "spool-fragment-greymoor": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "pimpillo": {
+  "file": "1l-UMGTZMH8gBH7Hv6HI_2NEJ62-i8PoE",
+  "name": "T_pimpilo",
+  "path": "Inventory & UI/Tools"
+ },
+ "mask-shard-deep-docks": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "wanderer-crest": {
+  "file": "1YMDHiZk7yVKSW64-e08SOsQEBaG78kSA",
+  "name": "Hornet_Inv_crest_icon_small__0004_wanderer",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "mask-shard-wormways": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "map-wormways": {
+  "file": "1oYdtImU-L1fQ0VXVnv0R5ns2H1ESVQ_j",
+  "name": "Shop_map_icon__0008_crawl",
+  "path": "Inventory & UI"
+ },
+ "dead-bugs-purse": {
+  "file": "1RN34xoY6aWBpT0YD0tFSTWXjQ9URRF5v",
+  "name": "T_dead_purse",
+  "path": "Inventory & UI/Tools"
+ },
+ "memory-locket-wormways": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "barbed-bracelet": {
+  "file": "1P4Yd8gZixDOIKqyQeGrK4l_da8-1ywkL",
+  "name": "T_barbed_wire",
+  "path": "Inventory & UI/Tools"
+ },
+ "map-sinners-road": {
+  "file": "1U3XA9QIW0txV0r7pUPjPjxr0w6gMJfgo",
+  "name": "Shop_map_icon__0008_sinners",
+  "path": "Inventory & UI"
+ },
+ "tacks": {
+  "file": "1Ea63RESjozsvjhKZTOciTOoZGn6MuFZT",
+  "name": "T_tack",
+  "path": "Inventory & UI/Tools"
+ },
+ "great-conchflies": {
+  "file": "1cHxgyETB1rT5Tx3vJhws398t7qQF3CQ0",
+  "name": "Great Conchfly - Coral Conch Driller Giant #4267185",
+  "path": "Hunter's Journal"
+ },
+ "map-blasted-steps": {
+  "file": "1-uBXjgfFKUA_PA6oM9fd6dlNuQ9XPYf5",
+  "name": "Shop_map_icon__0005_steps",
+  "path": "Inventory & UI"
+ },
+ "needle-strike": {
+  "file": "1zgfnhMSkDUEX1T192G4w3MCUGbwQK5pe",
+  "name": "prompt_nail_art",
+  "path": "Inventory & UI/Prompts"
+ },
+ "memory-locket-blasted-steps": {
+  "file": "1Gfa1SomxM3-9P5h9QNMKHvBDAtKFgnf9",
+  "name": "Hornet_icon_0005_R_saint_locket",
+  "path": "Inventory & UI"
+ },
+ "silkspeed-anklets": {
+  "file": "1rGa99X3eSl_VpVEez6nKPFJqGApgeKCX",
+  "name": "T_icon_sprintmaster",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-weavenest-atla": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-weavenest-atla": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "moss-mother-duo": {
+  "file": "1r1mc_ZKosARwIYvEQGwBXdnbcLbrWKtE",
+  "name": "Moss Mother - Mossbone Mother #4267313",
+  "path": "Hunter's Journal"
+ },
+ "weavelight": {
+  "file": "1pXGXKgDFdZw14-9l0QKqrZrephL3vie6",
+  "name": "T_attunement_charm",
+  "path": "Inventory & UI/Tools"
+ },
+ "simple-key-sinners-road": {
+  "file": "1phd0SARXVKCCw2YPxV6N_5StaVSKC3fp",
+  "name": "I_slab_key",
+  "path": "Inventory & UI"
+ },
+ "plasmium-phial": {
+  "file": "1qbPnFIwZu9nYUfzrz3SwY2S-naIukIWw",
+  "name": "T_syringe_lifeblood",
+  "path": "Inventory & UI/Tools"
+ },
+ "magnetite-dice": {
+  "file": "1wLCMfS9W4ebGcuQPerXUYGTMpId5S2BT",
+  "name": "_0006_I_magnetite_dice",
+  "path": "Inventory & UI"
+ },
+ "last-judge": {
+  "file": "1AmPUCpveeb6C6v0OZGYKl8dmSrsE99V5",
+  "name": "Last Judge",
+  "path": "Hunter's Journal"
+ },
+ "broodmother": {
+  "file": "1OWZbqWLvCPD7ssWv35-HcLs3Xy5q4mfS",
+  "name": "Broodmother - Slab Fly Broodmother",
+  "path": "Hunter's Journal"
+ },
+ "pilgrims-rest-supplies": {
+  "file": "1LdmHTsfwrU3hK3Lii_FQcuf77nl2zhrK",
+  "name": "QI_courier",
+  "path": "Inventory & UI/Tasks"
+ },
+ "spool-fragment-grand-gate": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "delvers-drill": {
+  "file": "12euA4iWywPhCmLrTYE3vO-w0HMFITe_D",
+  "name": "T_Spine_head",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-underworks-pit": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "white-key": {
+  "file": "13xekIxnUGSQb9pfwYeajntPvmDct7lOe",
+  "name": "I_key_whiteward",
+  "path": "Inventory & UI"
+ },
+ "wandering-merchant": {
+  "file": "1X-Qm5VXjbJPnUmJioVWooVjrqBDIRQD0",
+  "name": "QI_Wayfarer",
+  "path": "Inventory & UI/Tasks"
+ },
+ "mask-shard-songclave": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "ascendants-grip": {
+  "file": "1xYRqpVshfGQjbxEIDMxZJb6UqxOz-Q9n",
+  "name": "T_icon_white_ring",
+  "path": "Inventory & UI/Tools"
+ },
+ "spider-strings": {
+  "file": "1pXGXKgDFdZw14-9l0QKqrZrephL3vie6",
+  "name": "T_attunement_charm",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-extender": {
+  "file": "1bvLg-DF1ded9YE2z6GdZ5Xhs3NMfoHG3",
+  "name": "T_spool_bar_extender",
+  "path": "Inventory & UI/Tools"
+ },
+ "simple-key-jubilana": {
+  "file": "1phd0SARXVKCCw2YPxV6N_5StaVSKC3fp",
+  "name": "I_slab_key",
+  "path": "Inventory & UI"
+ },
+ "cogwork-dancers": {
+  "file": "19yUZCx9k6UBrJlolTdQhpqA-31gg7GKm",
+  "name": "Cogwork Dancers - Clockwork Dancer #4267321",
+  "path": "Hunter's Journal"
+ },
+ "mask-shard-cogwork-core": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-cogwork-core": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "vaultkeepers-melody": {
+  "file": "1bbhfeFngrTptFAhYyUKO-VDG2YdeovLP",
+  "name": "QI_Main__0002_librarian",
+  "path": "Inventory & UI/Tasks"
+ },
+ "mask-shard-whispering-vaults": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "trobbio": {
+  "file": "15Qq7u--KkrVMlsOTHiPRvKKrHyLaOuzK",
+  "name": "Trobbio #4267244",
+  "path": "Hunter's Journal"
+ },
+ "claw-mirror": {
+  "file": "1Dqn54FN5ie8jqIqa5u0xya-PeuRz6thg",
+  "name": "T_dazzle_bind",
+  "path": "Inventory & UI/Tools"
+ },
+ "shining-needle": {
+  "file": "1Ccl84MV0gQ1LE0jB0QWB9BbkYISVz-_Y",
+  "name": "Inv_0033_inv_nail_03",
+  "path": "Inventory & UI"
+ },
+ "savage-beastfly-grand-hunt": {
+  "file": "1HE3QXofTgcpHnWHNM1fLtQXTXgbAzB_w",
+  "name": "Savage Beastfly - Bone Flyer Giant",
+  "path": "Hunter's Journal"
+ },
+ "mask-shard-savage-beastfly": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-whiteward": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-sherma": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "injector-band": {
+  "file": "1YL6EWj65PtZOHNWLDm0280ZEH9-GG35p",
+  "name": "T_quick_bind",
+  "path": "Inventory & UI/Tools"
+ },
+ "clawline": {
+  "file": "1WvcQHxYsEI9X1e1tnir7NgErfkoKG641",
+  "name": "Inv_0029_spell_core_outer_icons_0000_1_harpoon_dash",
+  "path": "Inventory & UI"
+ },
+ "surgeons-key": {
+  "file": "1Yubh9WjSPqG4ZEzZgBOSaIkfV7BsViuy",
+  "name": "I_chute_key_whiteward",
+  "path": "Inventory & UI"
+ },
+ "garmond-and-zaza-duel": {
+  "file": "1HxbMBBSmjOdD7DDTO_bVd3XV4XNyL53C",
+  "name": "Garmond & Zaza - Garmond_Zaza",
+  "path": "Hunter's Journal"
+ },
+ "spool-fragment-underworks-cauldron": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "cogwork-wheel": {
+  "file": "127FaQQbjzHdAumTFsh7HLUqNop0OVZJl",
+  "name": "T_cogwork_saw",
+  "path": "Inventory & UI/Tools"
+ },
+ "scuttlebrace": {
+  "file": "1ybYbZR3jKmaAlMACBepOJcBsyDoWzEJn",
+  "name": "T_quick_sling",
+  "path": "Inventory & UI/Tools"
+ },
+ "sawtooth-circlet": {
+  "file": "1OH5M3LTP64PFOoAG3Sex09C-cbsNFv76",
+  "name": "T_brolly_spike",
+  "path": "Inventory & UI/Tools"
+ },
+ "crafting-kit-architect": {
+  "file": "1n48Yj8VaDteu_wCzHQiQV33RKqph8tg5",
+  "name": "icon_tool_kit_upgrade",
+  "path": "Inventory & UI/Tools"
+ },
+ "the-unravelled": {
+  "file": "1Oa-2NwH6NEFZ1LLJRLpl5KpPczpIkoNl",
+  "name": "The Unravelled - Conductor Boss #4267194",
+  "path": "Hunter's Journal"
+ },
+ "silk-heart-unravelled": {
+  "file": "1GjaNdt0hJuRHhi8c63jY8z65h6DHZLk1",
+  "name": "Inv_0029_spell_core_slim_silk_heart",
+  "path": "Inventory & UI"
+ },
+ "conductors-melody": {
+  "file": "17aNaNP7mAXe1th2jDTSBC3KTsQ_lubIR",
+  "name": "QI_Main__0000_conductor",
+  "path": "Inventory & UI/Tasks"
+ },
+ "cogfly": {
+  "file": "1c2UyIOVY3iMFAoiowJ3wQf2SRLLCAY3r",
+  "name": "T_cogwork_flier",
+  "path": "Inventory & UI/Tools"
+ },
+ "rosary-cannon": {
+  "file": "1dnm_r9JnfWN2sIAYQ5oIo3L6RpBuwRY6",
+  "name": "_0004_T_rosary_cannon_loaded",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-deep-docks-southeast": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "forebrothers-signis-and-gron": {
+  "file": "1lFMlH_N-2Qkk8tuANPul3SN9HPJo1tTi",
+  "name": "Forebrothers Signis & Gron - Dock Guard Thrower #4267289",
+  "path": "Hunter's Journal"
+ },
+ "sharpdart": {
+  "file": "1vaKOlpGKbI6rOij7_NLOeikRalj7hyAs",
+  "name": "S_thread_dash",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "phantom": {
+  "file": "18kDFch2fpioLz2Xb7aJua0W2Ghn-ENaK",
+  "name": "Phantom #4267162",
+  "path": "Hunter's Journal"
+ },
+ "cross-stitch": {
+  "file": "1nDw0PH1ZO8qK-PGhbY61qQh0OPJXlH3y",
+  "name": "S_parry",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "silkshot": {
+  "file": "1GogZVfo0taLg5LODhmmavRrcCDG2qwpA",
+  "name": "_0001_T_web_shot_forge_runes",
+  "path": "Inventory & UI/Tools"
+ },
+ "groal-the-great": {
+  "file": "1odhRPg4EJAb12HxRYDrDWwXXcQ28b3mX",
+  "name": "Groal the Great - Swamp Shaman #4267139",
+  "path": "Hunter's Journal"
+ },
+ "quick-sling": {
+  "file": "1ybYbZR3jKmaAlMACBepOJcBsyDoWzEJn",
+  "name": "T_quick_sling",
+  "path": "Inventory & UI/Tools"
+ },
+ "faydown-cloak": {
+  "file": "1dCr7DsLCvF2UiZ2pCCR-kOUDYrEtuk4g",
+  "name": "I_crimson_cloak",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-mount-fay": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "memory-crystal": {
+  "file": "1pS8XKo9nHTP_JSdvwFhW23oPsiilGA_W",
+  "name": "T_revenge_crystal",
+  "path": "Inventory & UI/Tools"
+ },
+ "mask-shard-skull-cavern": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-blasted-steps": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-grindle": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "snitch-pick": {
+  "file": "190wYaUFcl-zSn30SzLPVjsLzYu09H1Rr",
+  "name": "Thief_Claw",
+  "path": "Inventory & UI"
+ },
+ "thiefs-mark": {
+  "file": "1UFz1bT2SFCMOi3tJB1uZ2QldyRCVBd0v",
+  "name": "Thief_Brooch",
+  "path": "Inventory & UI"
+ },
+ "crafting-kit-grindle": {
+  "file": "1n48Yj8VaDteu_wCzHQiQV33RKqph8tg5",
+  "name": "icon_tool_kit_upgrade",
+  "path": "Inventory & UI/Tools"
+ },
+ "snare-setter": {
+  "file": "1X_pc2SBFHgqq4EAptrMMTCQYYgXRR1Ce",
+  "name": "_0004_T_snare_setter",
+  "path": "Inventory & UI/Tools"
+ },
+ "architects-melody": {
+  "file": "1f4rtqWO5uw90m4APDMpolFRY29fOg6MB",
+  "name": "QI_Main__0001_architect",
+  "path": "Inventory & UI/Tasks"
+ },
+ "spool-fragment-high-halls": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-memorium": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "voltvessels": {
+  "file": "1i7fLtSp5Oop9PrQlbW2X35VPw5SeLTxA",
+  "name": "_0004_T_lightning__0000_1",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-jubilana": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "key-of-apostate": {
+  "file": "1acvGFomgJnOart7CLomHFB1jsW18wjHa",
+  "name": "rusted_cage_key",
+  "path": "Inventory & UI"
+ },
+ "wreath-of-purity": {
+  "file": "1Pbp-nnmNjD3ONy2FlQHe0q_u-Y9CAPHD",
+  "name": "poultice_pouch_icon",
+  "path": "Inventory & UI"
+ },
+ "first-sinner": {
+  "file": "1NgU8pby6Ft4V6BO4HyKuRBFHrPbrx6lr",
+  "name": "First Sinner - First Weaver",
+  "path": "Hunter's Journal"
+ },
+ "rune-rage": {
+  "file": "1efKUlPuOIDtAi7IJklB7sDj_tgsyH3h7",
+  "name": "S_bomb",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "mask-shard-the-slab": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "spool-fragment-the-slab": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-wisp-thicket": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "father-of-the-flame": {
+  "file": "1UO6IHctBunrLf77fUwsAj155kzCXLRz9",
+  "name": "Father of the Flame - Wisp Pyre Effigy #4267131",
+  "path": "Hunter's Journal"
+ },
+ "wispfire-lantern": {
+  "file": "1Mp2KOsFhknvyWVCDxoWjN9iXYZA8MOFz",
+  "name": "T_wisp_lantern",
+  "path": "Inventory & UI/Tools"
+ },
+ "mask-shard-bilewater": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "raging-conchfly": {
+  "file": "1wCEOR_2cZ3lDl2bvW_AQ7uiRab2UWC1d",
+  "name": "Conchfly - Coral Conch Driller #4267164",
+  "path": "Hunter's Journal"
+ },
+ "conchcutter": {
+  "file": "1MlEJ5Nx1iLuWm8EeQwtLftdCZk4U-RTG",
+  "name": "T_Conch_Drill_Shot",
+  "path": "Inventory & UI/Tools"
+ },
+ "voltvyrm": {
+  "file": "1227NR0FT7or9smiqvWgl5c71IwxqSc3H",
+  "name": "Zap_Nest_Head_set_corpse",
+  "path": "Enemies & Corpses"
+ },
+ "volt-filament": {
+  "file": "1yjnlI0GX5Qo8Jpk1QazCnBiz0Nel6OOA",
+  "name": "T_zap_imbuement",
+  "path": "Inventory & UI/Tools"
+ },
+ "simple-key-sands-of-karak": {
+  "file": "1phd0SARXVKCCw2YPxV6N_5StaVSKC3fp",
+  "name": "I_slab_key",
+  "path": "Inventory & UI"
+ },
+ "disgraced-chef-lugoli": {
+  "file": "1x9XpmrH6TigjmM1m0q9F_z9DPlIc9D2N",
+  "name": "Disgraced Chef Lugoli - Roachkeeper Chef",
+  "path": "Hunter's Journal"
+ },
+ "hivesteel-needle": {
+  "file": "13b60f5bvgLe229vXqzuGy5pn7RffyWRp",
+  "name": "Inv_0033_inv_nail_04",
+  "path": "Inventory & UI"
+ },
+ "longclaw": {
+  "file": "1KzXN_wFr56Nk4MxxdrKx6tUCB_gWUj37",
+  "name": "T_longneedle",
+  "path": "Inventory & UI/Tools"
+ },
+ "spool-fragment-fleas": {
+  "file": "1rOG57J_smtE2JAwquDfCKbgnAMYqnwul",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon",
+  "path": "Inventory & UI"
+ },
+ "tool-pouch-fleatopia": {
+  "file": "1TELmKuWYmWfmv55JlX6zEmIggnIa7e61",
+  "name": "Inv_tool_pouch_upgrade",
+  "path": "Inventory & UI"
+ },
+ "second-sentinel": {
+  "file": "1X5olFlMzGlL11_mq2dErifetzB9fnOul",
+  "name": "Second Sentinel - Song Knight",
+  "path": "Hunter's Journal"
+ },
+ "reserve-bind": {
+  "file": "1NLykZF8Bp84Icut5Uix960hlDicaozXu",
+  "name": "T_focus_spool",
+  "path": "Inventory & UI/Tools"
+ },
+ "architect-crest": {
+  "file": "1zKfkPHjDgQ1RtdN_iB_S6UZ1Gd3k0P3o",
+  "name": "Hornet_Inv_crest_icon_small__0000_mechanist",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "lace-cradle": {
+  "file": "1bWJWGFqm1YiXxW3SQxO-ETGIalw3Y7Xs",
+  "name": "lace_weaver_scene_npc0000",
+  "path": "Bosses/Lace"
+ },
+ "silk-heart-lace": {
+  "file": "1GjaNdt0hJuRHhi8c63jY8z65h6DHZLk1",
+  "name": "Inv_0029_spell_core_slim_silk_heart",
+  "path": "Inventory & UI"
+ },
+ "throwing-ring": {
+  "file": "1i365kt8JkxMOeuxN70FDoROGhT93FNgc",
+  "name": "T_shakra_ring",
+  "path": "Inventory & UI/Tools"
+ },
+ "shakra-duel": {
+  "file": "1h5t3NFJ6mP5aWbmuNZpsZIZGIQlGOYYO",
+  "name": "Shakra",
+  "path": "Hunter's Journal"
+ },
+ "egg-of-flealia": {
+  "file": "1x5FAR6FuugrbXGfV6qNxS4KulxScd9sk",
+  "name": "Flea_Egg",
+  "path": "Inventory & UI"
+ },
+ "tool-pouch-nuu": {
+  "file": "1TELmKuWYmWfmv55JlX6zEmIggnIa7e61",
+  "name": "Inv_tool_pouch_upgrade",
+  "path": "Inventory & UI"
+ },
+ "grand-mother-silk-bind": {
+  "file": "15aXKjiiIvj_7ArlMcuEXeEST0IE3N8jL",
+  "name": "Grand Mother Silk - Silk Boss",
+  "path": "Hunter's Journal"
+ },
+ "rite-of-rebirth": {
+  "file": "1TelZplWy2Pr33Xp0oyEuRn6tuKm2__vn",
+  "name": "QI_gather",
+  "path": "Inventory & UI/Tasks"
+ },
+ "grand-mother-silk-cursed": {
+  "file": "15aXKjiiIvj_7ArlMcuEXeEST0IE3N8jL",
+  "name": "Grand Mother Silk - Silk Boss",
+  "path": "Hunter's Journal"
+ },
+ "witch-crest": {
+  "file": "1WKiNZnelMgy47NK7v2evOHtdjkn6Z3bz",
+  "name": "Hornet_Inv_crest_icon_small__0006_witch",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "silk-and-soul": {
+  "file": "1CA6gCCtuZ9LwPy-n7e5y9VChToCRNyBn",
+  "name": "QI_donate",
+  "path": "Inventory & UI/Tasks"
+ },
+ "grand-mother-silk-snared": {
+  "file": "15aXKjiiIvj_7ArlMcuEXeEST0IE3N8jL",
+  "name": "Grand Mother Silk - Silk Boss",
+  "path": "Hunter's Journal"
+ },
+ "plasmified-zango": {
+  "file": "13MPNpYSWAlgUpkRQXBX8xHqx2IpeKBQD",
+  "name": "Plasmified Zango - Blue Assistant",
+  "path": "Hunter's Journal"
+ },
+ "bell-eater": {
+  "file": "1lBfT3_sy_ohh8P710ht4lPn8P55Qxf8d",
+  "name": "Bell Eater - Giant Centipede",
+  "path": "Hunter's Journal"
+ },
+ "beastling-call": {
+  "file": "1TT0RSEP4Pu0SM8yoW6V2d1kOOIuPRghO",
+  "name": "bellbeast_melody_prompts",
+  "path": "Inventory & UI/Prompts"
+ },
+ "curvesickle": {
+  "file": "18oWQTYWhEYwhR7F37VSTEPphm9wVt5DV",
+  "name": "T_curve_claw_upgraded",
+  "path": "Inventory & UI/Tools"
+ },
+ "diving-bell-key": {
+  "file": "1PEn5n-Cy_Je0nkZ_Dfa1kQ6j7nWBQ2gY",
+  "name": "dock_key",
+  "path": "Inventory & UI"
+ },
+ "silk-soar": {
+  "file": "1i8tsHbZxwBN8ElNfzol5Dlf4nPkjf9fT",
+  "name": "Inv_0029_spell_core_outer_icons_0000_1_super_jump",
+  "path": "Inventory & UI"
+ },
+ "tormented-trobbio": {
+  "file": "1WxzPA7znlkCF_KPW8c3j5KJYsEwYQm_Z",
+  "name": "Tormented Trobbio",
+  "path": "Hunter's Journal"
+ },
+ "claw-mirrors": {
+  "file": "1-yiMC52hJ6pquAGlW4yONfAtgfR_5MAu",
+  "name": "T_dazzle_bind_upg",
+  "path": "Inventory & UI/Tools"
+ },
+ "elegy-of-the-deep": {
+  "file": "1PI6VAVuyHRcbsutij0YZ1YgfkP3Apdio",
+  "name": "deep_melody_prompts",
+  "path": "Inventory & UI/Prompts"
+ },
+ "palestag": {
+  "file": "1wBaEStNmpc1dsPtNGfpnr-xiImX7fz7-",
+  "name": "Palestag - Cloverstag White",
+  "path": "Hunter's Journal"
+ },
+ "watcher-at-the-edge": {
+  "file": "1AMf_4cI1c_fu8p1Pe9UquwBakiqpgB5S",
+  "name": "Watcher at the Edge - Coral Warrior Grey",
+  "path": "Hunter's Journal"
+ },
+ "grey-memento": {
+  "file": "19kKRjFjq3DvpbXZjm04Bh2blKHakcySd",
+  "name": "grey_warrior_memento",
+  "path": "Inventory & UI"
+ },
+ "shaman-crest": {
+  "file": "1WaGvMvtbhsGePWcl7iFppnATjHUteuQ6",
+  "name": "Hornet_Inv_crest_icon_small__0007_shaman",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "crust-king-khann": {
+  "file": "1gzzNQykpbH4RLfHEfoBE8xMidiIKy5Hb",
+  "name": "Crust King Khann - heart_death_coral_king0001",
+  "path": "Bosses"
+ },
+ "shrine-guardian-seth": {
+  "file": "1JCLNNSFI9kF0k_9hckqDw9dABZypzB2i",
+  "name": "Flea_Scoreboard_Icons_0005_Seth",
+  "path": "Inventory & UI"
+ },
+ "nyleth": {
+  "file": "1OE1sVMEYd94B9jQlwbv9KG4CY40gw1RX",
+  "name": "Nyleth - heart_death_flower_queen0001",
+  "path": "Bosses"
+ },
+ "skarrsinger-karmelita": {
+  "file": "12cZuSPwcHnPUiNRR3k0dUr-vtOWkMKOf",
+  "name": "Skarrsinger Karmelita - Hunter Queen",
+  "path": "Hunter's Journal"
+ },
+ "clover-dancers": {
+  "file": "1ucZ0x-bUJ6NAHbK4mHFxKHA6_jz1DnEG",
+  "name": "Clover Dancers - Clover Dancer",
+  "path": "Hunter's Journal"
+ },
+ "conjoined-heart": {
+  "file": "1tfYiATWxBYC149cNSFzb0KafDuR6_jSE",
+  "name": "memento_heart_clover0000",
+  "path": "Inventory & UI"
+ },
+ "everbloom": {
+  "file": "16RdMfF0nvM7YB3GiYkIAxgXSFNUt7DCR",
+  "name": "I_white_flower",
+  "path": "Inventory & UI"
+ },
+ "lost-garmond": {
+  "file": "1HxbMBBSmjOdD7DDTO_bVd3XV4XNyL53C",
+  "name": "Garmond & Zaza - Garmond_Zaza",
+  "path": "Hunter's Journal"
+ },
+ "heros-memento": {
+  "file": "1oArYQnHWnaKs7LCWPcjcp17omHew6ca7",
+  "name": "garmond_memento",
+  "path": "Inventory & UI"
+ },
+ "mask-shard-sprintmaster": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "gurr-the-outcast": {
+  "file": "12PMLtabZHm2ZVc-ZdkomSE2-PNSb_3-h",
+  "name": "Gurr the Outcast - Bone Hunter Trapper",
+  "path": "Hunter's Journal"
+ },
+ "mask-shard-hidden-hunter": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "craw-summons": {
+  "file": "1bBgdhqvvWre0o-rD6Dm2B4aponqbveZ-",
+  "name": "Inv_craw_summons",
+  "path": "Inventory & UI"
+ },
+ "crawfather": {
+  "file": "1nZw0oIGDnDZQOrfgHPsPzQ9FTMpVBdNZ",
+  "name": "Crawfather",
+  "path": "Hunter's Journal"
+ },
+ "mask-shard-dark-hearts": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "craw-memento": {
+  "file": "1O2bBiFLG6MpxOzbKqf6GA8a63n0qlbjl",
+  "name": "craw_court_memento",
+  "path": "Inventory & UI"
+ },
+ "crawbell": {
+  "file": "1qVreiMOrOnd6YsQGQIRlFKOhhMHli_VP",
+  "name": "Bell_Screen_Icons_0003_bell_basic",
+  "path": "Inventory & UI",
+  "manual": true
+ },
+ "mask-shard-brightvein": {
+  "file": "1II8DILzU-OozkfeXOUJre7xTZ_L5rvfU",
+  "name": "Hornet_Spool_Upgrade_Shop_Icon_Heart",
+  "path": "Inventory & UI"
+ },
+ "pale-nails": {
+  "file": "1mBnzRusCVcb-TfHdJJPeG4RNPKp9qgwU",
+  "name": "S_finger_blade",
+  "path": "Inventory & UI/Skills & Ancestral Arts"
+ },
+ "pinstress": {
+  "file": "1p8VNCsER60DzQEGBBBzutzBVazQvydHh",
+  "name": "Pinstress Boss",
+  "path": "Hunter's Journal"
+ },
+ "pin-badge": {
+  "file": "1l7tYxFmApV5WVjfwA9vHlJcEy2oFVDlG",
+  "name": "T_pinstress_tool",
+  "path": "Inventory & UI/Tools"
+ },
+ "pale-steel-needle": {
+  "file": "1advcfe3eDqLWXuDjlQBjRX77IhkRkGPg",
+  "name": "Inv_0033_inv_nail_05",
+  "path": "Inventory & UI"
+ },
+ "sylphsong": {
+  "file": "1C_jZuAjWaZmUw-BJqeqs6woKgR2CVDj-",
+  "name": "Inv_0029_spell_core_outer_icons_eva_heal",
+  "path": "Inventory & UI"
+ },
+ "passing-of-the-age": {
+  "file": "19VzB0Qp_3dBpwQUlMkU-pNW8D5X8o3XI",
+  "name": "QI_Rumor_clean",
+  "path": "Inventory & UI/Tasks"
+ },
+ "lost-lace": {
+  "file": "1SDrH2Mxi10l8GIBWRVEErImlT9j6KhfA",
+  "name": "Lost Lace",
+  "path": "Hunter's Journal"
+ }
+}

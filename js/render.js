@@ -3,6 +3,8 @@
 // over finished facts (done, available, next, needs text...). Text from data goes in through
 // textContent only, never innerHTML.
 
+import { iconUrl, withIconFallback } from './icons.js';
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 // ------------------------------------------------------------------ backdrop
@@ -62,6 +64,11 @@ function applySiteBackdrop(app) {
 }
 
 // ---------------------------------------------------------------- tiny helpers
+
+// The pixel-art icon in front of an entry's name (js/icons.js). Decoration: the type is also written in the row.
+function entryIcon(entry) {
+  return withIconFallback(h('img', { class: 'entry-icon', src: iconUrl(entry), alt: '', width: 64, height: 64, loading: 'lazy', decoding: 'async' }));
+}
 
 // h('div', { class: 'x', 'data-id': 'y' }, 'text', childElement) -> element.
 // Attributes with a null, undefined or false value are skipped.
@@ -345,7 +352,7 @@ function entryRow(entry) {
     h(
       'div',
       { class: 'entry-head' },
-      h('span', { class: 'entry-name' }, entry.name),
+      h('span', { class: 'entry-name' }, entryIcon(entry), entry.name),
       // A row off the Route says so in words (not colour only) where other rows show their Step.
       entry.onRoute === false
         ? h('span', { class: 'entry-step' }, 'Not on the route')
@@ -389,7 +396,7 @@ function lockedChain(view) {
       h(
         'div',
         { class: 'entry-body' },
-        h('span', { class: 'entry-name' }, entry.name),
+        h('span', { class: 'entry-name' }, entryIcon(entry), entry.name),
         h('div', { class: 'entry-meta' }, h('span', {}, `${typeLabel(entry.type)} in ${entry.regionName}`), sourceLink(entry)),
         h('p', { class: entry.done ? 'entry-state' : 'entry-state is-missing' }, stateText),
         entry.done ? null : h('p', { class: 'entry-link' }, h('a', { href: entry.regionHref }, `Go to ${entry.regionName}`))
@@ -1338,7 +1345,7 @@ function trackerRow(entry) {
     h(
       'div',
       { class: 'entry-body' },
-      h('div', { class: 'entry-head' }, h('span', { class: 'entry-name' }, entry.name)),
+      h('div', { class: 'entry-head' }, h('span', { class: 'entry-name' }, entryIcon(entry), entry.name)),
       h(
         'div',
         { class: 'entry-meta' },
@@ -1588,7 +1595,7 @@ function rosaryRow(entry) {
     h(
       'div',
       { class: 'entry-body' },
-      h('div', { class: 'entry-head tk-head' }, h('span', { class: 'entry-name' }, entry.name), h('span', { class: 'tk-price num' }, rosaryText(entry.price))),
+      h('div', { class: 'entry-head tk-head' }, h('span', { class: 'entry-name' }, entryIcon(entry), entry.name), h('span', { class: 'tk-price num' }, rosaryText(entry.price))),
       h(
         'div',
         { class: 'entry-meta' },
@@ -2089,7 +2096,7 @@ function goalRow(entry) {
       h(
         'div',
         { class: 'entry-head' },
-        h('span', { class: 'entry-name' }, entry.name),
+        h('span', { class: 'entry-name' }, entryIcon(entry), entry.name),
         entry.onRoute === false ? h('span', { class: 'entry-step' }, 'Not on the route') : h('span', { class: 'entry-step num' }, `Step ${entry.step}`)
       ),
       h(

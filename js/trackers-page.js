@@ -173,6 +173,7 @@ async function runTrackersPage(app) {
       name: item.name,
       kind: item.kind,
       type: item.type,
+      toolColor: item.toolColor,
       area: item.area || '',
       source: item.source,
       regionName: region ? region.name : item.regionId,

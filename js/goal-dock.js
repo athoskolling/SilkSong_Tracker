@@ -11,6 +11,7 @@ import { loadData, pageHref } from './data.js';
 import { configureProgress, loadProgress, setDone, onProgressChange, loadGoal, setGoal, onGoalChange } from './progress.js';
 import { directMissingFor, pathTo } from './requirements.js';
 import { listWithMore } from './render.js';
+import { iconUrl, withIconFallback } from './icons.js';
 
 const OPEN_KEY = 'silksong-guide:goal-dock-open:v1';
 const POS_KEY = 'silksong-guide:goal-dock-pos:v1';
@@ -115,6 +116,7 @@ export async function startGoalDock() {
       return {
         id: item.id,
         name: item.name,
+        type: item.type,
         regionName: region ? region.name : item.regionId,
         regionId: item.regionId,
         available: row.available,
@@ -142,7 +144,8 @@ export async function startGoalDock() {
       },
       el('span', { class: 'dock-bead', 'aria-hidden': 'true' })
     );
-    const name = el('span', { class: 'dock-row-name' }, row.name);
+    const icon = withIconFallback(el('img', { class: 'entry-icon', src: iconUrl(row), alt: '', width: 64, height: 64, loading: 'lazy', decoding: 'async' }));
+    const name = el('span', { class: 'dock-row-name' }, icon, row.name);
     const meta = el('span', { class: 'dock-row-meta' });
     const region = el('a', { href: pageHref('region.html', { id: row.regionId }, sample) }, row.regionName);
     meta.append(region);
