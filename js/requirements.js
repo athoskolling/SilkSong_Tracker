@@ -131,6 +131,21 @@ function regionMissing(index, regionId, doneSet) {
   return sortByStep(index, missing);
 }
 
+// The direct requirements only: the ids from the requirements list that are not done, each once,
+// in route order. No chain walk, so no cycle can occur here. Every id in the list is checked by
+// requirementsOfItem / requirementsOfRegion, done or not, like everywhere else in this module.
+function directMissing(index, requirementIds, doneSet) {
+  return sortByStep(index, new Set(requirementIds.filter((id) => !doneSet.has(id))));
+}
+
+function itemDirectMissing(index, itemId, doneSet) {
+  return directMissing(index, requirementsOfItem(index, getItem(index, itemId)), doneSet);
+}
+
+function regionDirectMissing(index, regionId, doneSet) {
+  return directMissing(index, requirementsOfRegion(index, regionId), doneSet);
+}
+
 // All entries, lowest `step` first. Does not change the caller's array.
 function itemsInRouteOrder(items) {
   return [...items].sort((a, b) => a.step - b.step);
@@ -247,6 +262,19 @@ export function isRegionAvailable(regionId, doneSet, regions) {
 // (including the Regions of those entries), in route order.
 export function missingForRegion(regionId, doneSet, regions, items) {
   return regionMissing(buildIndex(items, regions), regionId, doneSet);
+}
+
+// Like missingFor, but only the entry's direct requirements (its own and its Region's) that are
+// not done, without walking the chain. Always a subset of missingFor. The interface shows these
+// and counts the rest ("Needs Lace, plus 3 earlier steps"); the Locked page and the Goal page keep
+// the full chain.
+export function directMissingFor(itemId, doneSet, items, regions) {
+  return itemDirectMissing(buildIndex(items, regions), itemId, doneSet);
+}
+
+// The same for a Region: its `requires` that are not done, in route order, no chain walk.
+export function directMissingForRegion(regionId, doneSet, regions, items) {
+  return regionDirectMissing(buildIndex(items, regions), regionId, doneSet);
 }
 
 // Like missingFor, but for a Place (places.json, ADR 0007): what is still missing for the player to
