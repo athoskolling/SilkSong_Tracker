@@ -349,7 +349,8 @@ pathTo(itemId, doneSet, items, regions) -> Array<{ id: string, available: boolea
 // available = isAvailable(id, ...) for each row, so the page can say "Available now" without asking again.
 // itemId in doneSet: [] (the Goal is done, even if a requirement was left unmarked; out-of-order marking is allowed).
 // itemId not done and nothing missing: one row, the Goal, available: true.
-// Works for any entry, on or off the Route; it does not read routeIds. Unknown ids and cycles throw, as in missingFor.
+// Works for any entry, on or off the Route; it does not read routeIds. Unknown ids and cycles throw, as in missingFor,
+// even when itemId is in doneSet (the chain is checked first; a typo is a data bug whatever the player marked; GOAL-3 Q6).
 
 nextStep(doneSet, items, regions) -> string | null
 // "Next on the route": the id of the entry with the lowest `step` that is on the Route (routeIds),
@@ -476,15 +477,20 @@ setBuild(crestId /* slug */, build /* { red?, blue?, yellow?, white? } lists of 
 // Goal (approved by Athos, 2026-10-20). One entry id the player follows, on this device only (Athos: option 1a).
 // Not part of Progress: never in the Progress object, the cloud document, a backup file, a merge or an import.
 loadGoal() -> string | null
-// The stored Goal id, or null. Synchronous: it reads localStorage only. A stored value that is not a slug
+// The stored Goal id, or null. Synchronous: it reads localStorage on every call, with no cache, so a value
+// another tab wrote is seen on the next call (only while storage cannot be written does it answer from a copy
+// in memory, like Progress). Stored as the plain id text, not JSON. A stored value that is not a slug
 // reads as null. Not checked against data/: an id that no longer exists is returned, and the page says so.
 setGoal(itemId /* slug */ | null) -> void
-// Replaces the Goal (one at a time); null clears it. A non-slug argument is a TypeError and writes nothing.
+// Replaces the Goal (one at a time); null clears it. A non-slug argument (undefined included) is a TypeError
+// and writes nothing.
 // A call that changes nothing does nothing and does not notify. Never marks anything done or Visited,
 // never moves updatedAt and never writes to the cloud.
 onGoalChange(callback /* (id | null) => void */) -> unsubscribe
-// Called after every setGoal that changes something on this page, and after clearProgress. Not called
-// at once on subscribe (loadGoal gives the current value). Other open tabs see the change when they reload.
+// Called after every setGoal that changes something on this page, and after every clearProgress, with null,
+// even when there was no Goal. Not called at once on subscribe (loadGoal gives the current value), and not
+// called by configureProgress({ sample: true }): a page reads loadGoal after configuring. useStorage drops the
+// listeners with the rest of the in-session state. Other open tabs see the change when they reload.
 
 onProgressChange(callback /* ({ done: Set, visited: Set, crestSlots, builds }) => void */) -> unsubscribe /* () => void */
 // Called after every change, including changes from the cloud (another device).
