@@ -8,8 +8,8 @@
 
 import { loadData, pageHref } from './data.js';
 import { configureProgress, loadProgress, setDone, onProgressChange, loadGoal, setGoal, onGoalChange } from './progress.js';
-import { isAvailable, missingFor, isRegionAvailable, isCounted } from './requirements.js';
-import { renderMessage, renderTrackersShell, renderTrackersBody, listWithMore } from './render.js';
+import { isAvailable, missingFor, directMissingFor, isRegionAvailable, isCounted } from './requirements.js';
+import { renderMessage, renderTrackersShell, renderTrackersBody, needsText } from './render.js';
 
 // Which `type` goes on which tab. THIS IS A PROPOSAL, awaiting Athos (docs/CONTRACTS.md section 8,
 // "Which Tracker each type goes on"). It is the only place the grouping is written, so changing it is
@@ -165,7 +165,8 @@ async function runTrackersPage(app) {
   function entryView(item) {
     const available = isAvailable(item.id, state.done, items, regions);
     const done = state.done.has(item.id);
-    const missing = !done && !available ? missingFor(item.id, state.done, items, regions) : [];
+    const direct = !done && !available ? directMissingFor(item.id, state.done, items, regions) : [];
+    const chainLength = direct.length ? missingFor(item.id, state.done, items, regions).length : 0;
     const region = regionsById.get(item.regionId);
     return {
       id: item.id,
@@ -180,7 +181,7 @@ async function runTrackersPage(app) {
       available,
       isGoal: state.goal === item.id,
       // Once an entry is done, what it needed no longer matters (same rule as the Route).
-      needs: missing.length ? `Needs ${listWithMore(missing.map(nameOf), 3)}` : null,
+      needs: needsText(direct.map(nameOf), chainLength),
       // A Task is never counted, so "Not counted" is for Collectibles the game does not count.
       uncounted: item.kind === 'collectible' && !isCounted(item),
     };

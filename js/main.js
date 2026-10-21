@@ -20,6 +20,8 @@ import {
 import {
   isAvailable,
   missingFor,
+  directMissingFor,
+  directMissingForRegion,
   regionProgress,
   isRegionAvailable,
   missingForRegion,
@@ -44,7 +46,7 @@ import {
   renderRouteShell,
   renderRouteBody,
   joinNames,
-  listWithMore,
+  needsText,
   syncText,
   renderAccountShell,
   renderAccountPlate,
@@ -188,10 +190,11 @@ function makeEntryView(item, guide, done, nextId, goalId) {
 // requirements are all met; nothing when the entry has none.
 function needsLine(item, available, guide, done) {
   if (!available) {
-    const missing = missingFor(item.id, done, guide.items, guide.regions);
-    if (missing.length === 0) return null;
-    // Capped like the Locked Region card on Home: the nearest three by step, then "and N more".
-    return { text: `Needs ${listWithMore(missing.map(guide.nameOf), 3)}`, missing: true };
+    const direct = directMissingFor(item.id, done, guide.items, guide.regions);
+    if (direct.length === 0) return null;
+    // Only the direct requirements by name; the rest of the chain is a count (shared helper).
+    const chain = missingFor(item.id, done, guide.items, guide.regions);
+    return { text: needsText(direct.map(guide.nameOf), chain.length), missing: true };
   }
   if (item.requires.length > 0) {
     return { text: `Needs ${joinNames(item.requires.map(guide.nameOf))}, done`, missing: false };
@@ -422,8 +425,9 @@ function regionCard(region, guide, state, regionsWithDone, nextItem) {
   };
 
   if (cardState === 'locked') {
-    const missing = missingForRegion(region.id, state.done, guide.regions, guide.items).map(guide.nameOf);
-    card.needs = missing.length ? `Needs ${listWithMore(missing, 3)}` : null;
+    const direct = directMissingForRegion(region.id, state.done, guide.regions, guide.items);
+    const chain = missingForRegion(region.id, state.done, guide.regions, guide.items);
+    card.needs = needsText(direct.map(guide.nameOf), chain.length);
   }
   return card;
 }

@@ -12,8 +12,8 @@
 
 import { loadData, pageHref } from './data.js';
 import { configureProgress, loadProgress, setDone, onProgressChange, loadGoal, setGoal, onGoalChange } from './progress.js';
-import { isAvailable, missingFor, isRegionAvailable, isCounted, rosariesToSpend } from './requirements.js';
-import { renderMessage, renderRosariesShell, renderRosariesBody, listWithMore, formatRosaries } from './render.js';
+import { isAvailable, missingFor, directMissingFor, isRegionAvailable, isCounted, rosariesToSpend } from './requirements.js';
+import { renderMessage, renderRosariesShell, renderRosariesBody, needsText, formatRosaries } from './render.js';
 
 run();
 
@@ -74,7 +74,8 @@ async function runRosariesPage(app) {
   function entryView(item) {
     const available = isAvailable(item.id, state.done, items, regions);
     const done = state.done.has(item.id);
-    const missing = !done && !available ? missingFor(item.id, state.done, items, regions) : [];
+    const direct = !done && !available ? directMissingFor(item.id, state.done, items, regions) : [];
+    const chainLength = direct.length ? missingFor(item.id, state.done, items, regions).length : 0;
     return {
       id: item.id,
       name: item.name,
@@ -86,7 +87,7 @@ async function runRosariesPage(app) {
       available,
       isGoal: state.goal === item.id,
       // Once an entry is bought, what it needed no longer matters (same rule as the Route).
-      needs: missing.length ? `Needs ${listWithMore(missing.map(nameOf), 3)}` : null,
+      needs: needsText(direct.map(nameOf), chainLength),
       // A Task is never counted, so "Not counted" is for Collectibles the game does not count.
       uncounted: item.kind === 'collectible' && !isCounted(item),
     };
