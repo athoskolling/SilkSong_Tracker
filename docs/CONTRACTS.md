@@ -343,6 +343,14 @@ missingForPlace(place /* one Place object from places.json */, doneSet, items, r
 // Unknown place.regionId or an unknown id in any `requires` it reads: throw, as everywhere in this module.
 // Lets the Region page say "Needs X" for a Place without walking `requires` itself.
 
+pathTo(itemId, doneSet, items, regions) -> Array<{ id: string, available: boolean }>
+// Goal feature (2026-10-20, awaits Athos's review). What the Goal page lists: missingFor(itemId) in its order
+// (by `step`), then itemId itself, always last, even if the data gave it a lower `step` than a requirement.
+// available = isAvailable(id, ...) for each row, so the page can say "Available now" without asking again.
+// itemId in doneSet: [] (the Goal is done, even if a requirement was left unmarked; out-of-order marking is allowed).
+// itemId not done and nothing missing: one row, the Goal, available: true.
+// Works for any entry, on or off the Route; it does not read routeIds. Unknown ids and cycles throw, as in missingFor.
+
 nextStep(doneSet, items, regions) -> string | null
 // "Next on the route": the id of the entry with the lowest `step` that is on the Route (routeIds),
 // not done and Available. null when nothing Available is left on the Route. Never an entry off the
@@ -358,7 +366,7 @@ holdingYouUp(doneSet, items, regions) -> Array<{ id: string, blocks: string[] }>
 // Needed in Phase 2 (Home and Route); Athos may write it then.
 ```
 
-Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`. Phase 5: `regionProgress` leaves out a Collectible with `counts: false` and keeps one with `counts: true` or no `counts`; `isCounted` is false for every Task, even one with `counts: true`; an entry with `counts: false` or a `price` still works in `requires` chains (`isAvailable`, `missingFor`, `missingForRegion`) exactly like any other entry; `routeIds` holds every counted Collectible, every Task and every `missable` entry, holds a `counts: false` entry that an entry on the Route or a Region needs (also two links down), leaves out one needed only by entries off the Route, ignores `doneSet` (it takes none), throws on unknown ids and stops on a cycle; `nextStep` never returns an entry off the Route, even when it is Available and has the lowest `step`; `holdingYouUp` never lists an entry off the Route in `blocks`; `rosariesToSpend` leaves out done entries and entries without a price, and splits Available from not Available. Phase 5, third round: `missingForPlace` with empty `requires` in an Available Region is `[]`; in a Locked Region it lists the Region's missing ids; a two-step chain, a requirement already done and a diamond behave as in `missingFor`; ordered by `step`; it throws on an unknown `regionId` and on an unknown id in the Place's or the Region's `requires`; it does not change the Place object.
+Rules the tests must cover (QA 1): empty requirements; a two-step chain; a requirement already done is not listed and not walked; a diamond (two paths to the same requirement) lists it once; a cycle (`a` requires `b`, `b` requires `a`) does not loop forever and throws a clear error; unknown ids throw; tasks are excluded from `regionProgress`; ordering by `step`; an entry with no `requires` in a Locked Region is not Available and its `missingFor` lists the Region's missing ids; `nextStep` skips done and not Available entries and returns null at the end; `holdingYouUp` returns only Available ids and counts a Region in `blocks`. Phase 5: `regionProgress` leaves out a Collectible with `counts: false` and keeps one with `counts: true` or no `counts`; `isCounted` is false for every Task, even one with `counts: true`; an entry with `counts: false` or a `price` still works in `requires` chains (`isAvailable`, `missingFor`, `missingForRegion`) exactly like any other entry; `routeIds` holds every counted Collectible, every Task and every `missable` entry, holds a `counts: false` entry that an entry on the Route or a Region needs (also two links down), leaves out one needed only by entries off the Route, ignores `doneSet` (it takes none), throws on unknown ids and stops on a cycle; `nextStep` never returns an entry off the Route, even when it is Available and has the lowest `step`; `holdingYouUp` never lists an entry off the Route in `blocks`; `rosariesToSpend` leaves out done entries and entries without a price, and splits Available from not Available. Phase 5, third round: `missingForPlace` with empty `requires` in an Available Region is `[]`; in a Locked Region it lists the Region's missing ids; a two-step chain, a requirement already done and a diamond behave as in `missingFor`; ordered by `step`; it throws on an unknown `regionId` and on an unknown id in the Place's or the Region's `requires`; it does not change the Place object. Goal: `pathTo` returns `[]` for a done entry (also when a requirement is not done); one available row for an entry with nothing missing; `missingFor`'s ids in the same order followed by the entry; the entry last even when its `step` is lower than a requirement's; a done requirement is not listed; a diamond lists the shared id once; an entry in a Locked Region lists the Region's missing ids; `available` matches `isAvailable` for every row; an entry off the Route works the same way; unknown ids and a cycle throw.
 
 Athos delegated this module to Dev A on 2026-10-19 (Phase 1) and reviews it. Agents write tests against these signatures.
 
@@ -465,6 +473,19 @@ setBuild(crestId /* slug */, build /* { red?, blue?, yellow?, white? } lists of 
 
 // setShellShards was contracted as provisional and is dropped (ADR 0007); it was never built.
 
+// Goal (2026-10-20, awaits Athos's review). One entry id the player follows, on this device only (Athos: option 1a).
+// Not part of Progress: never in the Progress object, the cloud document, a backup file, a merge or an import.
+loadGoal() -> string | null
+// The stored Goal id, or null. Synchronous: it reads localStorage only. A stored value that is not a slug
+// reads as null. Not checked against data/: an id that no longer exists is returned, and the page says so.
+setGoal(itemId /* slug */ | null) -> void
+// Replaces the Goal (one at a time); null clears it. A non-slug argument is a TypeError and writes nothing.
+// A call that changes nothing does nothing and does not notify. Never marks anything done or Visited,
+// never moves updatedAt and never writes to the cloud.
+onGoalChange(callback /* (id | null) => void */) -> unsubscribe
+// Called after every setGoal that changes something on this page, and after clearProgress. Not called
+// at once on subscribe (loadGoal gives the current value). Other open tabs see the change when they reload.
+
 onProgressChange(callback /* ({ done: Set, visited: Set, crestSlots, builds }) => void */) -> unsubscribe /* () => void */
 // Called after every change, including changes from the cloud (another device).
 // Phase 5: the payload also carries the two player-choice fields, shaped as in loadProgress. A change to
@@ -522,6 +543,7 @@ clearProgress() -> Promise<void>
 // updatedAt (keeping syncedUid), so the old cloud copy cannot win back as the newer one.
 // Phase 5: the empty Progress has crestSlots {} and builds {} written explicitly, so a
 // new run also clears the saved Builds and opened slots, and the empty values win as the newer copy.
+// Goal: also clears the Goal on this device and notifies onGoalChange (a new run starts with no Goal).
 
 useStorage(storageLike) -> void
 // Test seam only: swaps localStorage for an in-memory stand-in and resets in-session state.
@@ -540,6 +562,7 @@ Behaviour that is not a function:
 - `combined` in the sync status is reported only on a first sign-in where a cloud copy already existed.
 - Known cost (ADR 0001): after the first sign-in, "newer wins as a whole object" means two devices editing at the same time keep only the newer side.
 - **Phase 5, Firestore rules first.** The cloud document may carry `crestSlots` and `builds`. The rules before Phase 5 accepted exactly four keys, so a write with either would be refused. The rules change (P5-5) keeps the four required keys and accepts the two as optional maps, and still lets a signed-in user reach only their own document. It never accepted `shellShards`, and since that field is dropped (ADR 0007) it never will: dropping it needs no rules change and nothing for Athos to publish. **Athos publishes those rules before the new `progress.js` (P5-7) is merged**, because every merge is pushed and goes live at once. The other order is safe: new rules accept the four-key documents that older pages write.
+- **Goal storage.** localStorage key `silksong-guide:goal:v1`; in sample mode `silksong-guide:goal:sample:v1`, so a sample id never becomes the real Goal. `useStorage` resets it with everything else. Why outside Progress (Athos chose device only): the Firestore rules accept a fixed set of keys, so a synced Goal would need new rules published first (like gate G1); a backup is a record of what was done, not of what the player meant to do next; and a Goal has no sensible union merge (two devices, two Goals). It can move into Progress later as an optional field, under ADR 0006's "missing is not empty" rule.
 - **Phase 5, older pages.** A device still running a page from before P5-7 reads and writes only the four keys. Its writes drop the two fields from the cloud document; a device running the new page keeps its own values (absent is not empty) and writes them back on its next change. A "Start a new run" made on an older page does not clear the saved Builds on devices running the new page. Both are accepted costs (ADR 0006).
 
 ## 4. `js/firebase.js`
@@ -603,6 +626,11 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
   - **Build picker: templates.** For the chosen Crest, its templates in file order (none: nothing is shown; a Crest without `slots` never has templates). Each shows its name, `goal`, "Our suggestion" when `editorial` is true or "From a guide" when false, its Source link, and where it stands from `fitTemplate`: ready; "Needs X, Y and 1 more" (`missing`); "Needs more slots: 1 red" (`noRoom`). A `missing` entry whose Region is not Visited is not named ("and 2 you have not found yet"), as entries in unvisited Regions are hidden elsewhere; whether the page gets a "Show everything" switch is the mockup's call. **"Use as my Build" never saves:** it replaces the Crest's draft with `usable` (so missing ids are left out, and ids with no room show as today's "no slot for it" rows), the save bar shows "Not saved", and the player saves or undoes as with any change. If the Crest already has unsaved changes, the page asks before replacing them. The left-out ids are announced in the live region. Templates are never filtered away for missing ids: a template the player cannot use yet stays listed with what it needs.
   - **Build picker: synergies.** Under the slots, "Works together": `synergiesIn` of the Build as shown (draft or saved), each with its `effect` and Source link. "Pairs well with": `synergyPartners` whose `other` the player owns (`ownedByColour`); a partner the player does not own is not shown (nothing to act on now, and no spoiler).
   - Without `builds.json` the picker works exactly as before; without `places.json` the Region and Rosaries pages do.
+- **Goal** (2026-10-20, awaits Athos's review; glossary "Goal"; copy and layout come from the mockup Athos approves). The interface reads and writes the Goal only through `loadGoal`, `setGoal` and `onGoalChange`, and the list only through `pathTo`.
+  - **The button.** Every entry row on the Region, Route, Trackers and Rosaries pages, and the "Next on the route" plate, gets a "Make this my goal" control (`<button type="button" aria-pressed>`). On the Goal's own row it reads as pressed ("Your goal"), and pressing it again clears the Goal. It appears only where the row itself is shown: the spoiler rules for rows do not change. Setting a Goal never marks anything.
+  - **Goal page:** new page `goal.html`, `data-page="goal"`, with its own script `js/goal-page.js` (as the Phase 5 pages do). No header link, so the header keeps its six links: the Home plate and the pressed button link to it. It shows the Goal's name, Region and how many rows `pathTo` returns, then one row per `pathTo` result in its order, each with the entry's name, bead or knot, Region (linking `region.html?id=`), Sub-area, `how`, Source link, "Available now" when `available` is true, and its done toggle (`setDone`, as on every other row; the list then shrinks). **Spoilers:** every row is shown in full whatever is Visited and without "Show everything" (Athos, 2026-10-20: the player asked for it by choosing the Goal). States: no Goal ("You have no goal yet", pointing at the Route and Trackers pages); Goal done ("Done", with a way to clear it); Goal id not in the data (an old id: say it is no longer in the guide and offer to clear it); the normal list.
+  - **Home:** a "Your goal" plate near "Next on the route": the Goal's name, how many rows are left, the first row that is Available now, and a link to the Goal page. No Goal: no plate. Counts, "Next on the route", "Holding you up", the Route and Complete do not change.
+  - Ids from the Goal never enter `done`, `visited` or any count.
 
 ## 6. Cross-checks the validator must enforce (`scripts/validate-data.js`)
 
@@ -656,6 +684,11 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
   - **Sources and MapGenie** (section 1): a MapGenie Silksong map link is allowed as a `source`, only as a citation of where something is, never as the origin of our text; agents still never fetch or scrape MapGenie (`CLAUDE.md` rule 9), so such a link is unchecked until Athos opens it.
   - **`shellShards` dropped** (sections 1 and 3, ADR 0006): no Progress field, no `setShellShards`, no `tookShellShards` in the import result (the code still returns it as an always-false key until P5-45), no Firestore rules change (the rules never accepted the key). Shell Shards come from entries, like the Rosaries; which entries and which field is open (section 8).
   - **What this replaces:** the second round's "no `data/builds.json`, no templates", `STRUCTURE.md`'s "points of interest stay optional, after everything else", and the provisional `shellShards`.
+- 2026-10-20, **the Goal** (Athos asked to choose one thing and see everything it needs; his answers: this device only, one at a time, spoilers shown, the word Goal; written by the orchestrator, **the text awaits his review**). Additive: no existing signature, page, data file or saved Progress changes meaning.
+  - `pathTo` in `requirements.js` (section 2): `missingFor` plus the Goal itself and an `available` flag per row. Why a function and not page code: the order rule (the Goal always last) and the done case are easy to get wrong, and pure functions are cheap to test.
+  - `loadGoal`, `setGoal`, `onGoalChange` in `progress.js` (section 3), under their own localStorage key, outside Progress: not synced, not in backups, cleared by "Start a new run". Why in `progress.js`: it is the only module that touches localStorage. Why outside Progress: no Firestore rules change, nothing to merge (section 3, "Goal storage").
+  - New page `goal.html` with `js/goal-page.js`, a button on every entry row and on the "Next on the route" plate, and a Home plate (section 5). No header link.
+  - Not in this change: bosses as their own entries (Part 2: a research sheet, then data; the Route rule for bosses that give nothing is decided with it).
 
 ## 8. Open contract questions
 

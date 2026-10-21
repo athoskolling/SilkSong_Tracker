@@ -113,6 +113,13 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 - **How saving works:** three short rows: On this device, In your account, When they differ ("The first time you sign in, both are combined. After that, the most recent change wins.").
 - **Guide data:** the data version and the number of Regions in the guide, read from `data/`.
 
+### Goal (`goal.html`, added 2026-10-20; mockup pending, so this is the brief, not the design)
+- The player picks one entry with "Make this my goal" on any entry row or the "Next on the route" plate; the page lists what it still needs, in Route order, the Goal last (`docs/CONTRACTS.md` section 5, "Goal").
+- Same language as the rest of the guide: the rows hang on the thread with beads and knots, the first row that is Available now looks like "Next on the route", rows that still need something use the dashed thread. Each row can be ticked done here.
+- Every row is shown in full, spoilers included (Athos, 2026-10-20). The page says so in one line, so a player is not surprised.
+- Home gets a small "Your goal" plate near "Next on the route". No header link.
+- The Goal is kept on this device only and is not in the backup file. The Goal page says so in one line; "How saving works" on the Account page may add a row.
+
 ## 7. Copy rules
 
 - English only. Sentence case. Plain verbs. No filler and no marketing.

@@ -72,6 +72,10 @@ _Avoid_: Walkthrough, path, order
 One position in the Route, pointing at a Collectible or Task.
 _Avoid_: Stage, milestone
 
+**Goal**:
+The one entry the player chose to follow, on or off the Route. The site lists everything it still needs, in Route order, ending with the Goal itself. Kept on this device only, not in Progress (Athos, 2026-10-20).
+_Avoid_: Target, pin, tracked item (a Tracker is a tab), path (the Route avoids it too)
+
 **Available**:
 A Region whose requirements the player has met, so it can be entered.
 _Avoid_: Unlocked, open
