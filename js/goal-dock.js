@@ -118,6 +118,7 @@ export async function startGoalDock() {
         regionName: region ? region.name : item.regionId,
         regionId: item.regionId,
         available: row.available,
+        kind: item.kind,
         isGoal: item.id === goalId,
         needs: missing.length ? `Needs ${listWithMore(missing.map(nameOf), 3)}` : null,
       };
@@ -140,13 +141,20 @@ export async function startGoalDock() {
         'data-id': row.id,
         'aria-label': `Mark as done: ${row.name}`,
       },
-      el('span', { class: 'dock-bead', 'aria-hidden': 'true' })
+      // The same marks as the Route: a bead for a Collectible, a knot for a Task; the silk ring on the next
+      // row, a dashed line on a row that still needs something.
+      el('span', {
+        class: ['mark', row.kind === 'task' ? 'mark--knot' : 'mark--bead', row === firstAvailable ? 'is-next' : '', row.available ? '' : 'is-blocked']
+          .filter(Boolean)
+          .join(' '),
+        'aria-hidden': 'true',
+      })
     );
     const name = el('span', { class: 'dock-row-name' }, row.name);
     const meta = el('span', { class: 'dock-row-meta' });
     const region = el('a', { href: pageHref('region.html', { id: row.regionId }, sample) }, row.regionName);
     meta.append(region);
-    if (row.isGoal) meta.append(' · Your goal');
+    if (row.isGoal) meta.append(' · ', el('span', { class: 'dock-row-goal' }, 'Your goal'));
     const lines = [name, meta];
     if (row.available) lines.push(el('span', { class: 'dock-row-flag' }, 'Available now'));
     else if (row.needs) lines.push(el('span', { class: 'dock-row-needs' }, row.needs));
