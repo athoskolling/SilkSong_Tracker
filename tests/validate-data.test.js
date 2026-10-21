@@ -719,6 +719,71 @@ test('counts false on a Collectible with a counted type (tool) gives no warning'
   assertClean(validate(withEntry('sample-key', 'collectible', { counts: false })));
 });
 
+// ---- optional (rule 6, bosses 2026-10-20): true or false, and only on a Task (contract section 1, rule 6)
+
+test('rule 6: optional true on a Task is accepted', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { optional: true })));
+});
+
+test('rule 6: optional false on a Task is accepted', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { optional: false })));
+});
+
+test('rule 6: a Task with no optional field is accepted (absence is the default, false)', () => {
+  // withEntry asserts that sample-door is a Task and adds nothing, so the field stays absent.
+  assertClean(validate(withEntry('sample-door', 'task', {})));
+});
+
+test('rule 6: the command exits 0 for a Task with optional true, and prints no warnings', () => {
+  const dir = withEntry('sample-door', 'task', { optional: true });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(run.stderr, '');
+  assert.match(run.stdout, /0 warning\(s\)/);
+});
+
+test('rule 6: optional true on a Collectible is an error, because only a Task has the field', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: true });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task, but this entry's "kind" is "collectible"/);
+});
+
+test('rule 6: optional false on a Collectible is still an error (presence is what counts, not the value)', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: false });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task/);
+});
+
+test('rule 6: optional "yes" on a Collectible gives two errors, one for the kind and one for the value', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: 'yes' });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 2, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task/);
+  assert.match(result.errors[1].message, /"optional" must be true or false when it is given/);
+});
+
+for (const value of ['yes', 'true', 1, null]) {
+  test(`rule 6: optional ${JSON.stringify(value)} on a Task is not true or false`, () => {
+    const dir = withEntry('sample-door', 'task', { optional: value });
+    const result = validate(dir);
+    assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-door' });
+    assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+    assert.match(result.errors[0].message, /"optional" must be true or false when it is given, found/);
+  });
+}
+
+test('rule 6: the command prints an optional error with file, id and rule, and exits 1', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: true });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 1, run.stdout + run.stderr);
+  assert.match(run.stderr, /ERROR items\.json, id "sample-key", rule 6: "optional" is only for a Task/);
+});
+
 // ---- price (shape)
 
 for (const price of [0, -5, 12.5, '80', null, true]) {
@@ -1256,6 +1321,59 @@ test('rule 14: the command prints the WARNING with file, Ending id and rule, exi
     /WARNING endings\.json, id "sample-ending-one", rule 14: "conditions" lists "sample-extra-relic", which is not on the Route/
   );
   assert.match(run.stdout, /passed.*1 warning/);
+});
+
+// Adds a Task to a copy of the sample, in sample-region-a, with the given fields (`optional`, `requires`...).
+function addTask(dir, id, fields = {}) {
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      id,
+      name: `Sample task ${id}`,
+      kind: 'task',
+      type: 'boss',
+      regionId: 'sample-region-a',
+      how: 'Sample text, not game data.',
+      requires: [],
+      step,
+      source: `https://example.invalid/${id}`,
+      ...fields,
+    });
+  });
+}
+
+// An optional Task (contract section 1, `optional`) is off the Route unless something on the Route needs it, and
+// an Ending condition does not put it on the Route (section 2). So an optional Task used as a condition warns.
+test('rule 14: an Ending condition that is an optional Task nothing needs warns, because it is off the Route', () => {
+  const dir = copySample();
+  addTask(dir, 'sample-extra-optional', { optional: true });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-optional');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14, { file: 'endings.json', id: 'sample-ending-one' });
+  assert.equal(result.warnings.length, 1, `exactly one warning:\n${result.warnings.map(formatProblem).join('\n')}`);
+  assert.match(result.warnings[0].message, /"conditions" lists "sample-extra-optional", which is not on the Route/);
+});
+
+test('rule 14: an optional Task used as a condition gives no warning when a counted Collectible needs it', () => {
+  // The chain rule: the counted Collectible is on the Route, so what it needs (the optional Task) is too.
+  const dir = copySample();
+  addTask(dir, 'sample-extra-optional', { optional: true });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-optional');
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      id: 'sample-extra-needs-optional',
+      name: 'Sample tool that needs the optional task',
+      kind: 'collectible',
+      type: 'tool',
+      regionId: 'sample-region-a',
+      how: 'Sample text, not game data.',
+      requires: ['sample-extra-optional'],
+      step,
+      source: 'https://example.invalid/sample-extra-needs-optional',
+    });
+  });
+  assertClean(validate(dir));
 });
 
 test('rule 14: the command works from any folder, because the import of js/requirements.js is relative to the script', () => {

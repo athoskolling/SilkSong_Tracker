@@ -14,7 +14,8 @@
 //   3  regionId and every id in requires, unlocks and conditions exist, and are of the right kind
 //   4  no loop in requires (an entry also needs its Region's requires)
 //   5  step is a unique integer across all entries
-//   6  kind is collectible or task; missable needs a missableNote; a Task never has counts: true
+//   6  kind is collectible or task; missable needs a missableNote; a Task never has counts: true;
+//      optional (bosses) is true or false, and only on a Task
 //   7  every entry has a name, how and a web link as source
 //   8  a Region's heroImage has a credit, a relative .jpg or .png path, and the file exists
 //   9  locksOut names existing Ending ids, and an Ending never locks itself out
@@ -439,6 +440,7 @@ function checkEntries(ctx, collection) {
     if (item.unlocks !== undefined) checkIdList(ctx, 3, ref, item, 'unlocks', 'entry');
     checkMissable(ctx, ref, item);
     checkTrackingFields(ctx, ref, item);
+    checkOptional(ctx, ref, item);
     checkBuildFields(ctx, ref, item);
     checkUniqueInteger(ctx, 5, ref, item.step, 'step', 'all entries', steps);
     if (item.spoiler !== undefined && !SPOILER_LEVELS.includes(item.spoiler)) {
@@ -543,6 +545,28 @@ function checkMissable(ctx, ref, item) {
   }
   if (item.missableNote !== undefined && typeof item.missableNote !== 'string') {
     ctx.report.error('shape', ref, '"missableNote" must be text.');
+  }
+}
+
+// `optional` (bosses, 2026-10-20; contract section 1, rule 6) is a Task's flag: a Task that gives nothing
+// on the Route. Presence is what counts, so `optional: false` on a Collectible is still an error. The two
+// checks are separate, so an entry that breaks both gets both errors, one for each thing to fix.
+function checkOptional(ctx, ref, item) {
+  if (item.optional === undefined) return;
+  if (item.kind !== 'task') {
+    const kind = item.kind === undefined ? 'missing' : describe(item.kind);
+    ctx.report.error(
+      6,
+      ref,
+      `"optional" is only for a Task, but this entry's "kind" is ${kind}. Remove "optional": only a Task has it. A Collectible is on the Route by its counts, its "missable" flag and what needs it.`
+    );
+  }
+  if (typeof item.optional !== 'boolean') {
+    ctx.report.error(
+      6,
+      ref,
+      `"optional" must be true or false when it is given, found ${describe(item.optional)}. Use true for a Task that gives nothing on the Route (a boss fought for its own sake), or leave the field out.`
+    );
   }
 }
 
