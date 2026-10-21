@@ -29,6 +29,9 @@ import {
 
 const REAL_KEY = 'silksong-guide:progress:v1';
 const SAMPLE_KEY = 'silksong-guide:progress:sample:v1';
+// The Goal lives under its own keys, outside Progress (docs/CONTRACTS.md section 3, "Goal storage").
+const GOAL_KEY = 'silksong-guide:goal:v1';
+const SAMPLE_GOAL_KEY = 'silksong-guide:goal:sample:v1';
 
 // Ids are permanent slugs (docs/CONTRACTS.md section 1). Checking them on import
 // also keeps odd keys such as "__proto__" out of our objects.
@@ -43,12 +46,14 @@ let storageKey = REAL_KEY; // switches to SAMPLE_KEY in sample mode; every read 
 let sampleMode = false; // true once configureProgress({ sample: true }) ran; never goes back in a session
 let storageOverride = null; // set by useStorage; null = use the browser's localStorage
 let memoryCopy = null; // Progress held in memory only while localStorage cannot be written
+let goalMemory; // the Goal held in memory only while localStorage cannot be written; undefined = not in use
 let entryRegions = new Map(); // entry id -> region id, supplied by configureProgress
 let contentVersion = null; // dataVersion of data/, supplied by configureProgress
 let syncStatus = { state: 'local', at: null, message: '' };
 
 const progressListeners = new Set();
 const statusListeners = new Set();
+const goalListeners = new Set();
 
 // ------------------------------------------------------------ setup (proposed)
 
@@ -86,6 +91,7 @@ function enterSampleMode() {
   sampleMode = true;
   stopCloud();
   memoryCopy = null;
+  goalMemory = undefined; // it could hold a real Goal that must not show up in the sample
   storageKey = SAMPLE_KEY;
   setSyncStatus({ state: 'local', at: null, message: '' });
   notifyProgress(readLocal());
@@ -98,11 +104,13 @@ export function useStorage(storage) {
   storageKey = REAL_KEY;
   sampleMode = false;
   memoryCopy = null;
+  goalMemory = undefined;
   entryRegions = new Map();
   contentVersion = null;
   syncStatus = { state: 'local', at: null, message: '' };
   progressListeners.clear();
   statusListeners.clear();
+  goalListeners.clear();
   stopCloud(); // a test starts from "nobody signed in, no cloud"
 }
 
@@ -349,6 +357,77 @@ function setSyncStatus(status) {
       console.error('Sync status subscriber failed', error);
     }
   }
+}
+
+// ====================================================================== GOAL
+// The Goal is one entry id the player follows (docs/CONTRACTS.md section 3). It is kept OUTSIDE
+// Progress on purpose: it is on this device only, so it never reaches the cloud document, a backup
+// file, a merge or an import, and it needs no Firestore rules change. Nothing here touches done,
+// visited or updatedAt. It still goes through getStorage(), so useStorage's in-memory stand-in
+// works for it and sample mode gets its own key.
+
+function goalKey() {
+  return sampleMode ? SAMPLE_GOAL_KEY : GOAL_KEY;
+}
+
+// Synchronous: it reads storage only. A stored value that is not a slug (hand-edited, damaged)
+// reads as null. The id is not checked against data/: the Goal page says "no longer in the guide".
+export function loadGoal() {
+  if (goalMemory !== undefined) return goalMemory;
+  try {
+    const stored = getStorage()?.getItem(goalKey());
+    return typeof stored === 'string' && SLUG.test(stored) ? stored : null;
+  } catch {
+    return null; // unreadable storage: no Goal, and the page keeps working
+  }
+}
+
+// Writes the Goal, or removes it for null. If storage cannot be written (blocked, full) the Goal
+// is kept in memory for this session, the same fallback writeLocal uses for Progress.
+function writeGoal(id) {
+  try {
+    const storage = getStorage();
+    if (!storage) throw new Error('no storage');
+    if (id === null) storage.removeItem(goalKey());
+    else storage.setItem(goalKey(), id);
+    goalMemory = undefined;
+  } catch {
+    goalMemory = id;
+  }
+}
+
+function notifyGoal(id) {
+  for (const callback of [...goalListeners]) {
+    try {
+      callback(id);
+    } catch (error) {
+      console.error('Goal subscriber failed', error); // one bad subscriber must not block the rest
+    }
+  }
+}
+
+// One Goal at a time: a new id replaces the old one, null clears it. The argument is checked
+// before anything is written, so a bad call leaves the stored Goal as it was. Same value as now:
+// nothing is written and nobody is told.
+export function setGoal(itemId) {
+  if (itemId !== null && (typeof itemId !== 'string' || !SLUG.test(itemId))) {
+    throw new TypeError(`Goal must be an entry id (a slug) or null, got ${JSON.stringify(itemId)}`);
+  }
+  if (loadGoal() === itemId) return;
+  writeGoal(itemId);
+  notifyGoal(itemId);
+}
+
+// Not called at once on subscribe: loadGoal gives the current value.
+export function onGoalChange(callback) {
+  goalListeners.add(callback);
+  return () => goalListeners.delete(callback);
+}
+
+// For clearProgress. Notifies even when there was no Goal ("after clearProgress", as contracted).
+function clearGoalOnThisDevice() {
+  writeGoal(null);
+  notifyGoal(null);
 }
 
 // ====================================================================== CLOUD
@@ -886,6 +965,7 @@ export function mergeLocalAndCloud(local, cloud, uid) {
 // is not awaited: a slow network must not hold the screen, and a failure only sets
 // the sync status.
 export async function clearProgress() {
+  clearGoalOnThisDevice(); // a new run starts with no Goal
   const { syncedUid } = readLocal();
   const fresh = emptyProgress();
   // Written empty on purpose (not left absent): an absent field would let the old cloud copy's

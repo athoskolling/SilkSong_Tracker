@@ -252,6 +252,21 @@ export function missingForPlace(place, doneSet, items, regions) {
   return sortByStep(index, missing);
 }
 
+// What the Goal page lists (Goal feature): everything still missing for the entry, in route order,
+// then the entry itself, always last. Built on missingFor and isAvailable so the chain is walked in
+// one way only. The entry goes last even when its `step` is lower than a requirement's, because the
+// Goal is the end of the path, not a position on the Route. `available` is isAvailable for each row,
+// so the page can say "Available now" without asking again. A done entry gives [] even if one of its
+// requirements was left unmarked (out-of-order marking is allowed). missingFor runs first, so an
+// unknown id or a cycle throws even for a done entry, as it does everywhere in this module.
+// It never reads routeIds: an entry off the Route works the same way.
+export function pathTo(itemId, doneSet, items, regions) {
+  const index = buildIndex(items, regions);
+  const missing = itemMissing(index, itemId, doneSet);
+  if (doneSet.has(itemId)) return [];
+  return [...missing, itemId].map((id) => ({ id, available: itemIsAvailable(index, id, doneSet) }));
+}
+
 // "Next on the route": the not-done, Available entry on the Route with the lowest `step`.
 // An entry off the Route is never returned, even when it is Available and has the lowest `step`.
 // null when nothing Available is left on the Route.
