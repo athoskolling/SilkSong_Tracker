@@ -155,6 +155,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - **GOAL-4 merged** (`dev-b/goal-screens`): `goal.html`, `js/goal-page.js`, `css/goal.css`, the control on Region, Route, Trackers and Rosaries rows and the Next plate, the Home plate. Dev B checked it in headless Chromium at 1280, 390 and 320 px with real and sample data (all four states, ticking, clearing, reload, the 41-row path, focus, no console errors). Orchestrator ran: 739 tests, validator 0 warnings, page loads with the boss data, looked at the real-data screenshots. Dev B's own choices: a done Goal on Home reads "Done." with "Open your goal"; a retired Goal shows no Home plate. Follow-up: the Goal page's Needs lines list up to three names "and N more" (the last row of a long path reads "Needs A, B, C and 38 more"); a direct-requirements function (the old line's `directMissingFor`, branch `local/acts-1-2`) would fix it. Note: agents in this session read an old copy of CONTRACTS.md through CLAUDE.md (loaded before the pull); a session restart refreshes it.
 - **Pushed** (Athos: "push when everything is merged"): Goal feature (GOAL-1 to GOAL-4) and bosses (BOSS-1 to BOSS-3, `dataVersion` 13).
 
+- **Athos: bring over `directMissingFor`.** Contract sections 2, 5, 7. DMF-1 (dev-a: port the two functions from `local/acts-1-2`), DMF-2 (qa-tests: port `tests/requirements-direct.test.js`), then DMF-3 (dev-b: Goal page Needs lines).
+
 ## Open
 
 - Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
