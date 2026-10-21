@@ -719,6 +719,71 @@ test('counts false on a Collectible with a counted type (tool) gives no warning'
   assertClean(validate(withEntry('sample-key', 'collectible', { counts: false })));
 });
 
+// ---- optional (rule 6, bosses 2026-10-20): true or false, and only on a Task (contract section 1, rule 6)
+
+test('rule 6: optional true on a Task is accepted', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { optional: true })));
+});
+
+test('rule 6: optional false on a Task is accepted', () => {
+  assertClean(validate(withEntry('sample-door', 'task', { optional: false })));
+});
+
+test('rule 6: a Task with no optional field is accepted (absence is the default, false)', () => {
+  // withEntry asserts that sample-door is a Task and adds nothing, so the field stays absent.
+  assertClean(validate(withEntry('sample-door', 'task', {})));
+});
+
+test('rule 6: the command exits 0 for a Task with optional true, and prints no warnings', () => {
+  const dir = withEntry('sample-door', 'task', { optional: true });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 0, run.stderr);
+  assert.equal(run.stderr, '');
+  assert.match(run.stdout, /0 warning\(s\)/);
+});
+
+test('rule 6: optional true on a Collectible is an error, because only a Task has the field', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: true });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task, but this entry's "kind" is "collectible"/);
+});
+
+test('rule 6: optional false on a Collectible is still an error (presence is what counts, not the value)', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: false });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task/);
+});
+
+test('rule 6: optional "yes" on a Collectible gives two errors, one for the kind and one for the value', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: 'yes' });
+  const result = validate(dir);
+  assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-key' });
+  assert.equal(result.errors.length, 2, result.errors.map(formatProblem).join('\n'));
+  assert.match(result.errors[0].message, /"optional" is only for a Task/);
+  assert.match(result.errors[1].message, /"optional" must be true or false when it is given/);
+});
+
+for (const value of ['yes', 'true', 1, null]) {
+  test(`rule 6: optional ${JSON.stringify(value)} on a Task is not true or false`, () => {
+    const dir = withEntry('sample-door', 'task', { optional: value });
+    const result = validate(dir);
+    assertOnlyRule(result, 6, { file: 'items.json', id: 'sample-door' });
+    assert.equal(result.errors.length, 1, result.errors.map(formatProblem).join('\n'));
+    assert.match(result.errors[0].message, /"optional" must be true or false when it is given, found/);
+  });
+}
+
+test('rule 6: the command prints an optional error with file, id and rule, and exits 1', () => {
+  const dir = withEntry('sample-key', 'collectible', { optional: true });
+  const run = spawnSync(process.execPath, [SCRIPT, dir], { encoding: 'utf8' });
+  assert.equal(run.status, 1, run.stdout + run.stderr);
+  assert.match(run.stderr, /ERROR items\.json, id "sample-key", rule 6: "optional" is only for a Task/);
+});
+
 // ---- price (shape)
 
 for (const price of [0, -5, 12.5, '80', null, true]) {
