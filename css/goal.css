@@ -125,11 +125,12 @@
    width at the bottom, so it never covers more than the pill unless the player opens it. */
 .goal-dock {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  /* Desktop: top right, under the header links, in line with the right edge of the page frame. */
+  top: 84px;
+  right: max(var(--gutter), calc((100vw - var(--frame)) / 2 + var(--gutter)));
   z-index: 30;
   width: min(360px, calc(100vw - 32px));
-  max-height: min(70vh, 560px);
+  max-height: calc(100vh - 104px);
   display: flex;
   flex-direction: column;
   background: var(--lacquer);
@@ -213,10 +214,9 @@
 }
 .dock-link:hover { color: var(--silk); }
 
-/* Room at the foot of the page so the closed box never hides the last line of the footer. */
-body.has-goal-dock .site-footer { padding-bottom: 80px; }
-
-@media (max-width: 600px) {
-  .goal-dock { right: 8px; left: 8px; bottom: 8px; width: auto; max-height: 65vh; }
+/* Phone: the header wraps to two rows, so the box sits at the bottom, and the footer leaves room for it. */
+@media (max-width: 700px) {
+  .goal-dock { top: auto; right: 8px; left: 8px; bottom: 8px; width: auto; max-height: 65vh; }
+  body.has-goal-dock .site-footer { padding-bottom: 80px; }
 }
 @media print { .goal-dock { display: none; } }

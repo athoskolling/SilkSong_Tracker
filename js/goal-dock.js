@@ -1,5 +1,5 @@
-// goal-dock.js: the Goal kept in view on every page except the Goal page itself. A small box fixed in the
-// bottom-right corner: collapsed it is one line ("Your goal: name, 6 left"); open it lists everything the
+// goal-dock.js: the Goal kept in view on every page except the Goal page itself. A small box fixed at the
+// top-right corner: collapsed it is one line ("Your goal: name, 6 left"); open it lists everything the
 // Goal still needs, in route order with the Goal last, each row with a done toggle.
 //
 // Same rules as the Goal page: the Goal is read and written only through loadGoal, setGoal and onGoalChange;
