@@ -174,13 +174,15 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos (2026-10-21): option B, yes to the four backdrop answers, the rest out of scope.** Backdrop rules in `docs/DESIGN.md` section 9 (Region page uses its own picture, none when Locked; one shared picture `img/backdrop/site.jpg` for the seven other pages; 8 percent, 10 px blur, global; kept on phones). Out-of-scope list in `docs/AGENT-PLAN.md` section 8. Image spec in `docs/IMAGES.md`; checklist item 9 asks for the shared picture too. **BG-2 started** (`dev-b`): the backdrop on every page, shipping with no picture configured.
 
+- **Athos (2026-10-21): `firestore.rules` published in the Firebase console** (gate G1 closed; reported by Athos, not checked by the orchestrator, which has no console access). He runs the two-device check on the real site later.
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
 
 - Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
 
-- Athos: are the rules published in the Firebase console the same as `firestore.rules` on `main`? (When last recorded they still denied everything.) The player-choices code (gate G1) is live; with older rules, signed-in sync fails, and with the deny-all rules it never worked. Then the two-device check on the real site, which closes Phase 1.
+- Athos: the two-device check on the real site (sign in on two devices, mark on one, see it on the other; also a saved Build and opened slots), which closes Phase 1 and the V1 sync item. Rules published (Athos, 2026-10-21).
 - Athos: check a sample of entries against the main wiki and swap `source` links as he goes (Acts 1 to 3; the Act 2 and 3 facts rest on search results only).
 - Athos: whether to push this log update (a push rebuilds the site; it would look the same). Whether to keep the scratchpad bundle somewhere permanent (the branch and tag already keep the old line).
 - Majors from the full QA pass not confirmed fixed: Build copy stating game rules in interface code, Trackers with no tab for 76 entries (the tab question below), one possible missable.
