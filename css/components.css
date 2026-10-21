@@ -907,6 +907,35 @@ a.region-card:hover .card-name { color: var(--silk); }
   .backdrop { display: none; }
 }
 
+/* ------------------------------------------------------------ next region */
+
+/* The foot of a Region page: one wide dashed plate that is a link to the next Region in the guide's order. */
+.region-next { margin: 56px 0 24px; }
+.region-next-link {
+  display: flex;
+  align-items: center;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+  min-height: 72px;
+  padding: 18px 26px;
+  border: 1.5px dashed var(--plate-border);
+  background: linear-gradient(180deg, var(--plate-top), var(--plate-bottom));
+  color: var(--ivory);
+  text-decoration: none;
+}
+.region-next-link:hover { border-color: var(--silk); }
+.region-next-label { font-size: 14px; font-weight: 500; color: var(--silk); }
+.region-next-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.4vw, 34px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.region-next-arrow { font-size: 28px; line-height: 1; }
+.region-next-link:hover .region-next-arrow { color: var(--silk); }
+
 /* ------------------------------------------------------------------- footer */
 
 /* While <main> has nothing in it (the page script is still loading, or failed: js/boot-guard.js), the footer

@@ -767,6 +767,7 @@ async function runRegionPage(app) {
       showAll: state.showAll,
       visited: state.visited.has(region.id),
       homeHref: pageHref('index.html', {}, sample),
+      nextRegion: nextRegionLink(),
       region: {
         id: region.id,
         name: region.name,
@@ -785,6 +786,14 @@ async function runRegionPage(app) {
       view.counts = countsForRegion();
     }
     return view;
+  }
+
+  // The Region after this one in the guide's own order (`order`), for the link at the foot of the page.
+  // null for the last Region: the page then offers the way back to all Regions instead.
+  function nextRegionLink() {
+    const ordered = [...regions].sort((a, b) => a.order - b.order);
+    const next = ordered[ordered.findIndex((r) => r.id === region.id) + 1];
+    return next ? { name: next.name, href: pageHref('region.html', { id: next.id }, sample) } : null;
   }
 
   // One row per entry, with everything render.js needs already decided.

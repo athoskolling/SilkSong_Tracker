@@ -195,6 +195,14 @@ export function renderShell(app, view) {
       { class: 'content' },
       h('div', { class: locked ? 'start-thread is-dashed' : 'start-thread', 'aria-hidden': 'true' }),
       layout
+    ),
+    // The foot of the page: on to the next Region, or back to all of them after the last one.
+    h(
+      'nav',
+      { class: 'region-next', 'aria-label': 'Next region' },
+      view.nextRegion
+        ? h('a', { class: 'region-next-link', href: view.nextRegion.href }, h('span', { class: 'region-next-label' }, 'Next region'), h('span', { class: 'region-next-name' }, view.nextRegion.name), h('span', { class: 'region-next-arrow', 'aria-hidden': 'true' }, '→'))
+        : h('a', { class: 'region-next-link', href: view.homeHref }, h('span', { class: 'region-next-label' }, 'That is the last region'), h('span', { class: 'region-next-name' }, 'Back to all regions'), h('span', { class: 'region-next-arrow', 'aria-hidden': 'true' }, '→'))
     )
   );
 
