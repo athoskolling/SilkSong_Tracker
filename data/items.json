@@ -1,5 +1,5 @@
 {
-  "dataVersion": 12,
+  "dataVersion": 13,
   "items": [
     {
       "id": "moss-mother",
@@ -864,6 +864,20 @@
       "source": "https://game-checklists.com/silksong/shellwood.html"
     },
     {
+      "id": "skull-tyrant",
+      "name": "Skull Tyrant",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-marrow",
+      "how": "The Terrible Tyrant, a Grand Hunt on the Bone Bottom wish board once you have Cling Grip. Its Crown Fragment, handed in, pays a Heavy Rosary Necklace (a consumable, not tracked).",
+      "requires": [
+        "cling-grip"
+      ],
+      "optional": true,
+      "step": 391,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "memory-locket-the-marrow",
       "name": "Memory Locket, The Marrow",
       "kind": "collectible",
@@ -1398,6 +1412,18 @@
       "source": "https://rogueranker.com/hollow-knight-silksong-last-judge/"
     },
     {
+      "id": "broodmother",
+      "name": "Broodmother",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-slab",
+      "how": "The Wailing Mother, a Songclave Grand Hunt. Its reward is a Rosary necklace (a consumable, not tracked); guides disagree on whether it is the Heavy one.",
+      "requires": [],
+      "optional": true,
+      "step": 651,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "pilgrims-rest-supplies",
       "name": "Pilgrim's Rest Supplies",
       "kind": "task",
@@ -1614,6 +1640,18 @@
       "source": "https://game-checklists.com/silksong/100-percent.html"
     },
     {
+      "id": "trobbio",
+      "name": "Trobbio",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "whispering-vaults",
+      "area": "The Stage",
+      "how": "A showman fought on the Stage in the Whispering Vaults. Optional for the story; the Claw Mirror is his prize.",
+      "requires": [],
+      "step": 809,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "claw-mirror",
       "name": "Claw Mirror",
       "kind": "collectible",
@@ -1622,7 +1660,9 @@
       "area": "The Stage",
       "how": "Beat Trobbio on The Stage; flip the lever before the arena for a shortcut to the Grand Bellway bench.",
       "toolColor": "blue",
-      "requires": [],
+      "requires": [
+        "trobbio"
+      ],
       "step": 810,
       "source": "https://rogueranker.com/?p=10606"
     },
@@ -1641,6 +1681,20 @@
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
     },
     {
+      "id": "savage-beastfly-grand-hunt",
+      "name": "Savage Beastfly, Grand Hunt",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "far-fields",
+      "how": "The rematch the Savage Beastfly Grand Hunt sends you to, in the Far Fields arena; its Horn Fragment is what the wish wants.",
+      "requires": [
+        "savage-beastfly",
+        "cogwork-dancers"
+      ],
+      "step": 824,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "mask-shard-savage-beastfly",
       "name": "Mask Shard, Savage Beastfly",
       "kind": "collectible",
@@ -1649,7 +1703,8 @@
       "how": "Savage Beastfly, an Act 2 Grand Hunt on the Bellhart Wishwall: track it by its shed shell to the Far Fields arena where the Fourth Chorus fell, beat it and bring its Horn Fragment back to the Wishwall.",
       "requires": [
         "savage-beastfly",
-        "cogwork-dancers"
+        "cogwork-dancers",
+        "savage-beastfly-grand-hunt"
       ],
       "step": 825,
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-wish-quest-list-all-tasks-and-rewards"
@@ -1702,6 +1757,20 @@
       ],
       "step": 860,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/clawline"
+    },
+    {
+      "id": "surgeons-key",
+      "name": "Surgeon's Key",
+      "kind": "collectible",
+      "counts": false,
+      "type": "key",
+      "regionId": "whiteward",
+      "how": "At the end of a path in Whiteward, hang on a Clawline hook until your weight opens a gate above; a body falls, and the key is on it.",
+      "requires": [
+        "clawline"
+      ],
+      "step": 861,
+      "source": "https://deltiasgaming.com/?p=341207"
     },
     {
       "id": "garmond-and-zaza-duel",
@@ -1796,6 +1865,19 @@
       "source": "https://www.shacknews.com/article/146145/upgrade-tool-pouch-crafting-kit-silksong"
     },
     {
+      "id": "the-unravelled",
+      "name": "The Unravelled",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "whiteward",
+      "how": "Behind the Surgeon's Key door, below the operating theatre.",
+      "requires": [
+        "surgeons-key"
+      ],
+      "step": 919,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "silk-heart-unravelled",
       "name": "Silk Heart, The Unravelled",
       "kind": "collectible",
@@ -1803,7 +1885,8 @@
       "regionId": "whiteward",
       "how": "Pull the hanging ring high in east Whiteward with the Clawline to drop the Surgeon's Key. Use it on the lock in the operating theatre, drop into the pit, survive two waves and beat The Unravelled; climb the chamber for the Silk Heart.",
       "requires": [
-        "clawline"
+        "clawline",
+        "the-unravelled"
       ],
       "step": 920,
       "source": "https://deltiasgaming.com/?p=346816"
@@ -1890,6 +1973,20 @@
       "source": "https://deltiasgaming.com/?p=344210"
     },
     {
+      "id": "phantom",
+      "name": "Phantom",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "bilewater",
+      "area": "Exhaust Organ",
+      "how": "The ghost of the Exhaust Organ, past the Mist; one of the two ways out of Act 1 (the other is the Last Judge).",
+      "requires": [
+        "needolin"
+      ],
+      "step": 979,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "cross-stitch",
       "name": "Cross Stitch",
       "kind": "collectible",
@@ -1898,7 +1995,8 @@
       "area": "Exhaust Organ",
       "how": "Cross the Mist west of Bilewater (play the Needolin to follow the white moths) to the Exhaust Organ, and beat the Phantom.",
       "requires": [
-        "needolin"
+        "needolin",
+        "phantom"
       ],
       "step": 980,
       "source": "https://www.sportskeeda.com/esports/how-get-act-2-hollow-knight-silksong-both-paths-explained"
@@ -1918,6 +2016,18 @@
       ],
       "step": 990,
       "source": "https://www.gamerguides.com/hollow-knight-silksong/guide/items/exploration/ruined-tool"
+    },
+    {
+      "id": "groal-the-great",
+      "name": "Groal the Great",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "bilewater",
+      "area": "Bilehaven",
+      "how": "Top of Bilewater, behind a short gauntlet. The Seeker's Soul that Silk and Soul asks for is in the hut past him.",
+      "requires": [],
+      "step": 995,
+      "source": "https://www.pcgamesn.com/hollow-knight-silksong/bosses"
     },
     {
       "id": "quick-sling",
@@ -2164,6 +2274,19 @@
       "source": "https://deltiasgaming.com/?p=346369"
     },
     {
+      "id": "first-sinner",
+      "name": "First Sinner",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "the-slab",
+      "how": "Chained in the prison in the south east of the Slab.",
+      "requires": [
+        "key-of-apostate"
+      ],
+      "step": 1179,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "rune-rage",
       "name": "Rune Rage",
       "kind": "collectible",
@@ -2171,7 +2294,8 @@
       "regionId": "the-slab",
       "how": "Find the First Sinner's spire through a hidden ceiling path right of the bench near the Bellway, open her locks and beat her.",
       "requires": [
-        "key-of-apostate"
+        "key-of-apostate",
+        "first-sinner"
       ],
       "step": 1180,
       "source": "https://gamingbolt.com/hollow-knight-silksong-guide-all-6-silk-skills-and-how-to-unlock-them"
@@ -2215,6 +2339,17 @@
       "source": "https://game-checklists.com/silksong/100-percent.html"
     },
     {
+      "id": "father-of-the-flame",
+      "name": "Father of the Flame",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "wisp-thicket",
+      "how": "A scarecrow fight west of the Wisp Thicket bench.",
+      "requires": [],
+      "step": 1219,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "wispfire-lantern",
       "name": "Wispfire Lantern",
       "kind": "collectible",
@@ -2223,7 +2358,9 @@
       "how": "Beat the Father of the Flame at the west end of Wisp Thicket; hit the braziers, not his body.",
       "toolColor": "blue",
       "effect": "Spends Silk to send homing wisps at foes.",
-      "requires": [],
+      "requires": [
+        "father-of-the-flame"
+      ],
       "step": 1220,
       "source": "https://deltiasgaming.com/?p=345658"
     },
@@ -2242,6 +2379,17 @@
       "source": "https://game-checklists.com/silksong/100-percent.html"
     },
     {
+      "id": "raging-conchfly",
+      "name": "Raging Conchfly",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sands-of-karak",
+      "how": "Fought before the Coral Tower.",
+      "requires": [],
+      "step": 1239,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "conchcutter",
       "name": "Conchcutter",
       "kind": "collectible",
@@ -2251,9 +2399,23 @@
       "how": "Beat the Raging Conchfly at the shrine up the Coral Tower; the tool is in the tower.",
       "toolColor": "red",
       "effect": "A piercing shell that bounces off walls.",
-      "requires": [],
+      "requires": [
+        "raging-conchfly"
+      ],
       "step": 1240,
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-tools-list-and-locations"
+    },
+    {
+      "id": "voltvyrm",
+      "name": "Voltvyrm",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sands-of-karak",
+      "area": "Voltnest",
+      "how": "In the Voltnest, north in the Sands of Karak.",
+      "requires": [],
+      "step": 1249,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
     },
     {
       "id": "volt-filament",
@@ -2265,7 +2427,9 @@
       "how": "Climb to the bridge at the top of the Sands, take the hidden path in the top right into the Voltnest, and beat the Voltvyrm.",
       "toolColor": "blue",
       "effect": "Silk Skills carry an electric charge.",
-      "requires": [],
+      "requires": [
+        "voltvyrm"
+      ],
       "step": 1250,
       "source": "https://deltiasgaming.com/?p=341943"
     },
@@ -2281,6 +2445,17 @@
       "source": "https://deltiasgaming.com/hollow-knight-silksong-where-to-use-the-simple-key"
     },
     {
+      "id": "disgraced-chef-lugoli",
+      "name": "Disgraced Chef Lugoli",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sinners-road",
+      "how": "The boss at the end of Sinner's Road. One of the five dishes for the Great Taste of Pharloom (the Pale Oil for the Hivesteel Needle) needs this fight.",
+      "requires": [],
+      "step": 1259,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "hivesteel-needle",
       "name": "Hivesteel Needle",
       "kind": "collectible",
@@ -2291,7 +2466,8 @@
       "requires": [
         "shining-needle",
         "faydown-cloak",
-        "my-missing-courier"
+        "my-missing-courier",
+        "disgraced-chef-lugoli"
       ],
       "step": 1260,
       "source": "https://primagames.com/tips/hollow-knight-silksong-how-to-complete-the-great-taste-of-pharloom"
@@ -2339,6 +2515,19 @@
       "source": "https://game8.co/games/Hollow-Knight-Silksong/archives/549961"
     },
     {
+      "id": "second-sentinel",
+      "name": "Second Sentinel",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "high-halls",
+      "how": "The Final Audience wish. Guides disagree on whether this fight is in High Halls or Choral Chambers; the guide follows the Reserve Bind, which is in High Halls.",
+      "requires": [
+        "conductors-melody"
+      ],
+      "step": 1309,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "reserve-bind",
       "name": "Reserve Bind",
       "kind": "collectible",
@@ -2347,7 +2536,8 @@
       "how": "The Second Sentinel's wish, Final Audience: rebuild the Cogheart, meet the Sentinel twice, learn the Conductor's Melody and finish two Songclave wishes (Building Up Songclave among them), then win the duel in the High Halls.",
       "toolColor": "blue",
       "requires": [
-        "conductors-melody"
+        "conductors-melody",
+        "second-sentinel"
       ],
       "step": 1310,
       "source": "https://deltiasgaming.com/?p=349653"
@@ -2547,7 +2737,8 @@
         "lace-cradle",
         "tool-pouch-fleatopia",
         "bellhome-key",
-        "throwing-ring"
+        "throwing-ring",
+        "groal-the-great"
       ],
       "step": 2000,
       "source": "https://deltiasgaming.com/?p=340771"
@@ -2565,6 +2756,50 @@
       ],
       "step": 2010,
       "source": "https://deltiasgaming.com/?p=339099"
+    },
+    {
+      "id": "plasmified-zango",
+      "name": "Plasmified Zango",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "wormways",
+      "how": "In Act 3 the Wormways change and Zylotol's dead assistant rises. No reward found in the sources read.",
+      "requires": [
+        "grand-mother-silk-snared"
+      ],
+      "optional": true,
+      "step": 2011,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
+      "id": "bell-eater",
+      "name": "Bell Eater",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "choral-chambers",
+      "area": "Grand Bellway",
+      "how": "In Act 3, calling the Bell Beast at the Grand Bellway fails and the Bell Eater comes up instead. Guides disagree on whether it is in Choral Chambers or The Marrow.",
+      "requires": [
+        "grand-mother-silk-snared"
+      ],
+      "optional": true,
+      "step": 2012,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
+      "id": "beastling-call",
+      "name": "Beastling Call",
+      "kind": "collectible",
+      "counts": false,
+      "type": "ability",
+      "regionId": "choral-chambers",
+      "area": "Grand Bellway",
+      "how": "After the Bell Eater, play the Needolin with the Bell Beast and its young to learn the song. Playing it later calls the Beastlings, who carry you back to a Bellway station.",
+      "requires": [
+        "bell-eater"
+      ],
+      "step": 2014,
+      "source": "https://www.sportskeeda.com/esports/how-get-beastling-call-hollow-knight-silksong"
     },
     {
       "id": "curvesickle",
@@ -2610,6 +2845,22 @@
       "source": "https://www.sportskeeda.com/esports/how-get-silk-soar-hollow-knight-silksong-super-jump"
     },
     {
+      "id": "tormented-trobbio",
+      "name": "Tormented Trobbio",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "whispering-vaults",
+      "area": "The Stage",
+      "how": "Act 3 rematch on the Stage, through the Pain, Anguish and Misery wish; gives the Dark Mirror (not counted).",
+      "requires": [
+        "claw-mirror",
+        "silk-soar"
+      ],
+      "optional": true,
+      "step": 2034,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "claw-mirrors",
       "name": "Claw Mirrors",
       "kind": "collectible",
@@ -2621,7 +2872,8 @@
       "upgradeOf": "claw-mirror",
       "requires": [
         "claw-mirror",
-        "silk-soar"
+        "silk-soar",
+        "tormented-trobbio"
       ],
       "step": 2035,
       "source": "https://rogueranker.com/?p=10606"
@@ -2641,6 +2893,37 @@
       "source": "https://gamerblurb.com/articles/hollow-knight-silksong-elegy-of-the-deep-location-unlock-guide"
     },
     {
+      "id": "palestag",
+      "name": "Palestag",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "greymoor",
+      "area": "Lost Verdania",
+      "how": "The first fight of Lost Verdania; it gives orbs for the area's puzzle, not an item. Guides disagree on whether it is required for 100 percent.",
+      "requires": [
+        "elegy-of-the-deep",
+        "simple-key-sands-of-karak"
+      ],
+      "optional": true,
+      "step": 2041,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
+      "id": "watcher-at-the-edge",
+      "name": "Watcher at the Edge",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "sands-of-karak",
+      "how": "Hidden in a parkour section of the Sands of Karak.",
+      "requires": [
+        "silk-soar",
+        "needolin"
+      ],
+      "optional": true,
+      "step": 2044,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "grey-memento",
       "name": "Grey Memento",
       "kind": "collectible",
@@ -2651,7 +2934,8 @@
       "how": "Use Silk Soar to reach a dormant statue, the Watcher at the Edge, at the far west edge of the Sands of Karak. Play the Needolin to wake it and beat it. Reports differ on this spot.",
       "requires": [
         "silk-soar",
-        "needolin"
+        "needolin",
+        "watcher-at-the-edge"
       ],
       "step": 2045,
       "source": "https://nerdschalk.com/hollow-knight-silksong-watcher-at-the-edge-boss-location-route-and-rewards/"
@@ -2698,6 +2982,21 @@
       "source": "https://deltiasgaming.com/?p=346848"
     },
     {
+      "id": "shrine-guardian-seth",
+      "name": "Shrine Guardian Seth",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "grand-gate",
+      "area": "Shellwood Shrine",
+      "how": "He guards Nyleth's shrine and is fought first. Gives nothing himself; on the Route because Nyleth needs him.",
+      "requires": [
+        "elegy-of-the-deep",
+        "silk-soar"
+      ],
+      "step": 2069,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "nyleth",
       "name": "Nyleth",
       "kind": "task",
@@ -2707,7 +3006,8 @@
       "how": "Silk Soar through the top of the Grand Gate lift shaft and find the hidden way down to the Shellwood Shrine. Beat its guardian, Seth, then play the Elegy at Nyleth's monument and win her memory fight for the Pollen Heart.",
       "requires": [
         "elegy-of-the-deep",
-        "silk-soar"
+        "silk-soar",
+        "shrine-guardian-seth"
       ],
       "step": 2070,
       "source": "https://nerdschalk.com/step-by-step-guide-to-get-to-nyleth-in-silksong/"
@@ -2728,6 +3028,22 @@
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-achievements"
     },
     {
+      "id": "clover-dancers",
+      "name": "Clover Dancers",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "greymoor",
+      "area": "Lost Verdania",
+      "how": "The last fight of Lost Verdania; gives the Conjoined Heart.",
+      "requires": [
+        "elegy-of-the-deep",
+        "simple-key-sands-of-karak"
+      ],
+      "optional": true,
+      "step": 2085,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "conjoined-heart",
       "name": "Conjoined Heart",
       "kind": "collectible",
@@ -2738,7 +3054,8 @@
       "how": "Free the Green Prince from his Sinner's Road cell with a Simple Key and meet him twice in the Citadel. In Act 3 play the Elegy of the Deep at the right wall of Craw Lake, clear 12 orbs in a row in Lost Verdania and beat the Clover Dancers. Their heart can stand in for one Old Heart.",
       "requires": [
         "elegy-of-the-deep",
-        "simple-key-sands-of-karak"
+        "simple-key-sands-of-karak",
+        "clover-dancers"
       ],
       "step": 2086,
       "source": "https://backyarddrunkard.com/game-guides/silksong-conjoined-heart/"
@@ -2760,6 +3077,20 @@
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-all-achievements"
     },
     {
+      "id": "lost-garmond",
+      "name": "Lost Garmond",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "blasted-steps",
+      "how": "Void-infected Garmond near the Blasted Steps Bellway (The Hero's Call wish).",
+      "requires": [
+        "everbloom"
+      ],
+      "optional": true,
+      "step": 2094,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "heros-memento",
       "name": "Hero's Memento",
       "kind": "collectible",
@@ -2769,7 +3100,8 @@
       "area": "Lost Garmond",
       "how": "The Hero's Call wish on the Bellhart Wishwall: find and beat Lost Garmond in the Blasted Steps, then talk to him. The wish may not appear until late in the game, so the route waits for the Everbloom.",
       "requires": [
-        "everbloom"
+        "everbloom",
+        "lost-garmond"
       ],
       "step": 2095,
       "source": "https://deltiasgaming.com/?p=350382"
@@ -2788,6 +3120,19 @@
       "source": "https://nerdschalk.com/silksong-sprintmaster-swift-guide-location-map-and-more/"
     },
     {
+      "id": "gurr-the-outcast",
+      "name": "Gurr the Outcast",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "far-fields",
+      "how": "The target of The Hidden Hunter Grand Hunt, hidden in the Far Fields.",
+      "requires": [
+        "skarrsinger-karmelita"
+      ],
+      "step": 2109,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "mask-shard-hidden-hunter",
       "name": "Mask Shard, The Hidden Hunter",
       "kind": "collectible",
@@ -2795,10 +3140,42 @@
       "regionId": "bellhart",
       "how": "The Hidden Hunter, an Act 3 wish: follow bone piles across Far Fields until a trap drags you to Gurr the Outcast's lair. Beat him and bring the Grass Doll to the Bellhart Wishwall.",
       "requires": [
-        "skarrsinger-karmelita"
+        "skarrsinger-karmelita",
+        "gurr-the-outcast"
       ],
       "step": 2110,
       "source": "https://www.fdaytalk.com/?p=59325"
+    },
+    {
+      "id": "craw-summons",
+      "name": "Craw Summons",
+      "kind": "collectible",
+      "counts": false,
+      "type": "key-item",
+      "regionId": "greymoor",
+      "area": "Craw Lake",
+      "how": "An Act 3 summons that opens the door at Craw Lake. Guides disagree on how it appears: after the Dark Hearts wish, in Bellhart, or after four Hunter's Journal entries.",
+      "requires": [
+        "grand-mother-silk-snared"
+      ],
+      "step": 2115,
+      "source": "https://allthings.how/hollow-knight-silksong-craw-summons-how-to-get-and-use/"
+    },
+    {
+      "id": "crawfather",
+      "name": "Crawfather",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "greymoor",
+      "area": "Craw Lake",
+      "how": "The Craw Summons opens a door at Craw Lake; past the tunnels, in the Court of Craws, beat the Crawfather after waves of Craws.",
+      "requires": [
+        "craw-summons",
+        "everbloom"
+      ],
+      "optional": true,
+      "step": 2117,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
     },
     {
       "id": "mask-shard-dark-hearts",
@@ -2812,6 +3189,36 @@
       ],
       "step": 2120,
       "source": "https://game-checklists.com/silksong/100-percent.html"
+    },
+    {
+      "id": "craw-memento",
+      "name": "Craw Memento",
+      "kind": "collectible",
+      "counts": false,
+      "type": "memento",
+      "regionId": "greymoor",
+      "area": "Craw Lake",
+      "how": "The Crawfather's prize, after the waves of Craws in the Court of Craws.",
+      "requires": [
+        "crawfather"
+      ],
+      "step": 2125,
+      "source": "https://deltiasgaming.com/hollow-knight-silksong-all-memento-locations/"
+    },
+    {
+      "id": "crawbell",
+      "name": "Crawbell",
+      "kind": "collectible",
+      "counts": false,
+      "type": "furnishing",
+      "regionId": "greymoor",
+      "area": "Craw Lake",
+      "how": "Bellhome furniture that comes with the Craw Memento.",
+      "requires": [
+        "crawfather"
+      ],
+      "step": 2126,
+      "source": "https://www.dualshockers.com/hollow-knight-silksong-how-to-get-all-mementos/"
     },
     {
       "id": "mask-shard-brightvein",
@@ -2841,6 +3248,21 @@
       "source": "https://www.nintendolife.com/guides/hollow-knight-silksong-every-silk-skill-and-ancestral-art"
     },
     {
+      "id": "pinstress",
+      "name": "Pinstress",
+      "kind": "task",
+      "type": "boss",
+      "regionId": "mount-fay",
+      "area": "Peak",
+      "how": "The Fatal Resolve wish: fight the Pinstress on Mount Fay.",
+      "requires": [
+        "needle-strike",
+        "silk-soar"
+      ],
+      "step": 2139,
+      "source": "https://game-checklists.com/silksong/all-bosses.html"
+    },
+    {
       "id": "pin-badge",
       "name": "Pin Badge",
       "kind": "collectible",
@@ -2852,7 +3274,8 @@
       "effect": "Needle Strike charges faster.",
       "requires": [
         "needle-strike",
-        "silk-soar"
+        "silk-soar",
+        "pinstress"
       ],
       "step": 2140,
       "source": "https://nerdschalk.com/silksong-fatal-resolve-wish-guide-everything-you-need-to-know/"
