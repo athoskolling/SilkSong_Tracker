@@ -26,6 +26,7 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
 - [x] **8. First batch.** Confirm on the wiki that Moss Grotto, The Marrow and Deep Docks are the first three Regions, and the scope of each.
   - Confirmed by Athos (2026-10-20): batch 1 is **Moss Grotto, The Marrow and Deep Docks**; **Bone Bottom is a Sub-area of Moss Grotto**. Research: `docs/research/2026-10-20-sources-and-batch-1.md`.
 - [ ] **9. Hero images.** Decide whether game screenshots stay as Region heroes on the public site (see "Rights and risk" in `docs/IMAGES.md`), and send the images you want (`img/incoming/`).
+  - Decision (Athos, 2026-10-20, "all your recommendations"): **screenshots stay**, his own captures, one per Region, with the Team Cherry credit; used as the Region hero and as a faint, darkened backdrop behind the Region page (mockup on Deep Docks first). Wallpapers and fan art from the web are not used (no permission found; fan art belongs to its artists). **Still open: the images themselves** (`img/incoming/<region-id>.png`, ideally 1920 × 1080, no HUD). The box is ticked when they arrive.
 
 ## Orchestrator's tasks
 

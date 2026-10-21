@@ -647,7 +647,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 3. `regionId` of every entry exists; every id in `requires` (entries and Regions) and `conditions` exists **and is an entry id** in `items.json`.
 4. No cycles in `requires`, where an entry also depends on its Region's `requires` (so a Region that requires an entry inside itself is a cycle).
 5. `step` is a unique integer across all entries.
-6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; `optional`, when given, is `true` or `false` and appears only on a Task (bosses, 2026-10-20); a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
+6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; `optional`, when given, is `true` or `false` and appears only on a Task (bosses, 2026-10-20; presence counts, so `optional: false` on a Collectible is an error too, and a wrong value on a Collectible gives both errors; an optional Task that is also `missable` is on the Route and gets no warning; an Ending condition should never be `optional`, and rule 14 warns if one is off the Route, BOSS-2); a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
 7. Every entry has `source`, `how` and a non-empty `name`.
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.

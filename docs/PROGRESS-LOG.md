@@ -149,6 +149,9 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **BOSS-1 merged locally** (`dev-a/route-optional`): `isRouteTask` makes a Task with `optional: true` stop being a root of the Route; nothing else changes. Orchestrator read the diff and ran: 712 tests pass, validator 0 warnings, and `routeIds` on today's `data/` returns the same 168 ids as before the merge.
 
+- **BOSS-2 merged locally** (`qa-tests/route-optional`): validator rule 6 checks `optional`; 13 Route tests, 14 validator tests; QA 1 caught the missing check with a deliberate bug. QA 1's five contract points settled as built (contract rule 6). **BOSS-3 merged locally** (`dev-a/bosses-data`, Dev A acting for Dev C): 24 bosses (10 `optional`), 5 uncounted Collectibles, 18 rewards gained their boss, `dataVersion` 13. Orchestrator ran after each merge: 739 tests pass, validator 0 warnings; on the merged data 236 entries, 47 bosses, 64 Tasks, 183 on the Route, the `nextStep` walk reaches all 183, all four Endings' conditions on the Route. To reword later: two boss `how` texts say "not tracked" (our jargon).
+- **Athos on Region images: "all your recommendations"**: his own screenshots per Region (checklist item 9 decision recorded, box open until the images arrive), used as the hero and as a faint backdrop behind the Region page; mockup on Deep Docks first (BG-1, dev-b). No wallpapers or fan art from the web.
+
 ## Open
 
 - Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
