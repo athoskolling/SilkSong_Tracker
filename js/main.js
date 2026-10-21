@@ -52,6 +52,7 @@ import {
   renderAccountPlate,
   setAccountMessage,
 } from './render.js';
+import { startGoalDock } from './goal-dock.js';
 
 const page = document.body.dataset.page;
 startPage();
@@ -67,6 +68,8 @@ function startPage() {
   onSyncStatus((status) => {
     document.getElementById('sync-status').textContent = syncText(status);
   });
+
+  startGoalDock(); // not awaited: the box fills in once the data is loaded; it skips the Goal page itself
 
   if (page === 'account') {
     startAccountPage();

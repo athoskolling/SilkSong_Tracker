@@ -117,3 +117,106 @@
 
 /* "1 available now." stays on one line, so the number never sits alone at the end of the line above. */
 .goal-count-label strong { white-space: nowrap; }
+
+/* ---------------------------------------------------------------- Goal dock (every page but Goal) */
+
+/* The Goal kept in view: a box fixed in the bottom-right corner. Collapsed it is one line; open it lists the
+   rows the Goal still needs. Above the header (z-index 20) and below nothing else. On a phone it spans the
+   width at the bottom, so it never covers more than the pill unless the player opens it. */
+.goal-dock {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+  background: var(--lacquer);
+  border: 1.5px solid var(--plate-border);
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--night) 70%, transparent);
+}
+.goal-dock[hidden] { display: none; }
+.goal-dock--open { border-color: var(--silk); }
+
+.dock-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 10px;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  color: var(--ivory);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.dock-label { font-size: 13px; font-weight: 500; color: var(--silk); }
+.dock-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dock-count { font-size: 13px; color: var(--ash); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dock-chevron {
+  width: 8px;
+  height: 8px;
+  border: solid var(--ivory);
+  border-width: 0 2px 2px 0;
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+.goal-dock--open .dock-chevron { transform: rotate(45deg) translate(-2px, -2px); }
+
+.dock-body { display: flex; flex-direction: column; min-height: 0; border-top: 1.5px dashed var(--track); }
+.dock-body[hidden] { display: none; }
+.dock-text { padding: 12px; font-size: 14px; line-height: 1.5; color: var(--ash); }
+
+.dock-list { list-style: none; margin: 0; padding: 4px 0; overflow-y: auto; min-height: 0; }
+.dock-row { display: flex; align-items: flex-start; gap: 4px; padding: 2px 12px 2px 4px; }
+.dock-row--next { background: var(--next-fill); }
+
+/* The done toggle keeps a 44px hit area around a small bead. */
+.dock-done {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.dock-bead { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ivory); }
+.dock-row--available .dock-bead { border-color: var(--silk); }
+.dock-done:hover .dock-bead { background: var(--next-fill); border-color: var(--silk); }
+
+.dock-row-text { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; min-width: 0; }
+.dock-row-name { font-size: 15px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.dock-row-meta { font-size: 13px; color: var(--ash); }
+.dock-row-meta a { color: var(--ash); }
+.dock-row-flag { font-size: 13px; font-weight: 500; color: var(--silk); }
+.dock-row-needs { font-size: 13px; line-height: 1.4; color: var(--silk); }
+
+.dock-actions { display: flex; flex-wrap: wrap; gap: 0 18px; padding: 0 12px; border-top: 1.5px dashed var(--track); }
+.dock-link {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  color: var(--ivory);
+  font: inherit;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.dock-link:hover { color: var(--silk); }
+
+/* Room at the foot of the page so the closed box never hides the last line of the footer. */
+body.has-goal-dock .site-footer { padding-bottom: 80px; }
+
+@media (max-width: 600px) {
+  .goal-dock { right: 8px; left: 8px; bottom: 8px; width: auto; max-height: 65vh; }
+}
+@media print { .goal-dock { display: none; } }
