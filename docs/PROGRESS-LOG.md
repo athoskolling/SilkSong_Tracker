@@ -145,7 +145,11 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos: "go with your recommendations"** (bosses and Goal screens). Bosses: rule A (`optional: true` on Tasks; contract sections 1, 2, 6, 7), Beastling Call, Craw Summons, Craw Memento and Crawbell added from sheet 2, Surgeon's Key a Collectible (`counts: false`, glossary), Region conflicts as recommended. Revised rows simulated on a copy of `data/`: 236 entries, 47 boss Tasks, nothing leaves the Route, no order inversions. Goal: mockup approved with the orchestrator's recommendations on its seven questions; counter copy "N left, the goal included".
 
+- **BOSS-1, BOSS-2, BOSS-3, GOAL-4 started** (from `71bcf02`): `dev-a/route-optional` (`routeIds` honours `optional`), `qa-tests/route-optional` (validator rule 6 and tests), `dev-a/bosses-data` (the sheet into `data/`, `dataVersion` 13; Dev A acting for Dev C under AGENT-PLAN section 3, because the `dev-c` agent was added after this session started and cannot be spawned from it), `dev-b/goal-screens`. Merge order: BOSS-1, BOSS-2, BOSS-3; GOAL-4 any time. Nothing pushed until Athos has seen it locally.
+
 ## Open
+
+- Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
 
 - Athos: are the rules published in the Firebase console the same as `firestore.rules` on `main`? (When last recorded they still denied everything.) The player-choices code (gate G1) is live; with older rules, signed-in sync fails, and with the deny-all rules it never worked. Then the two-device check on the real site, which closes Phase 1.
 - Athos: check a sample of entries against the main wiki and swap `source` links as he goes (Acts 1 to 3; the Act 2 and 3 facts rest on search results only).
