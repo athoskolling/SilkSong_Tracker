@@ -859,9 +859,11 @@ a.region-card:hover .card-name { color: var(--silk); }
    setBackdrop). Region pages use the Region's own hero picture; the other pages share one. One strength
    for all: tokens only, no color is written here.
    - It is a second <img> of the same file as the hero on a Region page, so the browser downloads it once.
-   - Darkened with `opacity`, not an overlay: the page behind is --night, so 0.08 is exactly "8 percent
-     picture, 92 percent --night". Do not raise it to make the picture show: the budget is set by the
-     --silk text on it (docs/design/backdrop/README.md, "Why the top is 10 percent").
+   - Darkened with `opacity`, not an overlay: the page behind is --night, so 0.25 is exactly "25 percent
+     picture, 75 percent --night" (Athos, 2026-10-21: the 8 percent of the screenshot era hid the artwork;
+     the pictures are now our own dark SVGs). Measured with the text hidden and the lightest pixel under every
+     text box on all pages at 1280 and 390 px: lowest contrast 4.72 to 1, so 0.25 with a 3px blur holds 4.5 to 1.
+     0.4 fails on several pages. Re-measure before raising it again.
    - position: absolute inside <main>, so it scrolls with the page: no parallax, nothing for
      prefers-reduced-motion to switch off. z-index -1 inside <main>'s own stacking context puts it above
      the page background and below the hero, thread and plates.
@@ -889,8 +891,15 @@ a.region-card:hover .card-name { color: var(--silk); }
   width: calc(100% + 96px);
   height: calc(100% + 96px);
   object-fit: cover;
-  opacity: 0.08;
-  filter: blur(10px);
+  opacity: 0.25;
+  filter: blur(3px);
+}
+
+/* The banner at the top of a page (not a hero that has its own picture) is see-through while a backdrop is on, so
+   the picture shows behind the title too and not only below the slanted edge. The title is large ivory text. It
+   was measured over the picture (see above). */
+.has-backdrop .hero:not(.hero--picture) {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lacquer) 40%, transparent), color-mix(in srgb, var(--night) 40%, transparent));
 }
 
 /* Anyone who asked for more contrast, a forced palette or paper gets the plain page. */

@@ -659,7 +659,14 @@ function silk(c, { n = 3, color = '#ec555b', op = 0.55 }) {
   c.add(`<g opacity="${Math.min(1, op + 0.3)}">${beads.join('')}</g>`);
 }
 
-function vignette(c) {
+// `light`: page backdrops, which sit behind the whole page and are already dimmed by the stylesheet, so they
+// keep only a soft edge shade; Region heroes also darken the top (title area) and the bottom.
+function vignette(c, light = false) {
+  if (light) {
+    const soft = c.radial([[0.6, '#130b13', 0], [1, '#130b13', 0.55]], W / 2, H * 0.5, W * 0.7);
+    c.add(`<rect width="${W}" height="${H}" fill="${soft}"/>`);
+    return;
+  }
   const top = c.linear([[0, '#130b13', 0.82], [0.5, '#130b13', 0]], 0, 0, 0, H * 0.55);
   c.add(`<rect width="${W}" height="${H}" fill="${top}"/>`);
   const edge = c.radial([[0.55, '#130b13', 0], [1, '#130b13', 0.7]], W / 2, H * 0.48, W * 0.66);
@@ -1173,27 +1180,58 @@ const PAGES = {
       particles(c, { n: 40, color: '#ffe0b0', rmin: 1, rmax: 2.4, op: 0.6, y0: 100, y1: 760, glowy: true });
     },
   },
+  locked: {
+    name: 'Locked region',
+    desc: 'A great shut gate bound with chains and a knotted thread, in cold dark stone. It shows nothing of what lies behind.',
+    draw(c) {
+      sky(c, ['#0d0b12', '#1a1722', '#2a2634']);
+      glow(c, { x: 800, y: 480, r: 620, color: '#8a6471', op: 0.2 });
+      ridge(c, { base: 560, amp: 90, color: '#1a1622', top: '#2e2838', style: 'jagged' });
+      c.add(`<path d="M520,${H}L520,330A280,280 0 0 1 1080,330L1080,${H}Z" fill="#100d16" stroke="#3a3446" stroke-width="6"/>`);
+      c.add(`<path d="M800,${H}L800,60" stroke="#2a2634" stroke-width="8"/>`);
+      for (let i = 0; i < 6; i++) c.add(`<path d="M${560 + i * 96},${H}L${560 + i * 96},${330 + (i % 3) * 20}" stroke="#2a2634" stroke-width="3"/>`);
+      c.add(`<path d="M470,470L1130,640M1130,470L470,640" stroke="#6a5a66" stroke-width="9" stroke-dasharray="26 12"/>`);
+      c.add(`<circle cx="800" cy="555" r="34" fill="#130b13" stroke="#8a6471" stroke-width="4"/><path d="M788,555a12,12 0 1 1 24,0" stroke="#8a6471" stroke-width="4" fill="none"/>`);
+      pillars(c, { n: 2, color: '#0b0910', y0: 120, y1: H, w: 120 });
+      fog(c, { y: 600, h: 220, color: '#8a8aa0', op: 0.12 });
+      particles(c, { n: 30, color: '#c8c0d4', rmin: 1, rmax: 2, op: 0.4, y0: 160, y1: 760 });
+    },
+  },
+  default: {
+    name: 'Guide background',
+    desc: 'A quiet dusk landscape with a single silk thread crossing dark hills, used wherever a page has no picture of its own.',
+    draw(c) {
+      sky(c, ['#120b16', '#2c1a30', '#5a3040']);
+      stars(c, { n: 40, maxY: 280 });
+      disc(c, { x: 1060, y: 400, r: 30, color: '#ffe0b0', halo: '#ff9a68', op: 0.4 });
+      ridge(c, { base: 560, amp: 130, color: '#2a1626', top: '#5a3444', style: 'hills' });
+      ridge(c, { base: 680, amp: 100, color: '#190d1a', top: '#34202e', style: 'hills' });
+      ridge(c, { base: 780, amp: 70, color: '#0e070f', style: 'hills' });
+      silk(c, { n: 4, op: 0.7 });
+      particles(c, { n: 40, color: '#ffd0b0', rmin: 1, rmax: 2.2, op: 0.55, y0: 120, y1: 700 });
+    },
+  },
 };
 
 // ------------------------------------------------------------------ writing the files
 
-function render(id, spec) {
+function render(id, spec, light = false) {
   const c = new Canvas(id);
   spec.draw(c);
   silk(c, { n: 2, op: 0.4 });
-  vignette(c);
+  vignette(c, light);
   return c.toSvg(spec.name, spec.desc);
 }
 
-function writeAll(folder, specs) {
+function writeAll(folder, specs, light = false) {
   fs.mkdirSync(path.join(root, folder), { recursive: true });
   for (const [id, spec] of Object.entries(specs)) {
     const file = path.join(root, folder, `${id}.svg`);
-    fs.writeFileSync(file, render(id, spec));
+    fs.writeFileSync(file, render(id, spec, light));
   }
   return Object.keys(specs).length;
 }
 
 const regions = writeAll('img/regions', REGIONS);
-const pages = writeAll('img/backdrop', PAGES);
+const pages = writeAll('img/backdrop', PAGES, true);
 console.log(`Wrote ${regions} Region pictures (img/regions) and ${pages} page backdrops (img/backdrop).`);

@@ -22,10 +22,14 @@ const SITE_BACKDROPS = {
   builds: 'img/backdrop/builds.svg',
   goal: 'img/backdrop/goal.svg',
   account: 'img/backdrop/account.svg',
+  // Not pages: what a Locked Region shows (it must not show the Region's own picture), and what any message
+  // page (data not loaded, Region not found, something went wrong) shows. Every page has a background.
+  locked: 'img/backdrop/locked.svg',
+  default: 'img/backdrop/default.svg',
 };
 
 function siteBackdropFor(page) {
-  const src = SITE_BACKDROPS[page];
+  const src = SITE_BACKDROPS[page] || SITE_BACKDROPS.default; // a page not listed still gets the default
   // Resolved against this module so it works under /<repository>/ on GitHub Pages, like the data files.
   return src ? { src: new URL('../' + src, import.meta.url).href, position: '50% 40%', credit: BACKDROP_CREDIT } : null;
 }
@@ -120,8 +124,6 @@ export function needsText(directNames, chainLength) {
 // reader announces it when it appears (the boot guard does the same).
 // message = { heading, paragraphs: [string], links: [{ text, href }] }
 export function renderMessage(app, message) {
-  // A message replaces the page, so the picture and its credit go too.
-  setBackdrop(app, null);
   const creditLine = document.getElementById('credit');
   if (creditLine) creditLine.hidden = true;
   const links = (message.links || []).map((link) => h('a', { href: link.href }, link.text));
@@ -138,6 +140,8 @@ export function renderMessage(app, message) {
       )
     )
   );
+  // After replaceChildren, which removes whatever was in <main>: a message shows the default background, never a Region's.
+  setBackdrop(app, siteBackdropFor('default'));
 }
 
 // ------------------------------------------------------------------- the shell
@@ -196,7 +200,8 @@ export function renderShell(app, view) {
 
   app.replaceChildren(hero, content);
   // The same file and position as the hero, so the browser fetches it once. None for a Locked Region.
-  setBackdrop(app, showImage ? { src: view.region.heroUrl, position: view.region.heroPosition } : null);
+  // A Locked Region gets the shared locked picture (nothing of the Region's own, so nothing to spoil).
+  setBackdrop(app, showImage ? { src: view.region.heroUrl, position: view.region.heroPosition } : siteBackdropFor(locked ? 'locked' : 'default'));
   return layout;
 }
 
