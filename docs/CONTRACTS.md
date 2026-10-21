@@ -35,7 +35,7 @@ Every file in `data/` is `{ "dataVersion": <integer>, ... }`, and **every file c
 | `order` | integer | yes | suggested position in the guide; unique |
 | `summary` | string | yes | our own words |
 | `requires` | string[] | yes | entry ids needed to enter; `[]` = available from the start |
-| `heroImage` | string | no | relative path, no leading slash; `.jpg` or `.png` |
+| `heroImage` | string | no | relative path, no leading slash; `.jpg`, `.png` or `.svg` |
 | `heroPosition` | string | no | CSS `object-position`; default `50% 40%` |
 | `heroCredit` | string | if `heroImage` | credit line shown under the image |
 
@@ -665,7 +665,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 5. `step` is a unique integer across all entries.
 6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; `optional`, when given, is `true` or `false` and appears only on a Task (bosses, 2026-10-20; presence counts, so `optional: false` on a Collectible is an error too, and a wrong value on a Collectible gives both errors; an optional Task that is also `missable` is on the Route and gets no warning; an Ending condition should never be `optional`, and rule 14 warns if one is off the Route, BOSS-2); a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
 7. Every entry has `source`, `how` and a non-empty `name`.
-8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
+8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg`, `.png` or `.svg`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
 10. A warning (not an error) for entries whose `how` is over 300 characters, to catch pasted wiki text. Phase 5, second round: the same warning for `effect` over 200 characters. Third round: a Place's `how` over 300, a template's `goal` over 200 and a synergy's `effect` over 200.
 11. Shape (added in Phase 2, T12): every required field in the section 1 tables is present with its type; `order` is a unique integer; `spoiler` is 0, 1 or 2 when given; `source` is an http or https link; `heroImage` has no leading `/` and no `..`; `unlocks`, when given, lists entry ids. Phase 5: `counts`, when given, is `true` or `false`; `price`, when given, is an integer of 1 or more; `toolColor`, when given, is `red`, `blue` or `yellow`.

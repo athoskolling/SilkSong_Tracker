@@ -17,7 +17,7 @@
 //   6  kind is collectible or task; missable needs a missableNote; a Task never has counts: true;
 //      optional (bosses) is true or false, and only on a Task
 //   7  every entry has a name, how and a web link as source
-//   8  a Region's heroImage has a credit, a relative .jpg or .png path, and the file exists
+//   8  a Region's heroImage has a credit, a relative .jpg, .png or .svg path, and the file exists
 //   9  locksOut names existing Ending ids, and an Ending never locks itself out
 //  10  warning: how over 300 characters (entries and Places), effect over 200 (entries and synergies),
 //      goal over 200 (templates): pasted wiki text
@@ -71,7 +71,7 @@ const OPTIONAL_COLLECTIONS = [
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const ITEM_KINDS = ['collectible', 'task'];
 const SPOILER_LEVELS = [0, 1, 2];
-const HERO_EXTENSIONS = ['.jpg', '.png'];
+const HERO_EXTENSIONS = ['.jpg', '.png', '.svg'];
 const LONG_HOW = 300;
 const LONG_EFFECT = 200;
 const LONG_GOAL = 200;
@@ -391,7 +391,7 @@ function checkRegions(ctx, collection) {
   });
 }
 
-// Rule 8: a Region with a hero image has a credit, a relative .jpg or .png path, and that file
+// Rule 8: a Region with a hero image has a credit, a relative .jpg, .png or .svg path, and that file
 // exists under the site root.
 function checkHero(ctx, ref, region) {
   if (region.heroImage === undefined) return;
@@ -412,7 +412,7 @@ function checkHero(ctx, ref, region) {
     return;
   }
   if (!HERO_EXTENSIONS.some((ext) => image.endsWith(ext))) {
-    ctx.report.error(8, ref, `"heroImage" "${image}" must end in .jpg or .png.`);
+    ctx.report.error(8, ref, `"heroImage" "${image}" must end in .jpg, .png or .svg.`);
     return;
   }
   if (!isFile(path.join(ctx.siteRoot, image))) {

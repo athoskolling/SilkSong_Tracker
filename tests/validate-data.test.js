@@ -457,6 +457,17 @@ test('rule 8: the same heroImage passes when the file is in the site root', () =
   assert.deepEqual(validate(dir, { siteRoot: site }).errors, []);
 });
 
+test('rule 8: a heroImage that is an .svg picture passes (original artwork, not a screenshot)', () => {
+  const dir = copySample();
+  const site = tempFolder();
+  mkdirSync(path.join(site, 'img', 'regions'), { recursive: true });
+  writeFileSync(path.join(site, 'img', 'regions', 'hero.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+  edit(dir, 'regions.json', (json) => {
+    region(json, 'sample-region-a').heroImage = 'img/regions/hero.svg';
+  });
+  assert.deepEqual(validate(dir, { siteRoot: site }).errors, []);
+});
+
 // ------------------------------------------------------------------ rule 9: lockouts
 
 test('rule 9: an ending locks itself out', () => {

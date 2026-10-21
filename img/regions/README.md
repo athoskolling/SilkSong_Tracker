@@ -1,8 +1,7 @@
 # Region hero images
 
-One file per Region: `img/regions/<region-id>.jpg`, 16:9, at least 1920 × 1080, under about 400 KB, no HUD or text.
-Every image needs a `heroCredit` in `data/regions.json`. Full rules: `docs/IMAGES.md`.
+One picture per Region: `img/regions/<region-id>.svg`, original artwork drawn for this guide (no game assets), written by `node tools/make-backgrounds.mjs` from the repository root. Change the script, not the files. Each Region's `heroImage` in `data/regions.json` points at its file and `heroCredit` reads "Original artwork drawn for this guide."
 
-Current files:
+A screenshot can still replace one: save it as `<region-id>.jpg` (16:9, at least 1920 × 1080, no HUD or text), point `heroImage` at it and change `heroCredit` to the Team Cherry credit. Full rules: `docs/IMAGES.md`.
 
-- `deep-docks.png`: 640 × 360 placeholder, a screenshot from Hollow Knight: Silksong, © Team Cherry. Replace with a larger image when available.
+`deep-docks.png` is an old 640 × 360 screenshot placeholder, kept only because the mockups in `docs/design/` link to it. The site does not use it.

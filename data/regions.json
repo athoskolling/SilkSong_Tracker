@@ -1,12 +1,14 @@
 {
-  "dataVersion": 13,
+  "dataVersion": 14,
   "regions": [
     {
       "id": "moss-grotto",
       "name": "Moss Grotto",
       "order": 1,
       "summary": "Where the game starts. Moss caves with the village of Bone Bottom, the Ruined Chapel and Mosshome.",
-      "requires": []
+      "requires": [],
+      "heroImage": "img/regions/moss-grotto.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "the-marrow",
@@ -15,7 +17,9 @@
       "summary": "Bone caverns past Bone Bottom. Shakra sells maps here, and the Bell Beast is trapped at the Bellway.",
       "requires": [
         "moss-mother"
-      ]
+      ],
+      "heroImage": "img/regions/the-marrow.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "deep-docks",
@@ -24,7 +28,9 @@
       "summary": "Hot docks of lava and machinery, reached from The Marrow's Bellway. The Forge Daughter works here.",
       "requires": [
         "bell-beast"
-      ]
+      ],
+      "heroImage": "img/regions/deep-docks.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "far-fields",
@@ -33,7 +39,9 @@
       "summary": "Wide grasslands past the Deep Docks. The Seamstress lives here, and Pilgrim's Rest sits above.",
       "requires": [
         "lace"
-      ]
+      ],
+      "heroImage": "img/regions/far-fields.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "hunters-march",
@@ -42,7 +50,9 @@
       "summary": "A hunting ground of the Skarr, reached from The Marrow. Crossing it takes the Drifter's Cloak.",
       "requires": [
         "drifters-cloak"
-      ]
+      ],
+      "heroImage": "img/regions/hunters-march.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "greymoor",
@@ -51,7 +61,9 @@
       "summary": "Rainy moors above Far Fields, home of the Halfway House and the crows.",
       "requires": [
         "fourth-chorus"
-      ]
+      ],
+      "heroImage": "img/regions/greymoor.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "bellhart",
@@ -60,7 +72,9 @@
       "summary": "A town under a silk curse until its Widow is beaten.",
       "requires": [
         "moorwing"
-      ]
+      ],
+      "heroImage": "img/regions/bellhart.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "shellwood",
@@ -69,7 +83,9 @@
       "summary": "A forest of shells and flowers west of Bellhart.",
       "requires": [
         "moorwing"
-      ]
+      ],
+      "heroImage": "img/regions/shellwood.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "wormways",
@@ -78,7 +94,9 @@
       "summary": "Tunnels west of Bone Bottom. The easy way in is from Shellwood.",
       "requires": [
         "moorwing"
-      ]
+      ],
+      "heroImage": "img/regions/wormways.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "sinners-road",
@@ -87,7 +105,9 @@
       "summary": "A road out of upper Greymoor, toward Bilewater.",
       "requires": [
         "cling-grip"
-      ]
+      ],
+      "heroImage": "img/regions/sinners-road.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "blasted-steps",
@@ -96,7 +116,9 @@
       "summary": "Cliffs and sands on the way to the Citadel's gate.",
       "requires": [
         "cling-grip"
-      ]
+      ],
+      "heroImage": "img/regions/blasted-steps.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "weavenest-atla",
@@ -105,7 +127,9 @@
       "summary": "A Weaver nest behind a door in Moss Grotto that opens to the Needolin.",
       "requires": [
         "needolin"
-      ]
+      ],
+      "heroImage": "img/regions/weavenest-atla.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "grand-gate",
@@ -114,7 +138,9 @@
       "summary": "The great gate at the top of the Blasted Steps and the hall of scales behind it, the way into the Citadel.",
       "requires": [
         "last-judge"
-      ]
+      ],
+      "heroImage": "img/regions/grand-gate.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "underworks",
@@ -123,7 +149,9 @@
       "summary": "The Citadel's furnace works below the Grand Gate, with The Cauldron at its east end.",
       "requires": [
         "last-judge"
-      ]
+      ],
+      "heroImage": "img/regions/underworks.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "choral-chambers",
@@ -132,7 +160,9 @@
       "summary": "The Citadel's main halls, with the Songclave, the First Shrine and the Grand Bellway.",
       "requires": [
         "last-judge"
-      ]
+      ],
+      "heroImage": "img/regions/choral-chambers.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "cogwork-core",
@@ -141,7 +171,9 @@
       "summary": "A clockwork tower above the Choral Chambers, guarded by the Cogwork Dancers.",
       "requires": [
         "last-judge"
-      ]
+      ],
+      "heroImage": "img/regions/cogwork-core.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "whispering-vaults",
@@ -150,7 +182,9 @@
       "summary": "Archives on the east side of the Citadel, entered from the Cogwork Core, with Trobbio's stage.",
       "requires": [
         "cogwork-dancers"
-      ]
+      ],
+      "heroImage": "img/regions/whispering-vaults.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "whiteward",
@@ -159,7 +193,9 @@
       "summary": "The Citadel's hospital, reached by a lift in the southwest of the Choral Chambers.",
       "requires": [
         "white-key"
-      ]
+      ],
+      "heroImage": "img/regions/whiteward.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "high-halls",
@@ -168,7 +204,9 @@
       "summary": "Upper halls above the top left of the Choral Chambers, home of the Conductor and the Forum.",
       "requires": [
         "clawline"
-      ]
+      ],
+      "heroImage": "img/regions/high-halls.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "the-slab",
@@ -177,7 +215,9 @@
       "summary": "A prison across a long bridge from the southwest of the Choral Chambers.",
       "requires": [
         "last-judge"
-      ]
+      ],
+      "heroImage": "img/regions/the-slab.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "mount-fay",
@@ -186,7 +226,9 @@
       "summary": "A freezing mountain past The Slab. The Faydown Cloak waits at the top.",
       "requires": [
         "clawline"
-      ]
+      ],
+      "heroImage": "img/regions/mount-fay.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "memorium",
@@ -195,7 +237,9 @@
       "summary": "A hall reached from the top right of the Choral Chambers with a double jump.",
       "requires": [
         "faydown-cloak"
-      ]
+      ],
+      "heroImage": "img/regions/memorium.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "putrified-ducts",
@@ -204,7 +248,9 @@
       "summary": "Foul ducts behind the Memorium, with Fleatopia and the Huntress.",
       "requires": [
         "faydown-cloak"
-      ]
+      ],
+      "heroImage": "img/regions/putrified-ducts.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "wisp-thicket",
@@ -213,7 +259,9 @@
       "summary": "A burning thicket above Greymoor, where the Father of the Flame waits.",
       "requires": [
         "faydown-cloak"
-      ]
+      ],
+      "heroImage": "img/regions/wisp-thicket.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "bilewater",
@@ -222,7 +270,9 @@
       "summary": "Toxic marshes past Sinner's Road, with the Exhaust Organ at the west end.",
       "requires": [
         "cling-grip"
-      ]
+      ],
+      "heroImage": "img/regions/bilewater.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "sands-of-karak",
@@ -232,7 +282,9 @@
       "requires": [
         "faydown-cloak",
         "clawline"
-      ]
+      ],
+      "heroImage": "img/regions/sands-of-karak.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "the-cradle",
@@ -243,7 +295,9 @@
         "vaultkeepers-melody",
         "architects-melody",
         "conductors-melody"
-      ]
+      ],
+      "heroImage": "img/regions/the-cradle.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     },
     {
       "id": "the-abyss",
@@ -252,7 +306,9 @@
       "summary": "The void-soaked depth below Pharloom, reached in Act 3 by the old diving bell at the bottom of the Deep Docks. Weavenest Absolom lies inside.",
       "requires": [
         "diving-bell-key"
-      ]
+      ],
+      "heroImage": "img/regions/the-abyss.svg",
+      "heroCredit": "Original artwork drawn for this guide."
     }
   ]
 }

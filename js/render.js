@@ -9,16 +9,25 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 
 // The faint picture behind every page (DESIGN.md section 9, IMAGES.md). Two sources, one look:
 //   - a Region page uses its own hero picture (renderShell below), so the file is downloaded once;
-//   - every other page uses the shared picture named HERE and nowhere else.
-// Shipped as null: the file img/backdrop/site.jpg does not exist yet (Athos is capturing it), and while this
-// is null those pages build no layer, request no image and look as they did before. To switch it on, set
-//   { src: 'img/backdrop/site.jpg', position: '50% 40%', credit: 'Screenshot from Hollow Knight: Silksong, © Team Cherry.' }
-// To give pages different pictures later, change siteBackdropFor() to look the page up in a map keyed by
-// document.body.dataset.page; nothing else needs to change.
-export const SITE_BACKDROP = null;
+//   - every other page uses the picture named HERE for that page and nowhere else.
+// The pictures are original artwork drawn for this guide (tools/make-backgrounds.mjs writes them), one SVG per
+// page in img/backdrop/, so no game screenshot and no outside credit is involved. To give a page a different
+// picture, change its entry; to turn a page's backdrop off, set it to null. A page that is not listed has none.
+const BACKDROP_CREDIT = 'Original artwork drawn for this guide.';
+const SITE_BACKDROPS = {
+  home: 'img/backdrop/home.svg',
+  route: 'img/backdrop/route.svg',
+  trackers: 'img/backdrop/trackers.svg',
+  rosaries: 'img/backdrop/rosaries.svg',
+  builds: 'img/backdrop/builds.svg',
+  goal: 'img/backdrop/goal.svg',
+  account: 'img/backdrop/account.svg',
+};
 
-function siteBackdropFor(/* page */) {
-  return SITE_BACKDROP;
+function siteBackdropFor(page) {
+  const src = SITE_BACKDROPS[page];
+  // Resolved against this module so it works under /<repository>/ on GitHub Pages, like the data files.
+  return src ? { src: new URL('../' + src, import.meta.url).href, position: '50% 40%', credit: BACKDROP_CREDIT } : null;
 }
 
 // Puts the layer first in <main> (and the class that lets it sit behind the content), or takes it away.
