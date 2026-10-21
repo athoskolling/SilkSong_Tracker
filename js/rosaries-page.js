@@ -11,7 +11,7 @@
 // confirmed that number, so neither the Progress code nor the rules for it exist yet.
 
 import { loadData, pageHref } from './data.js';
-import { configureProgress, loadProgress, setDone, onProgressChange } from './progress.js';
+import { configureProgress, loadProgress, setDone, onProgressChange, loadGoal, setGoal, onGoalChange } from './progress.js';
 import { isAvailable, missingFor, isRegionAvailable, isCounted, rosariesToSpend } from './requirements.js';
 import { renderMessage, renderRosariesShell, renderRosariesBody, listWithMore, formatRosaries } from './render.js';
 
@@ -56,7 +56,7 @@ async function runRosariesPage(app) {
     .filter((group) => group.entries.length > 0);
 
   // showAll is session-only on purpose, like on the Region page: Progress stores no interface settings.
-  const state = { done: new Set(), visited: new Set(), showAll: false };
+  const state = { done: new Set(), visited: new Set(), showAll: false, goal: null };
 
   function nameOf(id) {
     const found = itemsById.get(id);
@@ -84,6 +84,7 @@ async function runRosariesPage(app) {
       source: item.source,
       done,
       available,
+      isGoal: state.goal === item.id,
       // Once an entry is bought, what it needed no longer matters (same rule as the Route).
       needs: missing.length ? `Needs ${listWithMore(missing.map(nameOf), 3)}` : null,
       // A Task is never counted, so "Not counted" is for Collectibles the game does not count.
@@ -163,6 +164,7 @@ async function runRosariesPage(app) {
   function render() {
     const active = document.activeElement;
     const key = active && active.dataset ? active.dataset.focusKey : null;
+    state.goal = loadGoal(); // read at each draw, after configureProgress (sample mode has its own Goal key)
     renderRosariesBody(layout, buildView());
     if (key) {
       let again = app.querySelector(`[data-focus-key="${CSS.escape(key)}"]`);
@@ -201,6 +203,22 @@ async function runRosariesPage(app) {
       announce('That change could not be saved. Try again.');
     }
   });
+
+  // "Make this my goal": pressing the control of the current Goal clears it. The page redraws from onGoalChange.
+  app.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="toggle-goal"]');
+    if (!button) return;
+    const item = itemsById.get(button.dataset.id);
+    if (!item) return;
+    if (loadGoal() === item.id) {
+      setGoal(null);
+      announce(`Goal cleared: ${item.name}.`);
+    } else {
+      setGoal(item.id);
+      announce(`Your goal is now ${item.name}.`);
+    }
+  });
+  onGoalChange(() => render());
 
   app.addEventListener('change', (event) => {
     const input = event.target.closest('[data-action="show-all"]');
