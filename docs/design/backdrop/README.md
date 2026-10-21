@@ -93,3 +93,5 @@ The numbers above are for the 640 x 360 placeholder. A different or sharper pict
 ## Built (BG-2, 2026-10-21)
 
 The mockup rules now live in `css/components.css` (section "backdrop"), with the strength, blur and fade written as fixed values (0.08, 10 px, 35 percent hold) instead of the mockup's `--backdrop-*` variables and the a/b/c classes. They went into `components.css` and not a new file because every page already loads it, so no page can forget a stylesheet. The layer is made by `setBackdrop` in `js/render.js`: on a Region page from the Region's own `heroImage` (not for a Locked Region), on every other page from the `SITE_BACKDROP` constant (`null` until `img/backdrop/site.jpg` exists; see `img/backdrop/README.md`). This folder is still the design record; `_shoot.mjs` measures the mockup pages, not the site.
+
+> The mockup screenshots (`*-desktop.png`, `*-mobile*.png`) are not kept in the repository (cleanup, 2026-10-21). The HTML files are the mockups; `_shoot.mjs` regenerates the PNGs.

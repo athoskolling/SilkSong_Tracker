@@ -91,3 +91,5 @@ Every new pairing passes. Lowest ratios: control border not pressed (thread, das
 ## How the screenshots were made
 
 No Playwright here, so `_shoot.mjs` drives the system Chromium (`/usr/bin/chromium`, headless) over the DevTools protocol with Node's built-in WebSocket: `node docs/design/goal/_build.mjs && node docs/design/goal/_shoot.mjs`. Reduced motion is emulated so the start thread is drawn in full. The script also reports horizontal overflow at 390, 360 and 320 px (none found) and the size of every control and bead (all at least 44 px tall, none overlapping).
+
+> The mockup screenshots (`*-desktop.png`, `*-mobile*.png`) are not kept in the repository (cleanup, 2026-10-21). The HTML files are the mockups; `_shoot.mjs` regenerates the PNGs.
