@@ -5,6 +5,49 @@
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// ------------------------------------------------------------------ backdrop
+
+// The faint picture behind every page (DESIGN.md section 9, IMAGES.md). Two sources, one look:
+//   - a Region page uses its own hero picture (renderShell below), so the file is downloaded once;
+//   - every other page uses the shared picture named HERE and nowhere else.
+// Shipped as null: the file img/backdrop/site.jpg does not exist yet (Athos is capturing it), and while this
+// is null those pages build no layer, request no image and look as they did before. To switch it on, set
+//   { src: 'img/backdrop/site.jpg', position: '50% 40%', credit: 'Screenshot from Hollow Knight: Silksong, © Team Cherry.' }
+// To give pages different pictures later, change siteBackdropFor() to look the page up in a map keyed by
+// document.body.dataset.page; nothing else needs to change.
+export const SITE_BACKDROP = null;
+
+function siteBackdropFor(/* page */) {
+  return SITE_BACKDROP;
+}
+
+// Puts the layer first in <main> (and the class that lets it sit behind the content), or takes it away.
+// Call it right after the page's replaceChildren: that call removes whatever was in <main>.
+// `backdrop` = { src, position } or null. The layer is decoration: aria-hidden, empty alt.
+function setBackdrop(app, backdrop) {
+  app.querySelector(':scope > .backdrop')?.remove();
+  app.classList.toggle('has-backdrop', Boolean(backdrop));
+  if (!backdrop) return;
+  app.prepend(
+    h(
+      'div',
+      { class: 'backdrop', 'aria-hidden': 'true' },
+      h('img', { src: backdrop.src, alt: '', decoding: 'async', style: { objectPosition: backdrop.position || '50% 40%' } })
+    )
+  );
+}
+
+// For every page that is not a Region page. Also writes the footer credit, the way a Region page credits its
+// hero, because a picture is never shown without its credit.
+function applySiteBackdrop(app) {
+  const backdrop = siteBackdropFor(document.body.dataset.page);
+  setBackdrop(app, backdrop);
+  const credit = document.getElementById('credit');
+  if (!credit) return;
+  credit.hidden = !backdrop;
+  credit.textContent = backdrop ? `Backdrop image: ${backdrop.credit}` : '';
+}
+
 // ---------------------------------------------------------------- tiny helpers
 
 // h('div', { class: 'x', 'data-id': 'y' }, 'text', childElement) -> element.
@@ -68,6 +111,10 @@ export function needsText(directNames, chainLength) {
 // reader announces it when it appears (the boot guard does the same).
 // message = { heading, paragraphs: [string], links: [{ text, href }] }
 export function renderMessage(app, message) {
+  // A message replaces the page, so the picture and its credit go too.
+  setBackdrop(app, null);
+  const creditLine = document.getElementById('credit');
+  if (creditLine) creditLine.hidden = true;
   const links = (message.links || []).map((link) => h('a', { href: link.href }, link.text));
   app.replaceChildren(
     h(
@@ -139,6 +186,8 @@ export function renderShell(app, view) {
   );
 
   app.replaceChildren(hero, content);
+  // The same file and position as the hero, so the browser fetches it once. None for a Locked Region.
+  setBackdrop(app, showImage ? { src: view.region.heroUrl, position: view.region.heroPosition } : null);
   return layout;
 }
 
@@ -527,6 +576,7 @@ export function renderHomeShell(app) {
 
   const body = h('div', { class: 'content' });
   app.replaceChildren(hero, h('div', { class: 'frame' }, body));
+  applySiteBackdrop(app);
   return body;
 }
 
@@ -754,6 +804,7 @@ export function renderRouteShell(app) {
     hero,
     h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
   );
+  applySiteBackdrop(app);
   return layout;
 }
 
@@ -911,6 +962,7 @@ export function renderAccountShell(app) {
   );
 
   app.replaceChildren(hero, content);
+  applySiteBackdrop(app);
   return { plate, message };
 }
 
@@ -1103,6 +1155,7 @@ export function renderTrackersShell(app) {
       )
     )
   );
+  applySiteBackdrop(app);
   return { tabs, main, rail };
 }
 
@@ -1327,6 +1380,7 @@ export function renderRosariesShell(app) {
     hero,
     h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
   );
+  applySiteBackdrop(app);
   return layout;
 }
 
@@ -1546,6 +1600,7 @@ export function renderBuildsShell(app) {
     hero,
     h('div', { class: 'frame' }, h('div', { class: 'content' }, h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' }), layout))
   );
+  applySiteBackdrop(app);
   return { layout, intro };
 }
 
@@ -1898,6 +1953,7 @@ export function renderGoalShell(app) {
   const thread = h('div', { class: 'start-thread start-thread--short', 'aria-hidden': 'true' });
   const layout = h('div', {});
   app.replaceChildren(hero, h('div', { class: 'frame' }, h('div', { class: 'content' }, thread, layout)));
+  applySiteBackdrop(app);
   return { intro, thread, layout };
 }
 

@@ -853,6 +853,51 @@ a.region-card:hover .card-name { color: var(--silk); }
 .entry--hidden .entry-thread { border-left-style: dashed; }
 .entry--hidden .entry-note { margin-top: 0; font-size: 15px; line-height: 1.6; color: var(--ash); }
 
+/* ----------------------------------------------------------------- backdrop */
+
+/* A faint, blurred, darkened picture behind every page (DESIGN.md section 9; built in js/render.js,
+   setBackdrop). Region pages use the Region's own hero picture; the other pages share one. One strength
+   for all: tokens only, no color is written here.
+   - It is a second <img> of the same file as the hero on a Region page, so the browser downloads it once.
+   - Darkened with `opacity`, not an overlay: the page behind is --night, so 0.08 is exactly "8 percent
+     picture, 92 percent --night". Do not raise it to make the picture show: the budget is set by the
+     --silk text on it (docs/design/backdrop/README.md, "Why the top is 10 percent").
+   - position: absolute inside <main>, so it scrolls with the page: no parallax, nothing for
+     prefers-reduced-motion to switch off. z-index -1 inside <main>'s own stacking context puts it above
+     the page background and below the hero, thread and plates.
+   - A vertical mask fades it out toward the bottom, so the end of a long list and the footer sit on
+     plain --night. The <img> is 48px larger on every side so the blur has no soft border; the layer
+     clips it, so the page never grows sideways. */
+.has-backdrop { position: relative; isolation: isolate; }
+
+.backdrop {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(100%, 1100px);
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 35%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 35%, transparent 100%);
+}
+
+.backdrop img {
+  position: absolute;
+  inset: -48px;
+  width: calc(100% + 96px);
+  height: calc(100% + 96px);
+  object-fit: cover;
+  opacity: 0.08;
+  filter: blur(10px);
+}
+
+/* Anyone who asked for more contrast, a forced palette or paper gets the plain page. */
+@media (prefers-contrast: more), (forced-colors: active), print {
+  .backdrop { display: none; }
+}
+
 /* ------------------------------------------------------------------- footer */
 
 /* While <main> has nothing in it (the page script is still loading, or failed: js/boot-guard.js), the footer
