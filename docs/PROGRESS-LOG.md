@@ -161,6 +161,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **DMF-3 merged locally** (`dev-b/goal-direct-needs`, `js/goal-page.js` only): Goal page Needs lines use `directMissingFor`. Sylphsong as the Goal (42 rows): the last row went from "Needs Moss Mother, Silk Spear, Simple Key and 38 more" to "Needs Beast Crest, Reaper Crest, Needolin and 4 more" (its seven direct requirements). Dev B compared every row with the data in headless Chromium before and after ticks: 0 mismatches; no sideways scroll at 390 and 320 px. Orchestrator ran: 739 tests, validator 0 warnings. Noted by Dev B: names with a comma ("Tool Pouch upgrade, Fleatopia") read ambiguously in a Needs list (data naming; for Dev C).
 
+- **Athos: direct Needs lines on every page.** Contract section 5 ("Needs lines on every page"): direct names, capped at three, then ", plus N earlier steps"; the Locked Region page keeps the full chain, the Goal page keeps its count-free direct lines. DMF-4 started (dev-b).
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
