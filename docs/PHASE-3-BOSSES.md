@@ -2,7 +2,9 @@
 
 **Why this exists.** Athos asked that every boss be trackable, so it can be a Goal (glossary). `data/` (`dataVersion` 12) has 23 boss Tasks. About 15 more bosses are only named inside the `how` of the thing they give (Act 1 decision 5: a fight became its own Task only when it opened two or more things), and some are not in the data at all. Athos's decisions (2026-10-20, the orchestrator's recommendations, accepted): every boss becomes its own entry; a boss that gives nothing stays off the Route unless the Route needs it; a rematch gets an entry only when it gives something.
 
-**Research, not data.** Nothing here goes into `data/` until Athos confirms the rows (or strikes them) and the Route rule below is decided. Ids are permanent once published (ADR 0003).
+**Research, not data, until confirmed.** Ids are permanent once published (ADR 0003).
+
+**Athos's answers (2026-10-20): "go with your recommendations".** Route rule A (`optional: true`); the Beastling Call, the Craw Memento and the Crawbell are added, uncounted; the Craw rows follow `docs/PHASE-5-SHEET-2-MEMENTOS-EQUIPMENT-SHOPS.md` (Craw Summons, Craw Memento after the Everbloom, Crawbell), so the Craw Summons is added too; Second Sentinel in High Halls, Bell Eater in Choral Chambers; no Gelatinous Organ. No row was struck. **Dev C turns the tables below into `data/` as they stand now.**
 
 **Spoiler warning:** names every boss, Act 3 included.
 
@@ -36,7 +38,7 @@ Kind is T (Task) for all. `type` is `boss` unless noted. "Gives" is the existing
 |---|---|---|---|---|---|---|---|---|
 | 809 | `trobbio` | Trobbio | Whispering Vaults (The Stage) | | `claw-mirror` | on | A showman fought on the Stage in the Whispering Vaults. Optional for the story; the Claw Mirror is his prize. | GC-B, PCG-B, NL (search) |
 | 824 | `savage-beastfly-grand-hunt` | Savage Beastfly, Grand Hunt | Far Fields | `savage-beastfly`, `cogwork-dancers` | `mask-shard-savage-beastfly` | on | The rematch the Savage Beastfly Grand Hunt sends you to, in the Far Fields arena; its Horn Fragment is what the wish wants. | GC-B, PCG-B |
-| 861 | `surgeons-key` | Surgeon's Key | Whiteward | `clawline` | (`the-unravelled`) | on | Type `key`. At the end of a path in Whiteward, hang on a Clawline hook until your weight opens a gate above; a body falls, and the key is on it. | DG-SK, GB-K, wiki |
+| 861 | `surgeons-key` | Surgeon's Key | Whiteward | `clawline` | (`the-unravelled`) | on | **Collectible, `type: key`, `counts: false`** (a thing the player obtains, glossary; sheet 2 lists it with the keys). At the end of a path in Whiteward, hang on a Clawline hook until your weight opens a gate above; a body falls, and the key is on it. | DG-SK, GB-K, wiki |
 | 919 | `the-unravelled` | The Unravelled | Whiteward | `surgeons-key` | `silk-heart-unravelled` | on | Behind the Surgeon's Key door, below the operating theatre. | GC-B, PCG-B, DG-SK |
 | 979 | `phantom` | Phantom | Bilewater (Exhaust Organ) | `needolin` | `cross-stitch` | on | The ghost of the Exhaust Organ, past the Mist; one of the two ways out of Act 1 (the other is the Last Judge). | GC-B, PCG-B |
 | 995 | `groal-the-great` | Groal the Great | Bilewater (Bilehaven) | | `silk-and-soul` | on | Top of Bilewater, behind a short gauntlet. The Seeker's Soul that Silk and Soul asks for is in the hut past him. | PCG-B, GC-B, wiki, NL (search) |
@@ -61,9 +63,20 @@ Kind is T (Task) for all. `type` is `boss` unless noted. "Gives" is the existing
 | 391 | `skull-tyrant` | Skull Tyrant | The Marrow | `cling-grip` | nothing tracked | off | The Terrible Tyrant, a Grand Hunt on the Bone Bottom wish board once you have Cling Grip. Its Crown Fragment, handed in, pays a Heavy Rosary Necklace (a consumable, not tracked). | GC-B, PCG-B, GG-GH, II-ST, wiki |
 | 651 | `broodmother` | Broodmother | The Slab | | nothing tracked | off | The Wailing Mother, a Songclave Grand Hunt. Its reward is a Rosary necklace (**conflict:** Heavy [wiki] or plain [NL]); PCG-B lists a Gelatinous Organ. | GC-B, PCG-B, wiki, NL (search) |
 | 2011 | `plasmified-zango` | Plasmified Zango | Wormways | `grand-mother-silk-snared` | nothing tracked | off | In Act 3 the Wormways change and Zylotol's dead assistant rises. No reward in the sources read (one `low` source claims a health upgrade). | GC-B, PCG-B, wiki, NS-Z low |
-| 2012 | `bell-eater` | Bell Eater | Choral Chambers (Grand Bellway) | `grand-mother-silk-snared` | see open question 2 | off | In Act 3, calling the Bell Beast at the Grand Bellway fails and the Bell Eater comes up instead. **Conflict on the Region:** Choral Chambers [GC-B, DG-BE] or The Marrow [PCG-B]. | GC-B, PCG-B, DG-BE, SK-BC |
-| 2013 | `crawfather` | Crawfather | Greymoor (Craw Lake) | `grand-mother-silk-snared` | see open question 3 | off | The Craw Summons opens a door at Craw Lake; the Court of Craws is behind it. | GC-B, PCG-B, wiki |
+| 2012 | `bell-eater` | Bell Eater | Choral Chambers (Grand Bellway) | `grand-mother-silk-snared` | `beastling-call` (new, below) | off | In Act 3, calling the Bell Beast at the Grand Bellway fails and the Bell Eater comes up instead. **Conflict on the Region:** Choral Chambers [GC-B, DG-BE] or The Marrow [PCG-B]. | GC-B, PCG-B, DG-BE, SK-BC |
+| 2117 | `crawfather` | Crawfather | Greymoor (Craw Lake) | `craw-summons`, `everbloom` | `craw-memento`, `crawbell` (new, below) | off | The Craw Summons opens a door at Craw Lake; past the tunnels, in the Court of Craws, beat the Crawfather after waves of Craws. | GC-B, PCG-B, wiki, sheet 2 |
 | 2041 | `palestag` | Palestag | Greymoor (Lost Verdania) | `elegy-of-the-deep`, `simple-key-sands-of-karak` | nothing tracked | off | The first fight of Lost Verdania; it gives orbs for the area's puzzle, not an item. **Conflict:** "required for 100%" [GC-B] or not [DG-PS]. | GC-B, PCG-B, DG-PS |
+
+### Rewards and keys that are not in `data/` yet (Collectibles, `counts: false`, off the Route)
+
+| step | id | Name | Kind, type | Region (Sub-area) | requires | how (our words) | Sources |
+|---|---|---|---|---|---|---|---|
+| 2014 | `beastling-call` | Beastling Call | C, `ability`, `counts: false` | Choral Chambers (Grand Bellway) | `bell-eater` | After the Bell Eater, play the Needolin with the Bell Beast and its young to learn the song. Playing it later calls the Beastlings, who carry you back to a Bellway station. | SK-BC, DG-BE, wiki |
+| 2115 | `craw-summons` | Craw Summons | C, `key-item`, `counts: false` | Greymoor (Craw Lake) | `grand-mother-silk-snared` | An Act 3 summons that opens the door at Craw Lake. **Conflict on how it appears** (after the Dark Hearts wish, in Bellhart, or after four Hunter's Journal entries): see sheet 2, section 1. | sheet 2 (FX snippet, AT-CS, DS-M) |
+| 2125 | `craw-memento` | Craw Memento | C, `memento`, `counts: false` | Greymoor (Craw Lake) | `crawfather` | The Crawfather's prize, after the waves of Craws in the Court of Craws. | sheet 2 (DG-M, PCG-M, G8-M, GC-M), wiki |
+| 2126 | `crawbell` | Crawbell | C, `furnishing`, `counts: false` | Greymoor (Craw Lake) | `crawfather` | Bellhome furniture that comes with the Craw Memento. | sheet 2 (DS-M), wiki |
+
+`beastling-call` uses `ability` with `counts: false`, as `drifters-cloak` and `faydown-cloak` do; `key-item`, `memento` and `furnishing` are already tracked-only types (validator rule 12).
 
 ## Left out, with the reason
 
@@ -73,16 +86,17 @@ Kind is T (Task) for all. `type` is `boss` unless noted. "Gives" is the existing
 
 ## Open questions for Athos
 
-1. **The Route rule:** A (`optional: true`, recommended) or B (Ending conditions as roots).
-2. **Beastling Call** (from the Bell Eater: a Needolin song that calls the Beastlings back to a Bellway [wiki, SK-BC]) is not in `data/`. Is it an entry? The Elegy of the Deep, a similar song, is a Task (`type: ability`) today, although the glossary now says a thing the player obtains is a Collectible.
-3. **Craw Memento and Crawbell** (from the Crawfather [wiki]) are not in `data/`. The Craw Memento is a Memento (`counts: false`); the Crawbell was already planned off the Route (contract section 8). Add both with this batch?
-4. **The Craw Summons** (opens Craw Lake's door) is not in `data/`; the row gates the Crawfather on Act 3 only.
-5. **Two Region conflicts:** Second Sentinel (High Halls or Choral Chambers) and Bell Eater (Choral Chambers or The Marrow).
-6. **Gelatinous Organ** (PCG-B, from Broodmother) is not found in any other source; not added.
+1. **The Route rule:** A (`optional: true`). **Decided: A.**
+2. **Decided: added (table above).** **Beastling Call** (from the Bell Eater: a Needolin song that calls the Beastlings back to a Bellway [wiki, SK-BC]) is not in `data/`. Is it an entry? The Elegy of the Deep, a similar song, is a Task (`type: ability`) today, although the glossary now says a thing the player obtains is a Collectible.
+3. **Decided: added, with the Craw Summons (table above).** **Craw Memento and Crawbell** (from the Crawfather [wiki]) are not in `data/`. The Craw Memento is a Memento (`counts: false`); the Crawbell was already planned off the Route (contract section 8). Add both with this batch?
+4. **Decided:** the Craw Summons is added from sheet 2; its trigger conflict stays in its `how`.
+5. **Decided: High Halls and Choral Chambers.** **Two Region conflicts:** Second Sentinel (High Halls or Choral Chambers) and Bell Eater (Choral Chambers or The Marrow).
+6. **Decided: not added.** **Gelatinous Organ** (PCG-B, from Broodmother) is not found in any other source; not added.
 
 ## What Dev C would change, once confirmed
 
-- 24 new boss Tasks and one key Task (`surgeons-key`), with the steps above; 14 bosses and the key on the Route, 10 bosses off it with `optional: true` (if A).
+- 24 new boss Tasks (14 on the Route; 10 with `optional: true`, off it) and five new Collectibles with `counts: false`: `surgeons-key` (on the Route, The Unravelled needs it), `beastling-call`, `craw-summons`, `craw-memento`, `crawbell` (off it).
+- `optional: true` on exactly these 10 bosses: `tormented-trobbio`, `watcher-at-the-edge`, `clover-dancers`, `lost-garmond`, `skull-tyrant`, `broodmother`, `plasmified-zango`, `bell-eater`, `crawfather`, `palestag`.
 - `requires` gains the boss on 18 existing entries (the "Gives" column, which includes `nyleth` for Seth and `silk-and-soul` for Groal); nothing else in them changes.
 - Checked by simulating these rows and rule A on a copy of `data/`: nothing on the Route today leaves it, no entry on the Route comes before something it needs, and no id or step clashes.
 - The `how` of those entries can keep naming the boss.

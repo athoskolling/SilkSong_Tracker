@@ -79,6 +79,7 @@ A Region the model knows about but whose content has not shipped yet is allowed 
 | `unlocks` | string[] | no | not used in V1 and not derived by anything; if present, it must list entry ids (validator). Do not hand-write it |
 | `missable` | boolean | no | default `false` |
 | `missableNote` | string | if `missable` | when and why |
+| `optional` | boolean | no | Tasks only (bosses, 2026-10-20). Default `false`. `true` = a Task that gives nothing on the Route (a boss fought for its own sake, or for an uncounted reward): it is not on the Route by itself, only when something on the Route needs it (`routeIds`, section 2). Not shown to the player; it changes no count |
 | `step` | integer | yes | position in the one global Route; unique across all entries. For an entry that is off the Route (`routeIds`, section 2) it only orders the entry on its Region page and its Tracker; it is still required and unique, so the entry can join the Route later without renumbering |
 | `spoiler` | `0` \| `1` \| `2` | no | lets an entry stay hidden until the player gets there. What each level means is still open (see section 7); V1 only needs "hidden while its Region is not Visited" versus "shown", so treat every entry as hidden-until-Visited unless Athos says otherwise |
 | `source` | string (URL) | yes | link to the page the entry was checked against (the main wiki, or for Act 1 the guide page the orchestrator read, until Athos swaps it); a reference, not a copy. A MapGenie link is allowed only under the rules in "Sources and MapGenie" below |
@@ -307,11 +308,12 @@ isCounted(item /* one entry object */) -> boolean
 routeIds(items, regions) -> Set<string>
 // Phase 5 (decided 2026-10-20). The ids of the entries that are on the Route. An entry is on the Route when
 //   - isCounted(entry) is true, or
-//   - it is a Task (kind === 'task'), or
+//   - it is a Task (kind === 'task') without optional: true (bosses, 2026-10-20), or
 //   - it has missable: true (the Route is where the player is warned in time), or
 //   - it is in the requirements of an entry that is on the Route, or of any Region, walking the chain all the
 //     way down (each id's own `requires` plus its Region's `requires`), whatever is done.
-// Every other entry is off the Route: in practice a Collectible with counts: false that nothing on the Route needs.
+// Every other entry is off the Route: in practice a Collectible with counts: false, or a Task with optional: true,
+// that nothing on the Route needs. An optional Task that something on the Route needs stays on it (the chain rule).
 // "Needed by an entry on the Route", not "needed by any entry": an id required only by entries that are off the
 // Route is off the Route too (the Bellhome Key, required only by furnishings, stays off).
 // Takes no doneSet: being on the Route is a property of the data. Closed under requirements: whatever an entry on
@@ -645,7 +647,7 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
 3. `regionId` of every entry exists; every id in `requires` (entries and Regions) and `conditions` exists **and is an entry id** in `items.json`.
 4. No cycles in `requires`, where an entry also depends on its Region's `requires` (so a Region that requires an entry inside itself is a cycle).
 5. `step` is a unique integer across all entries.
-6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
+6. `kind` is `collectible` or `task`; `missable: true` has a `missableNote`; `optional`, when given, is `true` or `false` and appears only on a Task (bosses, 2026-10-20); a Task never has `counts: true` (Phase 5: a Task adds nothing to the counts, so the flag would contradict the kind).
 7. Every entry has `source`, `how` and a non-empty `name`.
 8. Every Region with `heroImage` has `heroCredit`, the path ends in `.jpg` or `.png`, and the image file exists.
 9. `locksOut` ids are existing endings, and an ending never locks out itself.
@@ -695,6 +697,8 @@ No fixed function contract; they follow `docs/DESIGN.md`. Rules:
   - `loadGoal`, `setGoal`, `onGoalChange` in `progress.js` (section 3), under their own localStorage key, outside Progress: not synced, not in backups, cleared by "Start a new run". Why in `progress.js`: it is the only module that touches localStorage. Why outside Progress: no Firestore rules change, nothing to merge (section 3, "Goal storage").
   - New page `goal.html` with `js/goal-page.js`, a button on every entry row and on the "Next on the route" plate, and a Home plate (section 5). No header link.
   - Not in this change: bosses as their own entries (Part 2: a research sheet, then data; the Route rule for bosses that give nothing is decided with it).
+
+- 2026-10-20, **bosses** (Athos: every boss its own entry; "go with your recommendations"; `docs/PHASE-3-BOSSES.md`). Optional field `optional` on Tasks (section 1); `routeIds` no longer puts a Task with `optional: true` on the Route by itself (section 2); validator rule 6 checks the field. Why a field and not "a boss is on the Route only when needed": that rule pushes Lost Lace off the Route, since nothing requires it (it is only an Ending condition) and `routeIds` does not read `endings.json`; reading Endings would change `routeIds`'s signature for every caller, for the same result on the data. Simulated on a copy of `data/` with the new rows: nothing on the Route today leaves it, and no entry on the Route comes before what it needs. No signature changed. Approved by Athos.
 
 ## 8. Open contract questions
 
