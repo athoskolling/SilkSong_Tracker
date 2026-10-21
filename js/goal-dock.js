@@ -124,6 +124,7 @@ export async function startGoalDock() {
     const classes = ['dock-row'];
     if (row.available) classes.push('dock-row--available');
     if (row === firstAvailable) classes.push('dock-row--next');
+    if (row.isGoal) classes.push('dock-row--goal');
     return el('li', { class: classes.join(' ') }, done, el('div', { class: 'dock-row-text' }, ...lines));
   }
 
@@ -155,8 +156,7 @@ export async function startGoalDock() {
         'aria-expanded': open ? 'true' : 'false',
         'aria-controls': 'goal-dock-body',
       },
-      el('span', { class: 'dock-label' }, 'Your goal'),
-      el('span', { class: 'dock-name' }, view.goal.name),
+      el('span', { class: 'dock-title' }, el('span', { class: 'dock-label' }, 'Your goal'), el('span', { class: 'dock-name' }, view.goal.name)),
       el('span', { class: 'dock-count' }, summary(view)),
       el('span', { class: 'dock-chevron', 'aria-hidden': 'true' })
     );
