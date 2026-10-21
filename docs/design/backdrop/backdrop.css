@@ -1,0 +1,59 @@
+/* backdrop.css: the themed backdrop of a Region page (mockup, BG-1).
+   If built, these rules would move to css/components.css (about 40 lines) or css/backdrop.css.
+   Tokens only; no color is written here.
+
+   HOW IT WORKS
+   - The backdrop is the Region's own hero picture, a second <img> of the SAME file (the browser downloads
+     it once; the page pays one more decode). It sits in a layer behind the content: <main> becomes a
+     stacking context and the layer has z-index -1, so it is above the page background (--night) and below
+     the hero, the thread and the plates.
+   - It is darkened with `opacity`, not with an overlay element. The page background behind it is --night,
+     so opacity 0.08 is exactly "8 percent picture, 92 percent --night": the same as a night overlay at 92
+     percent, with one layer less to composite.
+   - It scrolls with the page (position: absolute, not fixed): nothing moves relative to the content, so
+     there is no parallax and nothing for prefers-reduced-motion to turn off.
+   - A vertical mask fades it out toward the bottom, so the footer and the end of a long list are on plain
+     --night. The layer never makes the page wider: it is clipped to <main>, and the blur edge (the img is
+     48px larger on every side so the blur has no soft border) is cut by overflow: hidden. */
+
+.has-backdrop { position: relative; isolation: isolate; }
+
+.backdrop {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(100%, var(--backdrop-reach, 1100px));
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 var(--backdrop-hold, 35%), transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 var(--backdrop-hold, 35%), transparent 100%);
+}
+
+.backdrop img {
+  position: absolute;
+  inset: -48px;
+  width: calc(100% + 96px);
+  height: calc(100% + 96px);
+  object-fit: cover;
+  object-position: 50% 40%; /* the Region's heroPosition, set inline like the hero's */
+  opacity: var(--backdrop-strength, 0.08);
+  filter: blur(var(--backdrop-blur, 0px));
+}
+
+/* Three strengths for the mockup. In the product there would be one, chosen from the table in README.md. */
+.backdrop--a { --backdrop-strength: 0.05; --backdrop-blur: 0px; }
+.backdrop--b { --backdrop-strength: 0.08; --backdrop-blur: 10px; }
+.backdrop--c { --backdrop-strength: 0.10; --backdrop-blur: 24px; }
+
+/* Anyone who asked for more contrast, a forced palette or paper gets the plain page. */
+@media (prefers-contrast: more), (forced-colors: active), print {
+  .backdrop { display: none; }
+}
+
+/* ------------------------------------------------------------------ mockup only */
+
+.mock-states { font-weight: 500; }
+.mock-states a, .mock-states a:hover { color: var(--night); }
+.mock-states a[aria-current="page"] { font-weight: 600; text-decoration: none; }
