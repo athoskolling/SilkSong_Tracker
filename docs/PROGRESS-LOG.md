@@ -163,6 +163,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos: direct Needs lines on every page.** Contract section 5 ("Needs lines on every page"): direct names, capped at three, then ", plus N earlier steps"; the Locked Region page keeps the full chain, the Goal page keeps its count-free direct lines. DMF-4 started (dev-b).
 
+- **Session stopped (local save, Athos: one minute left).** Not pushed: `main` is ahead of `origin` with DMF-1 and DMF-3 merged (739 tests pass, validator 0 warnings). Still running or unmerged when stopped: DMF-2 (`qa-tests/direct-missing-back`, tests), DMF-4 (`dev-b/direct-needs-everywhere`, direct Needs lines on every page), BG-1 (`dev-b/backdrop-mockup`, mockup for Athos's review). **To resume:** for each finished branch, read its diff, merge one at a time (DMF-2, then DMF-4), run `node --test "tests/*.test.js"` and `node scripts/validate-data.js` after each, check the pages in a browser, then push (Athos: push when everything is merged). BG-1 goes to Athos for review, not into the push decision.
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
