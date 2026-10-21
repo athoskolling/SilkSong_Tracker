@@ -81,7 +81,6 @@ async function runRosariesPage(app) {
       name: item.name,
       kind: item.kind,
       type: item.type,
-      toolColor: item.toolColor,
       price: item.price,
       source: item.source,
       done,
