@@ -11,7 +11,7 @@
 
 import { loadData, pageHref } from './data.js';
 import { configureProgress, loadProgress, setDone, onProgressChange, loadGoal, setGoal, onGoalChange } from './progress.js';
-import { missingFor, pathTo, routeIds } from './requirements.js';
+import { directMissingFor, pathTo, routeIds } from './requirements.js';
 import { renderMessage, renderGoalShell, renderGoalBody, listWithMore } from './render.js';
 
 run();
@@ -89,7 +89,9 @@ async function runGoalPage(app) {
     const firstAvailable = path.find((row) => row.available);
     const rows = path.map((row) => {
       const item = itemsById.get(row.id);
-      const missing = row.available ? [] : missingFor(item.id, state.done, items, regions);
+      // Only what this row itself waits on. Everything earlier in the chain is already a row above it,
+      // so the full chain would just repeat the list ("Needs A, B, C and 38 more").
+      const missing = row.available ? [] : directMissingFor(item.id, state.done, items, regions);
       return {
         ...entryInfo(item),
         id: item.id,
