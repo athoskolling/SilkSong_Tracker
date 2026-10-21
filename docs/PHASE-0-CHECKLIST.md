@@ -27,6 +27,7 @@ Write the answer next to each item when it has one (name, URL, yes or no, date).
   - Confirmed by Athos (2026-10-20): batch 1 is **Moss Grotto, The Marrow and Deep Docks**; **Bone Bottom is a Sub-area of Moss Grotto**. Research: `docs/research/2026-10-20-sources-and-batch-1.md`.
 - [ ] **9. Hero images.** Decide whether game screenshots stay as Region heroes on the public site (see "Rights and risk" in `docs/IMAGES.md`), and send the images you want (`img/incoming/`).
   - Decision (Athos, 2026-10-20, "all your recommendations"): **screenshots stay**, his own captures, one per Region, with the Team Cherry credit; used as the Region hero and as a faint, darkened backdrop behind the Region page (mockup on Deep Docks first). Wallpapers and fan art from the web are not used (no permission found; fan art belongs to its artists). **Still open: the images themselves** (`img/incoming/<region-id>.png`, ideally 1920 × 1080, no HUD). The box is ticked when they arrive.
+  - Added 2026-10-21 (Athos, option B): a backdrop on every page. Besides the 28 Region pictures, **one shared picture** for the seven pages that are not Region pages (`img/incoming/site.png`, an early-game scene). The code ships first and shows nothing until a picture exists.
 
 ## Orchestrator's tasks
 

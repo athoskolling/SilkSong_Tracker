@@ -141,3 +141,11 @@ Empty state (new game): nothing is done, so the totals read "0 of N" and the nex
 ## 9. Images
 
 Short version here; the full rules are in `docs/IMAGES.md`. Region heroes are 16:9, at least 1920 × 1080, in `img/regions/<region-id>.jpg` (or `.png`), with a credit line in `heroCredit`. The only image in the kit today is `img/regions/deep-docks.png` (640 × 360, a screenshot Athos supplied, © Team Cherry). It is a placeholder until a larger one replaces it.
+
+**Backdrop** (Athos, 2026-10-21; mockups in `docs/design/backdrop/`, option b). Every page has a faint, blurred, darkened picture behind its content:
+
+- **Region page:** the Region's own `heroImage`, the same file as the hero. Shown when the Region is Available, Visited or not (the hero picture is already shown then). **Locked Region: no backdrop** (and, as today, no hero picture). A Region without `heroImage`: no backdrop.
+- **Every other page** (Home, Route, Trackers, Rosaries, Builds, Goal, Account): **one shared picture** (option B), `img/backdrop/site.jpg`, named in one place in the code. Until that file exists the code names no picture, so these pages look exactly as today and request nothing.
+- **One global strength:** 8 percent picture over `--night`, 10 px blur, fading out toward the bottom, scrolling with the page (no fixed layer, no parallax). Hidden for `prefers-contrast: more`, `forced-colors: active` and print. Kept on phones.
+- **Every picture is measured when it is converted** (`docs/design/backdrop/_shoot.mjs --measure`). A picture that fails the contrast floor at 8 percent is recropped or replaced; the strength is not changed per picture (no per-Region field).
+- The backdrop is decoration: `aria-hidden`, `alt=""`, and a page shown with the backdrop credits it in the footer like a hero.

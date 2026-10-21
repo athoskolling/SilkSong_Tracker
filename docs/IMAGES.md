@@ -4,7 +4,7 @@ Rules for the images on the site. Athos downloads or captures the images; the ag
 
 ## What the site uses
 
-One **hero image per Region**, shown at the top of its Region page and (optionally) as a small crop on its Home card. Nothing else uses game art: no icons, no sprites, no map.
+One **hero image per Region**, shown at the top of its Region page, as a small crop on its Home card, and as the faint backdrop behind its Region page. One **shared backdrop picture** for every page that is not a Region page (Home, Route, Trackers, Rosaries, Builds, Goal, Account; Athos, 2026-10-21, option B): `img/backdrop/site.jpg`, same specification as a hero, a scene from early in the game so it spoils nothing, credited in those pages' footers. Backdrop rules: `docs/DESIGN.md` section 9. Nothing else uses game art: no icons, no sprites, no map.
 
 ## Specification
 
@@ -26,9 +26,9 @@ Credit line used so far: `Screenshot from Hollow Knight: Silksong, © Team Cherr
 
 ## How Athos sends images
 
-1. Put the original files in `img/incoming/` (git-ignored). Name each one after the Region id (`moss-grotto.png`, `the-marrow.png`).
+1. Put the original files in `img/incoming/` (git-ignored). Name each one after the Region id (`moss-grotto.png`, `the-marrow.png`), and the shared backdrop `site.png`.
 2. Tell the orchestrator which Region each one is for and where the subject sits if it matters.
-3. Dev B converts each into `img/regions/<region-id>.jpg` (any tool; say which in the handoff), then sets `heroImage`, `heroPosition` and `heroCredit` on the Region. QA 1's validator checks the file exists and the credit is present.
+3. Dev B converts each into `img/regions/<region-id>.jpg` (any tool; say which in the handoff), then sets `heroImage`, `heroPosition` and `heroCredit` on the Region (Region data is Dev C's; Dev B hands the three values over), and measures the backdrop contrast (`docs/design/backdrop/_shoot.mjs --measure`). A picture that fails is recropped or replaced. QA 1's validator checks the file exists and the credit is present. The shared picture becomes `img/backdrop/site.jpg`, and Dev B points the code at it.
 4. Athos looks at the result in the browser before it is merged.
 
 ## Current state

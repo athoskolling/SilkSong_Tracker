@@ -143,6 +143,8 @@ The interface uses only these functions. It does not touch Firestore or localSto
 - Data has `source` and attribution, with no copied text.
 - QA checklist with no critical findings.
 
+**Out of scope for this version** (Athos, 2026-10-21: "backgrounds, then done; the rest is out of scope"). Not built and not required for done: real Build templates and Places data (`data/builds.json`, `data/places.json`; the code and samples stay), Shell Shards from entries, save-file import, a Trackers tab for the upgrade types, the ten disputed build facts, a wiki check of the Act 2 and 3 facts, renaming entries whose names hold a comma, and the Keys tab missing `key-item` (Craw Summons is on no tab). The open questions about them stay recorded in `docs/CONTRACTS.md` section 8.
+
 **Phase 5 adds (full tracker):**
 - The current `data/` passes the validator with no edit and the same warnings as before Phase 5; every Home, Region and Route number for the current data is the same as before.
 - No Collectible with `counts: false` appears in a headline count; each Tracker shows its own done and total.
