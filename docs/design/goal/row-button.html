@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Make this my goal | Silksong guide (mockup)</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="goal.css">
+</head>
+<body data-page="region">
+  <a class="skip-link" href="#app">Skip to the content</a>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other mockups: <a href="goal-page.html">Goal page</a> &middot; <a href="goal-none.html">No goal</a> &middot; <a href="goal-done.html">Goal done</a> &middot; <a href="goal-retired.html">Goal not in the guide</a> &middot; <a href="home-plate.html">Home plate</a> &middot; <a href="row-button.html" aria-current="page">Row control</a></div>
+  <div class="page">
+    <header class="site-header">
+      <div class="frame">
+        <a class="logo" href="../../../index.html">
+          <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true"><path class="line" d="M3 9 H29"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+          Silksong guide
+        </a>
+        <nav class="site-nav nav-short" aria-label="Main">
+          <a href="../../../index.html">Regions</a>
+          <a href="../../../route.html">Route</a>
+          <a href="../../../trackers.html">Trackers</a>
+          <a href="../../../account.html">Account<span class="nav-extra"> and backup</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="hero hero--short">
+        <div class="hero-shade"></div>
+        <div class="hero-shade hero-shade--title"></div>
+        <div class="frame">
+          
+          <h1 class="hero-title">Make this my goal</h1>
+          <p class="hero-intro">The control on an entry row and on the Next on the route plate, not pressed and pressed.</p>
+        </div>
+      </section>
+      <div class="frame">
+        <div class="content">
+          
+        <section class="sheet-section" aria-labelledby="sheet-region">
+          <h2 class="list-heading" id="sheet-region">On a Region page</h2>
+          <p class="sheet-note"><strong>Second row is the goal.</strong> The control sits at the foot of the row, after the how line and what it needs. A row that is already done has no control, because nothing is left to follow. The same row is used on the Route, Trackers and Rosaries pages.</p>
+          <ol class="entries">
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="false" aria-label="Example tool"><span class="mark mark--bead"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Example tool</span><span class="entry-step num">Step 21</span></div>
+                <div class="entry-meta"><span>Tool</span><span>Sample yard</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text that says how to do this, in our own words.</p>
+                <div class="entry-actions"><button type="button" class="goal-btn" aria-pressed="false"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Make this my goal<span class="visually-hidden">: Example tool</span></span></button></div>
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="false" aria-label="Sample errand" aria-describedby="needs-r2"><span class="mark mark--knot is-blocked"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Sample errand</span><span class="entry-step num">Step 22</span></div>
+                <div class="entry-meta"><span>Quest</span><span>Sample market</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text for the second row. It stays within about two lines.</p>
+                <p id="needs-r2" class="entry-needs is-missing">Needs Example tool</p>
+                <div class="entry-actions"><button type="button" class="goal-btn" aria-pressed="true"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Your goal<span class="visually-hidden">: Sample errand</span></span></button></div>
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread is-blocked" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="false" aria-label="Example crest" aria-describedby="needs-r3"><span class="mark mark--bead is-blocked"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Example crest</span><span class="entry-step num">Step 30</span></div>
+                <div class="entry-meta"><span>Crest</span><span>Sample tower</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text for a row that waits on something else.</p>
+                <p id="needs-r3" class="entry-needs is-missing">Needs Sample errand</p>
+                <div class="entry-actions"><button type="button" class="goal-btn" aria-pressed="false"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Make this my goal<span class="visually-hidden">: Example crest</span></span></button></div>
+              </div>
+            </li>
+            <li class="entry is-done">
+              <div class="entry-rail">
+                <span class="entry-thread is-clear" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="true" aria-label="Example relic"><span class="mark mark--bead is-done"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Example relic</span><span class="entry-step num">Step 33</span></div>
+                <div class="entry-meta"><span>Ability</span><span>Sample vault</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text that says how to do this, in our own words.</p>
+              </div>
+            </li>
+          </ol>
+        </section>
+        <section class="sheet-section" aria-labelledby="sheet-route">
+          <h2 class="list-heading" id="sheet-route">On the Route page</h2>
+          <p class="sheet-note"><strong>First row is the goal.</strong> On the stitched "next" row the control sits inside the plate, under the how line. A row that is not the goal reads "Make this my goal".</p>
+          <section class="route-group is-last" aria-labelledby="route-b">
+            <div class="route-head">
+              <div class="entry-rail"><span class="entry-thread" aria-hidden="true"></span></div>
+              <div class="route-head-body"><h3 class="route-name" id="route-b"><a href="#">Region A</a></h3><span class="route-meta"><span class="num">Steps 11 to 12</span></span></div>
+            </div>
+            <ol class="entries">
+            <li class="entry entry--next">
+              <div class="entry-rail">
+                <span class="entry-thread" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="false" aria-label="Sample next entry"><span class="mark mark--bead is-next"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Sample next entry</span><span class="entry-step num">Step 11</span></div>
+                <div class="entry-meta"><span>Tool</span><span>Sample yard</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text that says how to do this, in our own words.</p>
+                <div class="entry-actions"><button type="button" class="goal-btn" aria-pressed="true"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Your goal<span class="visually-hidden">: Sample next entry</span></span></button></div>
+              </div>
+            </li>
+            <li class="entry">
+              <div class="entry-rail">
+                <span class="entry-thread" aria-hidden="true"></span>
+                <button type="button" class="entry-mark" aria-pressed="false" aria-label="Sample boss"><span class="mark mark--knot"></span></button>
+              </div>
+              <div class="entry-body">
+                <div class="entry-head"><span class="entry-name">Sample boss</span><span class="entry-step num">Step 12</span></div>
+                <div class="entry-meta"><span>Boss</span><span>Sample hall</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+                <p class="entry-how">Sample text for the second row. It stays within about two lines.</p>
+                <div class="entry-actions"><button type="button" class="goal-btn" aria-pressed="false"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Make this my goal<span class="visually-hidden">: Sample boss</span></span></button></div>
+              </div>
+            </li>
+            </ol>
+          </section>
+        </section>
+        <section class="sheet-section" aria-labelledby="sheet-next">
+          <h2 class="list-heading" id="sheet-next">On the Next on the route plate</h2>
+          <p class="sheet-note">Home, and anywhere else the plate appears. The control joins the plate's links. First not pressed, then pressed.</p>
+          <div class="sheet-pair">
+            <section class="next-plate" aria-label="Next on the route, goal not set">
+            <span class="next-label">Next on the route</span>
+            <h3 class="next-name">Sample next entry</h3>
+            <div class="entry-meta next-meta"><span>Tool</span><span>Region A</span><span class="num">Step 11</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+            <p class="next-how">Sample text that says how to do this, in our own words.</p>
+            <p class="next-actions"><a href="#">See the whole route</a><a href="#">Open Region A</a><button type="button" class="goal-btn" aria-pressed="false"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Make this my goal<span class="visually-hidden">: Sample next entry</span></span></button></p>
+          </section>
+            <section class="next-plate" aria-label="Next on the route, goal set">
+            <span class="next-label">Next on the route</span>
+            <h3 class="next-name">Sample next entry</h3>
+            <div class="entry-meta next-meta"><span>Tool</span><span>Region A</span><span class="num">Step 11</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+            <p class="next-how">Sample text that says how to do this, in our own words.</p>
+            <p class="next-actions"><a href="#">See the whole route</a><a href="#">Open Region A</a><button type="button" class="goal-btn" aria-pressed="true"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Your goal<span class="visually-hidden">: Sample next entry</span></span></button></p>
+          </section>
+          </div>
+        </section>
+        </div>
+      </div>
+    </main>
+    <footer class="frame site-footer">
+      <p>Guide text written in our own words from the Hollow Knight: Silksong wiki and other references. Each entry links its source. Not affiliated with Team Cherry.</p>
+      <p>Layout sample. Names, steps, counts and states are invented to show what a screen can look like; they are not guide data.</p>
+    </footer>
+  </div>
+  <div class="visually-hidden" aria-live="polite" role="status"></div>
+</body>
+</html>
