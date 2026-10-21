@@ -157,6 +157,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos: bring over `directMissingFor`.** Contract sections 2, 5, 7. DMF-1 (dev-a: port the two functions from `local/acts-1-2`), DMF-2 (qa-tests: port `tests/requirements-direct.test.js`), then DMF-3 (dev-b: Goal page Needs lines).
 
+- **DMF-1 merged locally** (`dev-a/direct-missing`): the two functions on today's helpers, no second chain walk. Dev A checked on real data (new game and 50 steps done): subset of the full chain, direct ids only, by step; longest direct list 7 (Silk and Soul). Orchestrator ran: 739 tests, validator 0 warnings. To fix later (Dev A): its comment says the Goal page keeps the full chain; the Goal page will use the direct lists. DMF-3 started (dev-b).
+
 ## Open
 
 - Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
