@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home | Silksong guide (mockup)</title>
+  <link rel="stylesheet" href="../../../css/base.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="goal.css">
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#app">Skip to the content</a>
+  <div class="banner mock-states">Mockup with invented content, not guide data. Other mockups: <a href="goal-page.html">Goal page</a> &middot; <a href="goal-none.html">No goal</a> &middot; <a href="goal-done.html">Goal done</a> &middot; <a href="goal-retired.html">Goal not in the guide</a> &middot; <a href="home-plate.html" aria-current="page">Home plate</a> &middot; <a href="row-button.html">Row control</a></div>
+  <div class="page">
+    <header class="site-header">
+      <div class="frame">
+        <a class="logo" href="../../../index.html">
+          <svg class="logo-mark" viewBox="0 0 30 18" aria-hidden="true"><path class="line" d="M3 9 H29"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+          Silksong guide
+        </a>
+        <nav class="site-nav nav-short" aria-label="Main">
+          <a href="../../../index.html" aria-current="page">Regions</a>
+          <a href="../../../route.html">Route</a>
+          <a href="../../../trackers.html">Trackers</a>
+          <a href="../../../account.html">Account<span class="nav-extra"> and backup</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="hero hero--short hero--home">
+        <div class="hero-shade"></div>
+        <div class="hero-shade hero-shade--title"></div>
+        <div class="frame">
+          
+          <h1 class="hero-title">Every collectible.<br>Every ending.</h1>
+          <p class="hero-intro">Mark what you have, see what comes next, and see what each locked region still needs.</p>
+        </div>
+      </section>
+      <div class="frame">
+        <div class="content">
+          <div class="start-thread start-thread--short" aria-hidden="true"></div>
+        <div class="layout layout--home">
+          <div class="home-main">
+            <section class="next-plate" aria-labelledby="next-heading">
+              <span class="next-label">Next on the route</span>
+              <h2 class="next-name" id="next-heading">Sample next entry</h2>
+              <div class="entry-meta next-meta"><span>Tool</span><span>Region A</span><span class="num">Step 11</span><a class="source-link" href="#" target="_blank" rel="noopener">Source</a></div>
+              <p class="next-how">Sample text that says how to do this, in our own words.</p>
+              <p class="next-actions"><a href="../../../route.html">See the whole route</a><a href="#">Open Region A</a><button type="button" class="goal-btn" aria-pressed="false"><svg class="goal-icon" viewBox="0 0 24 14" aria-hidden="true"><path class="line" d="M1 7 H23"/><ellipse class="eye" cx="6" cy="7" rx="3" ry="4.6"/></svg><span>Make this my goal<span class="visually-hidden">: Sample next entry</span></span></button></p>
+            </section>
+            <section class="plate goal-plate" aria-labelledby="goal-plate-heading">
+              <h2 class="plate-heading" id="goal-plate-heading">Your goal</h2>
+              <div class="goal-plate-body">
+                <div>
+                  <p class="goal-plate-name">Example relic</p>
+                  <div class="entry-meta"><span>Ability</span><span>Region C</span></div>
+                  <p class="goal-plate-count"><strong class="num">6</strong> rows left, the goal included.</p>
+                </div>
+                <div>
+                  <p class="goal-plate-label">Available now</p>
+                  <p class="goal-plate-first">Sample boss</p>
+                  <div class="entry-meta"><span>Boss</span><span>Region A</span></div>
+                </div>
+              </div>
+              <p class="next-actions"><a href="goal-page.html">See everything it needs</a></p>
+            </section>
+            <section aria-labelledby="holding-heading">
+              <h2 class="section-heading" id="holding-heading">What is holding you up</h2>
+              <p class="section-intro">The things you are missing that block the most entries or a whole region.</p>
+              <ul class="holding-list">
+                <li class="holding-item"><span class="mark mark--knot holding-mark" aria-hidden="true"></span><div><span class="holding-name">Sample blocker</span><p class="holding-text">Blocks Sample entry and 1 more entry in Region B.</p></div></li>
+              </ul>
+              <p class="holding-more"><a href="../../../route.html">See everything on the route</a></p>
+            </section>
+          </div>
+          <aside class="plate plate--counts" aria-labelledby="thread-heading">
+            <h2 class="plate-heading" id="thread-heading">Your thread</h2>
+            <div class="count-block">
+              <div class="count-row count-row--collectibles"><span>Collectibles</span><span class="count-value num">7 of 18</span></div>
+              <div class="bar bar--collectibles" role="progressbar" aria-label="Collectibles: 7 of 18" aria-valuemin="0" aria-valuemax="18" aria-valuenow="7">
+                <div class="bar-track"></div>
+                <div class="bar-fill" style="width:39%"></div>
+                <svg class="bar-needle" width="28" height="18" viewBox="0 0 28 18" aria-hidden="true" style="left:calc(39% - 22px)"><path class="line" d="M3 9 H27"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+              </div>
+            </div>
+            <div class="count-block">
+              <div class="count-row count-row--tasks"><span>Tasks</span><span class="count-value num">4 of 9</span></div>
+              <div class="bar bar--tasks" role="progressbar" aria-label="Tasks: 4 of 9" aria-valuemin="0" aria-valuemax="9" aria-valuenow="4">
+                <div class="bar-track"></div>
+                <div class="bar-fill" style="width:44%"></div>
+                <svg class="bar-needle" width="28" height="18" viewBox="0 0 28 18" aria-hidden="true" style="left:calc(44% - 22px)"><path class="line" d="M3 9 H27"/><ellipse class="eye" cx="4.5" cy="9" rx="2.3" ry="3.6"/></svg>
+              </div>
+            </div>
+          </aside>
+        </div>
+        <section class="regions" aria-labelledby="regions-heading">
+          <h2 class="section-heading section-heading--big" id="regions-heading">Regions</h2>
+          <p class="section-intro section-intro--wide">A region opens when you meet what it needs. Entries in regions you have not visited stay hidden until you visit them or choose to show everything.</p>
+          <ul class="region-grid">
+            <li><a class="region-card region-card--next" href="#"><div class="card-body"><div class="card-state"><span class="state-dot state-dot--visited" aria-hidden="true"></span>Visited</div><h3 class="card-name">Region A</h3><div class="count-block">
+              <div class="count-row count-row--collectibles"><span>Collectibles</span><span class="count-value num">2 of 5</span></div>
+              <div class="bar bar--collectibles" role="progressbar" aria-label="Collectibles: 2 of 5" aria-valuemin="0" aria-valuemax="5" aria-valuenow="2">
+                <div class="bar-track"></div>
+                <div class="bar-fill" style="width:40%"></div>
+                
+              </div>
+            </div><p class="card-next">Next on the route is here</p></div></a></li>
+            <li><a class="region-card region-card--available" href="#"><div class="card-body"><div class="card-state"><span class="state-dot state-dot--available" aria-hidden="true"></span>Available</div><h3 class="card-name">Region B</h3><p class="card-note">Not visited yet. Its entries are hidden.</p></div></a></li>
+            <li><a class="region-card region-card--locked" href="#"><div class="card-body"><div class="card-state"><span class="state-dot state-dot--locked" aria-hidden="true"></span>Locked</div><h3 class="card-name">Region C</h3><p class="card-needs">Needs Sample boss</p><p class="card-note">Its entries stay hidden.</p></div></a></li>
+          </ul>
+        </section>
+        </div>
+      </div>
+    </main>
+    <footer class="frame site-footer">
+      <p>Guide text written in our own words from the Hollow Knight: Silksong wiki and other references. Each entry links its source. Not affiliated with Team Cherry.</p>
+      <p>Layout sample. Names, steps, counts and states are invented to show what a screen can look like; they are not guide data.</p>
+    </footer>
+  </div>
+  <div class="visually-hidden" aria-live="polite" role="status"></div>
+</body>
+</html>

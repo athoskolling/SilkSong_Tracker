@@ -1,0 +1,130 @@
+/* goal.css: the few new pieces the Goal feature needs (docs/CONTRACTS.md section 5, "Goal").
+   Everything else comes from css/base.css and css/components.css (tokens, header, hero, plates, thread,
+   beads and knots, buttons). Colors are tokens only; no hex value is written here.
+   If the Goal is built, this file becomes css/goal.css, loaded by goal.html, index.html, region.html,
+   route.html, the Trackers and the Rosaries pages (the last five need only the .goal-btn and
+   .entry-actions rules; the rest is the Goal page and the Home plate). */
+
+/* ------------------------------------------------------------------ mockup only */
+
+/* The strip that links the state files together. Not part of the design; hidden in the screenshots. */
+.mock-states { font-weight: 500; }
+.mock-states a, .mock-states a:hover { color: var(--night); }
+.mock-states a[aria-current="page"] { font-weight: 600; text-decoration: none; }
+
+/* A caption under a part of the sheet in row-button.html. Mockup only. */
+.sheet-note { max-width: 62ch; margin: 0 0 28px; font-size: 14px; line-height: 1.6; color: var(--ash); }
+.sheet-note strong { color: var(--ivory); font-weight: 600; }
+.sheet-section + .sheet-section { margin-top: 72px; }
+.sheet-pair { display: flex; flex-direction: column; gap: 28px; }
+
+/* --------------------------------------------------------- "Make this my goal" control */
+
+/* A text button on its own line at the foot of an entry row (after how and needs), and in the actions
+   line of the "Next on the route" plate. Not in the row's head: on a phone the head already holds the
+   name and Step, and the control is used rarely, so it should not compete with the done bead.
+   Not pressed: a dashed thread outline and a hollow eye, the same dashed-versus-solid language as the
+   thread. Pressed: solid silk outline, a faint silk fill, a filled eye and the words "Your goal", so the
+   state is carried by line style, shape and text as well as color. 44px tall at every width. */
+.entry-actions { margin-top: 14px; }
+
+.goal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px 0 14px;
+  border: 1.5px dashed var(--thread);
+  background: none;
+  color: var(--ivory);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+.goal-btn:hover { border-color: var(--silk); color: var(--silk); }
+
+.goal-icon { flex: none; width: 24px; height: 14px; }
+.goal-icon .line { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.goal-icon .eye { fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+.goal-btn[aria-pressed="true"] {
+  border: 1.5px solid var(--silk);
+  background: var(--next-fill);
+  color: var(--ivory);
+  font-weight: 600;
+}
+.goal-btn[aria-pressed="true"] .goal-icon .eye { fill: var(--silk); stroke: var(--silk); }
+.goal-btn[aria-pressed="true"]:hover { color: var(--ivory); }
+
+/* In the "Next on the route" plate the actions line holds links and, now, a button; line them up. */
+.next-actions { align-items: center; }
+
+/* "Available now" / "Your goal" words in a row's meta line. Same silk 500 as the "Next on the route" flag. */
+.entry-meta .flag-goal { color: var(--silk); font-weight: 500; }
+
+/* A Region link in a meta line: ivory and underlined (it is a link, so not the quiet ash of the text
+   around it), with the same padded hit area as the Source link. */
+.entry-meta .region-link {
+  position: relative;
+  display: inline-block;
+  padding: 15px 6px;
+  margin: -15px -6px;
+  line-height: 1.2;
+}
+
+/* ------------------------------------------------------------------- Goal page: rail */
+
+.goal-rail-name { font-size: 22px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.goal-rail-meta { margin-top: -10px; }
+.goal-count { display: flex; align-items: baseline; gap: 14px; }
+.goal-count-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.goal-count-label { font-size: 15px; line-height: 1.5; color: var(--ash); }
+.goal-count-label strong { color: var(--ivory); font-weight: 600; }
+@media (max-width: 600px) {
+  .goal-count-num { font-size: 44px; }
+}
+.goal-rail-actions { display: flex; flex-wrap: wrap; gap: 12px 16px; }
+
+/* --------------------------------------------------------------- Goal page: messages */
+
+/* no goal, done, retired: one plate, no list to lead into, so no start thread. */
+.goal-message { max-width: 60ch; padding: 30px 32px 32px; }
+@media (max-width: 600px) { .goal-message { padding: 24px 20px 26px; } }
+.goal-message--done { border-color: var(--bronze); background: var(--lacquer); }
+.goal-message-label { font-size: 14px; font-weight: 500; color: var(--ash); }
+.goal-message--done .goal-message-label { color: var(--bronze); }
+.goal-message-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.goal-message-text { max-width: 52ch; font-size: 16px; line-height: 1.6; color: var(--ash); }
+
+/* ------------------------------------------------------------------------ Home plate */
+
+/* A plain dashed plate (not the silk stitched one), so "Next on the route" stays the one stitched plate
+   on the page. Two columns on desktop (the goal; its first row that is Available now), one on a phone. */
+.goal-plate { gap: 20px; }
+.goal-plate-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 36px; }
+.goal-plate-body > * + * { padding-left: 36px; border-left: 1.5px dashed var(--track); }
+@media (max-width: 600px) {
+  .goal-plate-body { grid-template-columns: minmax(0, 1fr); }
+  .goal-plate-body > * + * { padding: 20px 0 0; border-left: 0; border-top: 1.5px dashed var(--track); }
+}
+.goal-plate-name { font-size: 22px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.goal-plate-count { margin-top: 12px; font-size: 15px; color: var(--ash); }
+.goal-plate-count strong { color: var(--ivory); font-weight: 600; font-variant-numeric: tabular-nums; }
+.goal-plate-label { font-size: 14px; font-weight: 500; color: var(--silk); }
+.goal-plate-first { margin-top: 6px; font-size: 17px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.goal-plate .next-actions { margin-top: 0; }
