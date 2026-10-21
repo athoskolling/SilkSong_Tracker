@@ -176,6 +176,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Athos (2026-10-21): `firestore.rules` published in the Firebase console** (gate G1 closed; reported by Athos, not checked by the orchestrator, which has no console access). He runs the two-device check on the real site later.
 
+- **BG-2 merged and pushed** (`dev-b/backdrop`): the backdrop layer in `js/render.js` (`setBackdrop`, `applySiteBackdrop`, `SITE_BACKDROP` shipped `null`) and `css/components.css`; `img/backdrop/README.md`. Region page uses its hero picture (not when Locked); the seven other pages use `SITE_BACKDROP`, with a footer credit. With `null` and real `data/`, Dev B found no layer, no image request and no change on all eight pages at four widths. With the 640 x 360 stand-in, every page's text clears 4.5:1 (lowest 4.90, Home "Next on the route" at 390); strict bound lowest 4.52 (Rosaries and Goal at 1280), so a brighter real picture could fail and each is measured on conversion. No sideways scroll, no console errors. Orchestrator read the diff, ran 777 tests and the validator (0 warnings, both folders), looked at the Region screenshot. Not checked: Safari, Firefox, a real phone, a real 1920 picture. Pre-existing and not a failure: the disabled "−" button on Builds measures 4.34 (WCAG exempts disabled controls). When `site.jpg` arrives, Dev B converts it, measures it and sets `SITE_BACKDROP`; Region pictures go to Dev C as `heroImage` values.
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
@@ -187,7 +189,7 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 - Athos: whether to push this log update (a push rebuilds the site; it would look the same). Whether to keep the scratchpad bundle somewhere permanent (the branch and tag already keep the old line).
 - Majors from the full QA pass not confirmed fixed: Build copy stating game rules in interface code, Trackers with no tab for 76 entries (the tab question below), one possible missable.
 - QA 1 and QA 2: old test command in `tests/firestore-rules.test.js` (comment) and `qa/checklist.md` N-9.
-- Athos: the wiki's license name (checklist item 4) and hero images (item 9).
+- Athos: the wiki's license name (checklist item 4) and the pictures (item 9): 28 Region screenshots plus `site.png`. The backdrop code is on `main` and switched off until they arrive.
 - `progress.js` loads the Firebase SDK on every page, even the redirecting `index.html` (harmless; a lazy start would be cheaper).
 - Athos: review the second-round Phase 5 contract text (`docs/CONTRACTS.md` section 7, last entry; ADR 0006).
 - Athos: may sheet 1's undisputed facts enter `data/` (P5-14)? The ten disputed ones stay open.
