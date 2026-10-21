@@ -147,6 +147,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **BOSS-1, BOSS-2, BOSS-3, GOAL-4 started** (from `71bcf02`): `dev-a/route-optional` (`routeIds` honours `optional`), `qa-tests/route-optional` (validator rule 6 and tests), `dev-a/bosses-data` (the sheet into `data/`, `dataVersion` 13; Dev A acting for Dev C under AGENT-PLAN section 3, because the `dev-c` agent was added after this session started and cannot be spawned from it), `dev-b/goal-screens`. Merge order: BOSS-1, BOSS-2, BOSS-3; GOAL-4 any time. Nothing pushed until Athos has seen it locally.
 
+- **BOSS-1 merged locally** (`dev-a/route-optional`): `isRouteTask` makes a Task with `optional: true` stop being a root of the Route; nothing else changes. Orchestrator read the diff and ran: 712 tests pass, validator 0 warnings, and `routeIds` on today's `data/` returns the same 168 ids as before the merge.
+
 ## Open
 
 - Orchestrator session: `dev-c` cannot be spawned until the session restarts (`claude --agent orchestrator` reads the agent list at start). Until then Dev A takes data tasks, as AGENT-PLAN section 3 allows.
