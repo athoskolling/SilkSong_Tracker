@@ -1323,6 +1323,59 @@ test('rule 14: the command prints the WARNING with file, Ending id and rule, exi
   assert.match(run.stdout, /passed.*1 warning/);
 });
 
+// Adds a Task to a copy of the sample, in sample-region-a, with the given fields (`optional`, `requires`...).
+function addTask(dir, id, fields = {}) {
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      id,
+      name: `Sample task ${id}`,
+      kind: 'task',
+      type: 'boss',
+      regionId: 'sample-region-a',
+      how: 'Sample text, not game data.',
+      requires: [],
+      step,
+      source: `https://example.invalid/${id}`,
+      ...fields,
+    });
+  });
+}
+
+// An optional Task (contract section 1, `optional`) is off the Route unless something on the Route needs it, and
+// an Ending condition does not put it on the Route (section 2). So an optional Task used as a condition warns.
+test('rule 14: an Ending condition that is an optional Task nothing needs warns, because it is off the Route', () => {
+  const dir = copySample();
+  addTask(dir, 'sample-extra-optional', { optional: true });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-optional');
+  const result = validate(dir);
+  assertOnlyWarningRule(result, 14, { file: 'endings.json', id: 'sample-ending-one' });
+  assert.equal(result.warnings.length, 1, `exactly one warning:\n${result.warnings.map(formatProblem).join('\n')}`);
+  assert.match(result.warnings[0].message, /"conditions" lists "sample-extra-optional", which is not on the Route/);
+});
+
+test('rule 14: an optional Task used as a condition gives no warning when a counted Collectible needs it', () => {
+  // The chain rule: the counted Collectible is on the Route, so what it needs (the optional Task) is too.
+  const dir = copySample();
+  addTask(dir, 'sample-extra-optional', { optional: true });
+  addCondition(dir, 'sample-ending-one', 'sample-extra-optional');
+  edit(dir, 'items.json', (json) => {
+    const step = Math.max(...json.items.map((item) => item.step)) + 1;
+    json.items.push({
+      id: 'sample-extra-needs-optional',
+      name: 'Sample tool that needs the optional task',
+      kind: 'collectible',
+      type: 'tool',
+      regionId: 'sample-region-a',
+      how: 'Sample text, not game data.',
+      requires: ['sample-extra-optional'],
+      step,
+      source: 'https://example.invalid/sample-extra-needs-optional',
+    });
+  });
+  assertClean(validate(dir));
+});
+
 test('rule 14: the command works from any folder, because the import of js/requirements.js is relative to the script', () => {
   const dir = copySample();
   addTrackedCollectible(dir, 'sample-extra-relic');
