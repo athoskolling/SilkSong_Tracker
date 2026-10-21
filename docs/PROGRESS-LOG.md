@@ -165,6 +165,8 @@ The orchestrator adds an entry after every task, merge and decision, newest last
 
 - **Session stopped (local save, Athos: one minute left).** Not pushed: `main` is ahead of `origin` with DMF-1 and DMF-3 merged (739 tests pass, validator 0 warnings). Still running or unmerged when stopped: DMF-2 (`qa-tests/direct-missing-back`, tests), DMF-4 (`dev-b/direct-needs-everywhere`, direct Needs lines on every page), BG-1 (`dev-b/backdrop-mockup`, mockup for Athos's review). **To resume:** for each finished branch, read its diff, merge one at a time (DMF-2, then DMF-4), run `node --test "tests/*.test.js"` and `node scripts/validate-data.js` after each, check the pages in a browser, then push (Athos: push when everything is merged). BG-1 goes to Athos for review, not into the push decision.
 
+- **DMF-2 merged and pushed** (`qa-tests/direct-missing-back`): 38 tests (the old 31 plus optional Tasks, entries off the Route, deeper unknown ids, self-cycles); QA 1 caught 18 of 18 deliberate bugs. Orchestrator ran on merged `main`: 777 tests pass, validator 0 warnings on both folders. Pushed with DMF-1 and DMF-3 (Athos: "merge everything and push"). Not merged, still in progress when pushed: DMF-4 (`dev-b/direct-needs-everywhere`, uncommitted work in its worktree) and BG-1 (`dev-b/backdrop-mockup`).
+
 ## Open
 
 - Dev A: the comment above `directMissingFor` in `js/requirements.js` says the Goal page keeps the full chain; it now uses the direct lists. Dev C: two boss `how` texts say "not tracked"; entry names with a comma read ambiguously in Needs lists.
