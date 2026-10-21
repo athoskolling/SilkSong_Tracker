@@ -136,9 +136,18 @@ function itemsInRouteOrder(items) {
   return [...items].sort((a, b) => a.step - b.step);
 }
 
+// A Task is a root of the Route unless it is marked `optional: true` (a boss fought for its own sake
+// or for an uncounted reward). Why a field and not "a boss is on the Route only when something needs
+// it": Lost Lace is needed only as an Ending condition, nothing lists it in `requires`, and routeIds
+// does not read endings.json, so that rule would push it off the Route. An optional Task still joins
+// the Route through the chain walk when an entry on the Route or a Region needs it.
+function isRouteTask(item) {
+  return item.kind === 'task' && item.optional !== true;
+}
+
 // The Route rule, with an index already built (so nextStep and holdingYouUp reuse theirs).
-// Start from the entries that are always on the Route (counted, a Task, or missable) and from what
-// every Region needs; then walk down the chain, adding what each of them needs in turn. The Set
+// Start from the entries that are always on the Route (counted, a Task that is not optional, or
+// missable) and from what every Region needs; then walk down the chain, adding what each of them needs in turn. The Set
 // of ids already added is also what stops a cycle: an id met twice is simply not walked twice.
 function routeIdsWithIndex(index, items, regions) {
   const onRoute = new Set();
@@ -148,7 +157,7 @@ function routeIdsWithIndex(index, items, regions) {
     // Check every entry, on the Route or not: the walk below only reads entries it reaches, so a
     // typo inside an off-Route entry would otherwise pass quietly (QA 1, P5-26).
     requirementsOfItem(index, item);
-    if (isCounted(item) || item.kind === 'task' || item.missable === true) pending.push(item.id);
+    if (isCounted(item) || isRouteTask(item) || item.missable === true) pending.push(item.id);
   }
   for (const region of regions) pending.push(...requirementsOfRegion(index, region.id));
 
@@ -217,10 +226,10 @@ export function rosariesToSpend(doneSet, items, regions) {
 // Which entries are on the Route? The one place that rule lives, so the Route page, "Next on the
 // route", "Holding you up" and the Region cards cannot disagree. The data alone decides it (no
 // doneSet), so the Route never changes shape as the player ticks things.
-// On the Route: every counted Collectible, every Task, every missable entry, and whatever those
+// On the Route: every counted Collectible, every Task without optional: true, every missable entry, and whatever those
 // entries and the Regions need, all the way down the chain. That last part makes the Set closed
 // under requirements: nothing the Route needs is ever off it. Anything else (in practice a
-// counts: false Collectible that nothing on the Route needs) is off the Route.
+// counts: false Collectible, or an optional Task, that nothing on the Route needs) is off the Route.
 // An unknown id throws, as in every function of this module: every entry's Region and `requires`
 // and every Region's `requires` are checked, including entries that end up off the Route.
 // A cycle does not loop and is not reported here; missingFor and the validator report it.
