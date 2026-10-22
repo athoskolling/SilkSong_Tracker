@@ -1219,6 +1219,16 @@ export function renderTrackersBody(parts, view) {
             h('a', { class: 'holding-name', href: view.buildsHref }, 'Pick a build'),
             h('p', { class: 'holding-text' }, 'See the Crests you own, their slots and the Tools you own for each.')
           )
+        ),
+        h(
+          'li',
+          { class: 'holding-item' },
+          h(
+            'div',
+            {},
+            h('a', { class: 'holding-name', href: view.mapHref }, 'Map'),
+            h('p', { class: 'holding-text' }, 'The whole of Pharloom on one map, and one map for each Region.')
+          )
         )
       )
     ),

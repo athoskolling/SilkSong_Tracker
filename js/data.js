@@ -124,6 +124,32 @@ export function loadTemplates() {
   return loadOptionalFile('builds', ['templates', 'synergies']);
 }
 
+// The map pictures (docs/MAP-PROPOSAL.md). data/map.json is optional like the two files above:
+// { dataVersion, full: { image, width, height, alt, credit }, regions: [{ regionId, image, box }] }.
+// A 404 means "not shipped yet" (full is null, regions is empty); any other failure never rejects either,
+// it comes back in `error` so the page can say so. `box` is [left, top, right, bottom] in pixels of the
+// full image: where the Region's picture was cut from.
+export async function loadMap() {
+  const folder = isSampleMode() ? 'data/sample' : 'data';
+  const empty = { full: null, regions: [], dataVersion: null, error: null };
+  let file;
+  try {
+    file = await loadFile(folder, 'map');
+  } catch (error) {
+    return error.notFound ? empty : { ...empty, error: error.message };
+  }
+  const { json, path } = file;
+  if (!json || typeof json.full !== 'object' || json.full === null || !Array.isArray(json.regions)) {
+    return { ...empty, error: `Guide data could not be loaded: ${path} needs a "full" object and a "regions" list.` };
+  }
+  return {
+    full: json.full,
+    regions: json.regions,
+    dataVersion: Number.isInteger(json.dataVersion) ? json.dataVersion : null,
+    error: null,
+  };
+}
+
 // Keeps ?data=sample on links between pages while the switch is on.
 export function pageHref(page, params = {}, sample = isSampleMode()) {
   const query = new URLSearchParams(params);

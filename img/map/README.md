@@ -10,3 +10,11 @@ on the pixels that are not background. It is a close copy, not an exact one. Fin
 slightly rough, the fills are posterised, and a few faint smudges remain where icons were.
 
 Not cleared for the site: docs/IMAGES.md needs Athos's explicit yes for any game art.
+
+## The map pictures the Map page uses
+
+- `pharloom-map.png`: the stitched map of Pharloom (3084 x 2160), the source picture enlarged 2x with an upscaling model (`tools/upscale-map.py`).
+- `regions/<region-id>.png`: one cut-out per Region (`tools/make-map.py` from `tools/map-boxes.json`), listed in `data/map.json`.
+- `pharloom-trace.svg` is the earlier vector trace and is not used by the site.
+
+Same rights note as above: Team Cherry's artwork, and the permission of whoever stitched the picture has not been asked (`docs/IMAGES.md`).

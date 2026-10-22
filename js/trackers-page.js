@@ -248,6 +248,7 @@ async function runTrackersPage(app) {
       showAll: state.showAll,
       rosariesHref: pageHref('rosaries.html', {}, sample),
       buildsHref: pageHref('builds.html', {}, sample),
+      mapHref: pageHref('map.html', {}, sample),
     };
   }
 

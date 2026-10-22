@@ -1,0 +1,348 @@
+{
+ "dataVersion": 14,
+ "full": {
+  "image": "img/map/pharloom-map.png",
+  "width": 3084,
+  "height": 2160,
+  "alt": "Map of the whole of Pharloom from Hollow Knight: Silksong. Every Region is drawn in its own colour, with its name beside it.",
+  "credit": "Map art \u00a9 Team Cherry, from Hollow Knight: Silksong. Stitched picture by Brent (Steam community). Enlarged 2x for this guide with an upscaling model, so fine detail is a best guess."
+ },
+ "regions": [
+  {
+   "regionId": "moss-grotto",
+   "image": "img/map/regions/moss-grotto.png",
+   "width": 700,
+   "height": 380,
+   "box": [
+    200,
+    1380,
+    900,
+    1760
+   ]
+  },
+  {
+   "regionId": "the-marrow",
+   "image": "img/map/regions/the-marrow.png",
+   "width": 720,
+   "height": 280,
+   "box": [
+    760,
+    1380,
+    1480,
+    1660
+   ]
+  },
+  {
+   "regionId": "deep-docks",
+   "image": "img/map/regions/deep-docks.png",
+   "width": 700,
+   "height": 340,
+   "box": [
+    1440,
+    1540,
+    2140,
+    1880
+   ]
+  },
+  {
+   "regionId": "far-fields",
+   "image": "img/map/regions/far-fields.png",
+   "width": 1060,
+   "height": 380,
+   "box": [
+    1800,
+    1340,
+    2860,
+    1720
+   ]
+  },
+  {
+   "regionId": "hunters-march",
+   "image": "img/map/regions/hunters-march.png",
+   "width": 520,
+   "height": 200,
+   "box": [
+    1300,
+    1380,
+    1820,
+    1580
+   ]
+  },
+  {
+   "regionId": "greymoor",
+   "image": "img/map/regions/greymoor.png",
+   "width": 820,
+   "height": 270,
+   "box": [
+    1400,
+    1080,
+    2220,
+    1350
+   ]
+  },
+  {
+   "regionId": "bellhart",
+   "image": "img/map/regions/bellhart.png",
+   "width": 250,
+   "height": 120,
+   "box": [
+    1240,
+    1260,
+    1490,
+    1380
+   ]
+  },
+  {
+   "regionId": "shellwood",
+   "image": "img/map/regions/shellwood.png",
+   "width": 640,
+   "height": 280,
+   "box": [
+    840,
+    1080,
+    1480,
+    1360
+   ]
+  },
+  {
+   "regionId": "wormways",
+   "image": "img/map/regions/wormways.png",
+   "width": 670,
+   "height": 220,
+   "box": [
+    30,
+    1340,
+    700,
+    1560
+   ]
+  },
+  {
+   "regionId": "sinners-road",
+   "image": "img/map/regions/sinners-road.png",
+   "width": 420,
+   "height": 210,
+   "box": [
+    1860,
+    990,
+    2280,
+    1200
+   ]
+  },
+  {
+   "regionId": "blasted-steps",
+   "image": "img/map/regions/blasted-steps.png",
+   "width": 800,
+   "height": 280,
+   "box": [
+    200,
+    960,
+    1000,
+    1240
+   ]
+  },
+  {
+   "regionId": "weavenest-atla",
+   "image": "img/map/regions/weavenest-atla.png",
+   "width": 680,
+   "height": 160,
+   "box": [
+    460,
+    1640,
+    1140,
+    1800
+   ]
+  },
+  {
+   "regionId": "grand-gate",
+   "image": "img/map/regions/grand-gate.png",
+   "width": 380,
+   "height": 260,
+   "box": [
+    760,
+    800,
+    1140,
+    1060
+   ]
+  },
+  {
+   "regionId": "underworks",
+   "image": "img/map/regions/underworks.png",
+   "width": 960,
+   "height": 260,
+   "box": [
+    1130,
+    790,
+    2090,
+    1050
+   ]
+  },
+  {
+   "regionId": "choral-chambers",
+   "image": "img/map/regions/choral-chambers.png",
+   "width": 680,
+   "height": 370,
+   "box": [
+    1040,
+    410,
+    1720,
+    780
+   ]
+  },
+  {
+   "regionId": "cogwork-core",
+   "image": "img/map/regions/cogwork-core.png",
+   "width": 300,
+   "height": 480,
+   "box": [
+    1400,
+    190,
+    1700,
+    670
+   ]
+  },
+  {
+   "regionId": "whispering-vaults",
+   "image": "img/map/regions/whispering-vaults.png",
+   "width": 470,
+   "height": 300,
+   "box": [
+    1700,
+    500,
+    2170,
+    800
+   ]
+  },
+  {
+   "regionId": "whiteward",
+   "image": "img/map/regions/whiteward.png",
+   "width": 490,
+   "height": 150,
+   "box": [
+    1270,
+    690,
+    1760,
+    840
+   ]
+  },
+  {
+   "regionId": "high-halls",
+   "image": "img/map/regions/high-halls.png",
+   "width": 340,
+   "height": 280,
+   "box": [
+    1180,
+    210,
+    1520,
+    490
+   ]
+  },
+  {
+   "regionId": "the-slab",
+   "image": "img/map/regions/the-slab.png",
+   "width": 280,
+   "height": 360,
+   "box": [
+    720,
+    370,
+    1000,
+    730
+   ]
+  },
+  {
+   "regionId": "mount-fay",
+   "image": "img/map/regions/mount-fay.png",
+   "width": 630,
+   "height": 510,
+   "box": [
+    120,
+    180,
+    750,
+    690
+   ]
+  },
+  {
+   "regionId": "memorium",
+   "image": "img/map/regions/memorium.png",
+   "width": 500,
+   "height": 250,
+   "box": [
+    1620,
+    320,
+    2120,
+    570
+   ]
+  },
+  {
+   "regionId": "putrified-ducts",
+   "image": "img/map/regions/putrified-ducts.png",
+   "width": 840,
+   "height": 200,
+   "box": [
+    2060,
+    380,
+    2900,
+    580
+   ]
+  },
+  {
+   "regionId": "wisp-thicket",
+   "image": "img/map/regions/wisp-thicket.png",
+   "width": 360,
+   "height": 140,
+   "box": [
+    1340,
+    990,
+    1700,
+    1130
+   ]
+  },
+  {
+   "regionId": "bilewater",
+   "image": "img/map/regions/bilewater.png",
+   "width": 820,
+   "height": 500,
+   "box": [
+    1800,
+    530,
+    2620,
+    1030
+   ]
+  },
+  {
+   "regionId": "sands-of-karak",
+   "image": "img/map/regions/sands-of-karak.png",
+   "width": 710,
+   "height": 350,
+   "box": [
+    190,
+    670,
+    900,
+    1020
+   ]
+  },
+  {
+   "regionId": "the-cradle",
+   "image": "img/map/regions/the-cradle.png",
+   "width": 360,
+   "height": 250,
+   "box": [
+    1400,
+    0,
+    1760,
+    250
+   ]
+  },
+  {
+   "regionId": "the-abyss",
+   "image": "img/map/regions/the-abyss.png",
+   "width": 640,
+   "height": 280,
+   "box": [
+    1260,
+    1870,
+    1900,
+    2150
+   ]
+  }
+ ]
+}
