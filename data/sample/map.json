@@ -1,0 +1,26 @@
+{
+  "dataVersion": 3,
+  "_note": "SAMPLE DATA. Invented layout and positions. Not Silksong facts. Never copy into data/.",
+  "maps": [
+    {
+      "regionId": "sample-region-a",
+      "image": "img/map/sample-region-a.svg",
+      "credit": "Invented sample drawing. Not game art.",
+      "alt": "Invented sample map with four rooms."
+    },
+    {
+      "regionId": "sample-region-b",
+      "image": "img/map/sample-region-b.svg",
+      "credit": "Invented sample drawing. Not game art.",
+      "alt": "Invented sample map with three rooms."
+    }
+  ],
+  "pins": [
+    { "itemId": "sample-ability", "x": 18, "y": 28 },
+    { "itemId": "sample-key", "x": 33, "y": 20 },
+    { "itemId": "sample-door", "x": 62, "y": 36 },
+    { "itemId": "sample-shard", "x": 38, "y": 79 },
+    { "itemId": "sample-boss", "x": 30, "y": 32 },
+    { "itemId": "sample-charm", "x": 74, "y": 24 }
+  ]
+}
