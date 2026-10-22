@@ -623,8 +623,15 @@ export function renderHomeBody(body, view) {
   );
 }
 
+// The one outside map the guide links to (CONTRACTS section 1 allows this Silksong address; no agent opens it).
+// The guide has no map of its own (Athos, 2026-10-22). Home and the Trackers page both use it.
+export const MAPGENIE_URL = 'https://mapgenie.io/hollow-knight-silksong/';
+
 function nextPlate(view) {
-  const actions = [h('a', { href: view.routeHref }, 'See the whole route')];
+  const actions = [
+    h('a', { href: view.routeHref }, 'See the whole route'),
+    h('a', { href: MAPGENIE_URL, target: '_blank', rel: 'noopener' }, 'Map on MapGenie'),
+  ];
 
   if (view.next) {
     actions.push(h('a', { href: view.next.regionHref }, `Open ${view.next.regionName}`));
@@ -1227,7 +1234,7 @@ export function renderTrackersBody(parts, view) {
             'div',
             {},
             // An outside site, so it opens in a new tab. The guide has no map of its own (Athos, 2026-10-22).
-            h('a', { class: 'holding-name', href: view.mapHref, target: '_blank', rel: 'noopener' }, 'Map on MapGenie'),
+            h('a', { class: 'holding-name', href: MAPGENIE_URL, target: '_blank', rel: 'noopener' }, 'Map on MapGenie'),
             h('p', { class: 'holding-text' }, 'Opens the Silksong map on MapGenie in a new tab. It is another website, not part of this guide.')
           )
         )
