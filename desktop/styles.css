@@ -1,0 +1,78 @@
+:root {
+  color-scheme: dark;
+}
+
+/* The window itself is transparent; the panel draws the background, so the rounded corners stay clean. */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  font-family: system-ui, sans-serif;
+}
+
+.panel {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(12, 14, 20, 0.88);
+  color: #e8e6e3;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* In Electron, this region drags the frameless window. Buttons inside it must opt out. */
+.titlebar {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+#quit {
+  background: transparent;
+  color: inherit;
+  border: 0;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#quit:hover,
+#quit:focus-visible {
+  opacity: 1;
+}
+
+.body {
+  flex: 1;
+  padding: 12px;
+  overflow: auto;
+  font-size: 14px;
+}
+
+.empty {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.hint {
+  padding: 6px 10px;
+  font-size: 12px;
+  opacity: 0.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}

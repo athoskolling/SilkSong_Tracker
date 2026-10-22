@@ -1,0 +1,13 @@
+{
+  "name": "silksong-guide-overlay",
+  "version": "0.1.0",
+  "description": "Always-on-top overlay that shows the Silksong Guide next to the game (Windows first).",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}

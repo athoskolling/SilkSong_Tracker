@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- No inline scripts and no remote content: the page only runs the files in this folder. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'" />
+  <title>Silksong Guide overlay</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="panel">
+    <header class="titlebar">
+      <span class="title">Silksong Guide</span>
+      <button type="button" id="quit" class="no-drag" aria-label="Close overlay">&times;</button>
+    </header>
+
+    <section class="body">
+      <p class="empty">Progress is not connected yet.</p>
+    </section>
+
+    <footer class="hint" id="hint"></footer>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+</html>
