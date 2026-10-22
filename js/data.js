@@ -124,12 +124,6 @@ export function loadTemplates() {
   return loadOptionalFile('builds', ['templates', 'synergies']);
 }
 
-// Returns { maps, pins, dataVersion, error }. The file is data/map.json (docs/MAP-PROPOSAL.md). Same rules as
-// the other optional files: a missing file is "no maps yet", and a failure never blocks the page.
-export function loadMap() {
-  return loadOptionalFile('map', ['maps', 'pins']);
-}
-
 // Keeps ?data=sample on links between pages while the switch is on.
 export function pageHref(page, params = {}, sample = isSampleMode()) {
   const query = new URLSearchParams(params);

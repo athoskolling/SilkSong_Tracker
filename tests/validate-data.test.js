@@ -31,9 +31,6 @@ function tempFolder() {
 function copySample() {
   const dir = tempFolder();
   cpSync(SAMPLE, dir, { recursive: true });
-  // map.json (rule 17) has its own tests in tests/validate-map.test.js. Left out here so a test that points
-  // siteRoot at a small temporary folder (rule 8) is not also about the map pictures, which are not in it.
-  rmSync(path.join(dir, 'map.json'), { force: true });
   return dir;
 }
 

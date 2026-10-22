@@ -36,9 +36,6 @@
 //  16  places.json (Phase 5, third round, ADR 0007, optional file): the shape of each Place, its
 //      kind, Region and links (requires, sells); warning for a MapGenie source that is not the
 //      Silksong map, in every file
-//  17  map.json (docs/MAP-PROPOSAL.md, optional file): each map names an existing Region once and has a
-//      credit, an alt and an image that exists; each Pin names an existing entry once and has x and y from
-//      0 to 100; the same dataVersion as the other files; warning for a Pin on a Region with no map
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
 // the tests run. It imports isCounted and routeIds from js/requirements.js, which is plain ES module
@@ -1144,102 +1141,6 @@ function checkSells(ctx, ref, place) {
   }
 }
 
-// ------------------------------------------------------------------ rule 17: map.json
-
-// map.json (docs/MAP-PROPOSAL.md) is read on its own: its records have no ids, so the id and version
-// machinery above, which expects an `id` on every record, does not fit. A proposal, not yet a contract.
-function checkMapFile(dir, ctx, byKey) {
-  const file = 'map.json';
-  if (!existsSync(path.join(dir, file))) return;
-  const { report } = ctx;
-  const doc = readJson(path.join(dir, file), file, report);
-  if (!doc) return;
-
-  // The same dataVersion as the other files (rule 1). The reference is the first core file that has one.
-  const reference = ['regions', 'items', 'endings'].map((key) => byKey[key].doc).find((d) => d && Number.isInteger(d.dataVersion));
-  if (!Number.isInteger(doc.dataVersion)) {
-    report.error(1, fileRef(file), `dataVersion must be an integer, found ${describe(doc.dataVersion)}.`);
-  } else if (reference && doc.dataVersion !== reference.dataVersion) {
-    report.error(1, fileRef(file), `dataVersion is ${doc.dataVersion}, but the other files have ${reference.dataVersion}. All files must share one dataVersion.`);
-  }
-
-  for (const key of ['maps', 'pins']) {
-    if (!Array.isArray(doc[key])) report.error(17, fileRef(file), `there must be an array named "${key}".`);
-  }
-  if (!Array.isArray(doc.maps) || !Array.isArray(doc.pins)) return;
-
-  // Cross-checks need the two lists they point at. If one could not be read, that is already an error elsewhere.
-  const regions = byKey.regions.list;
-  const entries = byKey.items.list;
-  const regionIds = new Set((regions ?? []).filter(isObject).map((r) => r.id));
-  const entriesById = new Map((entries ?? []).filter(isObject).map((e) => [e.id, e]));
-  const refAt = (kind, record, index) => ({
-    file,
-    id: null,
-    position: `${kind} number ${index + 1}${isObject(record) && typeof record.regionId === 'string' ? ` (${record.regionId})` : ''}`,
-  });
-
-  const mapped = new Set();
-  doc.maps.forEach((map, index) => {
-    const ref = refAt('map', map, index);
-    if (!isObject(map)) {
-      report.error(17, ref, 'a map must be an object.');
-      return;
-    }
-    if (!isText(map.regionId)) report.error(17, ref, '"regionId" must be a Region id.');
-    else if (regions && !regionIds.has(map.regionId)) report.error(17, ref, `"regionId" "${map.regionId}" is not a Region in regions.json.`);
-    else if (mapped.has(map.regionId)) report.error(17, ref, `"${map.regionId}" has two maps. A Region has one.`);
-    else mapped.add(map.regionId);
-    if (!isText(map.credit)) report.error(17, ref, '"credit" is required: it is the credit line shown under the image.');
-    if (!isText(map.alt)) report.error(17, ref, '"alt" is required: it is what a screen reader says for the image.');
-    checkMapImage(ctx, ref, map.image);
-  });
-
-  const placed = new Set();
-  doc.pins.forEach((pin, index) => {
-    const ref = { file, id: isObject(pin) && typeof pin.itemId === 'string' ? pin.itemId : null, position: `Pin number ${index + 1}` };
-    if (!isObject(pin)) {
-      report.error(17, ref, 'a Pin must be an object.');
-      return;
-    }
-    if (!isText(pin.itemId)) {
-      report.error(17, ref, '"itemId" must be an entry id.');
-    } else if (entries && !entriesById.has(pin.itemId)) {
-      report.error(17, ref, `"itemId" "${pin.itemId}" is not an entry in items.json.`);
-    } else if (placed.has(pin.itemId)) {
-      report.error(17, ref, `"${pin.itemId}" has two Pins. An entry has one.`);
-    } else {
-      placed.add(pin.itemId);
-      const regionId = entriesById.get(pin.itemId)?.regionId;
-      if (regions && regionIds.has(regionId) && !mapped.has(regionId)) {
-        report.warning(17, ref, `its Region "${regionId}" has no map, so this Pin is never drawn.`);
-      }
-    }
-    for (const axis of ['x', 'y']) {
-      const value = pin[axis];
-      if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 100) {
-        report.error(17, ref, `"${axis}" must be a number from 0 to 100 (a percent of the image), found ${describe(value)}.`);
-      }
-    }
-  });
-}
-
-// The same path rules as a Region's heroImage (rule 8): relative, inside the site, a known extension, and the file exists.
-function checkMapImage(ctx, ref, image) {
-  const { report } = ctx;
-  if (!isText(image)) {
-    report.error(17, ref, '"image" must be a non-empty path.');
-  } else if (image.startsWith('/')) {
-    report.error(17, ref, `"image" "${image}" starts with a slash. Use a relative path, because the site may be served from a sub-folder.`);
-  } else if (image.split('/').includes('..')) {
-    report.error(17, ref, `"image" "${image}" goes up with "..". Use a path inside the site.`);
-  } else if (!HERO_EXTENSIONS.some((ext) => image.endsWith(ext))) {
-    report.error(17, ref, `"image" "${image}" must end in .jpg, .png or .svg.`);
-  } else if (!isFile(path.join(ctx.siteRoot, image))) {
-    report.error(17, ref, `"image" "${image}" is not a file in the site. Paths are relative to the site root (the folder with index.html), not to the data folder.`);
-  }
-}
-
 // ------------------------------------------------------------------ the whole check
 
 // Checks the JSON files in `dir`: the three core files, and builds.json and places.json when they exist.
@@ -1265,7 +1166,6 @@ export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   checkUpgradeLoops(ctx, byKey.items);
   checkBuilds(ctx, byKey.templates, byKey.synergies);
   checkPlaces(ctx, byKey.places);
-  checkMapFile(dir, ctx, byKey);
   // Last, so that every rule 1 to 5 error is already in the report when the gate looks at it.
   checkEndingsOnRoute(ctx, byKey);
   return { errors: report.errors, warnings: report.warnings };
