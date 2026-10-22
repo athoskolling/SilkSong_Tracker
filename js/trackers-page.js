@@ -248,7 +248,7 @@ async function runTrackersPage(app) {
       showAll: state.showAll,
       rosariesHref: pageHref('rosaries.html', {}, sample),
       buildsHref: pageHref('builds.html', {}, sample),
-      mapHref: pageHref('map.html', {}, sample),
+      mapHref: 'https://mapgenie.io/hollow-knight-silksong/', // the Silksong map page the contract allows (CONTRACTS section 1); not opened by any agent
     };
   }
 

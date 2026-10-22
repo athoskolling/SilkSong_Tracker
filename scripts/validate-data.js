@@ -36,9 +36,6 @@
 //  16  places.json (Phase 5, third round, ADR 0007, optional file): the shape of each Place, its
 //      kind, Region and links (requires, sells); warning for a MapGenie source that is not the
 //      Silksong map, in every file
-//  17  map.json (docs/MAP-PROPOSAL.md, optional file): the full map and one picture per Region; every picture
-//      is an existing relative file, every cut-out box lies inside the full picture, each Region has at most
-//      one map; same dataVersion as the other files; warning for a Region with no map
 //
 // Plain Node with no dependency: the project has no build step, so the check must run anywhere
 // the tests run. It imports isCounted and routeIds from js/requirements.js, which is plain ES module
@@ -1144,120 +1141,9 @@ function checkSells(ctx, ref, place) {
   }
 }
 
-// ------------------------------------------------------------------ rule 17: map.json
-
-// The map pictures are Team Cherry's artwork and are served as they are, so PNG and WebP (lossless) are fine as
-// well as JPEG. SVG is allowed for a drawn map.
-const MAP_EXTENSIONS = ['.png', '.jpg', '.webp', '.svg'];
-
-// map.json is read on its own: its Region records have no `id`, so the id machinery above does not fit.
-function checkMapFile(dir, ctx, byKey) {
-  const file = 'map.json';
-  if (!existsSync(path.join(dir, file))) return;
-  const { report } = ctx;
-  const doc = readJson(path.join(dir, file), file, report);
-  if (!doc) return;
-
-  // The same dataVersion as the other files (rule 1). The reference is the first core file that has one.
-  const reference = ['regions', 'items', 'endings'].map((key) => byKey[key].doc).find((d) => d && Number.isInteger(d.dataVersion));
-  if (!Number.isInteger(doc.dataVersion)) {
-    report.error(1, fileRef(file), `dataVersion must be an integer, found ${describe(doc.dataVersion)}.`);
-  } else if (reference && doc.dataVersion !== reference.dataVersion) {
-    report.error(1, fileRef(file), `dataVersion is ${doc.dataVersion}, but the other files have ${reference.dataVersion}. All files must share one dataVersion.`);
-  }
-
-  const whole = checkFullMap(ctx, file, doc.full);
-  if (!Array.isArray(doc.regions)) {
-    report.error(17, fileRef(file), 'there must be an array named "regions".');
-    return;
-  }
-  // The cross-check needs the Region list. If it could not be read, that is already an error elsewhere.
-  const regionList = byKey.regions.list;
-  const regionIds = new Set((regionList ?? []).filter(isObject).map((r) => r.id));
-  const mapped = new Set();
-  doc.regions.forEach((entry, index) => {
-    const ref = { file, id: null, position: `map number ${index + 1}${isObject(entry) && typeof entry.regionId === 'string' ? ` (${entry.regionId})` : ''}` };
-    checkRegionMap(ctx, ref, entry, whole, regionList ? regionIds : null, mapped);
-  });
-  for (const region of regionList ?? []) {
-    if (isObject(region) && isText(region.id) && !mapped.has(region.id)) {
-      report.warning(17, fileRef(file), `Region "${region.id}" has no map, so the Map page shows "Not in the guide yet" for it.`);
-    }
-  }
-}
-
-// Returns { width, height } when both are usable, so the boxes can be checked against them.
-function checkFullMap(ctx, file, full) {
-  const { report } = ctx;
-  const ref = { file, id: null, position: '"full"' };
-  if (!isObject(full)) {
-    report.error(17, fileRef(file), '"full" must be an object: the picture of the whole map.');
-    return null;
-  }
-  checkMapImage(ctx, ref, full.image);
-  if (!isText(full.alt)) report.error(17, ref, '"alt" is required: it is what a screen reader says for the image.');
-  if (!isText(full.credit)) report.error(17, ref, '"credit" is required: it is the credit line shown under the map.');
-  const width = checkPixelSize(ctx, ref, 'width', full.width);
-  const height = checkPixelSize(ctx, ref, 'height', full.height);
-  return width && height ? { width, height } : null;
-}
-
-function checkRegionMap(ctx, ref, entry, whole, regionIds, mapped) {
-  const { report } = ctx;
-  if (!isObject(entry)) {
-    report.error(17, ref, 'a map must be an object.');
-    return;
-  }
-  if (!isText(entry.regionId)) report.error(17, ref, '"regionId" must be a Region id.');
-  else if (regionIds && !regionIds.has(entry.regionId)) report.error(17, ref, `"regionId" "${entry.regionId}" is not a Region in regions.json.`);
-  else if (mapped.has(entry.regionId)) report.error(17, ref, `"${entry.regionId}" has two maps. A Region has one.`);
-  else mapped.add(entry.regionId);
-  checkMapImage(ctx, ref, entry.image);
-  checkPixelSize(ctx, ref, 'width', entry.width);
-  checkPixelSize(ctx, ref, 'height', entry.height);
-  checkBox(ctx, ref, entry.box, whole);
-}
-
-// A box is [left, top, right, bottom] in pixels of the full picture: where the Region's picture was cut from.
-function checkBox(ctx, ref, box, whole) {
-  const { report } = ctx;
-  if (!Array.isArray(box) || box.length !== 4 || !box.every(Number.isInteger)) {
-    report.error(17, ref, `"box" must be four whole numbers [left, top, right, bottom], found ${describe(box)}.`);
-    return;
-  }
-  const [left, top, right, bottom] = box;
-  if (left < 0 || top < 0 || right <= left || bottom <= top) {
-    report.error(17, ref, `"box" ${JSON.stringify(box)} must have left and top of 0 or more, and right and bottom larger than them.`);
-  } else if (whole && (right > whole.width || bottom > whole.height)) {
-    report.error(17, ref, `"box" ${JSON.stringify(box)} reaches outside the full picture (${whole.width} by ${whole.height}).`);
-  }
-}
-
-function checkPixelSize(ctx, ref, field, value) {
-  if (Number.isInteger(value) && value > 0) return value;
-  ctx.report.error(17, ref, `"${field}" must be a whole number of pixels, 1 or more, found ${describe(value)}.`);
-  return null;
-}
-
-// The same path rules as a Region's heroImage (rule 8): relative, inside the site, a known extension, and the file exists.
-function checkMapImage(ctx, ref, image) {
-  const { report } = ctx;
-  if (!isText(image)) {
-    report.error(17, ref, '"image" must be a non-empty path.');
-  } else if (image.startsWith('/')) {
-    report.error(17, ref, `"image" "${image}" starts with a slash. Use a relative path, because the site may be served from a sub-folder.`);
-  } else if (image.split('/').includes('..')) {
-    report.error(17, ref, `"image" "${image}" goes up with "..". Use a path inside the site.`);
-  } else if (!MAP_EXTENSIONS.some((ext) => image.endsWith(ext))) {
-    report.error(17, ref, `"image" "${image}" must end in ${MAP_EXTENSIONS.join(', ')}.`);
-  } else if (!isFile(path.join(ctx.siteRoot, image))) {
-    report.error(17, ref, `"image" "${image}" is not a file in the site. Paths are relative to the site root (the folder with index.html), not to the data folder.`);
-  }
-}
-
 // ------------------------------------------------------------------ the whole check
 
-// Checks the JSON files in `dir`: the three core files, and builds.json, places.json and map.json when they exist.
+// Checks the JSON files in `dir`: the three core files, and builds.json and places.json when they exist.
 // `siteRoot` is where heroImage paths are looked up (tests point it somewhere else; the CLI never does).
 export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   const report = new Report();
@@ -1280,7 +1166,6 @@ export function validate(dir, { siteRoot = REPO_ROOT } = {}) {
   checkUpgradeLoops(ctx, byKey.items);
   checkBuilds(ctx, byKey.templates, byKey.synergies);
   checkPlaces(ctx, byKey.places);
-  checkMapFile(dir, ctx, byKey);
   // Last, so that every rule 1 to 5 error is already in the report when the gate looks at it.
   checkEndingsOnRoute(ctx, byKey);
   return { errors: report.errors, warnings: report.warnings };

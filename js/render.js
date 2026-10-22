@@ -1226,8 +1226,9 @@ export function renderTrackersBody(parts, view) {
           h(
             'div',
             {},
-            h('a', { class: 'holding-name', href: view.mapHref }, 'Map'),
-            h('p', { class: 'holding-text' }, 'The whole of Pharloom on one map, and one map for each Region.')
+            // An outside site, so it opens in a new tab. The guide has no map of its own (Athos, 2026-10-22).
+            h('a', { class: 'holding-name', href: view.mapHref, target: '_blank', rel: 'noopener' }, 'Map on MapGenie'),
+            h('p', { class: 'holding-text' }, 'Opens the Silksong map on MapGenie in a new tab. It is another website, not part of this guide.')
           )
         )
       )
