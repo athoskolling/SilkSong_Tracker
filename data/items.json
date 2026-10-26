@@ -1,5 +1,5 @@
 {
-  "dataVersion": 15,
+  "dataVersion": 16,
   "items": [
     {
       "id": "moss-mother",
@@ -1366,14 +1366,14 @@
       "counts": false,
       "type": "crest",
       "regionId": "weavenest-atla",
-      "how": "Wear the Hunter Crest and talk to Eva in Weavenest Atla, then accept her insight. Needs the Needolin to reach her.",
+      "how": "Reach Eva in Weavenest Atla and talk to her; the first evolution comes just from meeting her. Needs the Needolin to open the door to her.",
       "upgradeOf": "hunter-crest",
-      "effect": "Hits in a row build focus, and the Needle hits harder while you are focused.",
+      "effect": "Hits build a focus meter. At 6 hits it is full and Needle damage is 1.3 times higher. It resets if you are hit or rest at a bench.",
       "requires": [
         "hunter-crest"
       ],
       "step": 615,
-      "source": "https://www.sportskeeda.com/esports/all-eva-upgrades-hollow-knight-silksong-get"
+      "source": "https://hollowknight.wiki/w/Hunter_Crest"
     },
     {
       "id": "simple-key-sinners-road",
@@ -3318,14 +3318,14 @@
       "counts": false,
       "type": "crest",
       "regionId": "weavenest-atla",
-      "how": "Eva evolves it again once you have opened more Crest slots with Memory Lockets. The number she asks for is not confirmed in our sources.",
+      "how": "Talk to Eva again once you have unlocked 27 slots on Crests other than the Hunter Crest (slots opened with Memory Lockets count, but not on the Hunter Crest itself).",
       "upgradeOf": "hunter-crest-first-evolution",
-      "effect": "A stronger version of the first evolution's focus bonus. Guides disagree on the numbers, so none are given here.",
+      "effect": "Adds a second focus tier: 6 more hits (12 in total) raises Needle damage to 1.5 times. The focus meter is longer, with a gap between tiers.",
       "requires": [
         "hunter-crest-first-evolution"
       ],
       "step": 2155,
-      "source": "https://nerdschalk.com/silksong-eva-all-5-upgrade-requirements/"
+      "source": "https://hollowknight.wiki/w/Eva"
     },
     {
       "id": "sylphsong",
