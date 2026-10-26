@@ -107,9 +107,14 @@ async function runBuildsPage(app) {
     return found ? found.name : id;
   }
 
-  // The Crests offered are the Crest entries marked done, in route order (no special case for any of them).
+  // The Crests offered are the Crest entries marked done, in route order. An evolved Crest (`upgradeOf`) is not a second
+  // Crest: a Build is saved on the base Crest (CONTRACTS section 1), and owning the evolution counts as owning the base,
+  // as it does for Tools. So only base Crests are listed.
   function ownedCrests() {
-    return items.filter((item) => item.type === 'crest' && state.done.has(item.id)).sort((a, b) => a.step - b.step);
+    const evolved = new Set(items.filter((item) => item.type === 'crest' && item.upgradeOf && state.done.has(item.id)).map((item) => item.upgradeOf));
+    return items
+      .filter((item) => item.type === 'crest' && !item.upgradeOf && (state.done.has(item.id) || evolved.has(item.id)))
+      .sort((a, b) => a.step - b.step);
   }
 
   // The selected Crest: the one the player chose if they still own it, else the first they own.

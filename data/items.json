@@ -1,5 +1,5 @@
 {
-  "dataVersion": 14,
+  "dataVersion": 15,
   "items": [
     {
       "id": "moss-mother",
@@ -1358,6 +1358,22 @@
       ],
       "step": 610,
       "source": "https://game-checklists.com/silksong/weavenest-atla.html"
+    },
+    {
+      "id": "hunter-crest-first-evolution",
+      "name": "Hunter Crest, first evolution",
+      "kind": "collectible",
+      "counts": false,
+      "type": "crest",
+      "regionId": "weavenest-atla",
+      "how": "Wear the Hunter Crest and talk to Eva in Weavenest Atla, then accept her insight. Needs the Needolin to reach her.",
+      "upgradeOf": "hunter-crest",
+      "effect": "Hits in a row build focus, and the Needle hits harder while you are focused.",
+      "requires": [
+        "hunter-crest"
+      ],
+      "step": 615,
+      "source": "https://www.sportskeeda.com/esports/all-eva-upgrades-hollow-knight-silksong-get"
     },
     {
       "id": "simple-key-sinners-road",
@@ -3294,6 +3310,22 @@
       ],
       "step": 2150,
       "source": "https://www.pcgamesn.com/hollow-knight-silksong/pale-oil"
+    },
+    {
+      "id": "hunter-crest-second-evolution",
+      "name": "Hunter Crest, second evolution",
+      "kind": "collectible",
+      "counts": false,
+      "type": "crest",
+      "regionId": "weavenest-atla",
+      "how": "Eva evolves it again once you have opened more Crest slots with Memory Lockets. The number she asks for is not confirmed in our sources.",
+      "upgradeOf": "hunter-crest-first-evolution",
+      "effect": "A stronger version of the first evolution's focus bonus. Guides disagree on the numbers, so none are given here.",
+      "requires": [
+        "hunter-crest-first-evolution"
+      ],
+      "step": 2155,
+      "source": "https://nerdschalk.com/silksong-eva-all-5-upgrade-requirements/"
     },
     {
       "id": "sylphsong",

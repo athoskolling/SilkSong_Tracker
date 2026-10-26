@@ -176,6 +176,8 @@ async function runTrackersPage(app) {
       toolColor: item.toolColor,
       area: item.area || '',
       source: item.source,
+      effect: item.effect || '',
+      how: item.how || '',
       regionName: region ? region.name : item.regionId,
       regionHref: pageHref('region.html', { id: item.regionId }, sample),
       done,

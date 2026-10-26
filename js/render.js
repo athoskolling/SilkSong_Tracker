@@ -1373,6 +1373,9 @@ function trackerRow(entry) {
         entry.uncounted ? h('span', { class: 'flag-uncounted' }, 'Not counted') : null,
         sourceLink(entry)
       ),
+      // What it does, then where and how to get it (the Crest evolutions and Tools carry an `effect`).
+      entry.effect ? h('p', { class: 'entry-how' }, entry.effect) : null,
+      entry.effect && entry.how ? h('p', { class: 'entry-how' }, entry.how) : null,
       entry.needs ? h('p', { id: needsId, class: 'entry-needs is-missing' }, entry.needs) : null,
       goalActions(entry)
     )
